@@ -15,7 +15,7 @@ Last updated: 2026-10-20 (real-data run not yet complete; this file is rewritten
 | Knowledge corpus + FAISS retrieval | IMPLEMENTED_UNTESTED | unit tests | corpus documents downloading on workstation |
 | LLM (Ollama qwen2.5:7b) | VERIFIED (availability) / NOT_STARTED (advisory runs) | smoke test on workstation | |
 | LangGraph workflow + safety constraints | VERIFIED (software) | `tests/safety`, `tests/unit` | real cases pending |
-| SUMO/TraCI protected controller | VERIFIED (software, toy grid) | `tests/integration/test_sumo.py` | corridor scenario pending OSM download |
+| SUMO/TraCI protected controller | VERIFIED (software, toy grid) | `tests/integration/test_sumo_runner.py` | corridor scenario pending OSM download |
 | API + Postgres job queue + worker | VERIFIED (software) | `tests/integration/test_api.py`, `test_db.py`, `reports/verification/api_smoke.json`, `db_smoke.json` | readiness reports 503 until real artifacts exist, as designed |
 | Dashboard | VERIFIED (software) | `reports/verification/dashboard_smoke.json` | headless start, health and index 200 in 2 s |
 | MLflow tracking + export | VERIFIED (software) | e2e fixture run writes `mlflow_runs.json` | |

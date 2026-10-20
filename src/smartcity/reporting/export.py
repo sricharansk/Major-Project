@@ -83,6 +83,14 @@ def evidence_registry() -> list[dict]:
     for rid, comp, fn, impl, cmd, art in REQS:
         p = R / art
         status = "VERIFIED" if p.exists() else "NOT_STARTED"
+        if p.exists() and p.suffix == ".json":  # smoke/export files carry their own outcome
+            try:
+                js = json.loads(p.read_text())
+                st = js.get("status") if isinstance(js, dict) else None
+                status = {"OK": "VERIFIED", "BLOCKED": "BLOCKED", "FAILED": "FAILED", "PARTIAL": "PARTIAL",
+                          "NOT_RUN": "NOT_STARTED", "EMPTY": "NOT_STARTED"}.get(st, status)
+            except (ValueError, OSError):
+                status = "FAILED"
         o = over.get(rid, {})
         if o.get("status"):
             status = o["status"]
@@ -171,8 +179,8 @@ def mlflow_runs() -> list[dict]:
 
 def run() -> dict:
     VER.mkdir(parents=True, exist_ok=True)
+    ml = mlflow_runs()  # before the registry so TRACK-01 sees the fresh export
     ev = evidence_registry()
     rt = runtime_metrics()
-    ml = mlflow_runs()
     return {"evidence_rows": len(ev), "verified": sum(r["test_status"] == "VERIFIED" for r in ev), "runtime_rows": len(rt),
             "mlflow_runs": len(ml)}
