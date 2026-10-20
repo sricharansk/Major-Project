@@ -44,6 +44,28 @@ Statuses: NOT_STARTED / IMPLEMENTED_UNTESTED / VERIFIED / PARTIAL / BLOCKED / FA
   Ollama + qwen2.5:7b. No PostgreSQL/PostGIS or Docker on the workstation: DB-backed stages stay in the container.
 - Pipeline stages on real data: NOT_STARTED (guide: `docs/laptop_run.md`, runner: `scripts/run_real_pipeline.py`).
 
+### Milestone 2b: first real-data pipeline passes (workstation)
+- `data preprocess` (14.6 s): 1,968,303 raw rows; 978,018 with `speed <= 0` treated as missing; 59 above the speed
+  cap; 990,226 valid rows over 26 links, 2026-01-01T05:03Z to 2026-10-20T03:58Z; 5-minute grid 84,084 steps x 19
+  links (train-coverage eligibility), observed fraction 0.611.
+- `graph build`, endpoint rule only (PR #3 code): 26 nodes, 4 edges, 20 isolated. With the corridor rule (PR #4):
+  26 nodes, 5 edges (4 endpoint, 1 corridor), 18 isolated, 88 candidate pairs audited. Cause found from the
+  audit: DOT `link_points` polylines stop short of the named link ends (e.g. "FDR S 63rd - 25th St" is 1.5 km of
+  geometry for a 3 km segment and ends 1,509 m before "FDR S 25th St - Catherine Slip" starts), and one chain
+  link ("12th ave @ 45th - 11 ave ganservoort st") carries no direction token. A third, named-endpoint rule was
+  added (this PR); the workstation reruns from `graph build`.
+- First training attempt ran on the CPU (`configs/training.yaml` had `device: cpu` and the runner never moved
+  tensors): ~9 min per GRU epoch. FIXED: `device: auto` resolves to CUDA when available, tensors and model move to
+  the resolved device, the resolved device and cuDNN state are recorded in each run config and `run_info.json`.
+  A reproducible process crash at exit (0xC0000409, GRU + cuDNN on Windows/CUDA 12.8/torch 2.11) is avoided by
+  disabling cuDNN for GRU runs on CUDA only. Unit/leakage/safety/e2e: 41 passed on the workstation with the e2e
+  test training on the RTX 4050; 43 passed in the container after the graph change.
+- Docker: Dockerfiles fixed (torch-geometric-temporal installed `--no-deps`; `xgboost-cpu` instead of the CUDA
+  wheel). `docker compose build` succeeded on the workstation (3 images, 4.67 GB) and `verify smoke` there
+  reported api/db/dashboard/docker OK. The workstation's smoke JSON files are not yet in the repository: its `git
+  push` fails for lack of a GitHub sign-in on that machine (owner asked to sign in once), so the container-side
+  `docker_smoke.json` (BLOCKED) remains the committed evidence until then.
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK

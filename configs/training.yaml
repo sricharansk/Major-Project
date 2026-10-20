@@ -9,7 +9,7 @@ training:
   loss: masked_huber
   huber_delta: 1.0
   max_train_windows_per_epoch: null   # null = all windows
-  device: cpu
+  device: auto          # auto = CUDA when available, else CPU (resolved device recorded in each run config)
 trees:
   n_estimators: 400
   learning_rate: 0.05
