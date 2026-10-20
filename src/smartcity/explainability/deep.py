@@ -112,6 +112,8 @@ def explain_alert(model, data, origin: int, n: int, h_idx: int, n_bg: int = 16, 
         "group_contributions": {p["name"]: float(v) for p, v in zip(pl, sv)},
         "base_value": base, "prediction": float(pred), "additivity_gap": float(pred - base - sv.sum()),
         "observed_target_mph": None if not np.isfinite(data.Y[origin, h_idx, n]) else float(data.Y[origin, h_idx, n]),
+        "recent_target_steps_observed": int(np.isfinite(data.speed[origin - RECENT_STEPS + 1:origin + 1, n]).sum()),
+        "recent_steps": RECENT_STEPS,
         "runtime_s": runtime, "model_calls": fn.calls,
         "note": "Attributions describe model sensitivity, not causal effects.",
     }
@@ -191,6 +193,51 @@ def tree_shap_global(tree_result: dict, data, max_rows: int = 3000, seed: int = 
     return out
 
 
+def eligible_alert_mask(data, test: np.ndarray, h_idx: int, recent_steps: int = RECENT_STEPS) -> np.ndarray:
+    """[len(test), N] boolean: (origin, link) pairs that are legitimate alert examples.
+
+    A pair is eligible only if the link's *raw* speed was observed at every one of the last ``recent_steps``
+    input steps (no forward-filled or stale inputs) and the target at ``h_idx`` was observed.  Without this
+    rule the "largest predicted drop" is dominated by links whose feed went dark, where the model extrapolates
+    from stale or missing inputs (a real-data run picked a link with no observations for four weeks)."""
+    obs = np.isfinite(data.speed).astype(np.int32)                 # [T, N]
+    cs = np.cumsum(obs, axis=0)
+    cs = np.vstack([np.zeros((1, obs.shape[1]), np.int32), cs])    # cs[t] = sum over steps < t
+    recent = (cs[test + 1] - cs[test + 1 - recent_steps]) == recent_steps
+    target_ok = np.isfinite(data.Y[test, h_idx, :])
+    return recent & target_ok
+
+
+def select_alert_points(data, P: np.ndarray, test: np.ndarray, h_idx: int, n_alerts: int, rng) -> tuple[list, dict]:
+    """Half of the points are the largest predicted speed drops (relative to the link's train mean, one per
+    link) among eligible pairs; the rest are random eligible test pairs, for the global importance average."""
+    elig = eligible_alert_mask(data, test, h_idx)
+    drop = (data.mu[None, :] - P[:, h_idx, :]) / data.mu[None, :]
+    drop = np.where(elig, drop, np.nan)
+    flat = np.argsort(-np.nan_to_num(drop, nan=-np.inf).ravel())
+    alerts, seen = [], set()
+    for f in flat:
+        k, n = divmod(int(f), P.shape[2])
+        if not np.isfinite(drop[k, n]):
+            break
+        if n in seen:
+            continue
+        seen.add(n)
+        alerts.append((int(test[k]), n))
+        if len(alerts) >= n_alerts // 2:
+            break
+    cand = np.argwhere(elig)
+    for _ in range(min(n_alerts - len(alerts), len(cand))):
+        k, n = cand[rng.integers(0, len(cand))]
+        alerts.append((int(test[k]), int(n)))
+    info = {"rule": f"raw speed observed at all last {RECENT_STEPS} input steps and observed target at the "
+                    f"explained horizon; top drops one per link, then random eligible pairs",
+            "n_test_pairs": int(elig.size), "n_eligible_pairs": int(elig.sum()),
+            "links_with_eligible_pairs": int((elig.sum(axis=0) > 0).sum()),
+            "n_top_drop": sum(1 for _ in alerts[: n_alerts // 2]), "n_random": max(0, len(alerts) - n_alerts // 2)}
+    return alerts, info
+
+
 def run(model, data, results: list[dict], predict_fn, cal: dict | None, n_alerts: int = 12, seed: int = 42) -> dict:
     out_dir = settings.ROOT / "artifacts" / "explanations"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -198,21 +245,8 @@ def run(model, data, results: list[dict], predict_fn, cal: dict | None, n_alerts
     test = data.origins["test"]
     prop = next(r for r in results if r["info"]["model"] == "proposed")
     P = prop["preds"]["test"]
-    # alerts: test (origin, link) with the largest predicted 30-min speed drop relative to the train mean
     h_idx = 1 if len(data.horizon_minutes) > 1 else 0
-    drop = (data.mu[None, :] - P[:, h_idx, :]) / data.mu[None, :]
-    flat = np.argsort(-np.nan_to_num(drop, nan=-1).ravel())
-    alerts, seen = [], set()
-    for f in flat:
-        k, n = divmod(int(f), P.shape[2])
-        if n in seen:
-            continue
-        seen.add(n)
-        alerts.append((int(test[k]), n))
-        if len(alerts) >= n_alerts // 2:
-            break
-    for _ in range(n_alerts - len(alerts)):  # plus random test points for global importance
-        alerts.append((int(rng.choice(test)), int(rng.integers(0, P.shape[2]))))
+    alerts, sel_info = select_alert_points(data, P, test, h_idx, n_alerts, rng)
     local = [explain_alert(model, data, o, n, h_idx, seed=seed) for o, n in alerts]
     names = local[0]["players"] if local else []
     glob: dict = {}
@@ -227,6 +261,7 @@ def run(model, data, results: list[dict], predict_fn, cal: dict | None, n_alerts
     summary = {"model_run_id": prop["info"]["run_id"], "explained_model": "proposed (context-gated GATv2-Transformer)",
                "local_alerts": local, "global_grouped_mean_abs_shap_mph": global_imp,
                "global_note": f"mean |SHAP| over {len(local)} explained test points (half top-alert, half random)",
+               "alert_selection": sel_info,
                "neighbour_removal": nb_rows, "temporal_window": tw_rows, "tree_baseline_shap": trees_out,
                "players": names}
     write_json(out_dir / "explanations_summary.json", summary)
