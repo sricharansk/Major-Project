@@ -120,21 +120,24 @@ End-to-end latency is 19 to 30\,s per advisory after the first call.
 The West Street corridor extracted from OpenStreetMap has 82 corridor edges, 22 signalised intersections and 25
 side-street entries; demand is 1{,}200 vehicles per hour and direction on the corridor and 150 per side approach,
 both declared assumptions because no automated count matched the corridor, and the three scenarios are a routine
-peak, an event surge (demand $\times 1.25$) and an incident that reduces one corridor edge to 2.5\,m/s for 20
-minutes. Two DOT links map to the corridor with high confidence, but they are the West Side feeds that carry no
-usable speed data and the Brooklyn--Battery Tunnel approach, so the testbed is a transfer demonstration on a real
-corridor with declared demand rather than a digital twin of a forecast link. All 45 matched-seed runs (three
+peak, an event surge (demand $\times 1.25$) and an incident that, at the same $\times 1.25$ demand, reduces one
+corridor edge to 2.5\,m/s for 20 minutes. Two DOT links map to the corridor with high confidence: a dead West Side feed with no usable speed data
+(11th Ave S Gansevoort--West St at Spring St) and the modelled West St S Spring St--Brooklyn--Battery Tunnel portal
+link. The scenarios' demand and congestion flags are declared rather than derived from that link's observed or
+forecast speeds, so the testbed is a transfer demonstration on a real corridor with declared demand rather than a
+digital twin of a forecast link. All 45 matched-seed runs (three
 scenarios, fixed-time, actuated and forecast-informed-rule controllers, five seeds, 300\,s warm-up and 3{,}600\,s
-evaluation, SUMO 1.28.0, 9{,}661\,s of wall time) completed, and Table~\ref{tab:sim} reports their means. The
+evaluation, SUMO 1.28.0, 9{,}645\,s of wall time) completed, and Table~\ref{tab:sim} reports their means. The
 result is \emph{inconclusive}, and we report it as such: the declared demand oversaturates the corridor under every
-controller. Of 6{,}675 (routine) or 8{,}350 (surge and incident) loaded vehicles per run, only 1{,}236 to 2{,}877
-complete their trip within the evaluation window, 3{,}682 to 6{,}725 remain unfinished, and 1{,}330 to 2{,}268
+controller. Of 6{,}675 (routine) or 8{,}350 (surge and incident) loaded vehicles per run, only 1{,}003 to 3{,}441
+complete their trip within the evaluation window, 3{,}257 to 6{,}979 remain unfinished, and 1{,}091 to 2{,}386
 vehicles per run are teleported by SUMO after waiting 300\,s in gridlock. Mean time loss per completed trip is
 971.6\,s (fixed-time), 987.5 (actuated) and 971.6 (forecast rule) in the routine peak, where the rule never
 activates because congestion is not forecast and therefore reproduces fixed-time exactly; 780.5, 1{,}118.4 and 739.0
 in the event surge; and 898.4, 1{,}070.1 and 806.0 in the incident scenario. The forecast rule's lower time loss
 in the two stress scenarios is survivorship, not improvement: it completes fewer trips than fixed-time (2{,}014
-against 2{,}087 in the surge, 1{,}236 against 1{,}384 in the incident) and teleports as many or more, while the
+against 2{,}087 in the surge, 1{,}236 against 1{,}384 in the incident) and teleports a comparable number of vehicles (1{,}834 against 1{,}799 in the surge, 2{,}174 against 2{,}268 in
+the incident), while the
 actuated controller completes the most trips (2{,}877 and 2{,}240) at the highest time loss per completed trip. Under
 gridlock the per-trip metrics measure which vehicles got through rather than how well the corridor was served, so no
 controller ranking is claimed, the acceptance rule now counts completed trips and teleports alongside delay, and
