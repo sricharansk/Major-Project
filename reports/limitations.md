@@ -53,9 +53,11 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
    each epoch), early stopping with patience 5 and at most 30 epochs, to finish inside a fixed deadline on a 6 GB
    laptop GPU. The budget is identical for all deep models and recorded in each run's `config.yaml`; models trained
    on all windows could rank differently.
-7d. **Advisory corridor vs. forecast links.** The SUMO corridor (West Street) has signalized intersections, but the
-   DOT links on it are the dead West Side feeds and the West St S approach to the Brooklyn-Battery Tunnel; the
-   forecastable links are otherwise limited-access roads (FDR, BQE, tunnels, bridges). The signal-advisory
+7d. **Advisory corridor vs. forecast links.** The SUMO corridor (West Street) has signalized intersections, but the two
+   DOT links mapped to it (`simulation/mappings/dot_to_sumo.csv`) are a dead West Side feed (4616325, 11th Ave S
+   Gansevoort-West St at Spring St) and the modelled West St S Spring St-Brooklyn-Battery Tunnel portal link
+   (4456494), whose observed speeds do not drive the scenarios (demand and congestion flags are declared); the
+   other forecastable links are limited-access roads (FDR, BQE, tunnels, bridges). The signal-advisory
    simulation is therefore a transfer demonstration on a real corridor with declared demand, not a calibrated digital
    twin of a forecast link (see item 16).
 
@@ -127,10 +129,10 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     stage log are in `reports/verification/`.
 24. **Controller comparison inconclusive (oversaturated testbed).** All 45 runs completed
     (`reports/experiments/simulation_metrics.csv`), but the declared 1,200 veh/h per direction gridlocks the
-    corridor under every controller: per run 1,236-2,877 completed trips against 3,682-6,725 unfinished and
-    1,330-2,268 teleports (time-to-teleport 300 s). The forecast rule's lower mean time loss per completed trip
-    (739 vs 781 s in the event surge, 806 vs 898 s in the incident) comes with fewer completed trips and as many
-    teleports, i.e. survivorship, and the rule is identical to fixed-time in the routine peak because it only acts
+    corridor under every controller: per run 1,003-3,441 completed trips against 3,257-6,979 unfinished and
+    1,091-2,386 teleports (time-to-teleport 300 s). The forecast rule's lower mean time loss per completed trip
+    (739 vs 780 s in the event surge, 806 vs 898 s in the incident) comes with fewer completed trips and a comparable number
+    of teleports (surge 1,834 vs 1,799; incident 2,174 vs 2,268), i.e. survivorship, and the rule is identical to fixed-time in the routine peak because it only acts
     when congestion is forecast. No controller ranking or simulated gain is claimed; the paired acceptance check now
     also records completed trips and teleports and fails a candidate that completes fewer trips than the baseline.
     Demand calibration from observed counts (no ATR count matched the corridor) is future work; a lower-demand

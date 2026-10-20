@@ -84,8 +84,9 @@ Statuses: NOT_STARTED / IMPLEMENTED_UNTESTED / VERIFIED / PARTIAL / BLOCKED / FA
   documents from the pinned v1_28_0 tag before `rag build`.
 - SUMO (workstation): the West St corridor extracted from OSM was empty because netconvert drops street names by
   default; fixed on the workstation (`--output.street-names`, hard failure on an empty corridor): 82 edges, 22
-  signals, 2 DOT links mapped. Those two links are the dead West Side feeds / the BBT approach, so the controller
-  comparison is a transfer demonstration (limitations 7d).
+  signals, 2 DOT links mapped. Those two links are a dead West Side feed (4616325) and the modelled West St S-BBT
+  portal link (4456494), whose observations do not drive the declared scenarios, so the controller comparison is
+  a transfer demonstration (limitations 7d).
 - Two crash fixes (results folder created before the first RAG/SUMO write).
 
 ### Milestone 3: complete real-data run (workstation, 2026-10-20 19:38 UTC to 2026-10-20 21:28 UTC; SUMO still running)
@@ -142,10 +143,10 @@ Stage log: `reports/verification/stage_log.jsonl` (every stage rc=0 after the fi
 - DEFECT FOUND AND FIXED: the first `agents evaluate` pass reported rc=0 while every LLM case had ended in
   ERROR_TOOL (`KeyError: model_run_id`, a field the evaluation cases never set), so the LLM was never called; the
   forecast node now falls back to the calibrator's frozen model run id. The failed pass is kept on the workstation.
-- SUMO (`simulation_metrics.csv`, 45 runs OK, 9,661 s, pushed as 77175ff): corridor 82 edges, 22 signals, 25 side
+- SUMO (`simulation_metrics.csv`, 45 runs OK, 9,645 s wall time, pushed as 77175ff): corridor 82 edges, 22 signals, 25 side
   entries, 2 high-confidence DOT mappings, demand 1,200/150 vph declared (no ATR count matched). RESULT
-  INCONCLUSIVE: oversaturated under every controller (completed 1,236-2,877 vs unfinished 3,682-6,725 per run,
-  teleports 1,330-2,268). Mean time loss per completed trip fixed/actuated/rule: routine 971.6/987.5/971.6 (rule
+  INCONCLUSIVE: oversaturated under every controller (per run: completed 1,003-3,441 vs unfinished 3,257-6,979,
+  teleports 1,091-2,386; five-seed means in `paper/tables/simulation.tex`). Mean time loss per completed trip fixed/actuated/rule: routine 971.6/987.5/971.6 (rule
   inactive = fixed), surge 780.5/1118.4/739.0, incident 898.4/1070.1/806.0; the rule completes fewer trips (surge
   2,014 vs 2,087; incident 1,236 vs 1,384), so its lower time loss is survivorship. No controller ranking claimed;
   acceptance check extended to completed trips and teleports; demand calibration is future work.

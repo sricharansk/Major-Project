@@ -107,7 +107,7 @@ def simulation_table():
         agg.setdefault(k, []).append(r)
     head = ("\\begin{table*}[t]\\centering\\caption{" + cap + ". Scenario-based testbed with OSM geometry and declared "
             "demand, not a calibrated digital twin. Time loss is the mean per \\emph{completed} trip; completed, "
-            "unfinished and teleported vehicles are per run, so a lower time loss with fewer completed trips is "
+            "unfinished and teleported vehicles are per run, averaged over seeds, so a lower time loss with fewer completed trips is "
             "survivorship, not improvement.}\\label{tab:sim}")
     lines = [head,
              "\\begin{tabular}{llrrrrrrrr}\\toprule Scenario & Controller & Seeds & Loaded & Completed & Unfinished & "
