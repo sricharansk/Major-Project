@@ -159,8 +159,15 @@ def docker_smoke(build: bool = False, timeout_s: int = 900) -> dict:
         else:
             tail = out["compose_build"]["tail"].lower()
             limited = "toomanyrequests" in tail or "too many requests" in tail or "rate limit" in tail or " 429 " in tail
-            out.update(status="BLOCKED" if limited else "FAILED",
-                       reason="registry rate limit (HTTP 429) while pulling the base image" if limited else "build failed (see tail)")
+            no_net = any(k in tail for k in ("unable to locate package", "temporary failure resolving",
+                                               "failed to download", "could not resolve", "network is unreachable"))
+            if limited:
+                out.update(status="BLOCKED", reason="registry rate limit (HTTP 429) while pulling the base image")
+            elif no_net:
+                out.update(status="BLOCKED", reason="build container has no outbound network (apt/pip mirrors unreachable "
+                                                     "under the development environment's network policy)")
+            else:
+                out.update(status="FAILED", reason="build failed (see tail)")
     else:
         out.update(status="PARTIAL", reason="config validated; build not requested (--docker-build)")
     write_json(VER / "docker_smoke.json", out)

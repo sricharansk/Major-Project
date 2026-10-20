@@ -35,6 +35,15 @@ Statuses: NOT_STARTED / IMPLEMENTED_UNTESTED / VERIFIED / PARTIAL / BLOCKED / FA
 - Pending: events, volume, 311, OSM (x2), sentence-transformer weights, knowledge documents; Jan-Jul speeds backfill.
 - Pipeline stages on real data: NOT_STARTED (guide: `docs/laptop_run.md`, runner: `scripts/run_real_pipeline.py`).
 
+### Milestone 1b: service smoke checks (cloud container)
+- `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
+  422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
+  (health + index 200). Docker: compose config OK; `docker compose build` BLOCKED (see below). Evidence files:
+  `reports/verification/{api,db,dashboard,docker}_smoke.json`.
+- Paper skeleton compiles to a 5-page PDF with generated NOT RUN tables (`paper/main.pdf`).
+
 ### Open blockers
-- Docker Compose build: BLOCKED (Docker Hub rate limit in the container).
+- Docker Compose build: BLOCKED. Docker Hub returned HTTP 429 for `python:3.12-slim` (mirror.gcr.io works and the
+  base image is now a build arg), but the build container cannot reach deb.debian.org or download.pytorch.org
+  under the environment's network policy, and ghcr.io/mlflow is denied (403). To be built on the workstation.
 - Bibliography DOI checks: NOT_STARTED (`paper/REFERENCES_STATUS.md`).
