@@ -1,10 +1,41 @@
 \section{Discussion}
 \label{sec:discussion}
 The system is designed so that each component's contribution can be isolated: baselines and the proposed model share
-one test mask; ablations remove one context group or the gate at a time; the advisory evaluation runs the same cases
-under four policies that switch off retrieval, the constraint layer or the simulation gate. The discussion of what
-these comparisons show is written from the generated tables once the real-data run has completed and is therefore
-absent from this version rather than anticipated. What can already be stated is architectural: the language model
-never holds safety authority (constraints and the simulation gate are deterministic code), retrieved text is treated
-as untrusted evidence that must be cited by chunk id, and the most permissive status the workflow can reach is
-approval for simulation, never deployment.
+one test mask, ablations remove one context group or the gate at a time, and the advisory evaluation runs the same
+cases under four policies that switch off retrieval, the constraint layer or the simulation gate. Read together, the
+results support some of the proposals in Section~\ref{sec:intro} and not others.
+
+\textit{Forecasting.} The accuracy gain of the proposed model over persistence (7--16\,\% MAE) and over the tree
+baselines is real and consistent across horizons, but its margin over the GRU and the temporal-only Transformer is
+within what a single seed can resolve. Two measured facts explain why the spatial layer adds little here: the graph
+is sparse (16 nodes with usable data, most of them limited-access highway segments whose monitored neighbours are
+kilometres away) and the explanations attribute 0.52\,mph of mean absolute effect to neighbour traffic against
+8.22\,mph to the link's own last half hour. The neighbour-removal analysis shows the layer is not inert (prediction
+changes of 0.7--1.3\,mph on the connected links) but also that removing edges sometimes lowers the error, so on this
+network message passing is a modest and mixed contribution. The availability gate is the component the ablations do
+support: removing it costs 0.067\,mph with an interval that excludes zero.
+
+\textit{Context.} The weather ablation is the clearest negative result: the operational re-forecast weather features
+raise MAE by 0.046\,mph, and the retrospective track, which uses reanalysis weather, is only marginally better than
+the operational one. On a highway-heavy link set over nine months the weather signal reaching a 5-minute speed is
+weak relative to the traffic history, and a re-forecast proxy adds noise. The 311 infrastructure group helps by a
+small but non-zero amount. Whether the events and incidents groups help cannot be answered on the operational track,
+where the data to compute them were not available at prediction time.
+
+\textit{Uncertainty.} The conformal intervals hold their marginal 90\,\% guarantee but are wide and under-cover
+congested targets (0.76--0.80), which is exactly the regime an advisory cares about. The deterministic gate turns
+this into deferrals: a quarter of forecasts are withheld and the remainder are a third more accurate. For an
+operator this is the honest trade-off; a calibration conditional on congestion state is the obvious next step.
+
+\textit{Grounding and constraints.} The policy ablation isolates two mechanisms. Retrieval removes fabricated
+citations (three of three without it, none of nine with it), and the citation check catches them when they occur.
+The constraint layer, not the language model, decides admissibility: the same model output on an unmapped link is
+rejected with constraints and forwarded to human review without them. What the run does not show is a signal-timing
+recommendation surviving the whole chain into simulation: on the mapped corridor the model chose monitoring only,
+so the simulation gate's acceptance rule has been exercised by tests, not by a real advisory. We report this as a
+gap rather than fill it with a hand-written candidate.
+
+\textit{What is not claimed.} Nothing here is a deployment result, a causal explanation, or a congestion reduction
+on a real street. The language model never holds safety authority (constraints and the simulation gate are code),
+retrieved text is untrusted evidence that must be cited by chunk id, and the most permissive status the workflow can
+reach is approval for simulation, never deployment.

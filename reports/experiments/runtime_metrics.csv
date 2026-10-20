@@ -1,84 +1,96 @@
 component,run_id,metric,value,n,hardware
-forecast:persistence,persistence-20261020T193923-c48849,train_time_s,0,,cloud container CPU x4
-forecast:persistence,persistence-20261020T193923-c48849,inference_ms_per_origin,0.0005762081904578196,144213,cloud container CPU x4
-forecast:historical_average,historical_average-20261020T193932-e08975,train_time_s,0.23,,cloud container CPU x4
-forecast:historical_average,historical_average-20261020T193932-e08975,inference_ms_per_origin,0.0009203929672562105,144213,cloud container CPU x4
-forecast:xgboost,xgboost-20261020T193933-18d124,train_time_s,20.79,,cloud container CPU x4
-forecast:xgboost,xgboost-20261020T193933-18d124,inference_ms_per_origin,0.08077718333472961,144213,cloud container CPU x4
-forecast:lightgbm,lightgbm-20261020T193956-ccbf73,train_time_s,22.28,,cloud container CPU x4
-forecast:lightgbm,lightgbm-20261020T193956-ccbf73,inference_ms_per_origin,0.3856563840571987,144213,cloud container CPU x4
-forecast:gru,gru-20261020T200131-e3eef3,train_time_s,358.95,,cloud container CPU x4
-forecast:gru,gru-20261020T200131-e3eef3,inference_ms_per_origin,0.6790706424729785,144213,cloud container CPU x4
-forecast:temporal_transformer,temporal_transformer-20261020T200802-d8bdfb,train_time_s,107.29,,cloud container CPU x4
-forecast:temporal_transformer,temporal_transformer-20261020T200802-d8bdfb,inference_ms_per_origin,2.1560125318408705,144213,cloud container CPU x4
-forecast:proposed,proposed-20261020T201110-0e333f,train_time_s,138.95,,cloud container CPU x4
-forecast:proposed,proposed-20261020T201110-0e333f,inference_ms_per_origin,5.692540705274962,144213,cloud container CPU x4
-forecast:persistence,persistence-20261020T210027-47b8d9,train_time_s,0,,cloud container CPU x4
-forecast:persistence,persistence-20261020T210027-47b8d9,inference_ms_per_origin,0.0011479132762552016,144213,cloud container CPU x4
-forecast:historical_average,historical_average-20261020T210038-5ee439,train_time_s,0.23,,cloud container CPU x4
-forecast:historical_average,historical_average-20261020T210038-5ee439,inference_ms_per_origin,0.0029760602447458906,144213,cloud container CPU x4
-forecast:xgboost,xgboost-20261020T210039-5d09ee,train_time_s,28.13,,cloud container CPU x4
-forecast:xgboost,xgboost-20261020T210039-5d09ee,inference_ms_per_origin,0.10175921029395957,144213,cloud container CPU x4
-forecast:lightgbm,lightgbm-20261020T210111-1813a7,train_time_s,22.31,,cloud container CPU x4
-forecast:lightgbm,lightgbm-20261020T210111-1813a7,inference_ms_per_origin,0.39176408870476936,144213,cloud container CPU x4
-forecast:proposed,proposed-20261020T210211-4a0685,train_time_s,446.58,,cloud container CPU x4
-forecast:proposed,proposed-20261020T210211-4a0685,inference_ms_per_origin,6.642122059036423,144213,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212531-006725,runtime_s,1.83,528,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212534-8ca3c1,runtime_s,3.277,1040,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212538-f477a2,runtime_s,3.537,1040,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212541-0dfc40,runtime_s,3.446,1040,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212545-2845f6,runtime_s,3.485,1040,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212548-e18a16,runtime_s,3.497,1040,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212552-8f1a19,runtime_s,3.476,1040,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212555-92ac34,runtime_s,3.496,1040,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212600-7b80d0,runtime_s,4.172,1040,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212602-1cc6ea,runtime_s,2.289,528,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212606-86717f,runtime_s,4.177,1040,cloud container CPU x4
-explanation:grouped_kernel_shap,xai-20261020T212608-68d239,runtime_s,1.727,528,cloud container CPU x4
-retrieval:faiss,q01,latency_s,14.7991,1,cloud container CPU x4
-retrieval:faiss,q02,latency_s,0.0278,1,cloud container CPU x4
-retrieval:faiss,q03,latency_s,0.0491,1,cloud container CPU x4
-retrieval:faiss,q04,latency_s,0.0262,1,cloud container CPU x4
-retrieval:faiss,q05,latency_s,0.0271,1,cloud container CPU x4
-retrieval:faiss,q06,latency_s,0.0269,1,cloud container CPU x4
-retrieval:faiss,q07,latency_s,0.0259,1,cloud container CPU x4
-retrieval:faiss,q08,latency_s,0.0243,1,cloud container CPU x4
-retrieval:faiss,q09,latency_s,0.0244,1,cloud container CPU x4
-retrieval:faiss,q10,latency_s,0.0253,1,cloud container CPU x4
-retrieval:faiss,q11,latency_s,0.0298,1,cloud container CPU x4
-retrieval:faiss,q12,latency_s,0.0303,1,cloud container CPU x4
-retrieval:faiss,q13,latency_s,0.0263,1,cloud container CPU x4
-retrieval:faiss,q14,latency_s,0.0336,1,cloud container CPU x4
-retrieval:faiss,q15,latency_s,0.0294,1,cloud container CPU x4
-retrieval:faiss,q16,latency_s,0.0282,1,cloud container CPU x4
-retrieval:faiss,q17,latency_s,0.0279,1,cloud container CPU x4
-retrieval:faiss,q18,latency_s,0.0296,1,cloud container CPU x4
-retrieval:faiss,q19,latency_s,0.0288,1,cloud container CPU x4
-retrieval:faiss,q20,latency_s,0.0274,1,cloud container CPU x4
-retrieval:faiss,q21,latency_s,0.0274,1,cloud container CPU x4
-retrieval:faiss,q22,latency_s,0.0271,1,cloud container CPU x4
-retrieval:faiss,q23,latency_s,0.0269,1,cloud container CPU x4
-retrieval:faiss,q24,latency_s,0.0217,1,cloud container CPU x4
-retrieval:faiss,q25,latency_s,0.029,1,cloud container CPU x4
-retrieval:faiss,q26,latency_s,0.0288,1,cloud container CPU x4
-retrieval:faiss,q27,latency_s,0.0244,1,cloud container CPU x4
-retrieval:faiss,q28,latency_s,0.0259,1,cloud container CPU x4
-agent:full_system,adv-20261020T211644-0b7657,end_to_end_s,134.74,1,cloud container CPU (LLM latency recorded separately)
-agent:full_system,adv-20261020T211859-2a78d8,end_to_end_s,0.02,1,cloud container CPU (LLM latency recorded separately)
-agent:full_system,adv-20261020T211859-ce96cf,end_to_end_s,0.01,1,cloud container CPU (LLM latency recorded separately)
-agent:full_system,adv-20261020T211859-08f755,end_to_end_s,0.03,1,cloud container CPU (LLM latency recorded separately)
-agent:full_system,adv-20261020T211859-36e1c6,end_to_end_s,5.43,1,cloud container CPU (LLM latency recorded separately)
-agent:full_system,adv-20261020T211904-d7ae1c,end_to_end_s,113.49,1,cloud container CPU (LLM latency recorded separately)
-agent:full_system,adv-20261020T212058-64eb52,end_to_end_s,28.5,1,cloud container CPU (LLM latency recorded separately)
-agent:llm_without_retrieval,adv-20261020T212126-b96be2,end_to_end_s,19.01,1,cloud container CPU (LLM latency recorded separately)
-agent:llm_without_retrieval,adv-20261020T212145-3b91d0,end_to_end_s,0.02,1,cloud container CPU (LLM latency recorded separately)
-agent:llm_without_retrieval,adv-20261020T212145-746c6d,end_to_end_s,19.76,1,cloud container CPU (LLM latency recorded separately)
-agent:llm_without_retrieval,adv-20261020T212205-1d1c92,end_to_end_s,19.43,1,cloud container CPU (LLM latency recorded separately)
-agent:rag_without_constraints,adv-20261020T212225-c86a1a,end_to_end_s,27.95,1,cloud container CPU (LLM latency recorded separately)
-agent:rag_without_constraints,adv-20261020T212252-f8d1c6,end_to_end_s,0.02,1,cloud container CPU (LLM latency recorded separately)
-agent:rag_without_constraints,adv-20261020T212253-4975ca,end_to_end_s,28.16,1,cloud container CPU (LLM latency recorded separately)
-agent:rag_without_constraints,adv-20261020T212321-3c25f9,end_to_end_s,24.88,1,cloud container CPU (LLM latency recorded separately)
-agent:rag_constraints_without_simulation,adv-20261020T212346-37c555,end_to_end_s,23.9,1,cloud container CPU (LLM latency recorded separately)
-agent:rag_constraints_without_simulation,adv-20261020T212409-d2ee92,end_to_end_s,0.02,1,cloud container CPU (LLM latency recorded separately)
-agent:rag_constraints_without_simulation,adv-20261020T212409-099c9d,end_to_end_s,29.52,1,cloud container CPU (LLM latency recorded separately)
-agent:rag_constraints_without_simulation,adv-20261020T212439-a8cc65,end_to_end_s,25.66,1,cloud container CPU (LLM latency recorded separately)
+forecast:persistence,persistence-20261020T193923-c48849,train_time_s,0,,"Windows-11-10.0.26300-SP0, 12 CPUs; train_device=cpu"
+forecast:persistence,persistence-20261020T193923-c48849,inference_ms_per_origin,0.0005762081904578196,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:historical_average,historical_average-20261020T193932-e08975,train_time_s,0.23,,"Windows-11-10.0.26300-SP0, 12 CPUs; train_device=cpu"
+forecast:historical_average,historical_average-20261020T193932-e08975,inference_ms_per_origin,0.0009203929672562105,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:xgboost,xgboost-20261020T193933-18d124,train_time_s,20.79,,"Windows-11-10.0.26300-SP0, 12 CPUs; train_device=cpu"
+forecast:xgboost,xgboost-20261020T193933-18d124,inference_ms_per_origin,0.08077718333472961,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:lightgbm,lightgbm-20261020T193956-ccbf73,train_time_s,22.28,,"Windows-11-10.0.26300-SP0, 12 CPUs; train_device=cpu"
+forecast:lightgbm,lightgbm-20261020T193956-ccbf73,inference_ms_per_origin,0.3856563840571987,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:gru,gru-20261020T200131-e3eef3,train_time_s,358.95,,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; train_device=cuda"
+forecast:gru,gru-20261020T200131-e3eef3,inference_ms_per_origin,0.6790706424729785,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:temporal_transformer,temporal_transformer-20261020T200802-d8bdfb,train_time_s,107.29,,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; train_device=cuda"
+forecast:temporal_transformer,temporal_transformer-20261020T200802-d8bdfb,inference_ms_per_origin,2.1560125318408705,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:proposed,proposed-20261020T201110-0e333f,train_time_s,138.95,,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; train_device=cuda"
+forecast:proposed,proposed-20261020T201110-0e333f,inference_ms_per_origin,5.692540705274962,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:persistence,persistence-20261020T210027-47b8d9,train_time_s,0,,"Windows-11-10.0.26300-SP0, 12 CPUs; train_device=cpu"
+forecast:persistence,persistence-20261020T210027-47b8d9,inference_ms_per_origin,0.0011479132762552016,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:historical_average,historical_average-20261020T210038-5ee439,train_time_s,0.23,,"Windows-11-10.0.26300-SP0, 12 CPUs; train_device=cpu"
+forecast:historical_average,historical_average-20261020T210038-5ee439,inference_ms_per_origin,0.0029760602447458906,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:xgboost,xgboost-20261020T210039-5d09ee,train_time_s,28.13,,"Windows-11-10.0.26300-SP0, 12 CPUs; train_device=cpu"
+forecast:xgboost,xgboost-20261020T210039-5d09ee,inference_ms_per_origin,0.10175921029395957,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:lightgbm,lightgbm-20261020T210111-1813a7,train_time_s,22.31,,"Windows-11-10.0.26300-SP0, 12 CPUs; train_device=cpu"
+forecast:lightgbm,lightgbm-20261020T210111-1813a7,inference_ms_per_origin,0.39176408870476936,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+forecast:proposed,proposed-20261020T210211-4a0685,train_time_s,446.58,,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; train_device=cuda"
+forecast:proposed,proposed-20261020T210211-4a0685,inference_ms_per_origin,6.642122059036423,144213,"Windows-11-10.0.26300-SP0, 12 CPUs; inference on CPU"
+explanation:grouped_kernel_shap,xai-20261020T212531-006725,runtime_s,1.83,528,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212534-8ca3c1,runtime_s,3.277,1040,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212538-f477a2,runtime_s,3.537,1040,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212541-0dfc40,runtime_s,3.446,1040,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212545-2845f6,runtime_s,3.485,1040,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212548-e18a16,runtime_s,3.497,1040,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212552-8f1a19,runtime_s,3.476,1040,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212555-92ac34,runtime_s,3.496,1040,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212600-7b80d0,runtime_s,4.172,1040,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212602-1cc6ea,runtime_s,2.289,528,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212606-86717f,runtime_s,4.177,1040,"Windows-11-10.0.26300-SP0, 12 CPUs"
+explanation:grouped_kernel_shap,xai-20261020T212608-68d239,runtime_s,1.727,528,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q01,latency_s,14.7991,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q02,latency_s,0.0278,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q03,latency_s,0.0491,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q04,latency_s,0.0262,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q05,latency_s,0.0271,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q06,latency_s,0.0269,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q07,latency_s,0.0259,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q08,latency_s,0.0243,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q09,latency_s,0.0244,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q10,latency_s,0.0253,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q11,latency_s,0.0298,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q12,latency_s,0.0303,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q13,latency_s,0.0263,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q14,latency_s,0.0336,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q15,latency_s,0.0294,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q16,latency_s,0.0282,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q17,latency_s,0.0279,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q18,latency_s,0.0296,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q19,latency_s,0.0288,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q20,latency_s,0.0274,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q21,latency_s,0.0274,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q22,latency_s,0.0271,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q23,latency_s,0.0269,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q24,latency_s,0.0217,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q25,latency_s,0.029,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q26,latency_s,0.0288,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q27,latency_s,0.0244,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+retrieval:faiss,q28,latency_s,0.0259,1,"Windows-11-10.0.26300-SP0, 12 CPUs"
+llm:qwen2.5:7b,adv-20261020T211644-0b7657,latency_s,125.51,258,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T211904-d7ae1c,latency_s,108.37,258,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212058-64eb52,latency_s,23.58,242,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212126-b96be2,latency_s,15.28,169,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212145-746c6d,latency_s,15.92,181,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212205-1d1c92,latency_s,16.11,157,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212225-c86a1a,latency_s,23.66,256,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212253-4975ca,latency_s,24.27,259,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212321-3c25f9,latency_s,21.16,215,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212346-37c555,latency_s,20.09,222,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212409-099c9d,latency_s,25.77,278,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+llm:qwen2.5:7b,adv-20261020T212439-a8cc65,latency_s,21.79,215,"Windows-11-10.0.26300-SP0, 12 CPUs; GPU 0: NVIDIA GeForce RTX 4050 Laptop GPU; Ollama (ollama)"
+agent:full_system,adv-20261020T211644-0b7657,end_to_end_s,134.74,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:full_system,adv-20261020T211859-2a78d8,end_to_end_s,0.02,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:full_system,adv-20261020T211859-ce96cf,end_to_end_s,0.01,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:full_system,adv-20261020T211859-08f755,end_to_end_s,0.03,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:full_system,adv-20261020T211859-36e1c6,end_to_end_s,5.43,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:full_system,adv-20261020T211904-d7ae1c,end_to_end_s,113.49,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:full_system,adv-20261020T212058-64eb52,end_to_end_s,28.5,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:llm_without_retrieval,adv-20261020T212126-b96be2,end_to_end_s,19.01,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:llm_without_retrieval,adv-20261020T212145-3b91d0,end_to_end_s,0.02,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:llm_without_retrieval,adv-20261020T212145-746c6d,end_to_end_s,19.76,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:llm_without_retrieval,adv-20261020T212205-1d1c92,end_to_end_s,19.43,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:rag_without_constraints,adv-20261020T212225-c86a1a,end_to_end_s,27.95,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:rag_without_constraints,adv-20261020T212252-f8d1c6,end_to_end_s,0.02,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:rag_without_constraints,adv-20261020T212253-4975ca,end_to_end_s,28.16,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:rag_without_constraints,adv-20261020T212321-3c25f9,end_to_end_s,24.88,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:rag_constraints_without_simulation,adv-20261020T212346-37c555,end_to_end_s,23.9,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:rag_constraints_without_simulation,adv-20261020T212409-d2ee92,end_to_end_s,0.02,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:rag_constraints_without_simulation,adv-20261020T212409-099c9d,end_to_end_s,29.52,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"
+agent:rag_constraints_without_simulation,adv-20261020T212439-a8cc65,end_to_end_s,25.66,1,"Windows-11-10.0.26300-SP0, 12 CPUs (LLM latency recorded separately)"

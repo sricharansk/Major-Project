@@ -16,7 +16,15 @@ support-status accuracy for retrieval; schema validity, invalid-citation counts,
 distribution for advisories; SUMO time loss, travel time, waiting time, stops, queue length, throughput, side-road delay,
 unfinished trips, insertion backlog and teleports; and latency of each stage.
 
-\textit{Advisory cases and policies.} Routine rush hour, rainy period (if present in the test partition), a stale-data
-stress test, a wide-interval stress test, an out-of-scope query (insufficient evidence), and alerts on links with a
-reviewed mapping to the simulated corridor. Policies: full system; LLM without retrieval; RAG without the constraint
-layer; RAG with constraints but without the simulation gate.
+\textit{Training budget.} Every deep model (GRU, temporal Transformer, proposed model, ablations) is trained with
+AdamW and early stopping as in Section~\ref{sec:method}, under a recorded compute budget of 4{,}096 training windows
+per epoch, sampled afresh each epoch (\texttt{configs/training.yaml}); the budget, the resolved device and the stop
+reason are written into every run's configuration, and the budget is the same for all models.
+
+\textit{Advisory cases and policies.} Seven REPLAY cases chosen by rule from the test partition: routine rush hour
+(largest predicted drop at a weekday peak), rainy period (a wet weather code, present in this test partition), a
+stale-data stress test (inputs aged six steps), a wide-interval stress test (forced 99\,mph width), an out-of-scope
+query (insufficient evidence), and two cases on the one link with a reviewed, high-confidence mapping to the simulated
+corridor (its largest predicted drop and an ordinary rush-hour origin). Policies: full system; LLM without retrieval;
+RAG without the constraint layer; RAG with constraints but without the simulation gate. The three stress cases run
+under the full system only, giving 19 policy-by-case runs.

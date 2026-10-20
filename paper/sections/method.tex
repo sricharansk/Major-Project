@@ -1,4 +1,5 @@
 \section{Proposed Methodology}
+\label{sec:method}
 \subsection{Context-gated GATv2--Temporal Transformer}
 For each node and time step, every feature group $g$ is projected to a common width $d=64$,
 $h_{t,v,g}=\mathrm{ReLU}(W_g x_{t,v,g})$. A scoring network gives $s_{t,v,g}=w^\top\tanh(U h_{t,v,g})$; scores of
@@ -37,8 +38,10 @@ sensitivities. Tree baselines are explained with TreeSHAP and labelled as baseli
 
 \subsection{Retrieval, LLM and agentic workflow}
 Approved documents (U.S. federal signal-timing guidance, SUMO documentation, and a clearly labelled project-defined
-experimental policy) are hashed, allow-listed, chunked to at most 200 word-pieces (below the 256-token limit of
-all-MiniLM-L6-v2) and indexed with a FAISS inner-product index over normalised embeddings. A query whose best passages
+experimental policy) are hashed, allow-listed, chunked with a 200 word-piece target and indexed with a FAISS
+inner-product index over normalised all-MiniLM-L6-v2 embeddings; chunks that still exceed the encoder's 256-token
+window (171 of 1{,}633 in the built index, mostly tables of the PDF manual) are truncated by the encoder, and the
+count is recorded in the index manifest. A query whose best passages
 score below 0.35 returns INSUFFICIENT\_EVIDENCE. The LLM receives forecasts, intervals, quality flags, computed
 attributions, retrieved passages (marked as untrusted text) and the allowed action catalogue, and must return JSON that
 satisfies a Pydantic schema enforced through Ollama's structured-output option. A LangGraph state machine runs

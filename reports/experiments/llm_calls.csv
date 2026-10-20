@@ -1,0 +1,13 @@
+run_id,policy,case,provider,model,prompt_version,attempt,status,schema_valid,prompt_tokens,completion_tokens,latency_s,recommendation_type,n_candidates,n_evidence_ids,decision,mode
+adv-20261020T211644-0b7657,full_system,routine_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,1790,258,125.51,monitor_only,1,2,REJECT_CONSTRAINT,REPLAY
+adv-20261020T211904-d7ae1c,full_system,mapped_corridor_alert,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3582,258,108.37,monitor_only,1,4,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261020T212058-64eb52,full_system,mapped_corridor_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3604,242,23.58,monitor_only,1,2,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261020T212126-b96be2,llm_without_retrieval,routine_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,892,169,15.28,monitor_only,1,1,REJECT_CONSTRAINT,REPLAY
+adv-20261020T212145-746c6d,llm_without_retrieval,mapped_corridor_alert,ollama,qwen2.5:7b,advisory_v1,0,OK,True,2778,181,15.92,monitor_only,1,1,REJECT_CONSTRAINT,REPLAY
+adv-20261020T212205-1d1c92,llm_without_retrieval,mapped_corridor_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,2780,157,16.11,monitor_only,1,1,REJECT_CONSTRAINT,REPLAY
+adv-20261020T212225-c86a1a,rag_without_constraints,routine_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,1790,256,23.66,monitor_only,1,2,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261020T212253-4975ca,rag_without_constraints,mapped_corridor_alert,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3582,259,24.27,monitor_only,1,4,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261020T212321-3c25f9,rag_without_constraints,mapped_corridor_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3604,215,21.16,monitor_only,1,2,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261020T212346-37c555,rag_constraints_without_simulation,routine_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,1790,222,20.09,monitor_only,1,2,REJECT_CONSTRAINT,REPLAY
+adv-20261020T212409-099c9d,rag_constraints_without_simulation,mapped_corridor_alert,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3582,278,25.77,monitor_only,1,4,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261020T212439-a8cc65,rag_constraints_without_simulation,mapped_corridor_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3604,215,21.79,monitor_only,1,2,PENDING_HUMAN_REVIEW,REPLAY
