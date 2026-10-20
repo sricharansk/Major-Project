@@ -47,7 +47,8 @@ def netconvert(osm: Path, out: Path, tls_type: str = "static") -> Path:
            "--geometry.remove", "--ramps.guess", "--junctions.join", "--tls.guess-signals", "--tls.discard-simple",
            "--tls.join", "--tls.default-type", tls_type, "--keep-edges.by-vclass", "passenger",
            "--remove-edges.isolated", "--osm.turn-lanes", "--no-turnarounds.tls", "--tls.yellow.time", "3",
-           "--tls.allred.time", "2", "--seed", "42", "--no-warnings"]
+           "--tls.allred.time", "2", "--seed", "42", "--no-warnings",
+           "--output.street-names"]  # keep OSM names: corridor detection matches on edge names (dropped by default)
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         raise RuntimeError(f"netconvert failed: {r.stderr[-2000:]}")
