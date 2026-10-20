@@ -28,6 +28,7 @@ SIM = settings.ROOT / "simulation"
 def sumo_home() -> str:
     import sumo
 
+    os.environ.setdefault("SUMO_HOME", sumo.SUMO_HOME)
     return sumo.SUMO_HOME
 
 
