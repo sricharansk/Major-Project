@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+data/raw/
+data/interim/
+data/processed/
+data/models/
+mlruns/
+mlflow.db
+*.egg-info/
+.env
+simulation/outputs/**/*.xml
+artifacts/**/*.pt
+artifacts/**/*.npz
+knowledge/indexes/*.faiss
