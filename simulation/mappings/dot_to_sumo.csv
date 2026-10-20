@@ -1,0 +1,3 @@
+dot_link_id,dot_link_name,sumo_edge_id,direction_match,geometry_overlap,mapping_confidence,review_status,signal_relevance
+4456494,West St S Spring St - BBT Manhattan Portal outbound,614853315;1537478420;420809439;412875705#0;438367286#0;978439270#0;978431658#0;195743227,1.0,1.0,high,auto_checked_reviewed_by_claude_not_human,corridor_signalized_arterial
+4616325,11th ave s ganservoort - west st @ spring st,95181768#0;420809438#0,1.0,0.6,high,auto_checked_reviewed_by_claude_not_human,corridor_signalized_arterial

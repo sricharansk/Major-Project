@@ -1,0 +1,43 @@
+model: lightgbm
+trees:
+  n_estimators: 400
+  learning_rate: 0.05
+  max_depth: 8
+  early_stopping_rounds: 30
+train_origin_stride: 2
+tabular_columns:
+- speed_z_lag0
+- speed_z_lag1
+- speed_z_lag2
+- speed_z_lag3
+- speed_z_lag4
+- speed_z_lag5
+- speed_z_lag6
+- speed_z_lag7
+- speed_z_lag8
+- speed_z_lag9
+- speed_z_lag10
+- speed_z_lag11
+- speed_z
+- speed_observed_or_ffilled
+- obs_age_days_frac
+- rollmean_1h_z
+- delta_5m_z
+- hour_sin
+- hour_cos
+- dow_sin
+- dow_cos
+- weekend
+- us_federal_holiday
+- archive_precip_mm
+- archive_rain_mm
+- archive_snow_cm
+- archive_temp_c
+- archive_wind_kmh
+- archive_wet_code
+- archive_visibility_km
+- archive_cloud_pct
+- borough_events_active_next_60m
+- collisions_500m_60m
+- sr311_24h_lagged_log
+- link_index

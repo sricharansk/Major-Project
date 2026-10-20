@@ -253,7 +253,9 @@ def evaluate_ablations(track: str = "operational", reference: str = "proposed", 
     data = load_data(track)
     o = data.origins["test"]
     Y = data.Y[o]
-    day_index = np.asarray(data.times[o]).astype("datetime64[D]").astype("int64")
+    # data.times are int64 UTC epoch SECONDS: convert via datetime64[s] (a direct cast to [D] reads them as days and
+    # gives one "day" per 5-min origin, i.e. an i.i.d. bootstrap with far too narrow CIs).
+    day_index = np.asarray(data.times[o]).astype("datetime64[s]").astype("datetime64[D]").astype("int64")
     loaded = {r["info"]["model"]: r for r in load_results(track, [reference] + [v for v in DEEP_VARIANTS if v.startswith("ablation_")])}
     if reference not in loaded:
         raise typer.BadParameter(f"reference model {reference!r} is not in the {track} registry")
@@ -263,6 +265,13 @@ def evaluate_ablations(track: str = "operational", reference: str = "proposed", 
         mask &= np.isfinite(r["preds"]["test"])
     rows = []
     for v in [reference] + [v for v in DEEP_VARIANTS if v.startswith("ablation_")]:
+        drop = DEEP_VARIANTS[v].get("drop_groups") or []
+        if drop and not any(g in data.meta["groups"] for g in drop):
+            # the removed group is absent from this track, so the variant equals the reference model: not an ablation
+            rows.append({"variant": v, "track": track, "run_id": loaded[v]["info"]["run_id"] if v in loaded else "",
+                         "mae_mean_mph": "", "delta_vs_proposed_mph": "", "ci95_low": "", "ci95_high": "",
+                         "n_days": "", "status": f"NOT_APPLICABLE (no {'/'.join(drop)} group in {track} track)"})
+            continue
         if v not in loaded:
             rows.append({"variant": v, "track": track, "run_id": "", "mae_mean_mph": "", "delta_vs_proposed_mph": "",
                          "ci95_low": "", "ci95_high": "", "n_days": "", "status": "NOT_RUN"})

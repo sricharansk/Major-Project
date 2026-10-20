@@ -1,2 +1,22 @@
-\begin{table}[t]\centering\caption{Advisory workflow outcomes by policy (REPLAY cases; simulation-only effects)}\label{tab:adv}
-\begin{tabular}{c}\toprule NOT RUN \\ \bottomrule\end{tabular}\end{table}
+\begin{table*}[t]\centering\caption{Advisory workflow outcomes by policy (REPLAY cases; simulation-only effects)}\label{tab:adv}
+\begin{tabular}{llllrr}\toprule Policy & Case & Decision & LLM & Invalid cit. & Constraint viol. \\ \midrule
+full\_system & routine\_rush\_hour & REJECT\_CONSTRAINT & OK & 0 & 1 \\
+full\_system & rain\_period & DEFER\_UNCERTAINTY & -- & 0 & 0 \\
+full\_system & stale\_data\_stress & DEFER\_DATA & -- & 0 & 0 \\
+full\_system & wide\_interval\_stress & DEFER\_UNCERTAINTY & -- & 0 & 0 \\
+full\_system & insufficient\_evidence & DEFER\_EVIDENCE & -- & 0 & 0 \\
+full\_system & mapped\_corridor\_alert & PENDING\_HUMAN\_REVIEW & OK & 0 & 0 \\
+full\_system & mapped\_corridor\_rush\_hour & PENDING\_HUMAN\_REVIEW & OK & 0 & 0 \\
+llm\_without\_retrieval & routine\_rush\_hour & REJECT\_CONSTRAINT & OK & 1 & 1 \\
+llm\_without\_retrieval & rain\_period & DEFER\_UNCERTAINTY & -- & 0 & 0 \\
+llm\_without\_retrieval & mapped\_corridor\_alert & REJECT\_CONSTRAINT & OK & 1 & 1 \\
+llm\_without\_retrieval & mapped\_corridor\_rush\_hour & REJECT\_CONSTRAINT & OK & 1 & 1 \\
+rag\_without\_constraints & routine\_rush\_hour & PENDING\_HUMAN\_REVIEW & OK & 0 & 1 \\
+rag\_without\_constraints & rain\_period & DEFER\_UNCERTAINTY & -- & 0 & 0 \\
+rag\_without\_constraints & mapped\_corridor\_alert & PENDING\_HUMAN\_REVIEW & OK & 0 & 0 \\
+rag\_without\_constraints & mapped\_corridor\_rush\_hour & PENDING\_HUMAN\_REVIEW & OK & 0 & 0 \\
+rag\_constraints\_without\_simulation & routine\_rush\_hour & REJECT\_CONSTRAINT & OK & 0 & 1 \\
+rag\_constraints\_without\_simulation & rain\_period & DEFER\_UNCERTAINTY & -- & 0 & 0 \\
+rag\_constraints\_without\_simulation & mapped\_corridor\_alert & PENDING\_HUMAN\_REVIEW & OK & 0 & 0 \\
+rag\_constraints\_without\_simulation & mapped\_corridor\_rush\_hour & PENDING\_HUMAN\_REVIEW & OK & 0 & 0 \\
+\bottomrule\end{tabular}\end{table*}

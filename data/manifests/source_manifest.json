@@ -1,0 +1,184 @@
+{
+  "generated_at_utc": "2026-10-20T17:44:28.920016+00:00",
+  "sources": {
+    "_audit": {
+      "n_fetches": 18,
+      "files": {
+        "meta_i4gi-tjb9.json.gz": "ea5346d36d2ae37ab06e62966809975e01c84be58d9057909f79c79b1677e2b6",
+        "coverage_i4gi-tjb9.json.gz": "2d4d59bfdadd23289d22c2ba035ec7c29916e371245949a9699ce7925d348753",
+        "by_year_i4gi-tjb9.json.gz": "cbd4f3c20fbd90ef8e43151119dafbebcaa72a8b610d49e3b1fead998f842b93",
+        "by_borough_i4gi-tjb9.json.gz": "e43268358ce42220158e7f4da5b97a8444480c80940f0fb2b1fdae73e08b8e93",
+        "meta_7ym2-wayt.json.gz": "22d1720e2ec61bd0fe679dde9d43ce1b231a36e4bdb78bd5dc4ba420c5f4a3cf",
+        "by_year_7ym2-wayt.json.gz": "46e99d512db462a2a6e9cb7e26385e3eb1d3a11e3cb9d93b46a59068d7377b20",
+        "meta_tvpp-9vvx.json.gz": "224ba0cad0d33056f068974ccd56eb1322926410edc643bf25ea4f407429edd1",
+        "coverage_tvpp-9vvx.json.gz": "e77c7c77cf2f6cb7ffef3a016303e71a6b00a313961d7fe9d43c7cb9d4e4bde6",
+        "by_year_tvpp-9vvx.json.gz": "36730a2f58a7e711045750eb36d5fb874312810b936b4f024c3c3d9b18ece7bb",
+        "meta_bkfu-528j.json.gz": "07c91e5828eea207e0d5a7ec1006c0bf6e28ca66e2c11acd6ae7f20b9ededf20",
+        "coverage_bkfu-528j.json.gz": "054fd0c320754521236172bc4cd1e476b4da2a953a13b312c7777c05205e5a68",
+        "by_year_bkfu-528j.json.gz": "9bdceea2a4721417acedfba3ca00caba0e0baef81048b35bd76246ce65ce251a",
+        "meta_h9gi-nx95.json.gz": "361935bc15c12c14ca1b07d03f67cfdb1da0a070861e06ff59bf88b7fd9ef5bd",
+        "coverage_h9gi-nx95.json.gz": "d3af4c745033005476c30e7384e4e9ce46568c257f5769966e6af176ffe9298b",
+        "by_year_h9gi-nx95.json.gz": "35c462b9acd117a6622978e196c1e12de24f9a1293dd8e427fd4393b68369ea2",
+        "meta_erm2-nwe9.json.gz": "a0ac354275ed3068ba5b7f3cab61ebd59f0abe351ce43ff8e1954b474cdaf458",
+        "coverage_erm2-nwe9.json.gz": "3e867ec620b87dd3240e12b043e88dfa91562d445c6205d9aba2cd6dc2902d43",
+        "by_year_erm2-nwe9.json.gz": "d64d65406342c78d19a8561770890a7679a5822d916408b45655fa57b673750e"
+      }
+    },
+    "_runlogs": {
+      "n_fetches": 0,
+      "files": {}
+    },
+    "collisions": {
+      "n_fetches": 10,
+      "files": {
+        "collisions_manhattan_2026-01-01_2026-02-01_p000.json.gz": "5f65d0b67330447f6c83e5a472e5a2d6f2b201eef9efa48c3a2deef1903f4079",
+        "collisions_manhattan_2026-02-01_2026-03-04_p000.json.gz": "6bcaa7c1865cffffadb589987fbc293fa13e96a2fda70e06a40494ba2d82205b",
+        "collisions_manhattan_2026-03-04_2026-04-04_p000.json.gz": "2e36634e1832dba9b5384b16d8b8f91fe0c612c2998193f287281204b96e7660",
+        "collisions_manhattan_2026-04-04_2026-05-05_p000.json.gz": "c255c8bd4c303981d6d8df1fcbc6f5dbe21792927e1525ff476016b92fd2976b",
+        "collisions_manhattan_2026-05-05_2026-06-05_p000.json.gz": "1974e423061631401efacf6e46b2a362c5aae227175e9f648febb6f8f1581197",
+        "collisions_manhattan_2026-06-05_2026-07-06_p000.json.gz": "378088c75b56fe16bb0bca5241a81cb654f390ed4ea32e22e1af975768a5c098",
+        "collisions_manhattan_2026-07-06_2026-08-06_p000.json.gz": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "collisions_manhattan_2026-08-06_2026-09-06_p000.json.gz": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "collisions_manhattan_2026-09-06_2026-10-07_p000.json.gz": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "collisions_manhattan_2026-10-07_2026-10-20_p000.json.gz": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      }
+    },
+    "events": {
+      "n_fetches": 1,
+      "files": {
+        "events_manhattan_p000.json.gz": "9068d71f257e7077a77003a7d1d7f612be99d7b731ea01437b033f45a46ae0c6"
+      }
+    },
+    "events_hist": {
+      "n_fetches": 3,
+      "files": {
+        "events_hist_manhattan_p000.json.gz": "2fb157ff487b471bb99f043feb26fecd3473d9894a973767f706665da3b1313f",
+        "events_hist_manhattan_p001.json.gz": "6b9b0f8f862e5e3cdee39a7cfde81ec9637b5959958f9f8d7f5d7aa2f4fd91a0",
+        "events_hist_manhattan_p002.json.gz": "17be3203de2175a9e032947eee5d99f6ff04d9c3b5a0fef66256e55111ab0c84"
+      }
+    },
+    "knowledge": {
+      "n_fetches": 5,
+      "files": {
+        "mutcd2009_part4d.htm": "da8a8c003926ad2175b3d38400398174160160144fb1d0f7f934662c1dcb7460",
+        "mutcd2009_part4e.htm": "f38733cdcdfb1b15c022ddebf5079ad649ac93523d49ee152ef333686dc96667",
+        "fhwa_signal_timing_manual_2008.pdf": "675df7afec87adcef9a6218c14be35a58d153476e0a422a67d734b8634a6df7b",
+        "fhwa_stm_ch5.htm": "f8e5e46931d5699c292fc963eb38f1feb3c98a9a3793ce38fd69349cf0017f2f",
+        "fhwa_stm_ch6.htm": "f7cb50af30df6eb6b9300b5f5e9438a2c2044b708452673d34a11ae3f7a70372"
+      }
+    },
+    "osm": {
+      "n_fetches": 2,
+      "files": {
+        "manhattan_major.osm": "fb82e0bc2d456306b53b7aac9851098247937b63f5465d6a2bff1c123de5d694",
+        "west_st_corridor.osm": "a8799780d531c4dc4e29b650b15af3e5d566549b4eecde332ebd3ad59185c049"
+      }
+    },
+    "speeds": {
+      "n_fetches": 64,
+      "files": {
+        "speeds_manhattan_2026-07-01_2026-07-08_p000.json.gz": "636abf9a93b0082ad8b434961c2efac975c94f67bc5ac027cba9c2ab543dcd2f",
+        "speeds_manhattan_2026-07-01_2026-07-08_p001.json.gz": "adb97f0b3adbc31b451b979bf7324faad92c0ede09717cac35ad843c2e25b8eb",
+        "speeds_manhattan_2026-07-08_2026-07-15_p000.json.gz": "5299fe346b2e0e75c5fd8971ee1e9db3afbf617115b761af9e0012037e6d6659",
+        "speeds_manhattan_2026-07-15_2026-07-22_p000.json.gz": "304381065819dcb727fbb90b5b40997037e3597637a2d81e3feda60f0f9484f3",
+        "speeds_manhattan_2026-07-22_2026-07-29_p000.json.gz": "e06301b137876d7d09f13ba85dcbfb15a07e80507176c6ea18e035da3a65e3bc",
+        "speeds_manhattan_2026-07-22_2026-07-29_p001.json.gz": "18995a53904f4b9142b96a13f6b147025f799fc0490c8731877842e43060b774",
+        "speeds_manhattan_2026-07-29_2026-08-05_p000.json.gz": "0bd187756929275d5a8f4faa0bfb9e806d11194c22a2cc7fd279524cf1b83720",
+        "speeds_manhattan_2026-08-05_2026-08-12_p000.json.gz": "44ee1991b71fd4f46cf77e1cdbb73e81b34acbb7360ed2d70c81fedbc6b6b317",
+        "speeds_manhattan_2026-08-05_2026-08-12_p001.json.gz": "6def425008b35753fad9134c5e65b78ae8118c5dae782e719d05a2a17c0b1327",
+        "speeds_manhattan_2026-08-12_2026-08-19_p000.json.gz": "8e0a5858add61b256f7616d47a9dd408b032bb10d54b6238ad95340d28681b7f",
+        "speeds_manhattan_2026-08-12_2026-08-19_p001.json.gz": "79521554a2f2ea5c3343c94161460bb6fa0e840fd2388667c7e63920393dba9e",
+        "speeds_manhattan_2026-08-19_2026-08-26_p000.json.gz": "e8d7b23fddd470aa6a994443aec2eb996c56bf3da6dc9dadaf7dde8e8655e143",
+        "speeds_manhattan_2026-08-19_2026-08-26_p001.json.gz": "faacfbb458c9211a41de8a886a1c5885d2050ee5a88b48cea44ac009969a25e6",
+        "speeds_manhattan_2026-08-26_2026-09-02_p000.json.gz": "d5790d50729ff69729d977a047b3c3b62c3ab28a7ec8d056b9e1415557f56124",
+        "speeds_manhattan_2026-08-26_2026-09-02_p001.json.gz": "c473eb7be06eb9cda40444f36f4030fba99e2f8998220c67a78fd40cc433798c",
+        "speeds_manhattan_2026-09-02_2026-09-09_p000.json.gz": "632c33b6062fac895c3a0d9a475a345e79d197e0a74997063655de542e936421",
+        "speeds_manhattan_2026-09-09_2026-09-16_p000.json.gz": "852726806cbdc5dfbfc60402208c4f4801aa429128f3401e57ecd85a19693dbb",
+        "speeds_manhattan_2026-09-09_2026-09-16_p001.json.gz": "a631fce625e520fd12090c43cfeba5b76a746ee7ead73322e2b91e180d8a1b06",
+        "speeds_manhattan_2026-09-16_2026-09-23_p000.json.gz": "fa847763f3e1d4b302bfe98988544af30135102ad1aeed7e90c88de6a480b544",
+        "speeds_manhattan_2026-09-16_2026-09-23_p001.json.gz": "96202cc5243f9a696fa48d8970d96030005896e7366ab32f37466c022550965a",
+        "speeds_manhattan_2026-09-23_2026-09-30_p000.json.gz": "8de4724a3124df3fede17d78a12031a24d461adeaa14bc4d84d65bc228a11eb3",
+        "speeds_manhattan_2026-09-23_2026-09-30_p001.json.gz": "77dfac2d14f7410c83618c61f82d5d924e2f6bbea281305eba971c9a84aa02ae",
+        "speeds_manhattan_2026-09-30_2026-10-07_p000.json.gz": "d884647952944f32c5f3d0f91de1c7cc3bebaa55d56f2958bb0006105bd676cc",
+        "speeds_manhattan_2026-09-30_2026-10-07_p001.json.gz": "14e4483594839981adac9359d9dacbf200b8785e078ef1c4c9dc96908a1d6ddb",
+        "speeds_manhattan_2026-10-07_2026-10-14_p000.json.gz": "77e89f0c0a49db0bd8261db115ef750ce6b359a5d9ab1f4840ed867c2897c4d2",
+        "speeds_manhattan_2026-10-14_2026-10-20_p000.json.gz": "b725365a6322879b9848f50ce70bcc658b413ba2aa7087419e8d25521dba662f",
+        "speeds_manhattan_2026-01-01_2026-01-08_p000.json.gz": "00ab844049a27d97c70912e66e5f4bc69de7c6ca4fd6899cb79b54af65ecc30d",
+        "speeds_manhattan_2026-01-01_2026-01-08_p001.json.gz": "c4fcec4d25da4f5799b060f458009f2299f66afff439d5b2ecd9bd4c0097a52c",
+        "speeds_manhattan_2026-01-08_2026-01-15_p000.json.gz": "02a7c8e6e50f6d6bcc9b9f37ea94f331a36eba94828c7955b7e60f0d6133dcce",
+        "speeds_manhattan_2026-01-08_2026-01-15_p001.json.gz": "cebd069c6c0c426598a49037e0333c399e4565b71f75ab4ff64d47cc99bf6e10",
+        "speeds_manhattan_2026-01-15_2026-01-22_p000.json.gz": "ad6a10da971bda92ded45d1ab8dc78709a16d8ad70c1fbc39fe0327b60a2fd96",
+        "speeds_manhattan_2026-01-15_2026-01-22_p001.json.gz": "69bd0b9e59613a9d3578c45ea6b77a7f1061193d0f31e027ac22d74d0cd67d42",
+        "speeds_manhattan_2026-01-22_2026-01-29_p000.json.gz": "d66d32803891d4a822acad38ff206bc4e2a23b088823adb01fc2490a1fdd8393",
+        "speeds_manhattan_2026-01-22_2026-01-29_p001.json.gz": "806d394508b791ef981094074c7a42fc2f30a54d2ff2da04e62fe3e7f4d8620b",
+        "speeds_manhattan_2026-01-29_2026-02-05_p000.json.gz": "7e3c73a07ff213bc3a391d74f96ecc04a47ed57bb853c3587db1fc35b30024a8",
+        "speeds_manhattan_2026-01-29_2026-02-05_p001.json.gz": "1212107f764f08779af187b06cc9bf8576dc6e44a425c5af95295a6d794607c9",
+        "speeds_manhattan_2026-02-05_2026-02-12_p000.json.gz": "97953a0ac89e57cb54606eeeed965af5b3d09ebd71b99d73aec260661209c389",
+        "speeds_manhattan_2026-02-05_2026-02-12_p001.json.gz": "0e7b16890aaa9d1a584da23e74f698abdaf7d037f923ff82f9ffddf480eeba6a",
+        "speeds_manhattan_2026-02-12_2026-02-19_p000.json.gz": "4031f8c26c04c57396e26d76c5bbf4e7350727280b468b2118f9bb9de430aa83",
+        "speeds_manhattan_2026-02-12_2026-02-19_p001.json.gz": "0b65c24679534230cc1e360f7a06d5d70238fc542277e0f2fe5b0db18980d7c0",
+        "speeds_manhattan_2026-02-19_2026-02-26_p000.json.gz": "4d7b904f39426fd51fdc9ec3d8c4db2b8455deacd78c3f2686c89318b1e7017e",
+        "speeds_manhattan_2026-02-19_2026-02-26_p001.json.gz": "1873ec43c5d7c5453067acd6c636fdd3810a3ac0b9745abeca6731920d826ddd",
+        "speeds_manhattan_2026-02-26_2026-03-05_p000.json.gz": "3382eab82c8823ca0d39f7236076c6897b7c2a50e1fc5845da48972c9ab563ed",
+        "speeds_manhattan_2026-02-26_2026-03-05_p001.json.gz": "27b97788fe9e099f23fce6f0d953d58d4f2b7bdd31f3d7536bd41d315f91f0d3",
+        "speeds_manhattan_2026-03-05_2026-03-12_p000.json.gz": "bd1830a7e8659d57a42e31fdb205e713d73206f654d324fe83ed26861fd8badd",
+        "speeds_manhattan_2026-03-12_2026-03-19_p000.json.gz": "fa17b61487f8617f93f9c7f597b7dca742a34f0e09a1b1e9145f4004430b709b",
+        "speeds_manhattan_2026-03-19_2026-03-26_p000.json.gz": "5159197e1b9bd39003beedbb2ff628dc6b4aa45d96a3376ca2243cf52fc7699c",
+        "speeds_manhattan_2026-03-26_2026-04-02_p000.json.gz": "801fe8d4057a6c9387a398de90ff407fc7bba2abe3084e1f5fe01778f6765432",
+        "speeds_manhattan_2026-03-26_2026-04-02_p001.json.gz": "f05b653838bc90e9ceba0142ce1ae73246c30cc88b754ea95dbe16db1ba2d6f5",
+        "speeds_manhattan_2026-04-02_2026-04-09_p000.json.gz": "6f1b84e45de68b36fcc40549d34df7fba6fc09ee6d9b2787f24efb95002980ca",
+        "speeds_manhattan_2026-04-02_2026-04-09_p001.json.gz": "f525a463b0707c56f95a36906e28cfe613b1bc087d04299f6114745180c645f3",
+        "speeds_manhattan_2026-04-09_2026-04-16_p000.json.gz": "06e5dd72feecb725314d112a65a0bfb899614c4ed2ddb1b0497d7bfc2b547d59",
+        "speeds_manhattan_2026-04-09_2026-04-16_p001.json.gz": "395cb0e13917ef193080d8ee7357ce975d6a71c347f2df5aa3ef83914d4c5760",
+        "speeds_manhattan_2026-04-16_2026-04-23_p000.json.gz": "6972b7bfcd48dc5f710527037b20859febb068c638551749c1fe7b55ede520f2",
+        "speeds_manhattan_2026-04-23_2026-04-30_p000.json.gz": "34dae84ced7ba01ea12f3adc450668d44df36f7e0ed23a4766517a5e4f159aef",
+        "speeds_manhattan_2026-04-30_2026-05-07_p000.json.gz": "4168155edcc3468ecbb54da0cc5b7c8dfa2103ab218e6ad475847969aca54b5c",
+        "speeds_manhattan_2026-05-07_2026-05-14_p000.json.gz": "9a761622ab655ad5853190201871185216eb4cb558c89630b2abc413e92a4bd8",
+        "speeds_manhattan_2026-05-14_2026-05-21_p000.json.gz": "0dd582d6727e5c192511c313f48e6e518236782908c59439d8bc85111e94475a",
+        "speeds_manhattan_2026-05-21_2026-05-28_p000.json.gz": "e4b3a1fec5ec715e743656e77ff00f0ab62d6b3e9e00c4670a219a047c5860b7",
+        "speeds_manhattan_2026-05-28_2026-06-04_p000.json.gz": "cec3869f8beda8e625b2882564ff55147fa4c516475f1a5bf65ba369c6255eac",
+        "speeds_manhattan_2026-06-04_2026-06-11_p000.json.gz": "9b1f6903ced55e45780588ba6ff77efd288273f6ce8c5a08f0f0f3f197d820cd",
+        "speeds_manhattan_2026-06-11_2026-06-18_p000.json.gz": "97c1762034a8edcbcbcfc1cd435bcc3a9f4473e326c9317dc00b0fda31adde19",
+        "speeds_manhattan_2026-06-18_2026-06-25_p000.json.gz": "47810a1a4cff60b84b5debaa9b7bbf92e650e0cac5e4f40d7ed198f0b4341575",
+        "speeds_manhattan_2026-06-25_2026-07-01_p000.json.gz": "7bb60fa35ffdb6d1096ddae8651dabe0af94cd64d511679e08d249331ba49754"
+      }
+    },
+    "speeds_links": {
+      "n_fetches": 1,
+      "files": {
+        "links_since_2026-09-20.json.gz": "a0f4c05d391a9cad94d72ef6c467e517730b7e406cc0a12688ab1c869e96e370"
+      }
+    },
+    "sr311": {
+      "n_fetches": 10,
+      "files": {
+        "sr311_manhattan_2026-01-01_2026-02-01_p000.json.gz": "b0aa014cffa6ee0013c9eec7eb647b6a2ffe75d9a2b5d05532b9c2c499a879e7",
+        "sr311_manhattan_2026-02-01_2026-03-04_p000.json.gz": "ca7c3db7102c1308a5f25a2cd38da43aa182f0599f4af6efb422f9c1dfb90bee",
+        "sr311_manhattan_2026-03-04_2026-04-04_p000.json.gz": "8b16ffaf1aad6e1043c81bc8fa2900908f802cfe0a409f764e79fbc048aee1e6",
+        "sr311_manhattan_2026-04-04_2026-05-05_p000.json.gz": "e4c04e4e636074281cff9ff05e5b84acdd3daa33b6371046c31323cfe325e71d",
+        "sr311_manhattan_2026-05-05_2026-06-05_p000.json.gz": "06a36626101cee357d4e7e9ca0e2c5d4fbb831ae0d3cae2a40f77bcafd662880",
+        "sr311_manhattan_2026-06-05_2026-07-06_p000.json.gz": "20069d54b75c7da75d381eb8cb6466f9a9950f658c3c5947a415cc975cb588bb",
+        "sr311_manhattan_2026-07-06_2026-08-06_p000.json.gz": "e75980a51e3af0ba4175333e3df8d59ae3cb717d26d38fd8f63241a695dff433",
+        "sr311_manhattan_2026-08-06_2026-09-06_p000.json.gz": "9d825084fe33e75147b9b66ede9d7ccd210f11fb194f280efbd1a7e0acf89b0b",
+        "sr311_manhattan_2026-09-06_2026-10-07_p000.json.gz": "57f0dbbd27de4eeb6d69893f67aaed7999f0736d7b50e0cf1c761a8dd92e0af6",
+        "sr311_manhattan_2026-10-07_2026-10-20_p000.json.gz": "2f9be8a8d49ae3b568ef8ac3b3a2014ce8891786a6ab4d4c1f360baece691385"
+      }
+    },
+    "volume": {
+      "n_fetches": 3,
+      "files": {
+        "volume_manhattan_2024_p000.json.gz": "83319c3688bf31cfed1148920a08f309608c8fcf381c6f49f0b366e4060b28d3",
+        "volume_manhattan_2025_p000.json.gz": "2c9dc063f7b7f36cdbd3948f250c2e2ce6af85f5a08996c903cbd8d6f1a569fc",
+        "volume_manhattan_2026_p000.json.gz": "e1a78f9bb8c0efe091e40b242e1cf7da4a56da4a5396697d96c5a1367698ff4a"
+      }
+    },
+    "weather": {
+      "n_fetches": 2,
+      "files": {
+        "archive_2025-12-01_2026-10-20.json.gz": "f58e2e77a41b80049ed9540b1c9dfc883b8aeacf7a9ad43ef74278bb9485ebb7",
+        "historical_forecast_2025-12-01_2026-10-20.json.gz": "f0fbd6d5257350ef56d50c7696fdd6cf58be080e9f7eb622864482b1d1583db0"
+      }
+    }
+  },
+  "manifest_hash": "f823a75cbd73ade1"
+}

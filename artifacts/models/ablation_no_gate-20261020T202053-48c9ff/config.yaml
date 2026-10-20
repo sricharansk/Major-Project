@@ -1,0 +1,29 @@
+variant: ablation_no_gate
+spec:
+  kind: graph_transformer
+  use_graph: true
+  use_gate: false
+model:
+  hidden_dim: 64
+  graph_layers: 2
+  graph_heads: 4
+  temporal_layers: 2
+  temporal_heads: 4
+  feedforward_dim: 128
+  dropout: 0.1
+training:
+  seed: 42
+  batch_size: 8
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  max_epochs: 30
+  early_stopping_patience: 5
+  gradient_clip_norm: 1.0
+  loss: masked_huber
+  huber_delta: 1.0
+  max_train_windows_per_epoch: 4096
+  device: auto
+max_epochs_override: null
+windows_per_epoch: null
+resolved_device: cuda
+cudnn_enabled: true

@@ -1,2 +1,11 @@
-\begin{table}[t]\centering\caption{Verified public data sources (server-side audit)}\label{tab:sources}
-\begin{tabular}{c}\toprule NOT RUN \\ \bottomrule\end{tabular}\end{table}
+\begin{table*}[t]\centering\caption{Verified public data sources (server-side audit)}\label{tab:sources}\small
+\begin{tabular}{lllrl}\toprule Source & Dataset & Observed range & Records & Role/limitation \\ \midrule
+speeds & i4gi-tjb9 & 1930-12-09 -- 2026-10-20 & 112832791 & Historical retention verified by server-side counts; includes outlier  \\
+volume & 7ym2-wayt &  --  & -- & Sparse sampled ATR counts; not continuous observed volume; used for SU \\
+events & tvpp-9vvx & 2024-06-30 -- 2027-10-27 & 24837 & Current feed only; does not reconstruct what was announced in the past \\
+events\_hist & bkfu-528j & 2007-12-31 -- 2026-12-27 & 2906868 & Free-text locations (no coordinates); permit announcement time unknown \\
+collisions & h9gi-nx95 & 2012-07-01 -- 2026-06-11 & 2269187 & Publication lag of months (latest record far behind today); not a live \\
+sr311 & erm2-nwe9 & 2020-01-01 -- 2026-10-19 & 22854982 & Creation time is not publication time; used with a declared 24 h lag. \\
+weather &  &  --  & -- & Reanalysis is not street-level measurement; archived forecasts lack is \\
+osm &  &  --  & -- & Current topology applied to the 2026 study period. \\
+\bottomrule\end{tabular}\end{table*}

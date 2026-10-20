@@ -1,0 +1,15 @@
+{
+  "run_id": "ablation_no_weather-20261020T202610-295c01",
+  "model": "ablation_no_weather",
+  "best_epoch": 24,
+  "best_val_mae": 5.346986770629883,
+  "epochs_run": 30,
+  "train_time_s": 398.2864649295807,
+  "infer_latency_ms_per_origin": 5.190044440463293,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "549241875f444c5d2b791f68bd96532de2e61fe6f2b834225e3875056700aece",
+  "n_params": 158403,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\ablation_no_weather-20261020T202610-295c01",
+  "train_device": "cuda",
+  "cudnn_enabled": true
+}

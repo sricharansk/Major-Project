@@ -1,0 +1,7 @@
+{
+  "run_id": "historical_average-20261020T174515-8df525",
+  "model": "historical_average",
+  "train_time_s": 0.08604693412780762,
+  "infer_latency_ms_per_origin": 0.0011355391987429072,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\historical_average-20261020T174515-8df525"
+}

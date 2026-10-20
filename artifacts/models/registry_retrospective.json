@@ -1,0 +1,49 @@
+{
+  "persistence": {
+    "run_id": "persistence-20261020T210027-47b8d9",
+    "model": "persistence",
+    "train_time_s": 0.0,
+    "infer_latency_ms_per_origin": 0.0011479132762552016,
+    "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\persistence-20261020T210027-47b8d9"
+  },
+  "historical_average": {
+    "run_id": "historical_average-20261020T210038-5ee439",
+    "model": "historical_average",
+    "train_time_s": 0.22737717628479004,
+    "infer_latency_ms_per_origin": 0.0029760602447458906,
+    "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\historical_average-20261020T210038-5ee439"
+  },
+  "xgboost": {
+    "run_id": "xgboost-20261020T210039-5d09ee",
+    "model": "xgboost",
+    "train_time_s": 28.12913751602173,
+    "infer_latency_ms_per_origin": 0.10175921029395957,
+    "train_rows": 403328,
+    "train_origin_stride": 2,
+    "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\xgboost-20261020T210039-5d09ee"
+  },
+  "lightgbm": {
+    "run_id": "lightgbm-20261020T210111-1813a7",
+    "model": "lightgbm",
+    "train_time_s": 22.307989358901978,
+    "infer_latency_ms_per_origin": 0.39176408870476936,
+    "train_rows": 403328,
+    "train_origin_stride": 2,
+    "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\lightgbm-20261020T210111-1813a7"
+  },
+  "proposed": {
+    "run_id": "proposed-20261020T210211-4a0685",
+    "model": "proposed",
+    "best_epoch": 19,
+    "best_val_mae": 5.3436821301778155,
+    "epochs_run": 25,
+    "train_time_s": 446.5760381221771,
+    "infer_latency_ms_per_origin": 6.642122059036423,
+    "skipped_batches_no_target": 0,
+    "model_sha256": "5ecc9a95fd03f6f1c174b5f45998ed46d1ae6d8dbc439fc1c422ee153df61ecd",
+    "n_params": 166851,
+    "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\proposed-20261020T210211-4a0685",
+    "train_device": "cuda",
+    "cudnn_enabled": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "run_id": "proposed-20261020T201110-0e333f",
+  "model": "proposed",
+  "best_epoch": 8,
+  "best_val_mae": 5.388021787007649,
+  "epochs_run": 14,
+  "train_time_s": 138.95064902305603,
+  "infer_latency_ms_per_origin": 5.692540705274962,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "db9743015201500abc6da887421dabd66b8a73c10276cbc74a887f296b7abf7f",
+  "n_params": 158403,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\proposed-20261020T201110-0e333f",
+  "train_device": "cuda",
+  "cudnn_enabled": true
+}

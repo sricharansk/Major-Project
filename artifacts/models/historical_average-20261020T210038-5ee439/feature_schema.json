@@ -1,0 +1,93 @@
+{
+  "track": "retrospective",
+  "feature_names": [
+    "speed_z",
+    "speed_observed_or_ffilled",
+    "obs_age_days_frac",
+    "rollmean_1h_z",
+    "delta_5m_z",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "weekend",
+    "us_federal_holiday",
+    "archive_precip_mm",
+    "archive_rain_mm",
+    "archive_snow_cm",
+    "archive_temp_c",
+    "archive_wind_kmh",
+    "archive_wet_code",
+    "archive_visibility_km",
+    "archive_cloud_pct",
+    "borough_events_active_next_60m",
+    "collisions_500m_60m",
+    "sr311_24h_lagged_log"
+  ],
+  "groups": [
+    "traffic",
+    "calendar",
+    "weather",
+    "events",
+    "incidents",
+    "infrastructure"
+  ],
+  "group_slices": {
+    "traffic": [
+      0,
+      5
+    ],
+    "calendar": [
+      5,
+      11
+    ],
+    "weather": [
+      11,
+      19
+    ],
+    "events": [
+      19,
+      20
+    ],
+    "incidents": [
+      20,
+      21
+    ],
+    "infrastructure": [
+      21,
+      22
+    ]
+  },
+  "feature_schema_hash": "1595ad55fc632458",
+  "speed_unit": "mph",
+  "lookback_steps": 24,
+  "horizon_steps": [
+    3,
+    6,
+    12
+  ],
+  "horizon_minutes": [
+    15,
+    30,
+    60
+  ],
+  "link_ids": [
+    "4329507",
+    "4456450",
+    "4456452",
+    "4456494",
+    "4456501",
+    "4456502",
+    "4456511",
+    "4616328",
+    "4616329",
+    "4616332",
+    "4616333",
+    "4616339",
+    "4616340",
+    "4616341",
+    "4616342",
+    "4620298"
+  ],
+  "graph_hash": "d8c69a468b82cbda"
+}

@@ -1,0 +1,35 @@
+{
+  "run_id": "adv-20261020T211445-4aa4ae",
+  "thread_id": "adv-20261020T211445-4aa4ae",
+  "mode": "REPLAY",
+  "case": {
+    "name": "mapped_corridor_alert",
+    "origin": 74793,
+    "link_index": 3,
+    "case_id": "case-mapped_corridor_alert-74793-3",
+    "auto_review": {
+      "action": "pending"
+    },
+    "policy": "full_system"
+  },
+  "forecast_origin": "2026-09-17T21:50:00+00:00",
+  "data_quality": {
+    "data_age_minutes": 0.0,
+    "input_missing_fraction": 0.0,
+    "source_timestamp_utc": "2026-09-17T21:50:00+00:00",
+    "stale_stress_steps": 0
+  },
+  "decision": "ERROR_TOOL",
+  "decision_reasons": [
+    "forecast: KeyError: 'model_run_id'"
+  ],
+  "errors": [
+    "Traceback (most recent call last):\n  File \"C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\src\\smartcity\\agents\\workflow.py\", line 62, in wrapper\n    out = fn(state)\n          ^^^^^^^^^\n  File \"C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\src\\smartcity\\agents\\workflow.py\", line 142, in forecast\n    \"model_run_id\": s[\"case\"][\"model_run_id\"], \"speed_unit\": \"mph\"},\n                    ~~~~~~~~~^^^^^^^^^^^^^^^^\nKeyError: 'model_run_id'\n"
+  ],
+  "timings": {
+    "quality": 0.0,
+    "forecast": 0.01
+  },
+  "started_at": "2026-10-20T21:14:45Z",
+  "finished_at": "2026-10-20T21:14:45Z"
+}

@@ -8,7 +8,10 @@ training:
   gradient_clip_norm: 1.0
   loss: masked_huber
   huber_delta: 1.0
-  max_train_windows_per_epoch: null   # null = all windows
+  # Compute budget for the 2026-10-21 workstation run (deadline-bound): every deep model (GRU, temporal Transformer,
+  # proposed, ablations) samples 4096 training windows per epoch without replacement, freshly each epoch, with the
+  # same seed. null = all ~50k windows per epoch (about 3 min/epoch for the GRU on the RTX 4050; >7 h for all runs).
+  max_train_windows_per_epoch: 4096
   max_minutes_per_model: null         # wall-clock budget per deep model (null = none); stop reason is recorded per run
   device: auto          # auto = CUDA when available, else CPU (resolved device recorded in each run config)
 trees:

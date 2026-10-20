@@ -1,0 +1,9 @@
+{
+  "run_id": "lightgbm-20261020T193956-ccbf73",
+  "model": "lightgbm",
+  "train_time_s": 22.283682346343994,
+  "infer_latency_ms_per_origin": 0.3856563840571987,
+  "train_rows": 403328,
+  "train_origin_stride": 2,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\lightgbm-20261020T193956-ccbf73"
+}

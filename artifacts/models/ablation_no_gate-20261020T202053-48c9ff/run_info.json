@@ -1,0 +1,15 @@
+{
+  "run_id": "ablation_no_gate-20261020T202053-48c9ff",
+  "model": "ablation_no_gate",
+  "best_epoch": 8,
+  "best_val_mae": 5.432379563649495,
+  "epochs_run": 14,
+  "train_time_s": 144.93541359901428,
+  "infer_latency_ms_per_origin": 5.388573496769879,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "93b389572d3389cee1fee80ce2b834235cab25f1b2accea30ecd5d3461af813d",
+  "n_params": 158403,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\ablation_no_gate-20261020T202053-48c9ff",
+  "train_device": "cuda",
+  "cudnn_enabled": true
+}

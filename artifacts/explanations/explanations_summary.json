@@ -1,0 +1,717 @@
+{
+  "model_run_id": "proposed-20261020T201110-0e333f",
+  "explained_model": "proposed (context-gated GATv2-Transformer)",
+  "local_alerts": [
+    {
+      "explanation_id": "xai-20261020T212531-006725",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4620298",
+      "link_index": 15,
+      "horizon_minutes": 30,
+      "origin_index": 83417,
+      "origin_utc": 1792269000,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [],
+      "group_contributions": {
+        "traffic_target_last30min": -21.302659513664484,
+        "traffic_target_30_120min": -2.0960706468242716,
+        "calendar": -0.9830449845364291,
+        "weather": -0.287707607390022,
+        "infrastructure": 0.0
+      },
+      "base_value": 26.922187872683025,
+      "prediction": 2.2527051202678194,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 1.2400000095367432,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 1.8301844596862793,
+      "model_calls": 528,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212534-8ca3c1",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4616329",
+      "link_index": 8,
+      "horizon_minutes": 30,
+      "origin_index": 75062,
+      "origin_utc": 1789762500,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "traffic_graph_neighbours",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [
+        "4616328"
+      ],
+      "group_contributions": {
+        "traffic_target_last30min": -13.861832800206905,
+        "traffic_target_30_120min": -3.1801196510832903,
+        "traffic_graph_neighbours": -0.09035528934735482,
+        "calendar": -1.6506607236311426,
+        "weather": -0.04825874429038279,
+        "infrastructure": -0.12269993109529453
+      },
+      "base_value": 20.87116479843185,
+      "prediction": 1.9172376587774806,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 6.829999923706055,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 3.2768361568450928,
+      "model_calls": 1040,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212538-f477a2",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4616328",
+      "link_index": 7,
+      "horizon_minutes": 30,
+      "origin_index": 78923,
+      "origin_utc": 1790920800,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "traffic_graph_neighbours",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [
+        "4616329",
+        "4616342"
+      ],
+      "group_contributions": {
+        "traffic_target_last30min": -10.560624754845229,
+        "traffic_target_30_120min": -3.151899211592764,
+        "traffic_graph_neighbours": 0.09974250671770157,
+        "calendar": -0.9777798995387513,
+        "weather": -0.06196034785734107,
+        "infrastructure": 0.11155125994288911
+      },
+      "base_value": 16.44374145750902,
+      "prediction": 1.9027710103355275,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 3.0999999046325684,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 3.5374512672424316,
+      "model_calls": 1040,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212541-0dfc40",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4616333",
+      "link_index": 10,
+      "horizon_minutes": 30,
+      "origin_index": 83999,
+      "origin_utc": 1792443600,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "traffic_graph_neighbours",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [
+        "4616332",
+        "4616341"
+      ],
+      "group_contributions": {
+        "traffic_target_last30min": -14.288875304580333,
+        "traffic_target_30_120min": -2.744263446822931,
+        "traffic_graph_neighbours": -1.1993218718432672,
+        "calendar": -2.2586930022337333,
+        "weather": -0.015792904190984558,
+        "infrastructure": -0.18915795821682793
+      },
+      "base_value": 24.250480042304844,
+      "prediction": 3.5543755544167652,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 7.449999809265137,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 3.446136713027954,
+      "model_calls": 1040,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212545-2845f6",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4456501",
+      "link_index": 4,
+      "horizon_minutes": 30,
+      "origin_index": 73037,
+      "origin_utc": 1789155000,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "traffic_graph_neighbours",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [
+        "4456494"
+      ],
+      "group_contributions": {
+        "traffic_target_last30min": -16.249477545986146,
+        "traffic_target_30_120min": -1.0244945529668166,
+        "traffic_graph_neighbours": -2.2033407632385327,
+        "calendar": -1.095337585831694,
+        "weather": 0.3897624427393102,
+        "infrastructure": 0.15311198867551212
+      },
+      "base_value": 25.30891963038357,
+      "prediction": 5.279143613775204,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 13.039999961853027,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 3.4852685928344727,
+      "model_calls": 1040,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212548-e18a16",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4616342",
+      "link_index": 14,
+      "horizon_minutes": 30,
+      "origin_index": 80936,
+      "origin_utc": 1791524700,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "traffic_graph_neighbours",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [
+        "4456452",
+        "4616328",
+        "4616339",
+        "4616340"
+      ],
+      "group_contributions": {
+        "traffic_target_last30min": -8.486798679870423,
+        "traffic_target_30_120min": -2.866225682264404,
+        "traffic_graph_neighbours": 0.2408017714207008,
+        "calendar": -2.0176080479646417,
+        "weather": -0.24822207460983026,
+        "infrastructure": 0.027006835399598472
+      },
+      "base_value": 16.439866451883894,
+      "prediction": 3.0888205739948944,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 6.829999923706055,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 3.496892213821411,
+      "model_calls": 1040,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212552-8f1a19",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4456502",
+      "link_index": 5,
+      "horizon_minutes": 30,
+      "origin_index": 72571,
+      "origin_utc": 1789015200,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "traffic_graph_neighbours",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [
+        "4456494"
+      ],
+      "group_contributions": {
+        "traffic_target_last30min": 6.983204769046761,
+        "traffic_target_30_120min": 3.168629150559824,
+        "traffic_graph_neighbours": 0.09941966442290538,
+        "calendar": -1.480396148209228,
+        "weather": 0.5258952020584212,
+        "infrastructure": -0.13544706155158792
+      },
+      "base_value": 30.5586672166703,
+      "prediction": 39.719972792997396,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 37.279998779296875,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 3.475660800933838,
+      "model_calls": 1040,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212555-92ac34",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4616329",
+      "link_index": 8,
+      "horizon_minutes": 30,
+      "origin_index": 80771,
+      "origin_utc": 1791475200,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "traffic_graph_neighbours",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [
+        "4616328"
+      ],
+      "group_contributions": {
+        "traffic_target_last30min": -1.8746418378616625,
+        "traffic_target_30_120min": -1.900403788101637,
+        "traffic_graph_neighbours": -0.009895717007904814,
+        "calendar": -0.509489553245048,
+        "weather": -0.026933040201978477,
+        "infrastructure": -0.09449551744869504
+      },
+      "base_value": 20.86693915514159,
+      "prediction": 16.451079701274665,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 11.180000305175781,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 3.496103286743164,
+      "model_calls": 1040,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212600-7b80d0",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4616341",
+      "link_index": 13,
+      "horizon_minutes": 30,
+      "origin_index": 79331,
+      "origin_utc": 1791043200,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "traffic_graph_neighbours",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [
+        "4616333"
+      ],
+      "group_contributions": {
+        "traffic_target_last30min": 2.509803930484356,
+        "traffic_target_30_120min": 0.6033846150434009,
+        "traffic_graph_neighbours": 0.5670454278039211,
+        "calendar": 0.47174064267158605,
+        "weather": 0.03434530634947903,
+        "infrastructure": 0.026632115884774876
+      },
+      "base_value": 22.84006202597061,
+      "prediction": 27.053014064208128,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 2.4800000190734863,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 4.171633720397949,
+      "model_calls": 1040,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212602-1cc6ea",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4329507",
+      "link_index": 0,
+      "horizon_minutes": 30,
+      "origin_index": 76765,
+      "origin_utc": 1790273400,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [],
+      "group_contributions": {
+        "traffic_target_last30min": 0.8088834272594281,
+        "traffic_target_30_120min": -1.3917359021574511,
+        "calendar": -1.0125890291530955,
+        "weather": -0.1628437142157721,
+        "infrastructure": 0.047704258514740916
+      },
+      "base_value": 31.842047154792198,
+      "prediction": 30.131466195040048,
+      "additivity_gap": -2.220446049250313e-16,
+      "observed_target_mph": 31.68000030517578,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 2.2891952991485596,
+      "model_calls": 528,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212606-86717f",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4456502",
+      "link_index": 5,
+      "horizon_minutes": 30,
+      "origin_index": 76700,
+      "origin_utc": 1790253900,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "traffic_graph_neighbours",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [
+        "4456494"
+      ],
+      "group_contributions": {
+        "traffic_target_last30min": 0.7644067913609855,
+        "traffic_target_30_120min": 0.9285166109747526,
+        "traffic_graph_neighbours": 0.1502426700596237,
+        "calendar": -0.5717934534034144,
+        "weather": 0.4890595717536244,
+        "infrastructure": -0.1190134909776468
+      },
+      "base_value": 30.5586672166703,
+      "prediction": 32.200085916438226,
+      "additivity_gap": 2.220446049250313e-16,
+      "observed_target_mph": 29.81999969482422,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 4.176641464233398,
+      "model_calls": 1040,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    },
+    {
+      "explanation_id": "xai-20261020T212608-68d239",
+      "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+      "link_id": "4329507",
+      "link_index": 0,
+      "horizon_minutes": 30,
+      "origin_index": 82232,
+      "origin_utc": 1791913500,
+      "background": "16 windows sampled from TRAIN partition (seed 42)",
+      "players": [
+        "traffic_target_last30min",
+        "traffic_target_30_120min",
+        "calendar",
+        "weather",
+        "infrastructure"
+      ],
+      "neighbours": [],
+      "group_contributions": {
+        "traffic_target_last30min": -0.8953749204655923,
+        "traffic_target_30_120min": -1.3850969905255124,
+        "calendar": -0.023799285350763366,
+        "weather": 0.043373672807566946,
+        "infrastructure": 0.043100929784277986
+      },
+      "base_value": 31.842047154792198,
+      "prediction": 29.624250561042174,
+      "additivity_gap": 0.0,
+      "observed_target_mph": 34.790000915527344,
+      "recent_target_steps_observed": 6,
+      "recent_steps": 6,
+      "runtime_s": 1.727146863937378,
+      "model_calls": 528,
+      "note": "Attributions describe model sensitivity, not causal effects."
+    }
+  ],
+  "global_grouped_mean_abs_shap_mph": {
+    "traffic_target_last30min": 8.215548689636027,
+    "traffic_target_30_120min": 2.0367366874097543,
+    "calendar": 1.087744362980794,
+    "weather": 0.1945128857053928,
+    "infrastructure": 0.08916011229098714,
+    "traffic_graph_neighbours": 0.5177961868735458
+  },
+  "global_note": "mean |SHAP| over 12 explained test points (half top-alert, half random)",
+  "alert_selection": {
+    "rule": "raw speed observed at all last 6 input steps and observed target at the explained horizon; top drops one per link, then random eligible pairs",
+    "n_test_pairs": 201616,
+    "n_eligible_pairs": 132355,
+    "links_with_eligible_pairs": 13,
+    "n_top_drop": 6,
+    "n_random": 6
+  },
+  "neighbour_removal": [
+    {
+      "link_id": "4616342",
+      "n_neighbours": 4,
+      "mae_target_with_graph": 8.565542221069336,
+      "mae_target_neighbour_edges_removed": 8.579513549804688,
+      "mean_abs_prediction_change_mph": 1.3368674516677856,
+      "n_targets": 1571
+    },
+    {
+      "link_id": "4456494",
+      "n_neighbours": 2,
+      "mae_target_with_graph": 2.3981661796569824,
+      "mae_target_neighbour_edges_removed": 2.3981661796569824,
+      "mean_abs_prediction_change_mph": 0.0,
+      "n_targets": 1388
+    },
+    {
+      "link_id": "4616333",
+      "n_neighbours": 2,
+      "mae_target_with_graph": 5.271805763244629,
+      "mae_target_neighbour_edges_removed": 5.173452854156494,
+      "mean_abs_prediction_change_mph": 0.9051500558853149,
+      "n_targets": 1631
+    },
+    {
+      "link_id": "4616328",
+      "n_neighbours": 2,
+      "mae_target_with_graph": 8.12813663482666,
+      "mae_target_neighbour_edges_removed": 7.958127021789551,
+      "mean_abs_prediction_change_mph": 0.870552122592926,
+      "n_targets": 1620
+    },
+    {
+      "link_id": "4456502",
+      "n_neighbours": 1,
+      "mae_target_with_graph": 6.1653056144714355,
+      "mae_target_neighbour_edges_removed": 6.19661283493042,
+      "mean_abs_prediction_change_mph": 0.6725895404815674,
+      "n_targets": 1436
+    }
+  ],
+  "temporal_window": [
+    {
+      "recent_steps_kept": 24,
+      "minutes_kept": 120,
+      "mae_mph": 5.4271063804626465,
+      "n_targets": 20665
+    },
+    {
+      "recent_steps_kept": 12,
+      "minutes_kept": 60,
+      "mae_mph": 5.9965620040893555,
+      "n_targets": 20665
+    },
+    {
+      "recent_steps_kept": 6,
+      "minutes_kept": 30,
+      "mae_mph": 6.293318271636963,
+      "n_targets": 20665
+    },
+    {
+      "recent_steps_kept": 3,
+      "minutes_kept": 15,
+      "mae_mph": 6.539981365203857,
+      "n_targets": 20665
+    },
+    {
+      "recent_steps_kept": 1,
+      "minutes_kept": 5,
+      "mae_mph": 7.1132683753967285,
+      "n_targets": 20665
+    }
+  ],
+  "tree_baseline_shap": [
+    {
+      "model": "lightgbm",
+      "run_id": "lightgbm-20261020T193956-ccbf73",
+      "rows": 2992,
+      "by_horizon": {
+        "15": {
+          "grouped_mean_abs_shap_z": {
+            "traffic": 0.6515522436571531,
+            "calendar": 0.16495023943065484,
+            "weather": 0.037756060612961245,
+            "infrastructure": 0.004000418405655256,
+            "link_identity": 0.04180629822608768
+          },
+          "top_features": [
+            [
+              "rollmean_1h_z",
+              0.24102490300714507
+            ],
+            [
+              "speed_z_lag0",
+              0.14316682493061977
+            ],
+            [
+              "hour_cos",
+              0.07138943066688633
+            ],
+            [
+              "hour_sin",
+              0.06041977474826834
+            ],
+            [
+              "speed_z_lag2",
+              0.04371990224247669
+            ],
+            [
+              "link_index",
+              0.04180629822608768
+            ],
+            [
+              "speed_z_lag1",
+              0.039016245203600364
+            ],
+            [
+              "speed_z",
+              0.037984907049290605
+            ],
+            [
+              "speed_observed_or_ffilled",
+              0.030500965567812347
+            ],
+            [
+              "delta_5m_z",
+              0.02454869428087889
+            ]
+          ]
+        },
+        "30": {
+          "grouped_mean_abs_shap_z": {
+            "traffic": 0.5853522037604459,
+            "calendar": 0.2220794789426615,
+            "weather": 0.04877608405716914,
+            "infrastructure": 0.005703379943622691,
+            "link_identity": 0.05200216272270122
+          },
+          "top_features": [
+            [
+              "rollmean_1h_z",
+              0.23208366509769418
+            ],
+            [
+              "speed_z_lag0",
+              0.10597682850638061
+            ],
+            [
+              "hour_cos",
+              0.09980570302645196
+            ],
+            [
+              "hour_sin",
+              0.0798697582146151
+            ],
+            [
+              "link_index",
+              0.05200216272270122
+            ],
+            [
+              "speed_z_lag2",
+              0.042320061462059556
+            ],
+            [
+              "speed_observed_or_ffilled",
+              0.036413509687974674
+            ],
+            [
+              "speed_z_lag1",
+              0.03574869014729174
+            ],
+            [
+              "speed_z",
+              0.02715450063833537
+            ],
+            [
+              "dow_cos",
+              0.01884524028185663
+            ]
+          ]
+        },
+        "60": {
+          "grouped_mean_abs_shap_z": {
+            "traffic": 0.47289739353610133,
+            "calendar": 0.31153076136680924,
+            "weather": 0.06389741467022382,
+            "infrastructure": 0.008150733523899981,
+            "link_identity": 0.055645049577109966
+          },
+          "top_features": [
+            [
+              "rollmean_1h_z",
+              0.16598222593286419
+            ],
+            [
+              "hour_cos",
+              0.14900886549725398
+            ],
+            [
+              "hour_sin",
+              0.1005463946615913
+            ],
+            [
+              "speed_z_lag0",
+              0.09014884785921963
+            ],
+            [
+              "link_index",
+              0.055645049577109966
+            ],
+            [
+              "speed_z_lag2",
+              0.03959870276530643
+            ],
+            [
+              "dow_cos",
+              0.029117503654131363
+            ],
+            [
+              "speed_z_lag1",
+              0.02906607042038395
+            ],
+            [
+              "speed_observed_or_ffilled",
+              0.027629271894926626
+            ],
+            [
+              "historical_forecast_temp_c",
+              0.026853852126263407
+            ]
+          ]
+        }
+      },
+      "runtime_s": 10.956395387649536,
+      "note": "Explains the tree BASELINE only. Values in standardised-speed units. Not causal."
+    }
+  ],
+  "players": [
+    "traffic_target_last30min",
+    "traffic_target_30_120min",
+    "calendar",
+    "weather",
+    "infrastructure"
+  ]
+}

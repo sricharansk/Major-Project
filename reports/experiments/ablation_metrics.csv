@@ -1,0 +1,7 @@
+variant,track,run_id,mae_mean_mph,delta_vs_proposed_mph,ci95_low,ci95_high,n_days,status
+proposed,operational,proposed-20261020T201110-0e333f,5.4194,0.0,0.0,0.0,45,REFERENCE
+ablation_no_gate,operational,ablation_no_gate-20261020T202053-48c9ff,5.4867,0.0673,0.0482,0.0864,44,OK
+ablation_no_weather,operational,ablation_no_weather-20261020T202610-295c01,5.3732,-0.0462,-0.0692,-0.0205,44,OK
+ablation_no_infrastructure,operational,ablation_no_infrastructure-20261020T203545-6cd844,5.433,0.0136,0.0019,0.0258,44,OK
+ablation_no_events,operational,ablation_no_events-20261020T204114-372604,,,,,,NOT_APPLICABLE (no events group in operational track)
+ablation_no_incidents,operational,ablation_no_incidents-20261020T204742-10d59f,,,,,,NOT_APPLICABLE (no incidents group in operational track)

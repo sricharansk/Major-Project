@@ -1,0 +1,35 @@
+{
+  "run_id": "adv-20261020T211445-4213b8",
+  "thread_id": "adv-20261020T211445-4213b8",
+  "mode": "REPLAY",
+  "case": {
+    "name": "routine_rush_hour",
+    "origin": 77939,
+    "link_index": 13,
+    "case_id": "case-routine_rush_hour-77939-13",
+    "auto_review": {
+      "action": "pending"
+    },
+    "policy": "full_system"
+  },
+  "forecast_origin": "2026-09-28T20:00:00+00:00",
+  "data_quality": {
+    "data_age_minutes": 0.0,
+    "input_missing_fraction": 0.0,
+    "source_timestamp_utc": "2026-09-28T20:00:00+00:00",
+    "stale_stress_steps": 0
+  },
+  "decision": "ERROR_TOOL",
+  "decision_reasons": [
+    "forecast: KeyError: 'model_run_id'"
+  ],
+  "errors": [
+    "Traceback (most recent call last):\n  File \"C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\src\\smartcity\\agents\\workflow.py\", line 62, in wrapper\n    out = fn(state)\n          ^^^^^^^^^\n  File \"C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\src\\smartcity\\agents\\workflow.py\", line 142, in forecast\n    \"model_run_id\": s[\"case\"][\"model_run_id\"], \"speed_unit\": \"mph\"},\n                    ~~~~~~~~~^^^^^^^^^^^^^^^^\nKeyError: 'model_run_id'\n"
+  ],
+  "timings": {
+    "quality": 0.0,
+    "forecast": 0.024
+  },
+  "started_at": "2026-10-20T21:14:45Z",
+  "finished_at": "2026-10-20T21:14:45Z"
+}

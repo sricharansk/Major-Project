@@ -1,0 +1,20 @@
+link_id,link_name,coverage_train,coverage_val,coverage_calib,coverage_test,coverage_all,kept,rule
+4329472,LINCOLN TUNNEL E SOUTH TUBE - NJ - NY,0.0257,0.0,0.0,0.0,0.0154,False,train coverage >= min_link_coverage
+4329473,LINCOLN TUNNEL E CENTER TUBE NJ - NY,0.0164,0.0,0.0,0.0,0.0099,False,train coverage >= min_link_coverage
+4329507,LINCOLN TUNNEL W NORTH TUBE NY - NJ,0.8469,0.806,0.9022,0.8923,0.8531,True,train coverage >= min_link_coverage
+4329508,LINCOLN TUNNEL W CENTER TUBE NY - NJ,0.0028,0.0,0.0,0.0,0.0017,False,train coverage >= min_link_coverage
+4456450,FDR N - TBB E 116TH STREET - MANHATTAN TRUSS,0.5493,0.0,0.0,0.0,0.3296,True,train coverage >= min_link_coverage
+4456452,TBB W - FDR S MANHATTAN TRUSS - E116TH STREET,0.7308,0.0,0.0,0.0,0.4385,True,train coverage >= min_link_coverage
+4456494,West St S Spring St - BBT Manhattan Portal outbound,0.5233,0.6559,0.5737,0.7667,0.5847,True,train coverage >= min_link_coverage
+4456501,BBT W Toll Plaza - Manhattan Portal,0.5207,0.7199,0.713,0.7763,0.6081,True,train coverage >= min_link_coverage
+4456502,BBT E Manhattan Portal - Toll Plaza,0.5421,0.7261,0.7675,0.7935,0.6299,True,train coverage >= min_link_coverage
+4456511,QMT E Manhattan Side - Toll Plaza,0.5868,0.8871,0.9534,0.9331,0.7205,True,train coverage >= min_link_coverage
+4616328,FDR N Catherine Slip - 25th St,0.8206,0.8054,0.8936,0.8961,0.837,True,train coverage >= min_link_coverage
+4616329,FDR N 25th - 63rd St,0.8725,0.876,0.9738,0.9577,0.8959,True,train coverage >= min_link_coverage
+4616332,FDR S 63rd - 25th St,0.8575,0.879,0.9697,0.9596,0.8872,True,train coverage >= min_link_coverage
+4616333,FDR S 25th St - Catherine Slip,0.7475,0.846,0.9245,0.9072,0.8039,True,train coverage >= min_link_coverage
+4616339,BQE N Atlantic Ave - BKN Bridge Manhattan Side,0.8575,0.8639,0.9729,0.9504,0.8839,True,train coverage >= min_link_coverage
+4616340,BQE N Atlantic Ave - MAN Bridge Manhattan Side,0.8881,0.8756,0.8443,0.0,0.7486,True,train coverage >= min_link_coverage
+4616341,FDR S Catherine Slip - BKN Bridge Manhattan Side,0.5735,0.8517,0.9465,0.8256,0.6903,True,train coverage >= min_link_coverage
+4616342,BKN Bridge Manhattan Side - FDR N Catherine Slip,0.7742,0.7803,0.8537,0.8651,0.7967,True,train coverage >= min_link_coverage
+4620298,GWB E LOWER LEVEL PLAZA - CBE E LOWER LEVEL AMSTERDAM AVE,0.8702,0.8188,0.8957,0.9206,0.8726,True,train coverage >= min_link_coverage
