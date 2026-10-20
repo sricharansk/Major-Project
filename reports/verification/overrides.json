@@ -1,0 +1,15 @@
+{
+  "_comment": "Human-maintained status overrides for reports/verification/evidence_registry.csv. An override can only lower a status (VERIFIED -> PARTIAL/BLOCKED/FAILED) and must carry a reason. Remove the entry once the blocker is cleared.",
+  "DATA-02": {
+    "status": "PARTIAL",
+    "limitations": "Downloads run on the author's workstation (cloud container cannot reach NYC Open Data). speed-links --since 2026-01-01 timed out server-side 6x; link set is 'active since 2026-09-20' (125 links)."
+  },
+  "PACK-01": {
+    "status": "BLOCKED",
+    "limitations": "docker compose build not executed end-to-end: Docker Hub pulls are rate-limited from the development container. Compose/Dockerfiles are present and `docker compose config` validates."
+  },
+  "PAPER-01": {
+    "status": "PARTIAL",
+    "limitations": "Paper tables are generated from artifacts; results/discussion sections are filled only after the real-data run and bibliography entries remain NOT_YET_CHECKED (paper/REFERENCES_STATUS.md)."
+  }
+}

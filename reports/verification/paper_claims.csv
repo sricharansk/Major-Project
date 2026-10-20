@@ -1,0 +1,16 @@
+claim_id,section,claim,evidence_artifact,status,notes
+C01,data,NYC DOT speed links provide continuous 5-minute-scale history for 2026-01-01..2026-10-20 in Manhattan,reports/data_audit/source_inventory.csv,PENDING_RUN,server-side audit verified ranges; coverage table from data preprocess
+C02,data,Collisions are published with a lag of about four months and are used only retrospectively,reports/data_audit/source_inventory.csv,VERIFIED,latest crash_date 2026-06-11 at download time
+C03,method,Splits are chronological with purge gaps and scalers are fitted on train only,artifacts/models/<run>/split_manifest.json;tests/leakage,VERIFIED_SOFTWARE,leakage tests pass on fixtures; manifest produced per run
+C04,method,The proposed model consumes a real PyG Temporal graph signal,tests/integration/test_temporal_signal.py,VERIFIED_SOFTWARE,
+C05,results,Proposed model test MAE by horizon vs six baselines on identical masks,reports/experiments/forecast_metrics.csv,PENDING_RUN,
+C06,results,Ablation deltas with day-block bootstrap CIs,reports/experiments/ablation_metrics.csv,PENDING_RUN,
+C07,results,Conformal intervals reach near-nominal test coverage,reports/experiments/uncertainty_metrics.csv,PENDING_RUN,claim is only made if measured coverage supports it
+C08,results,Explanations are computed on the trained proposed model,artifacts/explanations/explanations_summary.json,PENDING_RUN,
+C09,results,Retrieval recall@k and MRR on the labelled query set,artifacts/retrieval/retrieval_eval.json,PENDING_RUN,labels drafted by project (unreviewed)
+C10,results,The LLM returns schema-valid advisories and invalid citations are counted,artifacts/llm_requests/responses.jsonl;reports/experiments/advisory_metrics.csv,PENDING_RUN,
+C11,results,The workflow reaches distinct decisions (defer/reject/pending review) on real cases,reports/experiments/advisory_metrics.csv,PENDING_RUN,
+C12,results,Matched-seed SUMO comparison of baseline vs protected controller,reports/experiments/simulation_metrics.csv,PENDING_RUN,SIMULATION label; not a digital twin
+C13,results,A deterministic constraint rejects an unsafe candidate regardless of LLM output,tests/safety/test_constraints.py,VERIFIED_SOFTWARE,
+C14,engineering,Functional API and persisted advisory runs in Postgres,tests/integration/test_api.py;tests/integration/test_db.py,VERIFIED_SOFTWARE,
+C15,engineering,Containerised deployment builds and runs,reports/verification/docker_smoke.json,BLOCKED,Docker Hub rate limit in the development container
