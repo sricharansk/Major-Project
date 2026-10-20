@@ -39,6 +39,21 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
    Tunnel tubes, QMT, BBT westbound, GWB, the Triborough connectors) have no monitored neighbour and stay isolated
    whatever the rule. The graph-vs-no-graph ablation must be read with this sparsity in mind.
 
+7c. **Dead feeds and link eligibility.** Seven of the 26 Manhattan links (the 12th Avenue, 11th Avenue and Westside
+   Highway chain) reported `speed = 0` in every 2026 record (about 78,500 rows each, 549k of the 978k zero rows), so
+   they carry no observations and cannot be forecast; two further Lincoln Tunnel tubes have under 3% coverage. The
+   link-eligibility threshold (train-period coverage, `configs/data.yaml`) was 0.6 before the first real-data run and
+   was lowered to 0.5 on 2026-10-20 after the coverage audit (`reports/data_audit/link_coverage_operational.csv`)
+   showed six surface-street and tunnel-approach links at 0.52-0.59 train coverage with at least 0.65 afterwards;
+   no results had been produced on the 0.6 set. Two eligible links lose their feed before or during the evaluation
+   period (TBB W to FDR S after 2026-05-29; BQE N to the Manhattan Bridge after 2026-09-02) and appear as
+   NOT_EVALUATED in `reports/experiments/link_test_support_<track>.csv`.
+7d. **Advisory corridor vs. forecast links.** The SUMO corridor (West Street) has signalized intersections, but the
+   DOT links on it are the dead West Side feeds and the West St S approach to the Brooklyn-Battery Tunnel; the
+   forecastable links are otherwise limited-access roads (FDR, BQE, tunnels, bridges). The signal-advisory
+   simulation is therefore a transfer demonstration on a real corridor with declared demand, not a calibrated digital
+   twin of a forecast link (see item 16).
+
 ## Modelling and evaluation
 
 8. **Single seed, single split.** One chronological split and one seed per model; seed variance is not reported.

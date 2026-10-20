@@ -28,6 +28,51 @@ KNOWN = {
     "fhwa_stm_ch6.htm": ("FHWA Traffic Signal Timing Manual, Chapter 6: Coordination", "official_guidance"),
 }
 
+# Source URLs of the approved external documents (SUMO docs at the v1_28_0 tag of the Eclipse SUMO repository, EPL-2.0;
+# FHWA/MUTCD pages are U.S. federal works).  `knowledge fetch` downloads whichever of these are missing locally.
+_SUMO_RAW = "https://raw.githubusercontent.com/eclipse-sumo/sumo/v1_28_0/docs/web/docs/"
+SOURCE_URLS = {
+    "sumo_Simulation_Traffic_Lights.md": _SUMO_RAW + "Simulation/Traffic_Lights.md",
+    "sumo_TraCI_Change_Traffic_Lights_State.md": _SUMO_RAW + "TraCI/Change_Traffic_Lights_State.md",
+    "sumo_TraCI_Traffic_Lights_Value_Retrieval.md": _SUMO_RAW + "TraCI/Traffic_Lights_Value_Retrieval.md",
+    "sumo_Simulation_Output_Lane-_or_Edge-based_Traffic_Measures.md":
+        _SUMO_RAW + "Simulation/Output/Lane-_or_Edge-based_Traffic_Measures.md",
+    "sumo_Simulation_Output_TripInfo.md": _SUMO_RAW + "Simulation/Output/TripInfo.md",
+    "sumo_Tools_Trip.md": _SUMO_RAW + "Tools/Trip.md",
+    "sumo_Simulation_Why_Vehicles_are_teleporting.md": _SUMO_RAW + "Simulation/Why_Vehicles_are_teleporting.md",
+    "sumo_Demand_Routes_from_Observation_Points.md": _SUMO_RAW + "Demand/Routes_from_Observation_Points.md",
+    "sumo_Simulation_Output_Summary.md": _SUMO_RAW + "Simulation/Output/Summary.md",
+    "mutcd2009_part4d.htm": "https://mutcd.fhwa.dot.gov/htm/2009/part4/part4d.htm",
+    "mutcd2009_part4e.htm": "https://mutcd.fhwa.dot.gov/htm/2009/part4/part4e.htm",
+    "fhwa_signal_timing_manual_2008.pdf": "https://ops.fhwa.dot.gov/publications/fhwahop08024/fhwa_hop_08_024.pdf",
+    "fhwa_stm_ch5.htm": "https://ops.fhwa.dot.gov/publications/fhwahop08024/chapter5.htm",
+    "fhwa_stm_ch6.htm": "https://ops.fhwa.dot.gov/publications/fhwahop08024/chapter6.htm",
+}
+
+
+def fetch_missing() -> dict:
+    """Download every approved external document that is not yet in data/raw/knowledge (with a fetch-log record).
+
+    Uses the provenance-preserving downloader; nothing is re-downloaded, and a failure is recorded per document
+    instead of raising, so the registry can still be populated from what exists."""
+    import argparse
+
+    from smartcity.ingestion import fetch
+
+    raw = (fetch.RAW if fetch.RAW.is_absolute() else settings.ROOT / fetch.RAW) / "knowledge"
+    raw.mkdir(parents=True, exist_ok=True)
+    done, failed = [], {}
+    for name, url in SOURCE_URLS.items():
+        if (raw / name).exists():
+            continue
+        try:
+            fetch.cmd_url(argparse.Namespace(url=url, name=name))
+            done.append(name)
+        except Exception as e:  # noqa: BLE001 - recorded, not hidden
+            failed[name] = f"{type(e).__name__}: {e}"
+    return {"fetched": done, "failed": failed, "present": sorted(p.name for p in raw.glob("*") if p.name in SOURCE_URLS)}
+
+
 LICENSES = {
     "software_documentation": "Eclipse Public License 2.0 (SUMO repository docs)",
     "official_guidance": "U.S. federal government work (public domain, 17 U.S.C. 105)",

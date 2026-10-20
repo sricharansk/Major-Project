@@ -37,9 +37,10 @@ export, paper tables). Do not pass `--max-epochs` or `--windows-per-epoch` to th
 caps. If a stage fails, stop and send the command plus the printed traceback tail back to the project thread; resume
 with `--from "<stage>"` after the fix is pulled.
 
-## 3b. After a graph-rule change
+## 3b. After a graph-rule or eligibility change
 
-When the graph rules change (`src/smartcity/graph/build.py`, `configs/graph.yaml`), restart with
+When the graph rules or the link-eligibility threshold change (`src/smartcity/graph/build.py`, `configs/graph.yaml`,
+`configs/data.yaml`), restart with
 `python scripts\run_real_pipeline.py --from "graph build"`: features embed the graph hash and every deep model consumes
 the edge index, so earlier training runs on the old graph are superseded (they stay in MLflow with their own hash).
 

@@ -66,6 +66,28 @@ Statuses: NOT_STARTED / IMPLEMENTED_UNTESTED / VERIFIED / PARTIAL / BLOCKED / FA
   push` fails for lack of a GitHub sign-in on that machine (owner asked to sign in once), so the container-side
   `docker_smoke.json` (BLOCKED) remains the committed evidence until then.
 
+### Milestone 2c: coverage audit and eligibility decision (workstation table, 2026-10-20 19:27 UTC)
+- Per-link observed fraction of the 5-minute grid by split (train 2026-01-01..06-25, val ..08-08, calib ..09-06,
+  test ..10-20): 10 links pass the 0.6 train-coverage rule; 6 links sit at 0.52-0.59 train coverage with 0.65-0.95
+  later (West St S to BBT 0.52/0.66/0.57/0.77; BBT W 0.52; BBT E 0.54; QMT E 0.59; FDR S Catherine Slip-BKN Bridge
+  0.57; FDR N-TBB E 0.55 then dead); 7 West Side links have no valid observation all year (dead feeds, 549k zero
+  rows); Lincoln Tunnel E tubes and W centre tube < 3%. TBB W-FDR S has no data after 2026-05-29 and BQE N-MAN
+  Bridge none after 2026-09-02.
+- DECISION: `min_link_coverage` 0.6 -> 0.5 (train period only; recorded in `configs/data.yaml` and limitations 7c);
+  per-link test support written by `evaluate forecasts` (`link_test_support_<track>.csv`, NOT_EVALUATED where a
+  link has no test targets). Graph rule 3 reworked to use the names' entry/exit directions and a start-to-start
+  distance cap because the polylines' end bearings are untrustworthy (FDR N Catherine Slip-25th -> 25th-63rd was
+  still missed). The workstation reruns from `graph build`; the deep runs on the 10-link set are superseded.
+- RAG on the real corpus (workstation, artifact pending push): index 82 s; 28 queries, 22 scored, recall@8 0.8125,
+  MRR 0.684, SUPPORTED/INSUFFICIENT_EVIDENCE status accuracy 0.955; 6 queries skipped because the SUMO
+  documentation pages were not downloaded on the workstation. `rag fetch-docs` (new) downloads the missing approved
+  documents from the pinned v1_28_0 tag before `rag build`.
+- SUMO (workstation): the West St corridor extracted from OSM was empty because netconvert drops street names by
+  default; fixed on the workstation (`--output.street-names`, hard failure on an empty corridor): 82 edges, 22
+  signals, 2 DOT links mapped. Those two links are the dead West Side feeds / the BBT approach, so the controller
+  comparison is a transfer demonstration (limitations 7d).
+- Two crash fixes (results folder created before the first RAG/SUMO write).
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK

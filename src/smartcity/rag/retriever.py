@@ -142,6 +142,7 @@ def evaluate(query_file: Path | None = None) -> dict:
     out = settings.ROOT / "artifacts" / "retrieval"
     write_json(out / "retrieval_eval.json", {"summary": summary, "per_query": per})
     exp = settings.ROOT / "reports" / "experiments" / "retrieval_metrics.csv"
+    exp.parent.mkdir(parents=True, exist_ok=True)
     with open(exp, "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(per[0].keys()))
         w.writeheader()

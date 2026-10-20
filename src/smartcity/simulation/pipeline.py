@@ -251,6 +251,7 @@ def evaluate_controllers(seeds: list[int] | None = None) -> list[dict]:
 
 def export_sim_rows(rows: list[dict], path=None):
     path = path or settings.ROOT / "reports" / "experiments" / "simulation_metrics.csv"
+    path.parent.mkdir(parents=True, exist_ok=True)
     keys = sorted({k for r in rows for k in r["metrics"]})
     with open(path, "w", newline="") as fh:
         w = csv.writer(fh)

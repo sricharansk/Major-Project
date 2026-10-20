@@ -298,6 +298,17 @@ def explain_alerts(track: str = "operational", n_alerts: int = 12):
     typer.echo(f"explanations: {len(s['local_alerts'])} alerts in {_t.time() - t0:.1f}s; global {s['global_grouped_mean_abs_shap_mph']}")
 
 
+@rag_app.command("fetch-docs")
+def rag_fetch_docs():
+    """Download approved knowledge documents that are missing locally (SUMO docs, FHWA/MUTCD pages)."""
+    from smartcity.knowledge import registry
+
+    r = registry.fetch_missing()
+    typer.echo(json.dumps(r, indent=1))
+    if r["failed"]:
+        raise typer.Exit(code=1)
+
+
 @rag_app.command("build")
 def rag_build():
     from smartcity.knowledge import registry

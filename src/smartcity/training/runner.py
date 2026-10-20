@@ -336,6 +336,15 @@ def evaluate_and_export(results: list[dict], data: ForecastData, track: str, fil
         if write_header:
             w.writeheader()
         w.writerows(rows)
+    # per-link test support: a link whose feed stopped before the test period has no targets there and is reported as
+    # NOT_EVALUATED rather than silently contributing nothing to the aggregate rows above
+    sup = EXP / f"link_test_support_{track}.csv"
+    with open(sup, "w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["track", "link_id", *[f"n_test_targets_{h}m" for h in data.horizon_minutes], "status"])
+        for n, lid in enumerate(data.meta["link_ids"]):
+            counts = [int(mask[:, hi, n].sum()) for hi in range(len(data.horizon_minutes))]
+            w.writerow([track, lid, *counts, "EVALUATED" if min(counts) > 0 else "NOT_EVALUATED_no_test_targets"])
     return rows
 
 

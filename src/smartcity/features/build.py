@@ -98,6 +98,27 @@ def calendar_features(times_utc: np.ndarray) -> tuple[np.ndarray, list[str]]:
     return f, ["hour_sin", "hour_cos", "dow_sin", "dow_cos", "weekend", "us_federal_holiday"]
 
 
+def _write_coverage_audit(track, grid, col, link_ids, bounds, train_cov, dropped, graph):
+    """reports/data_audit/link_coverage_<track>.csv: observed fraction of the 5-minute grid per link and split, and
+    whether the train-coverage rule kept the link.  Written before the rule is applied so dropped links are listed."""
+    import csv
+
+    names = {n["link_id"]: n.get("link_name") for n in graph.get("nodes", [])}
+    out = settings.ROOT / "reports" / "data_audit" / f"link_coverage_{track}.csv"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        w.writerow(["link_id", "link_name", *[f"coverage_{k}" for k in bounds], "coverage_all", "kept", "rule"])
+        for lid in link_ids:
+            s = grid["speed"][:, col[lid]]
+            per = [float(np.isfinite(s[lo:hi]).mean()) for lo, hi in bounds.values()]
+            w.writerow([lid, names.get(lid, ""), *[round(x, 4) for x in per], round(float(np.isfinite(s).mean()), 4),
+                        lid not in dropped, "train coverage >= min_link_coverage"])
+            print(f"  coverage {lid} {names.get(lid, '')!r}: " + " ".join(f"{k}={x:.2f}" for k, x in zip(bounds, per))
+                  + (" DROPPED" if lid in dropped else ""))
+    print(f"link coverage audit: {out.relative_to(settings.ROOT)} ({len(link_ids)} links, {len(dropped)} dropped)")
+
+
 def build(track: str = "operational", link_ids: list[str] | None = None) -> dict:
     dcfg = settings.load("data")
     gcfg = dcfg["grid"]
@@ -118,6 +139,7 @@ def build(track: str = "operational", link_ids: list[str] | None = None) -> dict
     # link eligibility uses TRAIN-period coverage only (no peeking at later partitions)
     cov = {lid: float(np.isfinite(grid["speed"][:a, col[lid]]).mean()) for lid in keep}
     dropped = {lid: c for lid, c in cov.items() if c < dcfg["study"]["min_link_coverage"]}
+    _write_coverage_audit(track, grid, col, list(keep), splits["bounds"], cov, dropped, graph)
     keep = [lid for lid in keep if lid not in dropped]
     speed = grid["speed"][:, [col[lid] for lid in keep]]
     N = speed.shape[1]
