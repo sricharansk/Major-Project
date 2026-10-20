@@ -13,3 +13,10 @@ simulation:
     min_delay_improvement_pct: 1.0
     max_side_road_delay_increase_pct: 10.0
     max_teleports: 0
+scenario:
+  osm_name: west_st_corridor
+  corridor_name_regex: "^(West Street|West Side Highway|Route 9A)$"
+  atr_street_regex: "WEST ST|WEST STREET|WEST SIDE HIGHWAY|ROUTE 9A"
+  fallback_main_vph: 1200        # DECLARED assumption, used only if no ATR counts match the corridor
+  side_vph_assumption: 150       # DECLARED assumption per side-street approach (no matched counts)
+  event_demand_scale: 1.25       # DECLARED stress-scenario surge (not observed)

@@ -194,7 +194,7 @@ def build_graph(tk: Toolkit, checkpointer=None):
                    "green_extension_seconds": settings.load("agents")["actions"]["green_extension_s"],
                    "note": None if mapped else "No reviewed DOT->SUMO mapping for this link: monitor_only only."}
         ev = [RetrievedEvidence(**e) for e in s["retrieval"]["evidence"]]
-        ctx = {"forecast_run_id": s["run_id"], "network_id": tk.sim_ctx.get("network_id", "none"),
+        ctx = {"forecast_run_id": s["case"]["case_id"], "network_id": tk.sim_ctx.get("network_id", "none"),
                "mode": s.get("mode"),
                "forecast_summary": {"link_id": f["link_id"], "horizons": [{k: h[k] for k in
                                     ("horizon_minutes", "predicted_speed_mph", "lower_mph", "upper_mph")} for h in f["horizons"]],
@@ -208,7 +208,9 @@ def build_graph(tk: Toolkit, checkpointer=None):
         llm_rec = {"status": res["status"], "attempts": res["attempts"], "provider": tk.llm.provider,
                    "model": tk.llm.model, "prompt_version": settings.load("agents")["llm"]["prompt_version"]}
         out = {"llm": llm_rec}
-        if res["status"] == "ERROR_TOOL":
+        if res["status"] == "AWAITING_LLM":
+            out.update(decision="AWAITING_LLM", decision_reasons=["request queued for remote Ollama executor"])
+        elif res["status"] == "ERROR_TOOL":
             out.update(decision=Decision.ERROR_TOOL.value, decision_reasons=[res["attempts"][-1]["error"]])
         elif res["status"] != "OK":
             out.update(decision=Decision.REJECT_SCHEMA.value, decision_reasons=["LLM output failed schema validation"])
@@ -223,7 +225,7 @@ def build_graph(tk: Toolkit, checkpointer=None):
 
         resp = AdvisoryResponse(**s["llm"]["response"])
         f = s["forecast"]
-        ctx = {"network": tk.sim_ctx.get("tls_inventory", {}), "forecast_run_id": s["run_id"],
+        ctx = {"network": tk.sim_ctx.get("tls_inventory", {}), "forecast_run_id": s["case"]["case_id"],
                "network_id": tk.sim_ctx.get("network_id", "none"),
                "mapping_valid": tk.sim_ctx.get("mapping_valid_by_link", {}).get(f["link_id"], False),
                "known_evidence_ids": s.get("retrieved_evidence_ids", []),
