@@ -1,0 +1,27 @@
+link_id,link_name,in_grid,in_features,train,val,calib,test,all
+4329472,LINCOLN TUNNEL E SOUTH TUBE - NJ - NY,True,False,0.026,0.0,0.0,0.0,0.015
+4329473,LINCOLN TUNNEL E CENTER TUBE NJ - NY,True,False,0.016,0.0,0.0,0.0,0.01
+4329507,LINCOLN TUNNEL W NORTH TUBE NY - NJ,True,True,0.847,0.806,0.902,0.892,0.853
+4329508,LINCOLN TUNNEL W CENTER TUBE NY - NJ,True,False,0.003,0.0,0.0,0.0,0.002
+4456450,FDR N - TBB E 116TH STREET - MANHATTAN TRUSS,True,False,0.549,0.0,0.0,0.0,0.33
+4456452,TBB W - FDR S MANHATTAN TRUSS - E116TH STREET,True,True,0.731,0.0,0.0,0.0,0.439
+4456494,West St S Spring St - BBT Manhattan Portal outbound,True,False,0.523,0.656,0.574,0.767,0.585
+4456501,BBT W Toll Plaza - Manhattan Portal,True,False,0.521,0.72,0.713,0.776,0.608
+4456502,BBT E Manhattan Portal - Toll Plaza,True,False,0.542,0.726,0.767,0.793,0.63
+4456511,QMT E Manhattan Side - Toll Plaza,True,False,0.587,0.887,0.953,0.933,0.72
+4616323,12th Ave S 57th St - 45th St,False,False,,,,,
+4616324,12th ave @ 45th - 11 ave ganservoort st,False,False,,,,,
+4616325,11th ave s ganservoort - west st @ spring st,False,False,,,,,
+4616328,FDR N Catherine Slip - 25th St,True,True,0.821,0.805,0.894,0.896,0.837
+4616329,FDR N 25th - 63rd St,True,True,0.872,0.876,0.974,0.958,0.896
+4616332,FDR S 63rd - 25th St,True,True,0.857,0.879,0.97,0.96,0.887
+4616333,FDR S 25th St - Catherine Slip,True,True,0.747,0.846,0.924,0.907,0.804
+4616337,11th ave n ganservoort - 12th ave @ 40th st,False,False,,,,,
+4616338,12th Ave N 40th - 57th St,False,False,,,,,
+4616339,BQE N Atlantic Ave - BKN Bridge Manhattan Side,True,True,0.858,0.864,0.973,0.95,0.884
+4616340,BQE N Atlantic Ave - MAN Bridge Manhattan Side,True,True,0.888,0.876,0.844,0.0,0.749
+4616341,FDR S Catherine Slip - BKN Bridge Manhattan Side,True,False,0.573,0.852,0.946,0.826,0.69
+4616342,BKN Bridge Manhattan Side - FDR N Catherine Slip,True,True,0.774,0.78,0.854,0.865,0.797
+4616346,Westside Hwy S GWB - 57th St,False,False,,,,,
+4620298,GWB E LOWER LEVEL PLAZA - CBE E LOWER LEVEL AMSTERDAM AVE,True,True,0.87,0.819,0.896,0.921,0.873
+4620343,Westside Hwy N 57th St - GWB,False,False,,,,,

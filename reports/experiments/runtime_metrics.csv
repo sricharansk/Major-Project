@@ -1,0 +1,129 @@
+component,run_id,metric,value,n,hardware
+forecast:persistence,persistence-20261020T193923-c48849,train_time_s,0,,cloud container CPU x4
+forecast:persistence,persistence-20261020T193923-c48849,inference_ms_per_origin,0.0005762081904578196,144213,cloud container CPU x4
+forecast:historical_average,historical_average-20261020T193932-e08975,train_time_s,0.23,,cloud container CPU x4
+forecast:historical_average,historical_average-20261020T193932-e08975,inference_ms_per_origin,0.0009203929672562105,144213,cloud container CPU x4
+forecast:xgboost,xgboost-20261020T193933-18d124,train_time_s,20.79,,cloud container CPU x4
+forecast:xgboost,xgboost-20261020T193933-18d124,inference_ms_per_origin,0.08077718333472961,144213,cloud container CPU x4
+forecast:lightgbm,lightgbm-20261020T193956-ccbf73,train_time_s,22.28,,cloud container CPU x4
+forecast:lightgbm,lightgbm-20261020T193956-ccbf73,inference_ms_per_origin,0.3856563840571987,144213,cloud container CPU x4
+forecast:gru,gru-20261020T200131-e3eef3,train_time_s,358.95,,cloud container CPU x4
+forecast:gru,gru-20261020T200131-e3eef3,inference_ms_per_origin,0.6790706424729785,144213,cloud container CPU x4
+forecast:temporal_transformer,temporal_transformer-20261020T200802-d8bdfb,train_time_s,107.29,,cloud container CPU x4
+forecast:temporal_transformer,temporal_transformer-20261020T200802-d8bdfb,inference_ms_per_origin,2.1560125318408705,144213,cloud container CPU x4
+forecast:proposed,proposed-20261020T201110-0e333f,train_time_s,138.95,,cloud container CPU x4
+forecast:proposed,proposed-20261020T201110-0e333f,inference_ms_per_origin,5.692540705274962,144213,cloud container CPU x4
+forecast:persistence,persistence-20261020T210027-47b8d9,train_time_s,0,,cloud container CPU x4
+forecast:persistence,persistence-20261020T210027-47b8d9,inference_ms_per_origin,0.0011479132762552016,144213,cloud container CPU x4
+forecast:historical_average,historical_average-20261020T210038-5ee439,train_time_s,0.23,,cloud container CPU x4
+forecast:historical_average,historical_average-20261020T210038-5ee439,inference_ms_per_origin,0.0029760602447458906,144213,cloud container CPU x4
+forecast:xgboost,xgboost-20261020T210039-5d09ee,train_time_s,28.13,,cloud container CPU x4
+forecast:xgboost,xgboost-20261020T210039-5d09ee,inference_ms_per_origin,0.10175921029395957,144213,cloud container CPU x4
+forecast:lightgbm,lightgbm-20261020T210111-1813a7,train_time_s,22.31,,cloud container CPU x4
+forecast:lightgbm,lightgbm-20261020T210111-1813a7,inference_ms_per_origin,0.39176408870476936,144213,cloud container CPU x4
+forecast:proposed,proposed-20261020T210211-4a0685,train_time_s,446.58,,cloud container CPU x4
+forecast:proposed,proposed-20261020T210211-4a0685,inference_ms_per_origin,6.642122059036423,144213,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212531-006725,runtime_s,1.83,528,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212534-8ca3c1,runtime_s,3.277,1040,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212538-f477a2,runtime_s,3.537,1040,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212541-0dfc40,runtime_s,3.446,1040,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212545-2845f6,runtime_s,3.485,1040,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212548-e18a16,runtime_s,3.497,1040,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212552-8f1a19,runtime_s,3.476,1040,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212555-92ac34,runtime_s,3.496,1040,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212600-7b80d0,runtime_s,4.172,1040,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212602-1cc6ea,runtime_s,2.289,528,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212606-86717f,runtime_s,4.177,1040,cloud container CPU x4
+explanation:grouped_kernel_shap,xai-20261020T212608-68d239,runtime_s,1.727,528,cloud container CPU x4
+retrieval:faiss,q01,latency_s,14.7991,1,cloud container CPU x4
+retrieval:faiss,q02,latency_s,0.0278,1,cloud container CPU x4
+retrieval:faiss,q03,latency_s,0.0491,1,cloud container CPU x4
+retrieval:faiss,q04,latency_s,0.0262,1,cloud container CPU x4
+retrieval:faiss,q05,latency_s,0.0271,1,cloud container CPU x4
+retrieval:faiss,q06,latency_s,0.0269,1,cloud container CPU x4
+retrieval:faiss,q07,latency_s,0.0259,1,cloud container CPU x4
+retrieval:faiss,q08,latency_s,0.0243,1,cloud container CPU x4
+retrieval:faiss,q09,latency_s,0.0244,1,cloud container CPU x4
+retrieval:faiss,q10,latency_s,0.0253,1,cloud container CPU x4
+retrieval:faiss,q11,latency_s,0.0298,1,cloud container CPU x4
+retrieval:faiss,q12,latency_s,0.0303,1,cloud container CPU x4
+retrieval:faiss,q13,latency_s,0.0263,1,cloud container CPU x4
+retrieval:faiss,q14,latency_s,0.0336,1,cloud container CPU x4
+retrieval:faiss,q15,latency_s,0.0294,1,cloud container CPU x4
+retrieval:faiss,q16,latency_s,0.0282,1,cloud container CPU x4
+retrieval:faiss,q17,latency_s,0.0279,1,cloud container CPU x4
+retrieval:faiss,q18,latency_s,0.0296,1,cloud container CPU x4
+retrieval:faiss,q19,latency_s,0.0288,1,cloud container CPU x4
+retrieval:faiss,q20,latency_s,0.0274,1,cloud container CPU x4
+retrieval:faiss,q21,latency_s,0.0274,1,cloud container CPU x4
+retrieval:faiss,q22,latency_s,0.0271,1,cloud container CPU x4
+retrieval:faiss,q23,latency_s,0.0269,1,cloud container CPU x4
+retrieval:faiss,q24,latency_s,0.0217,1,cloud container CPU x4
+retrieval:faiss,q25,latency_s,0.029,1,cloud container CPU x4
+retrieval:faiss,q26,latency_s,0.0288,1,cloud container CPU x4
+retrieval:faiss,q27,latency_s,0.0244,1,cloud container CPU x4
+retrieval:faiss,q28,latency_s,0.0259,1,cloud container CPU x4
+sumo:fixed_time,sim-routine_peak-fixed_time-s1-20261020T192017-e0ae00,wall_time_s,129.91,1,cloud container CPU
+sumo:fixed_time,sim-routine_peak-fixed_time-s2-20261020T192227-a8e14b,wall_time_s,138.57,1,cloud container CPU
+sumo:fixed_time,sim-routine_peak-fixed_time-s3-20261020T192446-e35e8e,wall_time_s,145.99,1,cloud container CPU
+sumo:fixed_time,sim-routine_peak-fixed_time-s4-20261020T192712-76131c,wall_time_s,132.6,1,cloud container CPU
+sumo:fixed_time,sim-routine_peak-fixed_time-s5-20261020T192925-e2f650,wall_time_s,130.33,1,cloud container CPU
+sumo:actuated,sim-routine_peak-actuated-s1-20261020T193136-c231c8,wall_time_s,142.65,1,cloud container CPU
+sumo:actuated,sim-routine_peak-actuated-s2-20261020T193359-bb5f75,wall_time_s,135.83,1,cloud container CPU
+sumo:actuated,sim-routine_peak-actuated-s3-20261020T193615-049018,wall_time_s,148.13,1,cloud container CPU
+sumo:actuated,sim-routine_peak-actuated-s4-20261020T193843-02b75a,wall_time_s,157.04,1,cloud container CPU
+sumo:actuated,sim-routine_peak-actuated-s5-20261020T194121-0d7e3a,wall_time_s,146.78,1,cloud container CPU
+sumo:forecast_rule,sim-routine_peak-forecast_rule-s1-20261020T194348-14b25f,wall_time_s,128.13,1,cloud container CPU
+sumo:forecast_rule,sim-routine_peak-forecast_rule-s2-20261020T194556-7270a8,wall_time_s,150.23,1,cloud container CPU
+sumo:forecast_rule,sim-routine_peak-forecast_rule-s3-20261020T194827-5c3e41,wall_time_s,210.14,1,cloud container CPU
+sumo:forecast_rule,sim-routine_peak-forecast_rule-s4-20261020T195157-d22621,wall_time_s,200.55,1,cloud container CPU
+sumo:forecast_rule,sim-routine_peak-forecast_rule-s5-20261020T195518-8eb1e1,wall_time_s,196.26,1,cloud container CPU
+sumo:fixed_time,sim-event_surge-fixed_time-s1-20261020T195835-3aa63f,wall_time_s,209.82,1,cloud container CPU
+sumo:fixed_time,sim-event_surge-fixed_time-s2-20261020T200205-8245a9,wall_time_s,268.71,1,cloud container CPU
+sumo:fixed_time,sim-event_surge-fixed_time-s3-20261020T200634-282f91,wall_time_s,203.51,1,cloud container CPU
+sumo:fixed_time,sim-event_surge-fixed_time-s4-20261020T200958-0934e5,wall_time_s,231.45,1,cloud container CPU
+sumo:fixed_time,sim-event_surge-fixed_time-s5-20261020T201350-792742,wall_time_s,534.31,1,cloud container CPU
+sumo:actuated,sim-event_surge-actuated-s1-20261020T202245-aebd81,wall_time_s,283.79,1,cloud container CPU
+sumo:actuated,sim-event_surge-actuated-s2-20261020T202729-bb7f52,wall_time_s,233.6,1,cloud container CPU
+sumo:actuated,sim-event_surge-actuated-s3-20261020T203123-2579d4,wall_time_s,301.14,1,cloud container CPU
+sumo:actuated,sim-event_surge-actuated-s4-20261020T203624-5796d9,wall_time_s,204.14,1,cloud container CPU
+sumo:actuated,sim-event_surge-actuated-s5-20261020T203949-2002f9,wall_time_s,263.72,1,cloud container CPU
+sumo:forecast_rule,sim-event_surge-forecast_rule-s1-20261020T204413-9cba26,wall_time_s,333.56,1,cloud container CPU
+sumo:forecast_rule,sim-event_surge-forecast_rule-s2-20261020T204947-c8c819,wall_time_s,367.4,1,cloud container CPU
+sumo:forecast_rule,sim-event_surge-forecast_rule-s3-20261020T205555-ca33d4,wall_time_s,313.04,1,cloud container CPU
+sumo:forecast_rule,sim-event_surge-forecast_rule-s4-20261020T210108-05bdf2,wall_time_s,270.91,1,cloud container CPU
+sumo:forecast_rule,sim-event_surge-forecast_rule-s5-20261020T210539-632e24,wall_time_s,286.57,1,cloud container CPU
+sumo:fixed_time,sim-incident_reduced_capacity-fixed_time-s1-20261020T211027-7718d6,wall_time_s,359.38,1,cloud container CPU
+sumo:fixed_time,sim-incident_reduced_capacity-fixed_time-s2-20261020T211626-5486ae,wall_time_s,327.14,1,cloud container CPU
+sumo:fixed_time,sim-incident_reduced_capacity-fixed_time-s3-20261020T212154-f1d8e8,wall_time_s,326.59,1,cloud container CPU
+sumo:fixed_time,sim-incident_reduced_capacity-fixed_time-s4-20261020T212721-e672de,wall_time_s,183.35,1,cloud container CPU
+sumo:fixed_time,sim-incident_reduced_capacity-fixed_time-s5-20261020T213024-32d11c,wall_time_s,181.37,1,cloud container CPU
+sumo:actuated,sim-incident_reduced_capacity-actuated-s1-20261020T213326-611a4f,wall_time_s,155.78,1,cloud container CPU
+sumo:actuated,sim-incident_reduced_capacity-actuated-s2-20261020T213602-ad6df2,wall_time_s,163.21,1,cloud container CPU
+sumo:actuated,sim-incident_reduced_capacity-actuated-s3-20261020T213845-be167d,wall_time_s,173.36,1,cloud container CPU
+sumo:actuated,sim-incident_reduced_capacity-actuated-s4-20261020T214139-c56998,wall_time_s,153.59,1,cloud container CPU
+sumo:actuated,sim-incident_reduced_capacity-actuated-s5-20261020T214413-39c818,wall_time_s,177.16,1,cloud container CPU
+sumo:forecast_rule,sim-incident_reduced_capacity-forecast_rule-s1-20261020T214710-3981f6,wall_time_s,162.28,1,cloud container CPU
+sumo:forecast_rule,sim-incident_reduced_capacity-forecast_rule-s2-20261020T214953-1e4d0e,wall_time_s,176.45,1,cloud container CPU
+sumo:forecast_rule,sim-incident_reduced_capacity-forecast_rule-s3-20261020T215250-9beb29,wall_time_s,169.88,1,cloud container CPU
+sumo:forecast_rule,sim-incident_reduced_capacity-forecast_rule-s4-20261020T215540-8601c6,wall_time_s,166.33,1,cloud container CPU
+sumo:forecast_rule,sim-incident_reduced_capacity-forecast_rule-s5-20261020T215826-474581,wall_time_s,170.45,1,cloud container CPU
+agent:full_system,adv-20261020T211644-0b7657,end_to_end_s,134.74,1,cloud container CPU (LLM latency recorded separately)
+agent:full_system,adv-20261020T211859-2a78d8,end_to_end_s,0.02,1,cloud container CPU (LLM latency recorded separately)
+agent:full_system,adv-20261020T211859-ce96cf,end_to_end_s,0.01,1,cloud container CPU (LLM latency recorded separately)
+agent:full_system,adv-20261020T211859-08f755,end_to_end_s,0.03,1,cloud container CPU (LLM latency recorded separately)
+agent:full_system,adv-20261020T211859-36e1c6,end_to_end_s,5.43,1,cloud container CPU (LLM latency recorded separately)
+agent:full_system,adv-20261020T211904-d7ae1c,end_to_end_s,113.49,1,cloud container CPU (LLM latency recorded separately)
+agent:full_system,adv-20261020T212058-64eb52,end_to_end_s,28.5,1,cloud container CPU (LLM latency recorded separately)
+agent:llm_without_retrieval,adv-20261020T212126-b96be2,end_to_end_s,19.01,1,cloud container CPU (LLM latency recorded separately)
+agent:llm_without_retrieval,adv-20261020T212145-3b91d0,end_to_end_s,0.02,1,cloud container CPU (LLM latency recorded separately)
+agent:llm_without_retrieval,adv-20261020T212145-746c6d,end_to_end_s,19.76,1,cloud container CPU (LLM latency recorded separately)
+agent:llm_without_retrieval,adv-20261020T212205-1d1c92,end_to_end_s,19.43,1,cloud container CPU (LLM latency recorded separately)
+agent:rag_without_constraints,adv-20261020T212225-c86a1a,end_to_end_s,27.95,1,cloud container CPU (LLM latency recorded separately)
+agent:rag_without_constraints,adv-20261020T212252-f8d1c6,end_to_end_s,0.02,1,cloud container CPU (LLM latency recorded separately)
+agent:rag_without_constraints,adv-20261020T212253-4975ca,end_to_end_s,28.16,1,cloud container CPU (LLM latency recorded separately)
+agent:rag_without_constraints,adv-20261020T212321-3c25f9,end_to_end_s,24.88,1,cloud container CPU (LLM latency recorded separately)
+agent:rag_constraints_without_simulation,adv-20261020T212346-37c555,end_to_end_s,23.9,1,cloud container CPU (LLM latency recorded separately)
+agent:rag_constraints_without_simulation,adv-20261020T212409-d2ee92,end_to_end_s,0.02,1,cloud container CPU (LLM latency recorded separately)
+agent:rag_constraints_without_simulation,adv-20261020T212409-099c9d,end_to_end_s,29.52,1,cloud container CPU (LLM latency recorded separately)
+agent:rag_constraints_without_simulation,adv-20261020T212439-a8cc65,end_to_end_s,25.66,1,cloud container CPU (LLM latency recorded separately)

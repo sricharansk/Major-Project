@@ -1,0 +1,216 @@
+{
+  "run_id": "adv-20261020T212145-746c6d",
+  "thread_id": "adv-20261020T212145-746c6d",
+  "mode": "REPLAY",
+  "case": {
+    "name": "mapped_corridor_alert",
+    "origin": 74793,
+    "link_index": 3,
+    "case_id": "case-mapped_corridor_alert-74793-3",
+    "auto_review": {
+      "action": "pending"
+    },
+    "policy": "llm_without_retrieval"
+  },
+  "forecast_origin": "2026-09-17T21:50:00+00:00",
+  "data_quality": {
+    "data_age_minutes": 0.0,
+    "input_missing_fraction": 0.0,
+    "source_timestamp_utc": "2026-09-17T21:50:00+00:00",
+    "stale_stress_steps": 0
+  },
+  "forecast": {
+    "link_id": "4456494",
+    "link_index": 3,
+    "horizons": [
+      {
+        "horizon_minutes": 15,
+        "predicted_speed_mph": 4.3407087326049805,
+        "displayed_speed_mph": 4.3407087326049805,
+        "lower_mph": -2.721247673034668,
+        "upper_mph": 11.402665138244629,
+        "interval_level": 0.9,
+        "observed_speed_mph": 5.590000152587891
+      },
+      {
+        "horizon_minutes": 30,
+        "predicted_speed_mph": 4.723139762878418,
+        "displayed_speed_mph": 4.723139762878418,
+        "lower_mph": -3.590576171875,
+        "upper_mph": 13.036855697631836,
+        "interval_level": 0.9,
+        "observed_speed_mph": 8.069999694824219
+      },
+      {
+        "horizon_minutes": 60,
+        "predicted_speed_mph": 6.344743728637695,
+        "displayed_speed_mph": 6.344743728637695,
+        "lower_mph": -2.3584365844726562,
+        "upper_mph": 15.047924041748047,
+        "interval_level": 0.9,
+        "observed_speed_mph": 14.90999984741211
+      }
+    ],
+    "train_reference_speed_mph": 14.711414337158203,
+    "congestion_ratio_30min": 0.3210527318878291,
+    "model_run_id": "proposed-20261020T201110-0e333f",
+    "speed_unit": "mph"
+  },
+  "forecast_artifact_id": "proposed-20261020T201110-0e333f",
+  "calibration_artifact_id": "artifacts/calibration/calibrator.json",
+  "uncertainty": {
+    "eligible": true,
+    "reasons": [],
+    "interval_widths": {
+      "15": 14.123912811279297,
+      "30": 16.627431869506836,
+      "60": 17.406360626220703
+    },
+    "gate_config": {
+      "max_interval_width_mph": 38.0967597961426,
+      "width_quantile_on_val": 0.8,
+      "max_input_missing_fraction": 0.34,
+      "max_data_age_minutes": 20,
+      "min_calibration_samples": 200
+    }
+  },
+  "explanation": {
+    "explanation_id": "xai-20261020T212149-9e3917",
+    "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+    "link_id": "4456494",
+    "link_index": 3,
+    "horizon_minutes": 30,
+    "origin_index": 74793,
+    "origin_utc": 1789681800,
+    "background": "16 windows sampled from TRAIN partition (seed 42)",
+    "players": [
+      "traffic_target_last30min",
+      "traffic_target_30_120min",
+      "traffic_graph_neighbours",
+      "calendar",
+      "weather",
+      "infrastructure"
+    ],
+    "neighbours": [
+      "4456501",
+      "4456502"
+    ],
+    "group_contributions": {
+      "traffic_target_last30min": -6.816580081979358,
+      "traffic_target_30_120min": -1.0611309216931941,
+      "traffic_graph_neighbours": 0.0,
+      "calendar": -0.7599237270226229,
+      "weather": -0.34146868224969323,
+      "infrastructure": -0.0663947597122867
+    },
+    "base_value": 13.76863783412987,
+    "prediction": 4.723139661472715,
+    "additivity_gap": 0.0,
+    "observed_target_mph": 8.069999694824219,
+    "runtime_s": 3.7489023208618164,
+    "model_calls": 1040,
+    "note": "Attributions describe model sensitivity, not causal effects."
+  },
+  "explanation_artifact_id": "xai-20261020T212149-9e3917",
+  "retrieval": {
+    "query": "Forecast speed drop to 32% of typical on an urban signalized arterial within 30 minutes. Which bounded signal timing adjustment such as extending green time is permitted while preserving minimum green, yellow change and red clearance intervals and pedestrian clearance?",
+    "status": "DISABLED",
+    "evidence": []
+  },
+  "retrieved_evidence_ids": [],
+  "llm": {
+    "status": "OK",
+    "attempts": [
+      {
+        "attempt": 0,
+        "raw": "{\n  \"forecast_run_id\": \"case-mapped_corridor_alert-74793-3\",\n  \"recommendation_type\": \"monitor_only\",\n  \"target_network_id\": \"sumo:f8cd9bd224f3\",\n  \"candidates\": [\n    {\n      \"candidate_id\": \"001\",\n      \"action_type\": \"monitor_only\",\n      \"evidence_ids\": [\n        \"EVIDENCE_123456\"\n      ],\n      \"rationale\": \"Insufficient evidence to propose a signal change. The forecast indicates a potential for reduced traffic flow, but the uncertainty is high, and there is no specific evidence to support a green extension at this time.\"\n    }\n  ],\n  \"uncertainty_note\": \"The forecast uncertainty is within acceptable limits, but the lack of specific evidence precludes recommending a signal change.\"\n}",
+        "latency_s": 15.921310186386108,
+        "model_digest": null,
+        "request_hash": null,
+        "prompt_tokens": 2778,
+        "completion_tokens": 181,
+        "schema_valid": true
+      }
+    ],
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "prompt_version": "advisory_v1",
+    "response": {
+      "forecast_run_id": "case-mapped_corridor_alert-74793-3",
+      "recommendation_type": "monitor_only",
+      "target_network_id": "sumo:f8cd9bd224f3",
+      "candidates": [
+        {
+          "candidate_id": "001",
+          "action_type": "monitor_only",
+          "traffic_light_id": null,
+          "phase_index": null,
+          "extension_seconds": null,
+          "program_id": null,
+          "evidence_ids": [
+            "EVIDENCE_123456"
+          ],
+          "rationale": "Insufficient evidence to propose a signal change. The forecast indicates a potential for reduced traffic flow, but the uncertainty is high, and there is no specific evidence to support a green extension at this time."
+        }
+      ],
+      "uncertainty_note": "The forecast uncertainty is within acceptable limits, but the lack of specific evidence precludes recommending a signal change.",
+      "limitations": [],
+      "requires_human_review": true
+    }
+  },
+  "candidate_actions": [
+    {
+      "candidate_id": "001",
+      "action_type": "monitor_only",
+      "traffic_light_id": null,
+      "phase_index": null,
+      "extension_seconds": null,
+      "program_id": null,
+      "evidence_ids": [
+        "EVIDENCE_123456"
+      ],
+      "rationale": "Insufficient evidence to propose a signal change. The forecast indicates a potential for reduced traffic flow, but the uncertainty is high, and there is no specific evidence to support a green extension at this time."
+    }
+  ],
+  "constraint_results": [
+    {
+      "candidate_id": "001",
+      "checks": {
+        "network_mapping_valid": "PASS",
+        "action_type_allowed": "PASS",
+        "signal_exists": "PASS",
+        "phase_exists": "PASS",
+        "parameter_in_bounds": "PASS",
+        "minimum_green_preserved": "PASS",
+        "maximum_green_preserved": "PASS",
+        "clearance_preserved": "PASS",
+        "pedestrian_protection_available": "NOT_EVALUATED",
+        "side_road_protection_available": "PASS",
+        "source_freshness_acceptable": "PASS",
+        "forecast_reliability_acceptable": "PASS",
+        "retrieval_support_acceptable": "FAIL",
+        "rationale_policy": "PASS"
+      },
+      "passed": false,
+      "reasons": [
+        "retrieval_support_acceptable: evidence ids not in retrieved set: ['EVIDENCE_123456']"
+      ]
+    }
+  ],
+  "decision": "REJECT_CONSTRAINT",
+  "decision_reasons": [
+    "retrieval_support_acceptable: evidence ids not in retrieved set: ['EVIDENCE_123456']"
+  ],
+  "errors": [],
+  "timings": {
+    "quality": 0.0,
+    "forecast": 0.012,
+    "uncertainty": 0.0,
+    "explanation": 3.803,
+    "retrieval": 0.0,
+    "recommendation": 15.925,
+    "safety": 0.0
+  },
+  "started_at": "2026-10-20T21:21:45Z",
+  "finished_at": "2026-10-20T21:22:05Z"
+}

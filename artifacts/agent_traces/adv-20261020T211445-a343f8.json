@@ -1,0 +1,33 @@
+{
+  "run_id": "adv-20261020T211445-a343f8",
+  "thread_id": "adv-20261020T211445-a343f8",
+  "mode": "REPLAY",
+  "case": {
+    "name": "stale_data_stress",
+    "origin": 77939,
+    "link_index": 13,
+    "simulate_stale_steps": 6,
+    "case_id": "case-stale_data_stress-77939-13",
+    "auto_review": {
+      "action": "pending"
+    },
+    "policy": "full_system"
+  },
+  "forecast_origin": "2026-09-28T20:00:00+00:00",
+  "data_quality": {
+    "data_age_minutes": 30.0,
+    "input_missing_fraction": 0.25,
+    "source_timestamp_utc": "2026-09-28T19:30:00+00:00",
+    "stale_stress_steps": 6
+  },
+  "decision": "DEFER_DATA",
+  "decision_reasons": [
+    "STALE: data age 30.0 min > 20"
+  ],
+  "errors": [],
+  "timings": {
+    "quality": 0.002
+  },
+  "started_at": "2026-10-20T21:14:45Z",
+  "finished_at": "2026-10-20T21:14:45Z"
+}

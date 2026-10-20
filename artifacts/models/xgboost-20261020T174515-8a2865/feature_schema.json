@@ -1,0 +1,75 @@
+{
+  "track": "operational",
+  "feature_names": [
+    "speed_z",
+    "speed_observed_or_ffilled",
+    "obs_age_days_frac",
+    "rollmean_1h_z",
+    "delta_5m_z",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "weekend",
+    "us_federal_holiday",
+    "historical_forecast_precip_mm",
+    "historical_forecast_rain_mm",
+    "historical_forecast_snow_cm",
+    "historical_forecast_temp_c",
+    "historical_forecast_wind_kmh",
+    "historical_forecast_wet_code",
+    "historical_forecast_visibility_km",
+    "historical_forecast_cloud_pct",
+    "sr311_24h_lagged_log"
+  ],
+  "groups": [
+    "traffic",
+    "calendar",
+    "weather",
+    "infrastructure"
+  ],
+  "group_slices": {
+    "traffic": [
+      0,
+      5
+    ],
+    "calendar": [
+      5,
+      11
+    ],
+    "weather": [
+      11,
+      19
+    ],
+    "infrastructure": [
+      19,
+      20
+    ]
+  },
+  "feature_schema_hash": "1d63c3fe45a729be",
+  "speed_unit": "mph",
+  "lookback_steps": 24,
+  "horizon_steps": [
+    3,
+    6,
+    12
+  ],
+  "horizon_minutes": [
+    15,
+    30,
+    60
+  ],
+  "link_ids": [
+    "4329507",
+    "4456452",
+    "4616328",
+    "4616329",
+    "4616332",
+    "4616333",
+    "4616339",
+    "4616340",
+    "4616342",
+    "4620298"
+  ],
+  "graph_hash": "e6926fd4744611cc"
+}

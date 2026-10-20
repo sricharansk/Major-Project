@@ -1,2 +1,9 @@
 \begin{table}[t]\centering\caption{Ablations of the proposed model (test MAE, mph, mean over horizons)}\label{tab:ablation}
-\begin{tabular}{c}\toprule NOT RUN \\ \bottomrule\end{tabular}\end{table}
+\begin{tabular}{lrrl}\toprule Variant & MAE & $\Delta$ & Status \\ \midrule
+proposed & 5.42 & 0.00 & REFERENCE \\
+ablation\_no\_gate & 5.49 & 0.07 & OK \\
+ablation\_no\_weather & 5.37 & -0.05 & OK \\
+ablation\_no\_infrastructure & 5.43 & 0.01 & OK \\
+ablation\_no\_events & -- & -- & NOT\_APPLICABLE (no events group in operational track) \\
+ablation\_no\_incidents & -- & -- & NOT\_APPLICABLE (no incidents group in operational track) \\
+\bottomrule\end{tabular}\end{table}

@@ -1,0 +1,7 @@
+{
+  "run_id": "persistence-20261020T210027-47b8d9",
+  "model": "persistence",
+  "train_time_s": 0.0,
+  "infer_latency_ms_per_origin": 0.0011479132762552016,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\persistence-20261020T210027-47b8d9"
+}

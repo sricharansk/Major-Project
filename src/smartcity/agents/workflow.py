@@ -136,11 +136,14 @@ def build_graph(tk: Toolkit, checkpointer=None):
                        "upper_mph": float(P[k, n] + q), "interval_level": 1 - tk.cal["alpha"],
                        "observed_speed_mph": None if not np.isfinite(y) else float(y)})
         ref = float(data.mu[n])
+        # cases built by agents.evaluate / the API job do not carry the model id; the frozen, calibrated model's run id
+        # is recorded in the calibrator, so that is the forecast artifact actually used here.
+        model_run_id = s["case"].get("model_run_id") or tk.cal.get("model_run_id")
         return {"forecast": {"link_id": data.meta["link_ids"][n], "link_index": n, "horizons": hz,
                              "train_reference_speed_mph": ref,
                              "congestion_ratio_30min": hz[min(1, len(hz) - 1)]["predicted_speed_mph"] / ref,
-                             "model_run_id": s["case"]["model_run_id"], "speed_unit": "mph"},
-                "forecast_artifact_id": s["case"]["model_run_id"],
+                             "model_run_id": model_run_id, "speed_unit": "mph"},
+                "forecast_artifact_id": model_run_id,
                 "calibration_artifact_id": "artifacts/calibration/calibrator.json"}
 
     @_timed("uncertainty")

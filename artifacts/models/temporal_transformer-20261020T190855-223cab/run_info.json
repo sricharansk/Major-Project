@@ -1,0 +1,15 @@
+{
+  "run_id": "temporal_transformer-20261020T190855-223cab",
+  "model": "temporal_transformer",
+  "best_epoch": 3,
+  "best_val_mae": 5.543979326883952,
+  "epochs_run": 9,
+  "train_time_s": 625.2567806243896,
+  "infer_latency_ms_per_origin": 1.07293665934135,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "ec818beebe4ebc90b551e7cf182493ac3bf2b23cff7b6f10f1b2c89028e63c2e",
+  "n_params": 158403,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\temporal_transformer-20261020T190855-223cab",
+  "train_device": "cuda",
+  "cudnn_enabled": true
+}

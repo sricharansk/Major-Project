@@ -1,0 +1,23 @@
+{
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "machine": "AMD64",
+  "torch": "2.11.0+cu128",
+  "torch_geometric": "2.8.1",
+  "torch_geometric_temporal": "0.54.0",
+  "xgboost": "3.4.1",
+  "lightgbm": "4.7.0",
+  "shap": "0.54.1",
+  "faiss": "1.15.1",
+  "sentence_transformers": "6.1.0",
+  "langgraph": "installed",
+  "mlflow": "3.17.1",
+  "pandas": "3.0.6",
+  "polars": "2.0.0",
+  "geopandas": "1.2.0",
+  "fastapi": "0.155.0",
+  "streamlit": "1.66.0",
+  "pydantic": "2.14.1",
+  "sumolib": "1.28.0",
+  "traci": "1.28.0"
+}

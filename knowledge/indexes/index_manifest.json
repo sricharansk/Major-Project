@@ -1,0 +1,28 @@
+{
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "local_model_dir": "data\\models\\sentence-transformers__all-MiniLM-L6-v2",
+  "n_chunks": 1633,
+  "dim": 384,
+  "corpus_hash": "50ff3107ae21057d",
+  "chunk_token_max": 3398,
+  "chunks_over_model_limit": 171,
+  "model_max_seq_length": 256,
+  "build_seconds": 56.25,
+  "documents": [
+    "fhwa_signal_timing_manual_2008",
+    "fhwa_stm_ch5",
+    "fhwa_stm_ch6",
+    "mutcd2009_part4d",
+    "mutcd2009_part4e",
+    "project_signal_policy",
+    "sumo_Demand_Routes_from_Observation_Points",
+    "sumo_Simulation_Output_Lane-_or_Edge-based_Traffic_Measures",
+    "sumo_Simulation_Output_Summary",
+    "sumo_Simulation_Output_TripInfo",
+    "sumo_Simulation_Traffic_Lights",
+    "sumo_Simulation_Why_Vehicles_are_teleporting",
+    "sumo_Tools_Trip",
+    "sumo_TraCI_Change_Traffic_Lights_State",
+    "sumo_TraCI_Traffic_Lights_Value_Retrieval"
+  ]
+}

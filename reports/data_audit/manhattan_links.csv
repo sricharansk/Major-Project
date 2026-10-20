@@ -1,0 +1,27 @@
+link_id,link_name,owner,length_m,corridor,entry_dir,exit_dir,direction_inferred,from_label,to_label,out_degree,in_degree
+4329472,LINCOLN TUNNEL E SOUTH TUBE - NJ - NY,PA -Lincoln Tunnel,1870.1,lincoln tunnel E,E,E,False,,,0,0
+4329473,LINCOLN TUNNEL E CENTER TUBE NJ - NY,PA -Lincoln Tunnel,1949.6,lincoln tunnel E,E,E,False,center,,0,0
+4329507,LINCOLN TUNNEL W NORTH TUBE NY - NJ,PA -Lincoln Tunnel,1955.1,lincoln tunnel W,W,W,False,lincoln tunnel,,0,0
+4329508,LINCOLN TUNNEL W CENTER TUBE NY - NJ,PA -Lincoln Tunnel,1953.1,lincoln tunnel W,W,W,False,center,,0,0
+4456450,FDR N - TBB E 116TH STREET - MANHATTAN TRUSS,MTA Bridges & Tunnels,16068.8,fdr N,N,E,False,116 tbb,truss,0,0
+4456452,TBB W - FDR S MANHATTAN TRUSS - E116TH STREET,MTA Bridges & Tunnels,2851.3,tbb W,W,S,False,fdr truss,116,0,1
+4456494,West St S Spring St - BBT Manhattan Portal outbound,NYC_DOT_LIC,2153.7,west st S,S,S,False,spring,bbt,2,1
+4456501,BBT W Toll Plaza - Manhattan Portal,MTA Bridges & Tunnels,3064.3,bbt W,W,W,False,bbt,,0,1
+4456502,BBT E Manhattan Portal - Toll Plaza,MTA Bridges & Tunnels,3157.8,bbt E,E,E,False,bbt,,0,1
+4456511,QMT E Manhattan Side - Toll Plaza,NYC_DOT_LIC,1791.1,qmt E,E,E,False,qmt,,0,0
+4616323,12th Ave S 57th St - 45th St,NYC_DOT_LIC,790.5,12th ave S,S,S,False,57,45,1,1
+4616324,12th ave @ 45th - 11 ave ganservoort st,NYC_DOT_LIC,3043.7,,S,S,True,12 45,11 ganservoort,1,1
+4616325,11th ave s ganservoort - west st @ spring st,NYC_DOT_LIC,1465.4,11th ave S,S,S,False,ganservoort,spring,1,1
+4616328,FDR N Catherine Slip - 25th St,NYC_DOT_LIC,7624.6,fdr N,N,N,False,catherine slip,25,1,1
+4616329,FDR N 25th - 63rd St,NYC_DOT_LIC,1177.2,fdr N,N,N,False,25,63,0,1
+4616332,FDR S 63rd - 25th St,NYC_DOT_LIC,1547.5,fdr S,S,S,False,63,25,1,0
+4616333,FDR S 25th St - Catherine Slip,NYC_DOT_LIC,875.9,fdr S,S,S,False,25,catherine slip,1,1
+4616337,11th ave n ganservoort - 12th ave @ 40th st,NYC_DOT_LIC,2303.0,11th ave N,N,N,False,ganservoort,12 40,1,0
+4616338,12th Ave N 40th - 57th St,NYC_DOT_LIC,1394.5,12th ave N,N,N,False,40,57,1,1
+4616339,BQE N Atlantic Ave - BKN Bridge Manhattan Side,NYC_DOT_LIC,9002.6,bqe N,N,N,False,atlantic,bkn bridge,1,0
+4616340,BQE N Atlantic Ave - MAN Bridge Manhattan Side,NYC_DOT_LIC,13892.1,bqe N,N,N,False,atlantic,bridge man,1,0
+4616341,FDR S Catherine Slip - BKN Bridge Manhattan Side,NYC_DOT_LIC,318.8,fdr S,S,S,False,catherine slip,bkn bridge,0,1
+4616342,BKN Bridge Manhattan Side - FDR N Catherine Slip,NYC_DOT_LIC,322.1,bkn bridge manhattan side - fdr N,N,N,False,bkn bridge,catherine fdr slip,2,2
+4616346,Westside Hwy S GWB - 57th St,NYC_DOT_LIC,1499.9,westside hwy S,S,S,False,gwb,57,1,0
+4620298,GWB E LOWER LEVEL PLAZA - CBE E LOWER LEVEL AMSTERDAM AVE,PA-GWBridge,2587.5,gwb E,E,E,False,gwb,amsterdam cbe,0,1
+4620343,Westside Hwy N 57th St - GWB,NYC_DOT_LIC,2721.7,westside hwy N,N,N,False,57,gwb,1,1

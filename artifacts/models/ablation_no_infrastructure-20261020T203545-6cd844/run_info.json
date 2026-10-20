@@ -1,0 +1,15 @@
+{
+  "run_id": "ablation_no_infrastructure-20261020T203545-6cd844",
+  "model": "ablation_no_infrastructure",
+  "best_epoch": 8,
+  "best_val_mae": 5.416618824005127,
+  "epochs_run": 14,
+  "train_time_s": 167.93222403526306,
+  "infer_latency_ms_per_origin": 4.7602603931425485,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "2d8f4dea27fe21d409a2f727e4cfa2b86593a3eed03fdbeaf375915066cf5de9",
+  "n_params": 158403,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\ablation_no_infrastructure-20261020T203545-6cd844",
+  "train_device": "cuda",
+  "cudnn_enabled": true
+}

@@ -1,0 +1,9 @@
+{
+  "run_id": "xgboost-20261020T210039-5d09ee",
+  "model": "xgboost",
+  "train_time_s": 28.12913751602173,
+  "infer_latency_ms_per_origin": 0.10175921029395957,
+  "train_rows": 403328,
+  "train_origin_stride": 2,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\xgboost-20261020T210039-5d09ee"
+}

@@ -1,0 +1,44 @@
+{
+  "speeds": {
+    "dataset_id": "i4gi-tjb9",
+    "missing_expected_columns": [],
+    "n_columns": 13,
+    "schema_hash": "5a8e28925c522fea",
+    "valid": true
+  },
+  "volume": {
+    "dataset_id": "7ym2-wayt",
+    "missing_expected_columns": [],
+    "n_columns": 14,
+    "schema_hash": "f024c379b00adcd3",
+    "valid": true
+  },
+  "events": {
+    "dataset_id": "tvpp-9vvx",
+    "missing_expected_columns": [],
+    "n_columns": 13,
+    "schema_hash": "d92226ba933dd415",
+    "valid": true
+  },
+  "events_hist": {
+    "dataset_id": "bkfu-528j",
+    "missing_expected_columns": [],
+    "n_columns": 13,
+    "schema_hash": "d92226ba933dd415",
+    "valid": true
+  },
+  "collisions": {
+    "dataset_id": "h9gi-nx95",
+    "missing_expected_columns": [],
+    "n_columns": 29,
+    "schema_hash": "aea59654942f21b2",
+    "valid": true
+  },
+  "sr311": {
+    "dataset_id": "erm2-nwe9",
+    "missing_expected_columns": [],
+    "n_columns": 48,
+    "schema_hash": "decc4b9f758fc0d3",
+    "valid": true
+  }
+}

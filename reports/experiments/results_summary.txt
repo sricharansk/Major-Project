@@ -1,0 +1,143 @@
+
+== forecast_metrics (operational) period 2026-09-06 09:00:00+00:00 .. 2026-10-20 04:00:00+00:00
+model                    15m MAE/RMSE/sMAPE/R2         30m MAE/RMSE/sMAPE/R2         60m MAE/RMSE/sMAPE/R2        
+persistence              5.139/ 9.137/ 24.7/ 0.55    6.056/10.054/ 28.9/ 0.46    7.288/11.428/ 33.9/ 0.30   
+historical_average       7.632/10.485/ 34.3/ 0.41    7.633/10.486/ 34.3/ 0.41    7.637/10.494/ 34.4/ 0.41   
+xgboost                  4.823/ 7.619/ 23.0/ 0.69    5.579/ 8.347/ 26.4/ 0.63    6.308/ 8.982/ 29.4/ 0.57   
+lightgbm                 4.873/ 7.716/ 23.2/ 0.68    5.599/ 8.353/ 26.4/ 0.63    6.315/ 9.029/ 29.4/ 0.56   
+gru                      4.715/ 7.545/ 22.9/ 0.69    5.373/ 8.260/ 25.9/ 0.63    6.174/ 9.034/ 29.1/ 0.56   
+temporal_transformer     4.733/ 7.619/ 22.7/ 0.69    5.338/ 8.308/ 25.5/ 0.63    6.184/ 9.116/ 29.0/ 0.55   
+proposed                 4.773/ 7.627/ 22.9/ 0.69    5.331/ 8.277/ 25.5/ 0.63    6.155/ 9.054/ 28.9/ 0.56   
+n valid targets per horizon: {15: '144217', 30: '144213', 60: '144205'}
+
+== forecast_metrics (retrospective) period 2026-09-06 09:00:00+00:00 .. 2026-10-20 04:00:00+00:00
+model                    15m MAE/RMSE/sMAPE/R2         30m MAE/RMSE/sMAPE/R2         60m MAE/RMSE/sMAPE/R2        
+persistence              5.139/ 9.137/ 24.7/ 0.55    6.056/10.054/ 28.9/ 0.46    7.288/11.428/ 33.9/ 0.30   
+historical_average       7.632/10.485/ 34.3/ 0.41    7.633/10.486/ 34.3/ 0.41    7.637/10.494/ 34.4/ 0.41   
+xgboost                  4.888/ 7.638/ 23.5/ 0.69    5.647/ 8.381/ 26.8/ 0.62    6.297/ 9.060/ 29.5/ 0.56   
+lightgbm                 4.895/ 7.676/ 23.5/ 0.68    5.613/ 8.411/ 26.7/ 0.62    6.392/ 9.104/ 30.0/ 0.56   
+proposed                 4.666/ 7.623/ 22.6/ 0.69    5.355/ 8.320/ 25.7/ 0.63    6.126/ 9.132/ 28.8/ 0.55   
+n valid targets per horizon: {15: '144217', 30: '144213', 60: '144205'}
+
+== ablation_metrics (mean MAE over horizons; delta vs proposed, day-block bootstrap 95% CI)
+proposed                     MAE=  5.4194 delta=     0.0 CI=[0.0, 0.0] days=45 REFERENCE
+ablation_no_gate             MAE=  5.4867 delta=  0.0673 CI=[0.0482, 0.0864] days=44 OK
+ablation_no_weather          MAE=  5.3732 delta= -0.0462 CI=[-0.0692, -0.0205] days=44 OK
+ablation_no_infrastructure   MAE=   5.433 delta=  0.0136 CI=[0.0019, 0.0258] days=44 OK
+ablation_no_events           MAE=         delta=         CI=[, ] days= NOT_APPLICABLE (no events group in operational track)
+ablation_no_incidents        MAE=         delta=         CI=[, ] days= NOT_APPLICABLE (no incidents group in operational track)
+
+== uncertainty_metrics
+proposed   h= 15 group=all          n= 144217 nominal=0.9 empirical=0.9089705097179944 width=24.256214141845703
+proposed   h= 30 group=all          n= 144213 nominal=0.9 empirical=0.9074147268276785 width=26.945035934448242
+proposed   h= 60 group=all          n= 144205 nominal=0.9 empirical=0.903318192850456 width=29.539352416992188
+proposed   h= 15 group=free_ratio>=0.8 n=  98556 nominal=0.9 empirical=0.9311153050042615 width=24.256214141845703
+proposed   h= 15 group=moderate_0.5-0.8 n=  22396 nominal=0.9 empirical=0.92663868547955 width=24.256214141845703
+proposed   h= 15 group=congested<0.5 n=  23265 nominal=0.9 empirical=0.7981517300666237 width=24.256214141845703
+proposed   h= 30 group=free_ratio>=0.8 n=  98546 nominal=0.9 empirical=0.9301138554583647 width=26.945035934448242
+proposed   h= 30 group=moderate_0.5-0.8 n=  22398 nominal=0.9 empirical=0.9258862398428431 width=26.945035934448242
+proposed   h= 30 group=congested<0.5 n=  23269 nominal=0.9 empirical=0.7935020843181916 width=26.945035934448242
+proposed   h= 60 group=free_ratio>=0.8 n=  98522 nominal=0.9 empirical=0.9329185359615111 width=29.539352416992188
+proposed   h= 60 group=moderate_0.5-0.8 n=  22406 nominal=0.9 empirical=0.9252878693207177 width=29.539352416992188
+proposed   h= 60 group=congested<0.5 n=  23277 nominal=0.9 empirical=0.756884478240323 width=29.539352416992188
+proposed   h= 15 group=non_rush     n= 106048 nominal=0.9 empirical=0.8983762070006035 width=24.256214141845703
+proposed   h= 15 group=rush_hour_7-10_16-19 n=  38169 nominal=0.9 empirical=0.9384055123267573 width=24.256214141845703
+proposed   h= 30 group=non_rush     n= 106018 nominal=0.9 empirical=0.8979135618479881 width=26.945035934448242
+proposed   h= 30 group=rush_hour_7-10_16-19 n=  38195 nominal=0.9 empirical=0.9337871449142557 width=26.945035934448242
+proposed   h= 60 group=non_rush     n= 106014 nominal=0.9 empirical=0.8950798951081933 width=29.539352416992188
+proposed   h= 60 group=rush_hour_7-10_16-19 n=  38191 nominal=0.9 empirical=0.9261867979366867 width=29.539352416992188
+proposed   h= 15 group=weather_dry  n= 136284 nominal=0.9 empirical=0.9079715887411581 width=24.256214141845703
+proposed   h= 15 group=weather_wet_code n=   7933 nominal=0.9 empirical=0.9261313500567251 width=24.256214141845703
+proposed   h= 30 group=weather_dry  n= 136302 nominal=0.9 empirical=0.9062743026514651 width=26.945035934448242
+proposed   h= 30 group=weather_wet_code n=   7911 nominal=0.9 empirical=0.9270635823536847 width=26.945035934448242
+proposed   h= 60 group=weather_dry  n= 136379 nominal=0.9 empirical=0.9025509792563371 width=29.539352416992188
+proposed   h= 60 group=weather_wet_code n=   7826 nominal=0.9 empirical=0.9166879631995911 width=29.539352416992188
+
+== link_test_support (operational): 16 links, NOT_EVALUATED: ['4456450', '4456452', '4616340']
+
+== link_test_support (retrospective): 16 links, NOT_EVALUATED: ['4456450', '4456452', '4616340']
+
+== retrieval_eval summary
+  n_queries: 28
+  n_scored: 28
+  n_skipped_missing_docs: 0
+  skipped: []
+  k: 8
+  mean_recall@8: 0.8181818181818182
+  mrr: 0.7022727272727273
+  status_accuracy: 0.9642857142857143
+  corpus_hash: 50ff3107ae21057d
+  min_score: 0.35
+  label_review_status: ['drafted_by_project_unreviewed']
+
+== simulation_metrics (mean over completed seeds)
+event_surge        actuated         OK       seeds=5 {'arrived': 3393.0, 'completed_trips': 2877.0, 'corridor_mean_time_loss_s': 1877.907, 'inserted': 5936.2, 'loaded': 8350.0, 'max_corridor_queue_veh': 1311.2, 'mean_corridor_queue_veh': 768.599, 'mean_stops': 17.699, 'mean_time_loss_s': 1118.437, 'mean_travel_time_s': 1359.947, 'mean_waiting_time_s': 955.735, 'pending_insertions_at_end': 0.0, 'running_at_end': 2498.0, 'side_road_mean_time_loss_s': 965.112, 'side_road_trips': 2388.4, 'teleports': 1667.4, 'unfinished_trips': 4957.0, 'waiting_to_insert': 0.0, 'wall_time_s': 257.278}
+event_surge        fixed_time       OK       seeds=5 {'arrived': 2494.2, 'completed_trips': 2087.0, 'corridor_mean_time_loss_s': 836.567, 'inserted': 5615.2, 'loaded': 8350.0, 'max_corridor_queue_veh': 1429.4, 'mean_corridor_queue_veh': 922.072, 'mean_stops': 11.182, 'mean_time_loss_s': 780.494, 'mean_travel_time_s': 994.926, 'mean_waiting_time_s': 682.637, 'pending_insertions_at_end': 0.0, 'running_at_end': 3075.2, 'side_road_mean_time_loss_s': 774.638, 'side_road_trips': 1891.2, 'teleports': 1798.8, 'unfinished_trips': 5855.8, 'waiting_to_insert': 0.0, 'wall_time_s': 289.56}
+event_surge        forecast_rule    OK       seeds=5 {'arrived': 2394.8, 'completed_trips': 2013.8, 'corridor_mean_time_loss_s': 715.296, 'inserted': 5524.4, 'loaded': 8350.0, 'max_corridor_queue_veh': 1346.4, 'mean_corridor_queue_veh': 864.779, 'mean_stops': 10.965, 'mean_time_loss_s': 738.999, 'mean_travel_time_s': 961.252, 'mean_waiting_time_s': 641.45, 'pending_insertions_at_end': 0.0, 'running_at_end': 3079.2, 'side_road_mean_time_loss_s': 741.853, 'side_road_trips': 1796.8, 'teleports': 1834.2, 'unfinished_trips': 5955.2, 'waiting_to_insert': 0.0, 'wall_time_s': 314.296}
+incident_reduced_capacity actuated         OK       seeds=5 {'arrived': 2746.4, 'completed_trips': 2239.8, 'corridor_mean_time_loss_s': 1816.33, 'inserted': 5911.6, 'loaded': 8350.0, 'max_corridor_queue_veh': 1367.6, 'mean_corridor_queue_veh': 849.764, 'mean_stops': 16.173, 'mean_time_loss_s': 1070.104, 'mean_travel_time_s': 1302.983, 'mean_waiting_time_s': 920.689, 'pending_insertions_at_end': 0.0, 'running_at_end': 3109.2, 'side_road_mean_time_loss_s': 946.119, 'side_road_trips': 1923.8, 'teleports': 1971.2, 'unfinished_trips': 5603.6, 'waiting_to_insert': 0.0, 'wall_time_s': 164.62}
+incident_reduced_capacity fixed_time       OK       seeds=5 {'arrived': 1784.0, 'completed_trips': 1384.0, 'corridor_mean_time_loss_s': 1405.562, 'inserted': 5456.0, 'loaded': 8350.0, 'max_corridor_queue_veh': 1526.8, 'mean_corridor_queue_veh': 1018.797, 'mean_stops': 12.39, 'mean_time_loss_s': 898.397, 'mean_travel_time_s': 1090.928, 'mean_waiting_time_s': 799.677, 'pending_insertions_at_end': 0.0, 'running_at_end': 3623.8, 'side_road_mean_time_loss_s': 863.53, 'side_road_trips': 1295.0, 'teleports': 2267.6, 'unfinished_trips': 6566.0, 'waiting_to_insert': 0.0, 'wall_time_s': 275.566}
+incident_reduced_capacity forecast_rule    OK       seeds=5 {'arrived': 1625.2, 'completed_trips': 1236.0, 'corridor_mean_time_loss_s': 1117.279, 'inserted': 5345.8, 'loaded': 8350.0, 'max_corridor_queue_veh': 1343.4, 'mean_corridor_queue_veh': 919.965, 'mean_stops': 10.762, 'mean_time_loss_s': 806.004, 'mean_travel_time_s': 997.314, 'mean_waiting_time_s': 717.407, 'pending_insertions_at_end': 0.0, 'running_at_end': 3665.4, 'side_road_mean_time_loss_s': 786.238, 'side_road_trips': 1160.4, 'teleports': 2173.6, 'unfinished_trips': 6724.8, 'waiting_to_insert': 0.0, 'wall_time_s': 169.078}
+routine_peak       actuated         OK       seeds=5 {'arrived': 2992.6, 'completed_trips': 2562.6, 'corridor_mean_time_loss_s': 1470.784, 'inserted': 5083.8, 'loaded': 6675.0, 'max_corridor_queue_veh': 860.8, 'mean_corridor_queue_veh': 500.562, 'mean_stops': 15.933, 'mean_time_loss_s': 987.488, 'mean_travel_time_s': 1224.427, 'mean_waiting_time_s': 836.574, 'pending_insertions_at_end': 0.0, 'running_at_end': 2033.2, 'side_road_mean_time_loss_s': 847.318, 'side_road_trips': 1983.6, 'teleports': 1399.0, 'unfinished_trips': 3682.4, 'waiting_to_insert': 0.0, 'wall_time_s': 146.086}
+routine_peak       fixed_time       OK       seeds=5 {'arrived': 2751.0, 'completed_trips': 2357.6, 'corridor_mean_time_loss_s': 1647.874, 'inserted': 4863.6, 'loaded': 6675.0, 'max_corridor_queue_veh': 1025.4, 'mean_corridor_queue_veh': 607.314, 'mean_stops': 14.237, 'mean_time_loss_s': 971.59, 'mean_travel_time_s': 1199.476, 'mean_waiting_time_s': 848.209, 'pending_insertions_at_end': 0.0, 'running_at_end': 2078.2, 'side_road_mean_time_loss_s': 829.59, 'side_road_trips': 1978.0, 'teleports': 1330.4, 'unfinished_trips': 3924.0, 'waiting_to_insert': 0.0, 'wall_time_s': 135.48}
+routine_peak       forecast_rule    OK       seeds=5 {'arrived': 2751.0, 'completed_trips': 2357.6, 'corridor_mean_time_loss_s': 1647.874, 'inserted': 4863.6, 'loaded': 6675.0, 'max_corridor_queue_veh': 1025.4, 'mean_corridor_queue_veh': 607.314, 'mean_stops': 14.237, 'mean_time_loss_s': 971.59, 'mean_travel_time_s': 1199.476, 'mean_waiting_time_s': 848.209, 'pending_insertions_at_end': 0.0, 'running_at_end': 2078.2, 'side_road_mean_time_loss_s': 829.59, 'side_road_trips': 1978.0, 'teleports': 1330.4, 'unfinished_trips': 3924.0, 'waiting_to_insert': 0.0, 'wall_time_s': 177.062}
+
+== advisory_metrics
+full_system    routine_rush_hour            decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=0 viol=1/1 sim= lat=134.74s mode=REPLAY
+full_system    rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.02s mode=REPLAY
+full_system    stale_data_stress            decision=DEFER_DATA llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.01s mode=REPLAY
+full_system    wide_interval_stress         decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.03s mode=REPLAY
+full_system    insufficient_evidence        decision=DEFER_EVIDENCE llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=5.43s mode=REPLAY
+full_system    mapped_corridor_alert        decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=113.49s mode=REPLAY
+full_system    mapped_corridor_rush_hour    decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=28.5s mode=REPLAY
+llm_without_retrieval routine_rush_hour            decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=1 viol=1/1 sim= lat=19.01s mode=REPLAY
+llm_without_retrieval rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.02s mode=REPLAY
+llm_without_retrieval mapped_corridor_alert        decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=1 viol=1/1 sim= lat=19.76s mode=REPLAY
+llm_without_retrieval mapped_corridor_rush_hour    decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=1 viol=1/1 sim= lat=19.43s mode=REPLAY
+rag_without_constraints routine_rush_hour            decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=1/1 sim= lat=27.95s mode=REPLAY
+rag_without_constraints rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.02s mode=REPLAY
+rag_without_constraints mapped_corridor_alert        decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=28.16s mode=REPLAY
+rag_without_constraints mapped_corridor_rush_hour    decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=24.88s mode=REPLAY
+rag_constraints_without_simulation routine_rush_hour            decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=0 viol=1/1 sim= lat=23.9s mode=REPLAY
+rag_constraints_without_simulation rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.02s mode=REPLAY
+rag_constraints_without_simulation mapped_corridor_alert        decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=29.52s mode=REPLAY
+rag_constraints_without_simulation mapped_corridor_rush_hour    decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=25.66s mode=REPLAY
+
+== explanations artifacts\explanations\explanations_summary.json: proposed (context-gated GATv2-Transformer) run proposed-20261020T201110-0e333f
+  global mean |SHAP| by group (mph): {'traffic_target_last30min': 8.215548689636027, 'traffic_target_30_120min': 2.0367366874097543, 'calendar': 1.087744362980794, 'weather': 0.1945128857053928, 'infrastructure': 0.08916011229098714, 'traffic_graph_neighbours': 0.5177961868735458}
+  local alerts explained: 12; neighbour-removal rows: 5; temporal-window rows: 5
+
+== run_info (deep models)
+ablation_no_events           epochs=14 best_ep= 8 best_val_mae=5.399 train=3.3min dev=cuda stop=None params=158403 lat=5.8310258370544705
+ablation_no_gate             epochs=14 best_ep= 8 best_val_mae=5.432 train=2.4min dev=cuda stop=None params=158403 lat=5.388573496769879
+ablation_no_incidents        epochs=14 best_ep= 8 best_val_mae=5.386 train=3.9min dev=cuda stop=None params=158403 lat=6.104509467766802
+ablation_no_infrastructure   epochs=14 best_ep= 8 best_val_mae=5.417 train=2.8min dev=cuda stop=None params=158403 lat=4.7602603931425485
+ablation_no_weather          epochs=30 best_ep=24 best_val_mae=5.347 train=6.6min dev=cuda stop=None params=158403 lat=5.190044440463293
+gru                          epochs= 7 best_ep= 1 best_val_mae=5.661 train=16.9min dev=cuda stop=None params=41667 lat=0.4258501313052644
+gru                          epochs= 7 best_ep= 1 best_val_mae=5.661 train=17.4min dev=cuda stop=None params=41667 lat=0.4615216451583898
+gru                          epochs=17 best_ep=11 best_val_mae=5.476 train=6.0min dev=cuda stop=None params=41667 lat=0.6790706424729785
+proposed                     epochs=14 best_ep= 8 best_val_mae=5.388 train=2.3min dev=cuda stop=None params=158403 lat=5.692540705274962
+proposed                     epochs=25 best_ep=19 best_val_mae=5.344 train=7.4min dev=cuda stop=None params=166851 lat=6.642122059036423
+temporal_transformer         epochs= 9 best_ep= 3 best_val_mae=5.544 train=10.4min dev=cuda stop=None params=158403 lat=1.07293665934135
+temporal_transformer         epochs=14 best_ep= 8 best_val_mae=5.406 train=1.8min dev=cuda stop=None params=158403 lat=2.1560125318408705
+
+== stage_log (last record per stage)
+rc=0     43.8s  doctor
+rc=0      0.8s  data audit
+rc=0     14.6s  data preprocess
+rc=0      0.6s  graph build
+rc=0      0.3s  graph validate
+rc=0      5.8s  features build --track operational
+rc=0      6.8s  features build --track retrospective
+rc=0     87.9s  train baselines --track operational
+rc=0    926.3s  train proposed --track operational
+rc=0   2307.8s  train proposed --track operational --variants ablation_no_gate,ablation_no_weather,ablation_no_infrastructure,ablation_no_events,ablation_no_incidents
+rc=0     50.3s  evaluate forecasts --track operational
+rc=0     79.6s  evaluate ablations --track operational
+rc=0     26.9s  uncertainty calibrate --track operational
+rc=0    141.1s  explain alerts --track operational
+rc=0    106.8s  train baselines --track retrospective
+rc=0    702.8s  train proposed --track retrospective --variants proposed
+rc=0     39.6s  evaluate forecasts --track retrospective
+rc=0    532.3s  agents evaluate
+rc=0      6.0s  report export
+rc=0      0.3s  paper sync

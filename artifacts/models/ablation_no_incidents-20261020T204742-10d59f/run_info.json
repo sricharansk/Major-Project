@@ -1,0 +1,15 @@
+{
+  "run_id": "ablation_no_incidents-20261020T204742-10d59f",
+  "model": "ablation_no_incidents",
+  "best_epoch": 8,
+  "best_val_mae": 5.386342207590739,
+  "epochs_run": 14,
+  "train_time_s": 235.39394068717957,
+  "infer_latency_ms_per_origin": 6.104509467766802,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "95f46d95c33c8948d5100c8d897b7a4eac164adc10c49660548e989f322a555d",
+  "n_params": 158403,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\ablation_no_incidents-20261020T204742-10d59f",
+  "train_device": "cuda",
+  "cudnn_enabled": true
+}

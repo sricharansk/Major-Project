@@ -1,0 +1,20 @@
+{
+  "raw_rows": 1968303,
+  "tz_unresolved": 0,
+  "unparseable_time": 0,
+  "duplicates_removed": 0,
+  "speed_null": 0,
+  "speed_zero_or_negative": 978018,
+  "speed_above_max": 59,
+  "valid_rows": 990226,
+  "links": 26,
+  "ts_min_utc": "2026-01-01 05:03:00+00:00",
+  "ts_max_utc": "2026-10-20 03:58:11+00:00",
+  "grid_steps": 84084,
+  "grid_links": 19,
+  "grid_observed_fraction": 0.6109329267224004,
+  "grid_file": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\data\\processed\\speed_grid.npz",
+  "grid_sha256": "5d91657fb706c74b070be657a96dcd11a971d002b869e27bb3a3363f5a595360",
+  "bin_label": "right: label t aggregates [t-5min, t)",
+  "speed_unit": "mph"
+}
