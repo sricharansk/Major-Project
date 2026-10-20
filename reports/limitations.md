@@ -8,8 +8,10 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
 1. **Link selection.** NYC DOT real-time speed links are a sparse, highway-heavy set chosen by the agency, not a
    full street network. Many Manhattan links are the FDR Drive, West Side Highway and bridge approaches. Graph
    neighbours are therefore often far apart, which limits what a spatial layer can learn. Link set in this run:
-   `data/raw/speeds_links/links_since_2026-09-20.json.gz` (125 links with geometry; the full-year group-by timed
-   out server-side six times, so the set is "links active since 2026-09-20", recorded in the fetch log).
+   `data/raw/speeds_links/links_since_2026-09-20.json.gz`: 125 links citywide with geometry, of which 26 are in
+   Manhattan (the full-year group-by timed out server-side six times, so the set is "links active since
+   2026-09-20", recorded in the fetch log). After the training-coverage eligibility rule, 19 Manhattan links form the
+   modelling grid.
 2. **Observation window.** Speeds cover 2026-01-01 to 2026-10-20 only; seasonality beyond that is not learned.
 3. **Collision publication lag.** The collisions dataset's latest `crash_date` was 2026-06-11 at download time
    (about four months of lag), so collisions are retrospective-only and absent from the test period. The
@@ -21,6 +23,16 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
    used only retrospectively and matched by street name, which is approximate.
 6. **Volume.** ATR counts are sampled, not continuous; they only parameterise SUMO demand.
 7. **Daylight-saving ambiguity.** The repeated 01:00-02:00 local hour on the fall-back day is nulled, not resolved.
+7a. **Zero speeds in the feed.** About half of the raw Manhattan speed records (978,018 of 1,968,303 in the 2026
+   download) carry `speed <= 0`. The feed uses 0 where no travel time was measured in the interval, so these records
+   are treated as missing (never imputed as 0 mph); the observed fraction of the 5-minute grid is 0.611. This is
+   recorded by `data preprocess` and is the main reason the missing-indicator features and the causal fill limit
+   matter.
+7b. **Sparse graph.** With the endpoint rule alone the 26 Manhattan links yield 4 edges and 20 isolated nodes,
+   because DOT segments do not tile the highways. The corridor-continuity rule (same signed corridor, nearest
+   downstream segment within 2 km, `configs/graph.yaml`) adds explicit edges across unmonitored stretches; every
+   edge's rule and gap are in `reports/data_audit/graph_edges.csv`. The graph-vs-no-graph ablation must be read
+   with this sparsity in mind.
 
 ## Modelling and evaluation
 

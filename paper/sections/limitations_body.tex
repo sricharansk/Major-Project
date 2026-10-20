@@ -1,7 +1,9 @@
 \label{sec:limitations}
 The DOT link set is sparse and highway-heavy, so graph neighbours are often distant and the spatial layer has less
 to exploit than on a dense sensor network; the full-year link enumeration timed out server-side and the study uses
-the 125 links active since 2026-09-20. Operational weather is Open-Meteo's historical-forecast product, a re-forecast
+the 26 Manhattan links active since 2026-09-20; about half of their raw records are zero-speed
+no-measurement rows, treated as missing. Monitored segments do not tile the highways, so the graph needs an explicit
+corridor-continuity rule and remains sparse. Operational weather is Open-Meteo's historical-forecast product, a re-forecast
 proxy rather than an archived agency forecast. Collisions lag publication by months and are retrospective only.
 A single seed and a single chronological split are used; the only variance estimate is a day-block bootstrap on
 paired differences. Split conformal intervals carry a marginal guarantee under exchangeability, which traffic series
