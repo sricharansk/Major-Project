@@ -446,5 +446,13 @@ def verify_all():
     raise typer.Exit(r.returncode)
 
 
+@verify_app.command("smoke")
+def verify_smoke(docker_build: bool = False):
+    """API, database, dashboard and Docker smoke checks -> reports/verification/*_smoke.json."""
+    from smartcity.reporting import smoke
+
+    typer.echo(json.dumps(smoke.run_all(docker_build), indent=1))
+
+
 if __name__ == "__main__":
     app()

@@ -19,8 +19,13 @@ services:
     volumes: [mlflowdata:/mlflow]
     ports: ["127.0.0.1:5000:5000"]
   api:
-    build: {context: ., dockerfile: Dockerfile.api}
-    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      args: {BASE_IMAGE: "${BASE_IMAGE:-python:3.12-slim}"}
+    env_file:
+      - path: .env
+        required: false
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-smartcity}:${POSTGRES_PASSWORD}@postgres-postgis:5432/smartcity
       MLFLOW_TRACKING_URI: http://mlflow:5000
@@ -28,15 +33,25 @@ services:
     depends_on: {postgres-postgis: {condition: service_healthy}}
     ports: ["127.0.0.1:8000:8000"]
   worker:
-    build: {context: ., dockerfile: Dockerfile.worker}
-    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+      args: {BASE_IMAGE: "${BASE_IMAGE:-python:3.12-slim}"}
+    env_file:
+      - path: .env
+        required: false
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-smartcity}:${POSTGRES_PASSWORD}@postgres-postgis:5432/smartcity
     volumes: ["./artifacts:/app/artifacts", "./data:/app/data", "./reports:/app/reports", "./knowledge:/app/knowledge", "./simulation:/app/simulation"]
     depends_on: {postgres-postgis: {condition: service_healthy}}
   dashboard:
-    build: {context: ., dockerfile: Dockerfile.dashboard}
-    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+      args: {BASE_IMAGE: "${BASE_IMAGE:-python:3.12-slim}"}
+    env_file:
+      - path: .env
+        required: false
     volumes: ["./artifacts:/app/artifacts:ro", "./data:/app/data:ro", "./reports:/app/reports:ro", "./knowledge:/app/knowledge:ro", "./simulation:/app/simulation:ro"]
     depends_on: [api]
     ports: ["127.0.0.1:8501:8501"]

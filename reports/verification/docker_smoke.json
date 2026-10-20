@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-10-20T16:57:27.683236+00:00",
+  "docker_version": {
+    "cmd": "docker --version",
+    "returncode": 0,
+    "tail": "Docker version 29.9.1, build dfc520d\n"
+  },
+  "daemon": {
+    "cmd": "docker info --format {{.ServerVersion}}",
+    "returncode": 0,
+    "tail": "29.9.1\n"
+  },
+  "compose_config": {
+    "cmd": "docker compose config -q",
+    "returncode": 0,
+    "tail": ""
+  },
+  "compose_build": {
+    "cmd": "docker compose build",
+    "returncode": 1,
+    "tail": "#1 [internal] load local bake definitions\n#1 reading from stdin 1.36kB done\n#1 DONE 0.0s\n\n#2 [dashboard internal] load build definition from Dockerfile.dashboard\n#2 transferring dockerfile: 917B done\n#2 DONE 0.0s\n\n#3 [api internal] load build definition from Dockerfile.api\n#3 transferring dockerfile: 853B done\n#3 DONE 0.0s\n\n#4 [worker internal] load build definition from Dockerfile.worker\n#4 transferring dockerfile: 671B done\n#4 DONE 0.0s\n\n#5 [worker internal] load metadata for docker.io/library/python:3.12-slim\n#5 ERROR: unexpected status from HEAD request to https://registry-1.docker.io/v2/library/python/manifests/3.12-slim: 429 Too Many Requests\n------\n > [dashboard internal] load metadata for docker.io/library/python:3.12-slim:\n------\n Image smartcity-api Building \n Image smartcity-worker Building \n Image smartcity-dashboard Building \nDockerfile.api:1\n\n--------------------\n\n   1 | >>> FROM python:3.12-slim\n\n   2 |     ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1\n\n   3 |     RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm -rf /var/lib/apt/lists/*\n\n--------------------\n\ntarget api: failed to solve: python:3.12-slim: failed to resolve source metadata for docker.io/library/python:3.12-slim: unexpected status from HEAD request to https://registry-1.docker.io/v2/library/python/manifests/3.12-slim: 429 Too Many Requests\n\n"
+  },
+  "status": "FAILED",
+  "reason": "build failed (see tail)"
+}
