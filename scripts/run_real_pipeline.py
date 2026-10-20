@@ -42,6 +42,7 @@ STAGES = [
     "train baselines --track retrospective",
     "train proposed --track retrospective --variants proposed",
     "evaluate forecasts --track retrospective",
+    "rag fetch-docs",
     "rag build",
     "rag evaluate",
     "simulation prepare",

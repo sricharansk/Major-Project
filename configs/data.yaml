@@ -9,7 +9,12 @@ sources:
   weather_forecast: {endpoint: "https://historical-forecast-api.open-meteo.com/v1/forecast", role: operational_weather_proxy}
 study:
   borough: Manhattan
-  min_link_coverage: 0.6        # fraction of 5-min bins observed in the training period to keep a link
+  # Fraction of 5-min bins observed in the TRAINING period to keep a link (later partitions are never consulted).
+  # 0.6 until 2026-10-20; lowered to 0.5 after the first real-data coverage audit (reports/data_audit/
+  # link_coverage_operational.csv): six surface-street / tunnel-approach links (West St, BBT, QMT, FDR S Catherine
+  # Slip) sit at 0.52-0.59 train coverage with >= 0.65 afterwards, and they are the signal-advisory corridor and
+  # the connected part of the graph. Links with no valid targets in a split are reported NOT_EVALUATED there.
+  min_link_coverage: 0.5
 grid:
   frequency_minutes: 5
   bin_label: right               # value at t aggregates observations in [t-5min, t)

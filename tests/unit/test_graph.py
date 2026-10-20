@@ -1,9 +1,9 @@
 """Graph construction rules on synthetic link geometries (software checks, not project evidence)."""
 
-from smartcity.graph.build import build_graph, corridor_key, endpoint_labels
+from smartcity.graph.build import build_graph, corridor_key, direction_tokens, endpoint_labels
 
 CFG = {"endpoint_join_m": 150, "max_heading_change_deg": 100, "reject_if_reverse_direction": True,
-       "corridor_join_m": 2000, "corridor_max_heading_change_deg": 100, "named_join_m": 6000}
+       "corridor_join_m": 2000, "corridor_max_heading_change_deg": 100, "named_join_m": 12000}
 
 
 def _link(lid, name, lat0, n=6, step=0.002, lon=-74.0, northbound=True):
@@ -59,23 +59,50 @@ def test_endpoint_labels_parse_real_dot_name_shapes():
     assert endpoint_labels("MANHATTAN BRIDGE") == (set(), set())
 
 
+def test_direction_tokens_entry_and_exit():
+    assert direction_tokens("FDR N 25th - 63rd St") == ("N", "N")
+    assert direction_tokens("TBB W - FDR S MANHATTAN TRUSS - E116TH STREET") == ("W", "S")
+    assert direction_tokens("FDR N - TBB E 116TH STREET - MANHATTAN TRUSS") == ("N", "E")
+    assert direction_tokens("BKN Bridge Manhattan Side - FDR N Catherine Slip") == ("N", "N")
+    assert direction_tokens("12th ave @ 45th - 11 ave ganservoort st") == (None, None)
+
+
 def test_named_rule_joins_truncated_polylines_but_not_opposite_or_generic():
     # 1 "63rd - 25th" geometry stops ~1.5 km short of 2's start (as the real DOT polylines do); corridor rule alone
     # would still join them, so disable it here to isolate the named rule.  3 is the opposite carriageway starting
-    # at the same named point; 4/5 share only the generic label "Toll Plaza"; 6 is a matching name 8 km away.
+    # at the same named point; 4/5 share only the generic label "Toll Plaza"; 6 is a matching name 15 km away.
     links = [_link("1", "FDR S 63rd - 25th St", 40.760, northbound=False),      # ends at 40.750
              _link("2", "FDR S 25th St - Catherine Slip", 40.736, northbound=False),  # starts ~1.55 km south of 1's end
              _link("3", "FDR N 25th - 63rd St", 40.736),                         # starts at 40.736 heading north
              _link("4", "QMT E Manhattan Side - Toll Plaza", 40.700, lon=-73.99),
              _link("5", "BBT W Toll Plaza - Manhattan Portal", 40.700, lon=-73.95),
-             _link("6", "FDR S Catherine Slip - BKN Bridge Manhattan Side", 40.660, northbound=False)]
+             _link("6", "FDR S Catherine Slip - BKN Bridge Manhattan Side", 40.600, northbound=False)]
     res = build_graph(links, dict(CFG, corridor_join_m=0))
     g = res["graph"]
     pairs = set(zip(*g["edge_index"]))
     assert (0, 1) in pairs and g["n_edges_named_rule"] == 1
     assert (0, 2) not in pairs and (1, 2) not in pairs   # S -> N never joined by name
     assert (3, 4) not in pairs and (4, 3) not in pairs   # generic labels carry no evidence
-    assert (1, 5) not in pairs                           # beyond named_join_m
+    assert (1, 5) not in pairs                           # beyond named_join_m (start to start)
     row = next(r for r in res["audit"] if r["src"] == "1" and r["dst"] == "2")
     assert row["accepted"] and row["rationale"].startswith("named-endpoint continuity") and "'25'" in row["rationale"]
     assert g["n_edges"] == 1
+
+
+def test_named_rule_handles_ramps_and_names_without_direction_tokens():
+    # a: Triborough westbound ramp exiting onto FDR S at 116th; b: FDR N on-ramp to Triborough eastbound from 116th.
+    # They share the label "116" but a exits S and b enters N: a U-turn, never joined.
+    # c: a southbound avenue link whose name has no direction token (direction inferred from geometry) feeding
+    # d (southbound, accepted) but not e (northbound at the same named point, rejected).
+    links = [_link("a", "TBB W - FDR S MANHATTAN TRUSS - E116TH STREET", 40.800, northbound=False),
+             _link("b", "FDR N - TBB E 116TH STREET - MANHATTAN TRUSS", 40.790),
+             _link("c", "12th ave @ 45th - 11 ave ganservoort st", 40.760, northbound=False),
+             _link("d", "11th ave s ganservoort - west st @ spring st", 40.745, northbound=False),
+             _link("e", "11th ave n ganservoort - 12th ave @ 40th st", 40.745)]
+    res = build_graph(links, dict(CFG, corridor_join_m=0))
+    pairs = set(zip(*res["graph"]["edge_index"]))
+    assert (0, 1) not in pairs
+    assert (2, 3) in pairs and (2, 4) not in pairs
+    nodes = {n["link_id"]: n for n in res["graph"]["nodes"]}
+    assert nodes["c"]["direction_inferred"] and nodes["c"]["exit_dir"] == "S"
+    assert not nodes["a"]["direction_inferred"] and (nodes["a"]["entry_dir"], nodes["a"]["exit_dir"]) == ("W", "S")

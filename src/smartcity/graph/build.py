@@ -10,12 +10,15 @@ Edge  = A -> B when B plausibly receives traffic leaving A, by one of two rules:
            with a compatible heading, and B is the nearest such link.  DOT links do not tile a highway, so consecutive
            monitored segments can be separated by unmonitored stretches; this rule connects them explicitly;
         3. named-endpoint continuity: DOT link names are "<road> <dir> <from> - <to>"; when the <to> label of A and the
-           <from> label of B share a distinctive token (a street number, "Catherine Slip", "ganservoort", "GWB"), the
-           two links are not opposite directions, B's start lies ahead of A's start and within ``named_join_m`` of
-           A's end, and the headings are compatible, A -> B is accepted.  This rule exists because the published
-           ``link_points`` polylines do not reliably reach the named end of a link (on the 2026 Manhattan set, "FDR S
-           63rd - 25th St" is 1.5 km of geometry for a 3 km segment and ends 1.5 km short of "FDR S 25th St -
-           Catherine Slip"), so geometry-only rules miss joins that the names state explicitly.
+           <from> label of B share a distinctive token (a street number, "Catherine Slip", "ganservoort", "GWB"), A's
+           exit direction and B's entry direction are not opposite (N/S, E/W; "TBB W - FDR S ..." exits S), and B's
+           start point lies within ``named_join_m`` of A's start point, A -> B is accepted.  The order is given by the
+           labels (A's "to" equals B's "from"), so no heading test is applied: the published ``link_points``
+           polylines neither reach the named end of a link nor have a trustworthy end bearing (on the 2026 Manhattan
+           set "FDR S 63rd - 25th St" is 1.5 km of geometry for a 3 km segment and ends 1.5 km short of "FDR S 25th
+           St - Catherine Slip"; "FDR N Catherine Slip - 25th St" is 7.6 km of geometry for a 3.5 km segment).  A
+           name without any direction token takes its direction from the polyline's overall bearing, flagged as
+           inferred.
 Geometries that merely cross (mid-segment intersections, bridges over roads) are never connected because
 only endpoint-to-startpoint relations are considered.  Every candidate edge (accepted or rejected) is written
 with its rationale to ``reports/data_audit/graph_edges.csv``.
@@ -168,11 +171,24 @@ def endpoint_labels(name: str | None) -> tuple[set[str], set[str]]:
     return frm_tokens, _label_tokens(to)
 
 
-def _opposite(a_key, b_key) -> bool:
-    """True when both links carry direction tokens that are opposite (N/S or E/W): never joined by name."""
-    if not a_key or not b_key:
-        return False
-    return {a_key[1], b_key[1]} in ({"N", "S"}, {"E", "W"})
+def direction_tokens(name: str | None) -> tuple[str | None, str | None]:
+    """(entry, exit) direction tokens of a link name: the first and the last N/S/E/W token.
+
+    'FDR N 25th - 63rd St' -> ('N', 'N'); 'TBB W - FDR S MANHATTAN TRUSS - E116TH STREET' -> ('W', 'S') (enters as
+    Triborough westbound, exits as FDR southbound); '12th ave @ 45th - 11 ave ganservoort st' -> (None, None)."""
+    if not name:
+        return None, None
+    dirs = [_DIR[t.upper().strip(".,")] for t in re.split(r"\s+", name.strip()) if t.upper().strip(".,") in _DIR]
+    return (dirs[0], dirs[-1]) if dirs else (None, None)
+
+
+def _quadrant(bearing: float) -> str:
+    return "NESW"[int(((bearing + 45) % 360) // 90)]
+
+
+def _opposite(a_dir: str | None, b_dir: str | None) -> bool:
+    """True when the two direction tokens are opposite (N/S or E/W): never joined by name."""
+    return bool(a_dir and b_dir) and {a_dir, b_dir} in ({"N", "S"}, {"E", "W"})
 
 
 def _end_bearing(pts, start: bool) -> float:
@@ -204,6 +220,12 @@ def build_graph(links: list[dict], cfg: dict) -> dict:
     for n in nodes:
         n["corridor"] = corridor_key(n["link_name"])
         n["from_tokens"], n["to_tokens"] = endpoint_labels(n["link_name"])
+        entry, exit_ = direction_tokens(n["link_name"])
+        n["direction_inferred"] = entry is None
+        if entry is None:  # no token in the name: take the travel direction from the polyline's overall bearing
+            entry = exit_ = _quadrant(bearing_deg(*n["start"], *n["end"])) if haversine_m(*n["start"], *n["end"]) > 50 \
+                else _quadrant(n["start_bearing"])
+        n["entry_dir"], n["exit_dir"] = entry, exit_
     corridor_join = float(cfg.get("corridor_join_m", 0) or 0)
     named_join = float(cfg.get("named_join_m", 0) or 0)
     corridor_turn = float(cfg.get("corridor_max_heading_change_deg", cfg["max_heading_change_deg"]))
@@ -236,15 +258,9 @@ def build_graph(links: list[dict], cfg: dict) -> dict:
                 if i == j or not b["from_tokens"]:
                     continue
                 shared = a["to_tokens"] & b["from_tokens"]
-                if not shared or _opposite(a["corridor"], b["corridor"]):
+                if not shared or _opposite(a["exit_dir"], b["entry_dir"]):
                     continue
-                d = haversine_m(*a["end"], *b["start"])
-                if d > named_join:
-                    continue
-                d0 = haversine_m(*a["start"], *b["start"])
-                ahead = angle_diff(bearing_deg(*a["start"], *b["start"]), a["start_bearing"]) if d0 > 1 else 0.0
-                turn = angle_diff(a["end_bearing"], b["start_bearing"])
-                if ahead <= 90 and turn <= corridor_turn:
+                if haversine_m(*a["start"], *b["start"]) <= named_join:
                     named[(i, j)] = ",".join(sorted(shared))
     edges, audit = [], []
     for i, a in enumerate(nodes):
@@ -272,13 +288,17 @@ def build_graph(links: list[dict], cfg: dict) -> dict:
                              f"nearest downstream segment {d:.0f}m ahead (endpoint rule failed: {'; '.join(reasons)})")
             elif not accepted and (i, j) in named:
                 accepted = True
-                rationale = (f"named-endpoint continuity: shared endpoint token(s) {named[(i, j)]!r}, start of dst "
-                             f"{d:.0f}m from end of src (endpoint rule failed: {'; '.join(reasons)})")
+                rationale = (f"named-endpoint continuity: shared endpoint token(s) {named[(i, j)]!r}, directions "
+                             f"{a['exit_dir']}->{b['entry_dir']}, start-to-start "
+                             f"{haversine_m(*a['start'], *b['start']):.0f}m (endpoint rule failed: {'; '.join(reasons)})")
             audit.append({"src": a["link_id"], "dst": b["link_id"], "src_name": a["link_name"],
                           "dst_name": b["link_name"], "endpoint_gap_m": round(d, 1), "heading_change_deg": round(turn, 1),
                           "src_corridor": " ".join(a["corridor"]) if a["corridor"] else "",
                           "dst_corridor": " ".join(b["corridor"]) if b["corridor"] else "",
                           "src_to_label": " ".join(sorted(a["to_tokens"])), "dst_from_label": " ".join(sorted(b["from_tokens"])),
+                          "src_exit_dir": a["exit_dir"] + ("?" if a["direction_inferred"] else ""),
+                          "dst_entry_dir": b["entry_dir"] + ("?" if b["direction_inferred"] else ""),
+                          "start_to_start_m": round(haversine_m(*a["start"], *b["start"]), 1),
                           "accepted": accepted, "rationale": rationale})
             if accepted:
                 edges.append((i, j))
@@ -329,12 +349,14 @@ def run(link_ids_keep: list[str] | None = None) -> dict:
     g = res["graph"]
     src, dst = g["edge_index"]
     with open(audit_path.with_name(f"{borough.lower()}_links.csv"), "w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=["link_id", "link_name", "owner", "length_m", "corridor", "from_label",
-                                           "to_label", "out_degree", "in_degree"])
+        w = csv.DictWriter(fh, fieldnames=["link_id", "link_name", "owner", "length_m", "corridor", "entry_dir",
+                                           "exit_dir", "direction_inferred", "from_label", "to_label", "out_degree",
+                                           "in_degree"])
         w.writeheader()
         for k, n in enumerate(g["nodes"]):
             w.writerow({"link_id": n["link_id"], "link_name": n["link_name"], "owner": n["owner"],
                         "length_m": round(n["length_m"], 1), "corridor": n["corridor"] or "",
+                        "entry_dir": n["entry_dir"], "exit_dir": n["exit_dir"], "direction_inferred": n["direction_inferred"],
                         "from_label": " ".join(n["from_tokens"]), "to_label": " ".join(n["to_tokens"]),
                         "out_degree": src.count(k), "in_degree": dst.count(k)})
     return res["graph"]
