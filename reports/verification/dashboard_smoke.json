@@ -1,11 +1,12 @@
 {
-  "checked_at": "2026-10-20T16:57:12.365264+00:00",
-  "command": "-m streamlit run /home/user/Major-Project/src/smartcity/dashboard/app.py --server.headless true --server.port 41439 --browser.gatherUsageStats false",
-  "port": 41439,
+  "checked_at": "2026-10-20T18:07:11.844081+00:00",
+  "command": "-m streamlit run C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\src\\smartcity\\dashboard\\app.py --server.headless true --server.port 51573 --browser.gatherUsageStats false",
+  "port": 51573,
   "health_status": 200,
   "health_body": "ok",
-  "startup_s": 2.0,
+  "startup_s": 4.4,
   "index_status": 200,
-  "log_tail": "2026-10-20 16:57:13.431 Could not bind IPv6 wildcard address :::41439; falling back to 0.0.0.0:41439.\n2026-10-20 16:57:13.500 Uvicorn server started on 0.0.0.0:41439\n\n  You can now view your Streamlit app in your browser.\n\n  Local URL: http://localhost:41439\n  Network URL: http://192.0.2.2:41439\n  External URL: http://35.202.184.100:41439\n\n  Stopping...\n",
-  "status": "OK"
+  "log_tail": "2026-10-20 23:37:15.238 Uvicorn server started on :::51573\n\n  You can now view your Streamlit app in your browser.\n\n  Local URL: http://localhost:51573\n  Network URL: http://<redacted>:51573\n  External URL: http://<redacted>:51573\n\n",
+  "status": "OK",
+  "redaction_note": "Workstation LAN and public IP addresses printed by Streamlit were replaced with <redacted> before commit."
 }

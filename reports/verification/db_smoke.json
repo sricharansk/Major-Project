@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-20T16:57:11.537974+00:00",
+  "checked_at": "2026-10-20T18:07:11.681265+00:00",
   "ready": {
     "ok": true,
     "postgis": "3.4 USE_GEOS=1 USE_PROJ=1 USE_STATS=1",
