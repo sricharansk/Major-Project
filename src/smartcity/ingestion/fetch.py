@@ -70,7 +70,8 @@ def utcnow() -> str:
     return dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def http_get(url: str, params: dict | None = None, *, timeout: int = 180, retries: int = 6) -> tuple[int, bytes, str]:
+def http_get(url: str, params: dict | None = None, *, timeout: int = 180, retries: int = 6,
+             accept: str = "application/json") -> tuple[int, bytes, str]:
     """GET with exponential backoff.  Returns (status, body, final_url).
 
     Dropped connections mid-body surface as http.client.IncompleteRead (an HTTPException, not a URLError), so the
@@ -81,7 +82,7 @@ def http_get(url: str, params: dict | None = None, *, timeout: int = 180, retrie
     """
     if params:
         url = url + ("&" if "?" in url else "?") + urllib.parse.urlencode(params)
-    headers = {"User-Agent": USER_AGENT, "Accept": "application/json"}
+    headers = {"User-Agent": USER_AGENT, "Accept": accept}
     token = os.environ.get("SOCRATA_APP_TOKEN")
     if token and SOCRATA in url:
         headers["X-App-Token"] = token
@@ -399,7 +400,8 @@ def cmd_hf_model(args) -> None:
 
 def cmd_url(args) -> None:
     """Fetch an approved knowledge document (official guidance) verbatim with provenance."""
-    status, body, url = http_get(args.url, timeout=600)
+    # FHWA/MUTCD servers answer HTTP 406 to "Accept: application/json" for .htm/.pdf, so accept anything here.
+    status, body, url = http_get(args.url, timeout=600, accept="text/html,application/pdf,*/*;q=0.8")
     out_dir = RAW / "knowledge"
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / args.name
