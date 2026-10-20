@@ -9,6 +9,7 @@ training:
   loss: masked_huber
   huber_delta: 1.0
   max_train_windows_per_epoch: null   # null = all windows
+  max_minutes_per_model: null         # wall-clock budget per deep model (null = none); stop reason is recorded per run
   device: auto          # auto = CUDA when available, else CPU (resolved device recorded in each run config)
 trees:
   n_estimators: 400

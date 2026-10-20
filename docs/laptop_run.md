@@ -44,6 +44,18 @@ When the graph rules or the link-eligibility threshold change (`src/smartcity/gr
 `python scripts\run_real_pipeline.py --from "graph build"`: features embed the graph hash and every deep model consumes
 the edge index, so earlier training runs on the old graph are superseded (they stay in MLflow with their own hash).
 
+## 3c. Finishing under a wall-clock deadline
+
+Two recorded, fair-across-models budget controls exist; both are written into every run's config and `run_info.json`
+and must be stated in the results and limitations:
+
+- `training.max_train_windows_per_epoch` (configs/training.yaml): windows sampled per epoch (fresh sample each epoch,
+  seeded) instead of all ~50k; `null` = all.
+- `--max-minutes M` on `train proposed` (or `python scripts\run_real_pipeline.py --max-minutes M`): wall-clock cap per
+  deep model; the best epoch so far is kept and `stopped_reason` records `time_budget_Mmin`.
+- `--parallel N` on `train proposed --variants a,b,c` (runner: `--parallel-ablations N`): trains N variants at once in
+  separate processes on the same GPU; the per-track registry is lock-protected.
+
 ## 4. Hand the results back
 
 Commit to a new branch cut from the tip of `claude/implement-traffic-system-5rzj9i`:

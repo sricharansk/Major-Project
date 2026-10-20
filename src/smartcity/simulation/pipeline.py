@@ -35,6 +35,9 @@ def prepare() -> dict:
     net = sumolib.net.readNet(str(static), withPrograms=True)
     pat = re.compile(sc["corridor_name_regex"], re.I)
     corridor = [e for e in net.getEdges() if e.getName() and pat.search(e.getName()) and e.allows("passenger")]
+    if not corridor:  # a controller comparison over zero corridor edges would compare nothing; fail loudly
+        raise RuntimeError(f"empty corridor: no passenger edge name matches /{sc['corridor_name_regex']}/ in {static}; "
+                           "check the OSM extract and that netconvert kept street names (--output.street-names)")
     # split directions by edge heading
     def heading(e):
         (x1, y1), (x2, y2) = e.getShape()[0], e.getShape()[-1]

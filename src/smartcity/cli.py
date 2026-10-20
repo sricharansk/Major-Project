@@ -31,10 +31,28 @@ def registry_path(track: str) -> Path:
 
 
 def register(results: list[dict], track: str):
-    reg = read_json(registry_path(track)) if registry_path(track).exists() else {}
-    for r in results:
-        reg[r["info"]["model"]] = r["info"]
-    write_json(registry_path(track), reg)
+    """Add runs to the per-track registry under a lock file (variants may be trained in parallel processes)."""
+    import os
+    import time as _time
+
+    lock = registry_path(track).with_suffix(".lock")
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    for _ in range(600):
+        try:
+            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            break
+        except FileExistsError:
+            _time.sleep(0.1)
+    else:
+        raise RuntimeError(f"registry lock held too long: {lock}")
+    try:
+        reg = read_json(registry_path(track)) if registry_path(track).exists() else {}
+        for r in results:
+            reg[r["info"]["model"]] = r["info"]
+        write_json(registry_path(track), reg)
+    finally:
+        os.close(fd)
+        os.unlink(lock)
 
 
 def load_results(track: str, models: list[str] | None = None) -> list[dict]:
@@ -169,14 +187,41 @@ def train_baselines(track: str = "operational"):
 
 @train_app.command("proposed")
 def train_proposed(track: str = "operational", variants: str = "gru,temporal_transformer,proposed",
-                   max_epochs: int = 0, windows_per_epoch: int = 0):
+                   max_epochs: int = 0, windows_per_epoch: int = 0, max_minutes: float = 0, parallel: int = 1):
+    """Train deep variants. --max-minutes caps each model's wall clock (recorded as the stop reason); --parallel N
+    trains N variants at once in separate processes (same GPU; useful when the data loader is the bottleneck)."""
     from smartcity.training import runner
     from smartcity.training.data import load_data
 
+    names = [v for v in variants.split(",") if v]
+    if parallel > 1 and len(names) > 1:
+        import subprocess
+        import sys
+
+        procs, pending, failed = [], list(names), []
+        base = [sys.executable, "-m", "smartcity.cli", "train", "proposed", "--track", track,
+                "--max-epochs", str(max_epochs), "--windows-per-epoch", str(windows_per_epoch),
+                "--max-minutes", str(max_minutes)]
+        while pending or procs:
+            while pending and len(procs) < parallel:
+                v = pending.pop(0)
+                procs.append((v, subprocess.Popen(base + ["--variants", v])))
+            for v, p in list(procs):
+                if p.poll() is not None:
+                    procs.remove((v, p))
+                    (failed if p.returncode else []).append(v)
+                    typer.echo(f"variant {v} exited {p.returncode}")
+            import time as _time
+            _time.sleep(5)
+        if failed:
+            raise typer.Exit(code=1)
+        typer.echo("trained (parallel): " + ", ".join(names))
+        return
     data = load_data(track)
     res = []
-    for v in variants.split(","):
-        res.append(runner.train_deep(v, data, max_epochs=max_epochs or None, windows_per_epoch=windows_per_epoch or None))
+    for v in names:
+        res.append(runner.train_deep(v, data, max_epochs=max_epochs or None, windows_per_epoch=windows_per_epoch or None,
+                                     max_minutes=max_minutes or None))
         register([res[-1]], track)
     typer.echo("trained: " + ", ".join(r["info"]["run_id"] for r in res))
 

@@ -85,11 +85,17 @@ class ContextGatedGraphTransformer(nn.Module):
         self._ei_cache: dict = {}
 
     def _batched_edges(self, edge_index: torch.Tensor, copies: int, n: int) -> torch.Tensor:
-        key = (copies, n, edge_index.data_ptr(), edge_index.shape[1])
-        if key not in self._ei_cache:
-            offs = (torch.arange(copies, device=edge_index.device) * n).view(1, -1, 1)
-            self._ei_cache = {key: (edge_index.unsqueeze(1) + offs).reshape(2, -1)}
-        return self._ei_cache[key]
+        # The cache is validated against the edge tensor's *content*, not only its data pointer: a temporary
+        # tensor (e.g. the reduced edge set of a node-drop sensitivity run) can be freed and the next one
+        # allocated at the same address with the same length, which previously returned a stale batch.
+        key = (copies, n, edge_index.shape[1])
+        hit = self._ei_cache.get(key)
+        if hit is not None and hit[0].device == edge_index.device and torch.equal(hit[0], edge_index):
+            return hit[1]
+        offs = (torch.arange(copies, device=edge_index.device) * n).view(1, -1, 1)
+        big = (edge_index.unsqueeze(1) + offs).reshape(2, -1)
+        self._ei_cache = {key: (edge_index.clone(), big)}
+        return big
 
     def forward(self, x, group_mask, edge_index, node_drop: torch.Tensor | None = None):
         B, L, N, _ = x.shape
