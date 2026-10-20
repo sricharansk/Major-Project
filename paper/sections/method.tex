@@ -1,0 +1,58 @@
+\section{Proposed Methodology}
+\subsection{Context-gated GATv2--Temporal Transformer}
+For each node and time step, every feature group $g$ is projected to a common width $d=64$,
+$h_{t,v,g}=\mathrm{ReLU}(W_g x_{t,v,g})$. A scoring network gives $s_{t,v,g}=w^\top\tanh(U h_{t,v,g})$; scores of
+unavailable groups ($m_{t,v,g}=0$) are masked to $-\infty$ and a softmax over the remaining groups yields weights
+$\alpha_{t,v,g}$. The fused representation is $z_{t,v}=\sum_g\alpha_{t,v,g}h_{t,v,g}$; if no group is available a
+learned ``unavailable'' vector is used and the event is logged. Two GATv2 layers~\cite{brody2022gatv2} (4 heads,
+residual connections, layer normalisation) propagate $z$ over the fixed directed graph at every time step
+(implemented with PyTorch Geometric~\cite{fey2019pyg}). Each node's sequence then receives a learned positional
+embedding and passes through a 2-layer, 4-head Transformer encoder (feed-forward width 128, dropout 0.1); a linear head on
+the last state outputs the three horizons. Targets are standardised per link with training-period statistics and the
+masked Huber loss is averaged over observed targets only; batches without any observed target are skipped and
+counted. Optimisation: AdamW (lr $10^{-3}$, weight decay $10^{-4}$), batch size 8, gradient clipping at 1.0, early
+stopping on validation MAE with patience 5 and at most 30 epochs, seed 42. The temporal snapshots are held in a
+PyTorch Geometric Temporal~\cite{rozemberczki2021pgt} \texttt{StaticGraphTemporalSignal}, from which training windows
+are drawn lazily. The gate weights are not interpreted as causal importance.
+
+\subsection{Baselines and ablations}
+Persistence (last observation), a training-period historical average per link, day type and 5-minute slot, XGBoost and
+LightGBM (one model per horizon on 12 speed lags and the same causal features), a GRU, and a temporal-only Transformer
+(the proposed model without message passing). Ablations remove the gate (concatenation instead), or one feature group
+at a time.
+
+\subsection{Uncertainty and reliability gate}
+With the selected model frozen, per-horizon absolute residuals on the calibration partition give the split-conformal
+quantile $q_h$ as the $\lceil (n+1)(1-\alpha)\rceil$-th smallest residual ($\alpha=0.1$); a per-link variant is also
+computed when at least 50 calibration residuals exist. The advisory gate defers when data are older than 20 minutes,
+more than one third of recent traffic inputs are missing, the interval is wider than a threshold chosen on calibration
+data (80th percentile of per-link widths), or calibration support is below 200 samples.
+
+\subsection{Explanations}
+For an alert (link $v$, horizon $h$, origin $t$) the explained scalar is the predicted speed in mph. Players are the
+target's recent traffic (last 30 min), older traffic (30--120 min), the traffic of its graph neighbours and each context
+group; an absent player takes values from 16 training-period background windows. All $2^P$ coalitions are evaluated
+(exact KernelSHAP~\cite{lundberg2017shap}). We additionally measure neighbour-edge removal and temporal-window
+sensitivities. Tree baselines are explained with TreeSHAP and labelled as baseline explanations.
+
+\subsection{Retrieval, LLM and agentic workflow}
+Approved documents (U.S. federal signal-timing guidance, SUMO documentation, and a clearly labelled project-defined
+experimental policy) are hashed, allow-listed, chunked to at most 200 word-pieces (below the 256-token limit of
+all-MiniLM-L6-v2) and indexed with a FAISS inner-product index over normalised embeddings. A query whose best passages
+score below 0.35 returns INSUFFICIENT\_EVIDENCE. The LLM receives forecasts, intervals, quality flags, computed
+attributions, retrieved passages (marked as untrusted text) and the allowed action catalogue, and must return JSON that
+satisfies a Pydantic schema enforced through Ollama's structured-output option. A LangGraph state machine runs
+quality $\rightarrow$ forecast $\rightarrow$ uncertainty $\rightarrow$ explanation $\rightarrow$ retrieval
+$\rightarrow$ recommendation $\rightarrow$ safety $\rightarrow$ simulation $\rightarrow$ decision $\rightarrow$ human
+review, with deterministic routing to DEFER\_DATA, DEFER\_UNCERTAINTY, DEFER\_EVIDENCE, REJECT\_SCHEMA,
+REJECT\_CONSTRAINT, REJECT\_SIMULATION, PENDING\_HUMAN\_REVIEW or ERROR\_TOOL. Only the recommendation node calls the
+LLM.
+
+\subsection{Safety constraints and simulation gate}
+Allowed actions are a bounded green extension (0--10 s) of an existing green phase, selection of a pre-validated
+program, or monitoring only. Thirteen deterministic checks (mapping validity, signal and phase existence, action type,
+bounds, minimum/maximum green, clearance preservation, pedestrian and side-road protection availability, data freshness,
+forecast reliability, evidence support) plus a text policy filter must pass. Candidates are then applied through a
+protective TraCI wrapper that refuses non-green phases and out-of-bound durations, and compared with the fixed-time
+baseline on matched seeds; a candidate passes only if corridor delay improves by at least 1\%, side-road delay rises by
+at most 10\% and no vehicle teleports. Pedestrian performance is not modelled and is reported as NOT\_EVALUATED.
