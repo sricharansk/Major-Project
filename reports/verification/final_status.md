@@ -5,7 +5,7 @@ Last updated: 2026-10-20 (real-data run not yet complete; this file is rewritten
 | Component | Status | Evidence | Notes |
 |---|---|---|---|
 | Data audit and provenance | VERIFIED | `reports/data_audit/source_inventory.csv`, `data/raw/*/fetch_log.jsonl` (workstation) | server-side counts and date ranges verified before download |
-| Raw downloads | PARTIAL | fetch logs | weather, collisions, links done; speeds re-running after a dropped connection; others pending |
+| Raw downloads | PARTIAL | fetch logs (workstation) | speeds Jul-Oct, links, weather, collisions, events, volume, 311, OSM, embedding model done; knowledge docs re-downloading after a 406 fix; Jan-Jul speeds backfill running |
 | Preprocessing, splits, leakage tests | IMPLEMENTED_UNTESTED on real data | `tests/leakage` pass on fixtures | real-data run pending |
 | Graph + PyG Temporal signal | IMPLEMENTED_UNTESTED on real data | `tests/integration/test_temporal_signal.py` | |
 | Baselines and proposed model | IMPLEMENTED_UNTESTED on real data | e2e fixture run | |
