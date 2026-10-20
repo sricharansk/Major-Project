@@ -46,4 +46,4 @@ Statuses: NOT_STARTED / IMPLEMENTED_UNTESTED / VERIFIED / PARTIAL / BLOCKED / FA
 - Docker Compose build: BLOCKED. Docker Hub returned HTTP 429 for `python:3.12-slim` (mirror.gcr.io works and the
   base image is now a build arg), but the build container cannot reach deb.debian.org or download.pytorch.org
   under the environment's network policy, and ghcr.io/mlflow is denied (403). To be built on the workstation.
-- Bibliography DOI checks: NOT_STARTED (`paper/REFERENCES_STATUS.md`).
+- Bibliography: 23 entries checked against publisher records (`paper/REFERENCES_STATUS.md`); johnson2019faiss DOI string still to confirm on IEEE Xplore (search result did not display it).

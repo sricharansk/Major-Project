@@ -69,5 +69,6 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     the workstation's Ollama; the recorded-request batch executor (`scripts/ollama_batch.py`) exists for that reason.
 21. **Docker build** is verified only where `reports/verification/docker_smoke.json` says so; otherwise it is
     BLOCKED with the reason recorded.
-22. **Bibliography.** `paper/REFERENCES_STATUS.md` lists which references have been checked against the publisher;
-    unchecked entries are marked NOT_YET_CHECKED.
+22. **Bibliography.** `paper/REFERENCES_STATUS.md` records the publisher-record check of every entry (2026-10-20);
+    the FHWA 2008 Signal Timing Manual and the 2009 MUTCD are superseded editions, cited because they are the
+    public-domain texts the corpus holds.
