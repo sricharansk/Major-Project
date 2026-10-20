@@ -1,0 +1,48 @@
+# CPU-only path. Optional GPU / Ollama: `docker compose --profile llm up` (see README).
+name: smartcity
+services:
+  postgres-postgis:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-smartcity}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: smartcity
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-smartcity} -d smartcity"]
+      interval: 10s
+      retries: 10
+    # not published to the host: only reachable on the compose network
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.1.0
+    command: mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:////mlflow/mlflow.db --artifacts-destination /mlflow/artifacts
+    volumes: [mlflowdata:/mlflow]
+    ports: ["127.0.0.1:5000:5000"]
+  api:
+    build: {context: ., dockerfile: Dockerfile.api}
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-smartcity}:${POSTGRES_PASSWORD}@postgres-postgis:5432/smartcity
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    volumes: ["./artifacts:/app/artifacts", "./data:/app/data", "./reports:/app/reports", "./knowledge:/app/knowledge", "./simulation:/app/simulation"]
+    depends_on: {postgres-postgis: {condition: service_healthy}}
+    ports: ["127.0.0.1:8000:8000"]
+  worker:
+    build: {context: ., dockerfile: Dockerfile.worker}
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-smartcity}:${POSTGRES_PASSWORD}@postgres-postgis:5432/smartcity
+    volumes: ["./artifacts:/app/artifacts", "./data:/app/data", "./reports:/app/reports", "./knowledge:/app/knowledge", "./simulation:/app/simulation"]
+    depends_on: {postgres-postgis: {condition: service_healthy}}
+  dashboard:
+    build: {context: ., dockerfile: Dockerfile.dashboard}
+    env_file: .env
+    volumes: ["./artifacts:/app/artifacts:ro", "./data:/app/data:ro", "./reports:/app/reports:ro", "./knowledge:/app/knowledge:ro", "./simulation:/app/simulation:ro"]
+    depends_on: [api]
+    ports: ["127.0.0.1:8501:8501"]
+  ollama:
+    image: ollama/ollama:0.12.6
+    profiles: ["llm"]
+    volumes: [ollama:/root/.ollama]
+    ports: ["127.0.0.1:11434:11434"]
+volumes: {pgdata: {}, mlflowdata: {}, ollama: {}}
