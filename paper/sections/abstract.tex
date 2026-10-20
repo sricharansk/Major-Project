@@ -1,0 +1,18 @@
+\begin{abstract}
+Urban traffic management needs forecasts that are accurate at several horizons, honest about their uncertainty, and
+explainable enough to justify an intervention. This paper presents an end-to-end research prototype for Manhattan
+that couples a context-gated spatiotemporal graph transformer for 15/30/60-minute link-speed forecasting with a
+constrained, retrieval-augmented agentic workflow that produces simulation-only signal-timing advisories. The
+forecaster consumes a directed road-link graph built from NYC DOT real-time speed links as a PyTorch Geometric
+Temporal signal, fuses weather, 311 and calendar context through an availability-aware gate, and is calibrated
+with split conformal prediction. Explanations are computed on the trained model with grouped KernelSHAP. Advisories
+are drafted by a locally hosted large language model that must cite passages retrieved from an allowlisted corpus
+of federal signal-timing guidance and a project-defined policy, are checked by deterministic safety constraints,
+and are evaluated against a baseline controller in SUMO with matched seeds before being queued for human review.
+All data are public and all reported figures are generated from stored artifacts; results, including negative and
+blocked outcomes, are reported in Section~\ref{sec:results} exactly as produced by the pipeline.
+\end{abstract}
+\begin{IEEEkeywords}
+traffic forecasting, graph neural networks, transformers, conformal prediction, explainable AI, retrieval-augmented
+generation, agentic systems, traffic simulation, smart cities
+\end{IEEEkeywords}

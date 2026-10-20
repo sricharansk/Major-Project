@@ -16,3 +16,9 @@ artifacts/**/*.pt
 artifacts/**/*.npz
 knowledge/indexes/*.faiss
 transfer/
+paper/*.aux
+paper/*.log
+paper/*.bbl
+paper/*.blg
+paper/*.out
+paper/*.synctex.gz

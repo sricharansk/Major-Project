@@ -1,0 +1,10 @@
+\section{Discussion}
+\label{sec:discussion}
+The system is designed so that each component's contribution can be isolated: baselines and the proposed model share
+one test mask; ablations remove one context group or the gate at a time; the advisory evaluation runs the same cases
+under four policies that switch off retrieval, the constraint layer or the simulation gate. The discussion of what
+these comparisons show is written from the generated tables once the real-data run has completed and is therefore
+absent from this version rather than anticipated. What can already be stated is architectural: the language model
+never holds safety authority (constraints and the simulation gate are deterministic code), retrieved text is treated
+as untrusted evidence that must be cited by chunk id, and the most permissive status the workflow can reach is
+approval for simulation, never deployment.
