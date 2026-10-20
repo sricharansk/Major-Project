@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm 
 RUN useradd --create-home --uid 10001 app
 WORKDIR /app
 COPY requirements.lock /app/requirements.lock
-RUN grep -v -E "^(nvidia-|triton==|cuda-|torch-scatter|torch-sparse|-e )" requirements.lock > /tmp/req.txt && pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1 && pip install -r /tmp/req.txt
+RUN grep -v -E "^(nvidia-|triton==|cuda-|torch-scatter|torch-sparse|torch-geometric-temporal|xgboost==|-e )" requirements.lock > /tmp/req.txt && pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1 && pip install -r /tmp/req.txt && pip install xgboost-cpu==3.4.1 && pip install --no-deps torch-geometric-temporal==0.56.2
 COPY --chown=app:app . /app
 RUN pip install --no-deps -e .
 USER app

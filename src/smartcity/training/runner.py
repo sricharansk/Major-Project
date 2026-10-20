@@ -93,10 +93,17 @@ def _group_drop_mask(data: ForecastData, variant: str) -> np.ndarray | None:
     return keep
 
 
+def resolve_device(name: str | None) -> torch.device:
+    """`auto` -> CUDA when available, else CPU.  Explicit `cpu` / `cuda` are honoured as given."""
+    if not name or name == "auto":
+        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    return torch.device(name)
+
+
 def _apply_drop(x, m, data, keep):
     if keep is None:
         return x, m
-    m = m & torch.from_numpy(keep)
+    m = m & torch.from_numpy(keep).to(m.device)
     x = x.clone()
     for gi, g in enumerate(data.meta["groups"]):
         if not keep[gi]:
@@ -109,14 +116,17 @@ def _apply_drop(x, m, data, keep):
 def predict_deep(model, data: ForecastData, origins: np.ndarray, keep=None, batch: int = 64,
                  node_drop: torch.Tensor | None = None, input_transform=None) -> np.ndarray:
     model.eval()
-    ei = torch.from_numpy(data.edge_index)
+    dev = next(model.parameters()).device
+    ei = torch.from_numpy(data.edge_index).to(dev)
+    if node_drop is not None:
+        node_drop = node_drop.to(dev)
     outs = []
     for i in range(0, len(origins), batch):
         x, m, _, _ = data.window(origins[i:i + batch])
         x, m = _apply_drop(x, m, data, keep)
         if input_transform is not None:
             x, m = input_transform(x, m)
-        outs.append(model(x, m, ei, node_drop=node_drop).numpy())
+        outs.append(model(x.to(dev), m.to(dev), ei, node_drop=node_drop).cpu().numpy())
     return data.to_mph(np.concatenate(outs)) if outs else np.zeros((0, len(data.horizon_steps), data.X.shape[1]))
 
 
@@ -130,11 +140,18 @@ def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_
     d = _run_dir(run_id)
     cfg = {"variant": variant, "spec": DEEP_VARIANTS[variant], "model": mcfg, "training": tcfg,
            "max_epochs_override": max_epochs, "windows_per_epoch": windows_per_epoch}
+    dev = resolve_device(tcfg.get("device"))
+    cfg["resolved_device"] = str(dev)
+    # Training the GRU with cuDNN on Windows/CUDA 12.8 (torch 2.11) crashed the process at exit (0xC0000409) after
+    # a successful run; the native (non-cuDNN) CUDA RNN kernels do not.  Set per call so other variants keep cuDNN.
+    gru_on_cuda = DEEP_VARIANTS[variant]["kind"] == "gru" and dev.type == "cuda"
+    torch.backends.cudnn.enabled = not gru_on_cuda
+    cfg["cudnn_enabled"] = torch.backends.cudnn.enabled
     _common_artifacts(d, data, cfg)
-    model = make_model(variant, data, mcfg)
+    model = make_model(variant, data, mcfg).to(dev)
     keep = _group_drop_mask(data, variant)
     opt = torch.optim.AdamW(model.parameters(), lr=tcfg["learning_rate"], weight_decay=tcfg["weight_decay"])
-    ei = torch.from_numpy(data.edge_index)
+    ei = torch.from_numpy(data.edge_index).to(dev)
     tr, va = data.origins["train"], data.origins["val"]
     va_sub = va[:: max(1, len(va) // 1500)]  # fixed validation subset (same every epoch)
     rng = np.random.default_rng(tcfg["seed"])
@@ -149,8 +166,8 @@ def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_
         for i in range(0, len(sel), tcfg["batch_size"]):
             x, m, yz, mask = data.window(sel[i:i + tcfg["batch_size"]])
             x, m = _apply_drop(x, m, data, keep)
-            pred = model(x, m, ei)
-            loss = masked_huber(pred, yz, mask, tcfg["huber_delta"])
+            pred = model(x.to(dev), m.to(dev), ei)
+            loss = masked_huber(pred, yz.to(dev), mask.to(dev), tcfg["huber_delta"])
             if loss is None:
                 skipped += 1  # no observed target in batch: skipped and counted
                 continue
@@ -178,7 +195,9 @@ def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_
         w = csv.DictWriter(fh, fieldnames=list(history[0].keys()))
         w.writeheader()
         w.writerows(history)
-    model.load_state_dict(torch.load(d / "model.pt"))
+    # Final predictions, latency and every downstream consumer (calibration, explanations, agents) run on CPU.
+    model = model.cpu()
+    model.load_state_dict(torch.load(d / "model.pt", map_location="cpu"))
     preds, latency = {}, None
     for split in ("val", "calib", "test"):
         o = data.origins[split]
@@ -190,7 +209,8 @@ def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_
     info = {"run_id": run_id, "model": variant, "best_epoch": best_ep, "best_val_mae": best,
             "epochs_run": len(history), "train_time_s": train_time, "infer_latency_ms_per_origin": latency,
             "skipped_batches_no_target": skipped, "model_sha256": sha256_file(d / "model.pt"),
-            "n_params": sum(p.numel() for p in model.parameters()), "artifact_dir": str(d)}
+            "n_params": sum(p.numel() for p in model.parameters()), "artifact_dir": str(d),
+            "train_device": str(dev), "cudnn_enabled": cfg["cudnn_enabled"]}
     write_json(d / "run_info.json", info)
     return {"info": info, "preds": preds}
 

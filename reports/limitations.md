@@ -28,11 +28,16 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
    are treated as missing (never imputed as 0 mph); the observed fraction of the 5-minute grid is 0.611. This is
    recorded by `data preprocess` and is the main reason the missing-indicator features and the causal fill limit
    matter.
-7b. **Sparse graph.** With the endpoint rule alone the 26 Manhattan links yield 4 edges and 20 isolated nodes,
-   because DOT segments do not tile the highways. The corridor-continuity rule (same signed corridor, nearest
-   downstream segment within 2 km, `configs/graph.yaml`) adds explicit edges across unmonitored stretches; every
-   edge's rule and gap are in `reports/data_audit/graph_edges.csv`. The graph-vs-no-graph ablation must be read
-   with this sparsity in mind.
+7b. **Sparse graph and unreliable polylines.** With the endpoint rule alone the 26 Manhattan links yield 4 edges and
+   20 isolated nodes, and the corridor rule added one more, because DOT segments do not tile the highways and the
+   published `link_points` polylines often stop short of the named end of a link ("FDR S 63rd - 25th St" is 1.5 km
+   of geometry for a 3 km segment and ends 1.5 km before "FDR S 25th St - Catherine Slip" starts). The
+   named-endpoint rule therefore joins links whose names state a shared endpoint (`configs/graph.yaml`,
+   `named_join_m`), guarded by direction, heading and distance checks; every edge's rule, gap and matched tokens are
+   in `reports/data_audit/graph_edges.csv`, and the 26 names with their degrees are in
+   `reports/data_audit/manhattan_links.csv`. Links that are tunnels, bridges or isolated highway stubs (Lincoln
+   Tunnel tubes, QMT, BBT westbound, GWB, the Triborough connectors) have no monitored neighbour and stay isolated
+   whatever the rule. The graph-vs-no-graph ablation must be read with this sparsity in mind.
 
 ## Modelling and evaluation
 

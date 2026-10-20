@@ -33,12 +33,18 @@ in `reports/experiments/` and are generated, never typed.
 
 ## 3. Graph (`smartcity.graph`)
 
-Nodes are DOT links. A directed edge `a -> b` is accepted when the end point of `a` is within `endpoint_join_m` of
-the start point of `b` and the heading change is below `max_heading_change_deg` (endpoint continuity), or when `b`
-is the nearest link on the same signed corridor (same name stem and direction token, e.g. "FDR N") whose start lies
-downstream of `a`'s end within `corridor_join_m` (corridor continuity, needed because DOT segments do not tile the
-highways). Every candidate pair, accepted or
-rejected, is written with its rationale to `reports/data_audit/graph_edges_audit.csv`, and `graph validate` reports
+Nodes are DOT links. A directed edge `a -> b` is accepted by one of three rules, each recorded per edge:
+(1) endpoint continuity: the end point of `a` is within `endpoint_join_m` of the start point of `b` and the heading
+change is below `max_heading_change_deg`; (2) corridor continuity: `b` is the nearest link on the same signed corridor
+(same name stem and direction token, e.g. "FDR N") whose start lies downstream of `a`'s end within `corridor_join_m`;
+(3) named-endpoint continuity: DOT link names state their endpoints ("FDR S 63rd - 25th St" -> "FDR S 25th St -
+Catherine Slip"), and when `a`'s "to" label and `b`'s "from" label share a distinctive token (a street number,
+"Catherine Slip", "ganservoort", "GWB"; generic words such as "Toll Plaza" or "Manhattan Side" never count), the links
+are not opposite directions, `b` starts ahead of `a` and within `named_join_m` of `a`'s end, and the headings are
+compatible, the edge is accepted. Rules 2 and 3 exist because the published `link_points` polylines neither tile the
+highways nor reliably reach the named end of a link (in the 2026 Manhattan set "FDR S 63rd - 25th St" carries 1.5 km
+of geometry for a 3 km segment and stops 1.5 km short of the next segment's start). Every candidate pair, accepted or
+rejected, is written with its rationale to `reports/data_audit/graph_edges.csv`, and `graph validate` reports
 component counts and isolated nodes. The graph is exposed as a PyTorch Geometric Temporal
 `StaticGraphTemporalSignal` (`smartcity.graph.temporal`), so the model consumes a real temporal graph signal.
 

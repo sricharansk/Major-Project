@@ -8,3 +8,8 @@ graph:
   # heading. Each such edge is labelled "corridor continuity" in reports/data_audit/graph_edges.csv.
   corridor_join_m: 2000
   corridor_max_heading_change_deg: 100
+  # Named-endpoint continuity: DOT link names state their endpoints ("FDR S 63rd - 25th St" -> "FDR S 25th St -
+  # Catherine Slip") while the published polylines often stop short of the named end, so A -> B is also accepted when
+  # A's "to" label and B's "from" label share a distinctive token, the links are not opposite directions, B starts
+  # ahead of A and within named_join_m of A's end, and the headings are compatible. Set to 0 to disable.
+  named_join_m: 6000
