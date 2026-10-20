@@ -1,7 +1,7 @@
 \section{Experimental Design}
 \textit{Partitions.} The 5-minute time axis is split chronologically into training (60\%), validation (15\%),
 calibration (10\%) and test (15\%). A forecast origin belongs to a partition only if all of its targets fall inside it
-(purging); earlier history may be used as input. Scalers and link eligibility (training coverage $\ge 0.6$) use the
+(purging); earlier history may be used as input. Scalers and link eligibility (training-partition coverage $\ge 0.5$, lowered from the planned 0.6 after the coverage audit and recorded as such) use the
 training partition only.
 
 \textit{Feature tracks.} The \emph{operational} track uses traffic, calendar, archived weather \emph{forecasts}
