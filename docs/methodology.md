@@ -33,8 +33,11 @@ in `reports/experiments/` and are generated, never typed.
 
 ## 3. Graph (`smartcity.graph`)
 
-Nodes are DOT links. A directed edge `a -> b` is accepted when the end point of `a` is within `endpoint_gap_m` of
-the start point of `b` and the heading change is below `max_heading_change_deg`. Every candidate pair, accepted or
+Nodes are DOT links. A directed edge `a -> b` is accepted when the end point of `a` is within `endpoint_join_m` of
+the start point of `b` and the heading change is below `max_heading_change_deg` (endpoint continuity), or when `b`
+is the nearest link on the same signed corridor (same name stem and direction token, e.g. "FDR N") whose start lies
+downstream of `a`'s end within `corridor_join_m` (corridor continuity, needed because DOT segments do not tile the
+highways). Every candidate pair, accepted or
 rejected, is written with its rationale to `reports/data_audit/graph_edges_audit.csv`, and `graph validate` reports
 component counts and isolated nodes. The graph is exposed as a PyTorch Geometric Temporal
 `StaticGraphTemporalSignal` (`smartcity.graph.temporal`), so the model consumes a real temporal graph signal.

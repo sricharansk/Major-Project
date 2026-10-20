@@ -2,7 +2,7 @@
   "_comment": "Human-maintained status overrides for reports/verification/evidence_registry.csv. An override can only lower a status (VERIFIED -> PARTIAL/BLOCKED/FAILED) and must carry a reason. Remove the entry once the blocker is cleared.",
   "DATA-02": {
     "status": "PARTIAL",
-    "limitations": "Downloads run on the author's workstation (cloud container cannot reach NYC Open Data). speed-links --since 2026-01-01 timed out server-side 6x; link set is 'active since 2026-09-20' (125 links)."
+    "limitations": "Downloads run on the author's workstation (cloud container cannot reach NYC Open Data). speed-links --since 2026-01-01 timed out server-side 6x; link set is 'active since 2026-09-20' (125 links citywide, 26 in Manhattan)."
   },
   "PACK-01": {
     "status": "BLOCKED",

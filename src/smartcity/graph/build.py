@@ -1,12 +1,16 @@
 """Directed road-link graph from NYC DOT link geometries.
 
 Node  = monitored directed DOT road link (its geometry runs in the travel direction).
-Edge  = A -> B when B plausibly receives traffic leaving A:
-        * B's first point lies within ``endpoint_join_m`` of A's last point (topological continuity), and
-        * the heading change between A's last bearing and B's first bearing is <= ``max_heading_change_deg``, and
-        * B is not simply the opposite carriageway of A (reverse geometry).
+Edge  = A -> B when B plausibly receives traffic leaving A, by one of two rules:
+        1. endpoint continuity: B's first point lies within ``endpoint_join_m`` of A's last point, the heading change
+           between A's last bearing and B's first bearing is <= ``max_heading_change_deg``, and B is not simply the
+           opposite carriageway of A (reverse geometry);
+        2. corridor continuity: A and B are on the same signed corridor (same name stem and direction token, e.g.
+           "FDR N"), B's start lies downstream of A's end (ahead along A's end bearing) within ``corridor_join_m``
+           with a compatible heading, and B is the nearest such link.  DOT links do not tile a highway, so consecutive
+           monitored segments can be separated by unmonitored stretches; this rule connects them explicitly.
 Geometries that merely cross (mid-segment intersections, bridges over roads) are never connected because
-only endpoint-to-startpoint proximity is considered.  Every candidate edge (accepted or rejected) is written
+only endpoint-to-startpoint relations are considered.  Every candidate edge (accepted or rejected) is written
 with its rationale to ``reports/data_audit/graph_edges.csv``.
 """
 
@@ -94,6 +98,25 @@ def link_geometry(row: dict) -> list[tuple[float, float]]:
     return pts
 
 
+_DIR = {"N": "N", "S": "S", "E": "E", "W": "W", "NB": "N", "SB": "S", "EB": "E", "WB": "W"}
+
+
+def corridor_key(name: str | None) -> tuple[str, str] | None:
+    """('fdr', 'N') from 'FDR N 25th - 42nd'; None when the name carries no direction token.
+
+    The stem is everything before the first direction token; names without one (bridges named by endpoints,
+    free text) get no corridor and can only be joined by endpoint continuity."""
+    if not name:
+        return None
+    toks = re.split(r"\s+", name.strip())
+    for i, t in enumerate(toks[1:], start=1):
+        d = _DIR.get(t.upper().strip(".,"))
+        if d:
+            stem = " ".join(toks[:i]).lower()
+            return (stem, d) if stem else None
+    return None
+
+
 def _end_bearing(pts, start: bool) -> float:
     # use a point ~ several vertices in to avoid noise from duplicated vertices
     if start:
@@ -120,13 +143,36 @@ def build_graph(links: list[dict], cfg: dict) -> dict:
             "start_bearing": _end_bearing(pts, True), "end_bearing": _end_bearing(pts, False),
         })
     nodes.sort(key=lambda n: n["link_id"])
+    for n in nodes:
+        n["corridor"] = corridor_key(n["link_name"])
+    corridor_join = float(cfg.get("corridor_join_m", 0) or 0)
+    corridor_turn = float(cfg.get("corridor_max_heading_change_deg", cfg["max_heading_change_deg"]))
+    # rule 2 candidates: nearest downstream same-corridor successor per link
+    successor: dict[int, tuple[int, float, float]] = {}
+    if corridor_join > 0:
+        for i, a in enumerate(nodes):
+            if not a["corridor"]:
+                continue
+            best = None
+            for j, b in enumerate(nodes):
+                if i == j or b["corridor"] != a["corridor"]:
+                    continue
+                d = haversine_m(*a["end"], *b["start"])
+                if d > corridor_join:
+                    continue
+                ahead = angle_diff(bearing_deg(*a["end"], *b["start"]), a["end_bearing"]) if d > 1 else 0.0
+                turn = angle_diff(a["end_bearing"], b["start_bearing"])
+                if ahead <= 90 and turn <= corridor_turn and (best is None or d < best[1]):
+                    best = (j, d, turn)
+            if best:
+                successor[i] = best
     edges, audit = [], []
     for i, a in enumerate(nodes):
         for j, b in enumerate(nodes):
             if i == j:
                 continue
             d = haversine_m(*a["end"], *b["start"])
-            if d > cfg["endpoint_join_m"] * 3:
+            if d > max(cfg["endpoint_join_m"] * 3, corridor_join):
                 continue  # not a candidate at all
             turn = angle_diff(a["end_bearing"], b["start_bearing"])
             reverse = (haversine_m(*a["start"], *b["end"]) < cfg["endpoint_join_m"]
@@ -139,11 +185,16 @@ def build_graph(links: list[dict], cfg: dict) -> dict:
             if reverse and cfg.get("reject_if_reverse_direction", True):
                 reasons.append("opposite carriageway (reverse geometry)")
             accepted = not reasons
+            rationale = "end(src)->start(dst) continuity with compatible heading" if accepted else "; ".join(reasons)
+            if not accepted and successor.get(i, (None,))[0] == j:
+                accepted = True
+                rationale = (f"corridor continuity: same signed corridor {a['corridor'][0]!r} {a['corridor'][1]}, "
+                             f"nearest downstream segment {d:.0f}m ahead (endpoint rule failed: {'; '.join(reasons)})")
             audit.append({"src": a["link_id"], "dst": b["link_id"], "src_name": a["link_name"],
                           "dst_name": b["link_name"], "endpoint_gap_m": round(d, 1), "heading_change_deg": round(turn, 1),
-                          "accepted": accepted,
-                          "rationale": "end(src)->start(dst) continuity with compatible heading" if accepted
-                          else "; ".join(reasons)})
+                          "src_corridor": " ".join(a["corridor"]) if a["corridor"] else "",
+                          "dst_corridor": " ".join(b["corridor"]) if b["corridor"] else "",
+                          "accepted": accepted, "rationale": rationale})
             if accepted:
                 edges.append((i, j))
     edge_index = np.array(edges, dtype=np.int64).T if edges else np.zeros((2, 0), dtype=np.int64)
@@ -151,7 +202,9 @@ def build_graph(links: list[dict], cfg: dict) -> dict:
     out_deg = np.bincount(edge_index[0], minlength=len(nodes)) if edges else np.zeros(len(nodes), int)
     graph = {
         "link_ids": [n["link_id"] for n in nodes],
-        "nodes": [{k: v for k, v in n.items() if k != "points"} for n in nodes],
+        "nodes": [{k: (" ".join(v) if k == "corridor" and v else v) for k, v in n.items() if k != "points"} for n in nodes],
+        "n_edges_endpoint_rule": sum(1 for r in audit if r["accepted"] and r["rationale"].startswith("end(src)")),
+        "n_edges_corridor_rule": sum(1 for r in audit if r["accepted"] and r["rationale"].startswith("corridor")),
         "edge_index": edge_index.tolist(),
         "n_nodes": len(nodes), "n_edges": int(edge_index.shape[1]),
         "isolated_nodes": [nodes[k]["link_id"] for k in range(len(nodes)) if in_deg[k] == 0 and out_deg[k] == 0],
