@@ -105,9 +105,17 @@ def evaluate(query_file: Path | None = None) -> dict:
     r = Retriever()
     rows = list(csv.DictReader(open(query_file, encoding="utf-8")))
     k = r.cfg["retrieve_k"]
-    per, recalls, rr, status_ok = [], [], [], []
+    indexed = set(r.manifest["documents"])
+    per, recalls, rr, status_ok, skipped = [], [], [], [], []
     for q in rows:
         rel_docs = {d.strip() for d in q["relevant_document_ids"].split(";") if d.strip()}
+        if rel_docs - indexed:  # labelled document was not downloaded/approved: report, do not score
+            skipped.append({"query_id": q["query_id"], "missing_documents": sorted(rel_docs - indexed)})
+            per.append({"query_id": q["query_id"], "query": q["query"], "expected_status": q["expected_status"].strip(),
+                        "status": "RELEVANT_DOC_NOT_INDEXED", "status_correct": None, f"recall@{k}": None,
+                        "reciprocal_rank": None, "top1": None, "top1_score": None, "latency_s": None,
+                        "review_status": q.get("review_status", "")})
+            continue
         t0 = time.time()
         hits = r.search(q["query"], k=k)
         status, ev = r.evidence(q["query"])
@@ -125,8 +133,10 @@ def evaluate(query_file: Path | None = None) -> dict:
                     "status_correct": ok, f"recall@{k}": recall, "reciprocal_rank": mrr if rel_docs else None,
                     "top1": hits[0].chunk_id if hits else None, "top1_score": hits[0].score if hits else None,
                     "latency_s": round(latency, 4), "review_status": q.get("review_status", "")})
-    summary = {"n_queries": len(rows), "k": k, f"mean_recall@{k}": float(np.mean(recalls)) if recalls else None,
-               "mrr": float(np.mean(rr)) if rr else None, "status_accuracy": float(np.mean(status_ok)),
+    summary = {"n_queries": len(rows), "n_scored": len(status_ok), "n_skipped_missing_docs": len(skipped),
+               "skipped": skipped, "k": k, f"mean_recall@{k}": float(np.mean(recalls)) if recalls else None,
+               "mrr": float(np.mean(rr)) if rr else None,
+               "status_accuracy": float(np.mean(status_ok)) if status_ok else None,
                "corpus_hash": r.manifest["corpus_hash"], "min_score": r.cfg["min_score"],
                "label_review_status": sorted({q.get("review_status", "") for q in rows})}
     out = settings.ROOT / "artifacts" / "retrieval"

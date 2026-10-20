@@ -1,0 +1,29 @@
+query_id,query,relevant_document_ids,expected_status,review_status
+q01,Which signal actions is the advisory allowed to propose?,project_signal_policy,SUPPORTED,drafted_by_project_unreviewed
+q02,How many seconds may a green phase be extended per cycle?,project_signal_policy,SUPPORTED,drafted_by_project_unreviewed
+q03,When should the system defer instead of recommending a signal change?,project_signal_policy,SUPPORTED,drafted_by_project_unreviewed
+q04,What are the project congestion categories based on speed ratio?,project_signal_policy,SUPPORTED,drafted_by_project_unreviewed
+q05,Is shortening the yellow or all-red clearance interval permitted?,project_signal_policy,SUPPORTED,drafted_by_project_unreviewed
+q06,What happens to a candidate that increases side-road delay in simulation?,project_signal_policy,SUPPORTED,drafted_by_project_unreviewed
+q07,What is the most permissive approval status the prototype can reach?,project_signal_policy,SUPPORTED,drafted_by_project_unreviewed
+q08,Can advisories be sent to real traffic signals?,project_signal_policy,SUPPORTED,drafted_by_project_unreviewed
+q09,What does the MUTCD say about the duration of the yellow change interval?,mutcd2009_part4d,SUPPORTED,drafted_by_project_unreviewed
+q10,MUTCD requirements for the red clearance interval at a signalized intersection,mutcd2009_part4d,SUPPORTED,drafted_by_project_unreviewed
+q11,What does the MUTCD require for pedestrian clearance time and the flashing upraised hand?,mutcd2009_part4e,SUPPORTED,drafted_by_project_unreviewed
+q12,How is pedestrian walking speed used to compute pedestrian clearance in the MUTCD?,mutcd2009_part4e,SUPPORTED,drafted_by_project_unreviewed
+q13,How is minimum green time determined in the FHWA Traffic Signal Timing Manual?,fhwa_stm_ch5;fhwa_signal_timing_manual_2008,SUPPORTED,drafted_by_project_unreviewed
+q14,What is the purpose of maximum green in actuated signal control?,fhwa_stm_ch5;fhwa_signal_timing_manual_2008,SUPPORTED,drafted_by_project_unreviewed
+q15,What is signal coordination and what is an offset?,fhwa_stm_ch6;fhwa_signal_timing_manual_2008,SUPPORTED,drafted_by_project_unreviewed
+q16,How does cycle length selection affect arterial progression?,fhwa_stm_ch6;fhwa_signal_timing_manual_2008,SUPPORTED,drafted_by_project_unreviewed
+q17,How does TraCI change the state or phase of a traffic light in SUMO?,sumo_TraCI_Change_Traffic_Lights_State,SUPPORTED,drafted_by_project_unreviewed
+q18,How can the remaining phase duration of a traffic light be read through TraCI?,sumo_TraCI_Traffic_Lights_Value_Retrieval,SUPPORTED,drafted_by_project_unreviewed
+q19,Why do vehicles teleport in a SUMO simulation?,sumo_Simulation_Why_Vehicles_are_teleporting,SUPPORTED,drafted_by_project_unreviewed
+q20,What does the timeLoss field in SUMO tripinfo output mean?,sumo_Simulation_Output_TripInfo,SUPPORTED,drafted_by_project_unreviewed
+q21,How are traffic light programs and phases defined in a SUMO network?,sumo_Simulation_Traffic_Lights,SUPPORTED,drafted_by_project_unreviewed
+q22,How does randomTrips generate demand in SUMO?,sumo_Tools_Trip,SUPPORTED,drafted_by_project_unreviewed
+q23,What is the best recipe for chocolate cake?,,INSUFFICIENT_EVIDENCE,drafted_by_project_unreviewed
+q24,Who won the 2022 football world cup?,,INSUFFICIENT_EVIDENCE,drafted_by_project_unreviewed
+q25,How do I configure a Kubernetes ingress controller?,,INSUFFICIENT_EVIDENCE,drafted_by_project_unreviewed
+q26,What is the official NYC DOT policy on congestion pricing exemptions?,,INSUFFICIENT_EVIDENCE,drafted_by_project_unreviewed
+q27,Explain quantum entanglement in simple terms,,INSUFFICIENT_EVIDENCE,drafted_by_project_unreviewed
+q28,What interest rate does the central bank set this year?,,INSUFFICIENT_EVIDENCE,drafted_by_project_unreviewed

@@ -29,6 +29,7 @@ import argparse
 import datetime as dt
 import gzip
 import hashlib
+import http.client
 import json
 import os
 import sys
@@ -72,6 +73,9 @@ def utcnow() -> str:
 def http_get(url: str, params: dict | None = None, *, timeout: int = 180, retries: int = 6) -> tuple[int, bytes, str]:
     """GET with exponential backoff.  Returns (status, body, final_url).
 
+    Dropped connections mid-body surface as http.client.IncompleteRead (an HTTPException, not a URLError), so the
+    whole HTTPException family and socket-level OSError are retried as network errors.
+
     A non-retryable HTTP error is raised; an empty JSON list is a *valid* empty result and
     is returned like any other body, so callers can distinguish it from failures.
     """
@@ -95,7 +99,7 @@ def http_get(url: str, params: dict | None = None, *, timeout: int = 180, retrie
                 delay *= 2
                 continue
             raise RuntimeError(f"HTTP {exc.code} for {url}: {body[:500]!r}") from exc
-        except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
+        except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException, OSError) as exc:
             if attempt < retries - 1:
                 print(f"  network error {exc}; retry in {delay:.0f}s", file=sys.stderr)
                 time.sleep(delay)
