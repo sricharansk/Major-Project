@@ -6,7 +6,7 @@
   },
   "PACK-01": {
     "status": "BLOCKED",
-    "limitations": "docker compose build not executed end-to-end: Docker Hub pulls are rate-limited from the development container. Compose/Dockerfiles are present and `docker compose config` validates."
+    "limitations": "docker compose build not executed end-to-end: Docker Hub pulls are rate-limited from the development container. Compose/Dockerfiles are present and `docker compose config` validates against .env.example."
   },
   "PAPER-01": {
     "status": "PARTIAL",

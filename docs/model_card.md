@@ -8,7 +8,7 @@ exists they read NOT_RUN. Nothing here is an estimate.
 * **Architecture**: `smartcity.models.deep.ContextGatedGraphTransformer` — GATv2 spatial layer over the directed
   link graph, availability-aware gate over context feature groups, Transformer encoder over the lag window,
   linear heads for 15/30/60-minute horizons.
-* **Inputs**: per-link standardised speed lags, missing indicators, calendar features, weather archive, 311
+* **Inputs**: per-link standardised speed lags, missing indicators, calendar features, historical weather forecast, 311
   (24 h lag), link attributes (operational track). Feature list: `artifacts/models/<run>/feature_schema.json`.
 * **Output**: speed in mph per link per horizon, with split-conformal intervals from
   `artifacts/calibration/calibrator.json`.
@@ -46,7 +46,8 @@ Grouped exact KernelSHAP on this model (not a surrogate) for alert cases, plus n
 
 ## Known limitations
 
-* Weather comes from the archive, so operational weather knowledge is overstated.
+* Operational weather is Open-Meteo's historical-forecast product, a re-forecast proxy for what was knowable at
+  the time, not an archived agency forecast.
 * DOT links are a sparse, highway-heavy selection, not a full street network; neighbours are often distant.
 * Single seed; variance across seeds is not reported.
 * Context sources are sparse in time; the gate was designed for that but the ablation table is the evidence, not

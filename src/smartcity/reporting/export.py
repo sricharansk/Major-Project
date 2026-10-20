@@ -41,7 +41,7 @@ REQS = [
     ("GRAPH-01", "graph", "Directed road graph with edge rationale", "src/smartcity/graph/build.py",
      "python -m smartcity.cli graph build && graph validate", "reports/data_audit/graph_validation.json"),
     ("GRAPH-02", "graph", "Real temporal snapshot integration (PyG Temporal)", "src/smartcity/graph/temporal.py; src/smartcity/training/data.py",
-     "pytest tests/integration/test_temporal_signal.py", "data/processed/features_operational_meta.json"),
+     "pytest tests/unit/test_models.py tests/leakage", "data/processed/features_operational_meta.json"),
     ("MODEL-01", "models", "Trained context-gated GATv2-Transformer", "src/smartcity/models/deep.py",
      "python -m smartcity.cli train proposed", "artifacts/models/registry_operational.json"),
     ("MODEL-02", "models", "Baseline comparison on identical splits/masks", "src/smartcity/training/runner.py",

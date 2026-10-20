@@ -10,13 +10,13 @@ in `reports/experiments/` and are generated, never typed.
   2026-10-20. Each page is stored verbatim as gzip JSON with a `fetch_log.jsonl` line (URL, time, HTTP status,
   SHA-256). `python src/smartcity/ingestion/fetch.py audit` verifies the dataset identity and observed date ranges
   server-side before anything is downloaded; results are in `reports/data_audit/source_inventory.csv`.
-* **Context sources**: Open-Meteo archive (weather), NYC Automated Traffic Volume Counts (`7ym2-wayt`, sampled ATR
+* **Context sources**: Open-Meteo historical forecast (operational weather) and archive (retrospective weather), NYC Automated Traffic Volume Counts (`7ym2-wayt`, sampled ATR
   counts used only for SUMO demand), NYC permitted events (`tvpp-9vvx` current, `bkfu-528j` historical), Motor Vehicle
   Collisions (`h9gi-nx95`), 311 service requests (`erm2-nwe9`), OpenStreetMap via Overpass (geometry for SUMO).
 * **Observation-time rules** (`configs/data.yaml`): collisions and historical events have no reliable announcement
   time, so they are used only in the *retrospective* feature track; 311 is used operationally with a declared 24 h
-  lag; weather uses the archive (not forecasts) and is therefore an upper bound on operational weather knowledge,
-  which is stated in the limitations.
+  lag; the operational track uses Open-Meteo *historical forecasts* (what a forecast issued at the time would have
+  said) while the retrospective track uses the finalised archive; `tests/leakage` asserts the track groups.
 
 ## 2. Preprocessing (`smartcity.preprocessing`)
 
@@ -45,8 +45,8 @@ Two tracks share code paths and differ only in which sources are allowed:
 
 | Track | Sources | Purpose |
 |---|---|---|
-| operational | speed lags, calendar, weather archive, 311 (24 h lag), link attributes | the deployable model |
-| retrospective | operational + collisions + historical events | analysis of incident/event effects |
+| operational | speed lags, calendar, historical weather forecast, 311 (24 h lag), link attributes | the deployable model |
+| retrospective | operational with archive weather in place of the forecast, + collisions + historical events | analysis of incident/event effects |
 
 Feature groups are recorded in `feature_schema.json` so that gating, ablations and explanations use the same
 grouping.

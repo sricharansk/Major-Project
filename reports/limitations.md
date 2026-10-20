@@ -14,8 +14,9 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
 3. **Collision publication lag.** The collisions dataset's latest `crash_date` was 2026-06-11 at download time
    (about four months of lag), so collisions are retrospective-only and absent from the test period. The
    retrospective track's incident features are therefore evaluated on a period without them.
-4. **Weather.** The Open-Meteo archive is used as weather context; an operational system would only have the
-   forecast. Operational weather knowledge is overstated by this choice.
+4. **Weather.** The operational track uses Open-Meteo's historical-forecast product as a proxy for the forecast
+   that would have been available at the time; it is a model re-forecast, not an archived agency forecast, so
+   operational weather knowledge is approximated, not reproduced. The retrospective track uses the finalised archive.
 5. **Events.** The historical permitted-events dataset has free-text locations and no announcement timestamp; it is
    used only retrospectively and matched by street name, which is approximate.
 6. **Volume.** ATR counts are sampled, not continuous; they only parameterise SUMO demand.
