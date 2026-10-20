@@ -15,3 +15,4 @@ simulation/outputs/**/*.xml
 artifacts/**/*.pt
 artifacts/**/*.npz
 knowledge/indexes/*.faiss
+transfer/
