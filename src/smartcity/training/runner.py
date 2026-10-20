@@ -131,15 +131,17 @@ def predict_deep(model, data: ForecastData, origins: np.ndarray, keep=None, batc
 
 
 def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_epochs: int | None = None,
-               windows_per_epoch: int | None = None) -> dict:
+               windows_per_epoch: int | None = None, max_minutes: float | None = None) -> dict:
     tcfg = settings.load("training")["training"]
     mcfg = {k: v for k, v in settings.load("model")["model"].items() if k not in ("name", "lookback_steps", "horizon_steps")}
     seed_all(tcfg["seed"])
     torch.set_num_threads(4)
     run_id = run_id or new_run_id(variant)
     d = _run_dir(run_id)
+    max_minutes = max_minutes or tcfg.get("max_minutes_per_model") or None
     cfg = {"variant": variant, "spec": DEEP_VARIANTS[variant], "model": mcfg, "training": tcfg,
-           "max_epochs_override": max_epochs, "windows_per_epoch": windows_per_epoch}
+           "max_epochs_override": max_epochs, "windows_per_epoch": windows_per_epoch,
+           "max_minutes_per_model": max_minutes}
     dev = resolve_device(tcfg.get("device"))
     cfg["resolved_device"] = str(dev)
     # Training the GRU with cuDNN on Windows/CUDA 12.8 (torch 2.11) crashed the process at exit (0xC0000409) after
@@ -156,6 +158,7 @@ def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_
     va_sub = va[:: max(1, len(va) // 1500)]  # fixed validation subset (same every epoch)
     rng = np.random.default_rng(tcfg["seed"])
     best, best_ep, bad, history, skipped = np.inf, -1, 0, [], 0
+    stopped_reason = "max_epochs"
     epochs = max_epochs or tcfg["max_epochs"]
     wpe = windows_per_epoch or tcfg.get("max_train_windows_per_epoch") or len(tr)
     t0 = time.time()
@@ -189,7 +192,13 @@ def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_
         else:
             bad += 1
             if bad >= tcfg["early_stopping_patience"]:
+                stopped_reason = "early_stopping"
                 break
+        if max_minutes and (time.time() - t0) / 60 >= max_minutes:
+            # wall-clock budget (recorded, not hidden): the best epoch so far is kept, nothing is extrapolated
+            stopped_reason = f"time_budget_{max_minutes:g}min"
+            print(f"[{variant}] time budget of {max_minutes:g} min reached after epoch {ep}", flush=True)
+            break
     train_time = time.time() - t0
     with open(d / "training_history.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(history[0].keys()))
@@ -210,7 +219,8 @@ def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_
             "epochs_run": len(history), "train_time_s": train_time, "infer_latency_ms_per_origin": latency,
             "skipped_batches_no_target": skipped, "model_sha256": sha256_file(d / "model.pt"),
             "n_params": sum(p.numel() for p in model.parameters()), "artifact_dir": str(d),
-            "train_device": str(dev), "cudnn_enabled": cfg["cudnn_enabled"]}
+            "train_device": str(dev), "cudnn_enabled": cfg["cudnn_enabled"], "stopped_reason": stopped_reason,
+            "max_minutes_per_model": max_minutes}
     write_json(d / "run_info.json", info)
     return {"info": info, "preds": preds}
 

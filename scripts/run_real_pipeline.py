@@ -57,8 +57,14 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--from", dest="start", default=None, help="first stage to run (exact stage string)")
     ap.add_argument("--skip", action="append", default=[], help="substring of stages to skip (repeatable)")
+    ap.add_argument("--max-minutes", type=float, default=0, help="wall-clock budget per deep model (train proposed stages)")
+    ap.add_argument("--parallel-ablations", type=int, default=1, help="train the ablation variants N at a time")
     a = ap.parse_args()
     stages = STAGES[STAGES.index(a.start):] if a.start else STAGES
+    if a.max_minutes:
+        stages = [s + f" --max-minutes {a.max_minutes:g}" if s.startswith("train proposed") else s for s in stages]
+    if a.parallel_ablations > 1:
+        stages = [s + f" --parallel {a.parallel_ablations}" if "ablation_" in s else s for s in stages]
     LOG.parent.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, PYTHONUNBUFFERED="1")
     for stage in stages:
