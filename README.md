@@ -82,7 +82,9 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
 * Retrieval: 28 queries, Recall@8 0.818, MRR 0.702 (project-drafted labels). LLM agents: 12/12 schema-valid calls;
   3/3 fabricated citations without retrieval (all rejected), 0/9 with; constraints reject the unmapped link; the
   LLM chose monitor-only on the mapped corridor, so no advisory reached the simulation gate.
-* SUMO controller comparison: running on the workstation at the time of writing (see `reports/limitations.md` 24).
+* SUMO controller comparison (45 matched-seed runs, real West St corridor): **inconclusive**; the declared demand
+  gridlocks the corridor under every controller (unfinished trips > completed, 1.3k-2.3k teleports per run), so the
+  forecast rule's lower per-trip time loss is survivorship, not improvement (`reports/limitations.md` 16, 24).
 
 ## Honesty rules this repository follows
 

@@ -125,9 +125,16 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
 23. **Artifacts not in git.** Model weights, prediction arrays, raw data, the FAISS index, document copies and the two
     superseded runs (ablation bootstrap, first agents pass) stay on the workstation; run ids, hashes and the
     stage log are in `reports/verification/`.
-24. **Simulation results pending at the time of the paper draft.** `simulation_metrics.csv` is produced by the
-    workstation run of `simulation evaluate` (incident scenario still executing when the paper narrative was written);
-    the paper's simulation table reads NOT RUN until it is pushed.
+24. **Controller comparison inconclusive (oversaturated testbed).** All 45 runs completed
+    (`reports/experiments/simulation_metrics.csv`), but the declared 1,200 veh/h per direction gridlocks the
+    corridor under every controller: per run 1,236-2,877 completed trips against 3,682-6,725 unfinished and
+    1,330-2,268 teleports (time-to-teleport 300 s). The forecast rule's lower mean time loss per completed trip
+    (739 vs 781 s in the event surge, 806 vs 898 s in the incident) comes with fewer completed trips and as many
+    teleports, i.e. survivorship, and the rule is identical to fixed-time in the routine peak because it only acts
+    when congestion is forecast. No controller ranking or simulated gain is claimed; the paired acceptance check now
+    also records completed trips and teleports and fails a candidate that completes fewer trips than the baseline.
+    Demand calibration from observed counts (no ATR count matched the corridor) is future work; a lower-demand
+    sensitivity run, if executed, is reported as a declared-assumption sensitivity, not as calibration.
 22. **Bibliography.** `paper/REFERENCES_STATUS.md` records the publisher-record check of every entry (2026-10-20);
     the FHWA 2008 Signal Timing Manual and the 2009 MUTCD are superseded editions, cited because they are the
     public-domain texts the corpus holds.

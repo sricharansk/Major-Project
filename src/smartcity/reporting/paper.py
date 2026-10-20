@@ -105,17 +105,22 @@ def simulation_table():
             continue
         k = (r["scenario"], r["controller"])
         agg.setdefault(k, []).append(r)
-    lines = [f"\\begin{{table*}}[t]\\centering\\caption{{{cap}. Scenario-based testbed with OSM geometry and declared demand; "
-             "not a calibrated digital twin.}}\\label{{tab:sim}}",
-             "\\begin{tabular}{llrrrrrr}\\toprule Scenario & Controller & Seeds & Time loss (s) & Corridor TL (s) & "
-             "Side TL (s) & Arrived & Teleports \\\\ \\midrule"]
+    head = ("\\begin{table*}[t]\\centering\\caption{" + cap + ". Scenario-based testbed with OSM geometry and declared "
+            "demand, not a calibrated digital twin. Time loss is the mean per \\emph{completed} trip; completed, "
+            "unfinished and teleported vehicles are per run, so a lower time loss with fewer completed trips is "
+            "survivorship, not improvement.}\\label{tab:sim}")
+    lines = [head,
+             "\\begin{tabular}{llrrrrrrrr}\\toprule Scenario & Controller & Seeds & Loaded & Completed & Unfinished & "
+             "Teleports & Time loss (s) & Corridor TL (s) & Side TL (s) \\\\ \\midrule"]
+
     def mean(rs, k):
         v = [float(x[k]) for x in rs if x.get(k) not in (None, "", "None")]
         return sum(v) / len(v) if v else None
     for (s, c), rs in sorted(agg.items()):
-        lines.append(f"{_esc(s)} & {_esc(c)} & {len(rs)} & {_f(mean(rs, 'mean_time_loss_s'), 1)} & "
-                     f"{_f(mean(rs, 'corridor_mean_time_loss_s'), 1)} & {_f(mean(rs, 'side_road_mean_time_loss_s'), 1)} & "
-                     f"{_f(mean(rs, 'arrived'), 0)} & {_f(mean(rs, 'teleports'), 1)} \\\\")
+        lines.append(f"{_esc(s)} & {_esc(c)} & {len(rs)} & {_f(mean(rs, 'loaded'), 0)} & {_f(mean(rs, 'completed_trips'), 0)} & "
+                     f"{_f(mean(rs, 'unfinished_trips'), 0)} & {_f(mean(rs, 'teleports'), 0)} & "
+                     f"{_f(mean(rs, 'mean_time_loss_s'), 1)} & {_f(mean(rs, 'corridor_mean_time_loss_s'), 1)} & "
+                     f"{_f(mean(rs, 'side_road_mean_time_loss_s'), 1)} \\\\")
     lines.append("\\bottomrule\\end{tabular}\\end{table*}\n")
     _write("simulation.tex", "\n".join(lines))
 

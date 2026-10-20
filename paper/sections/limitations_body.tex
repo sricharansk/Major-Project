@@ -29,7 +29,9 @@ first agent pass); both superseded runs are kept as local evidence and described
 
 \textit{Simulation.} The SUMO testbed is a scenario built from OSM geometry with declared demand and default signal
 programs, not a calibrated digital twin, and contains no pedestrian demand; the mapped DOT links are not the
-forecastable ones, so the controller comparison is a transfer demonstration. \textit{Engineering.} Data download,
+forecastable ones, so the controller comparison is a transfer demonstration. Under the declared demand the corridor
+gridlocks under every controller (more unfinished than completed trips, 1{,}300--2{,}300 teleports per run), so the
+controller comparison is inconclusive and no simulated gain is claimed. \textit{Engineering.} Data download,
 training, LLM inference and simulation ran on the authors' workstation (torch 2.11.0+cu128, a recorded deviation from
 the lock file); the development container could not reach the data portals or the model server, and the container
 images were built and smoke-tested on the workstation only. Model weights, prediction arrays, raw data and the FAISS

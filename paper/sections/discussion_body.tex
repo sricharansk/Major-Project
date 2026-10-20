@@ -35,6 +35,13 @@ recommendation surviving the whole chain into simulation: on the mapped corridor
 so the simulation gate's acceptance rule has been exercised by tests, not by a real advisory. We report this as a
 gap rather than fill it with a hand-written candidate.
 
+\textit{Simulation.} The controller comparison is the clearest example of a result that a less careful reading
+would have turned into a gain: the forecast-informed rule shows 5 to 10\,\% lower time loss per completed trip in
+the two stress scenarios, but it completes fewer trips and teleports as many vehicles, because the declared
+1{,}200 vehicles per hour and direction gridlock the corridor under every controller. The honest conclusion is that
+the testbed's demand, not its controllers, determined the outcome; it tells us to calibrate demand from observed
+counts before any controller claim, and it is why the acceptance rule counts completed trips and teleports.
+
 \textit{What is not claimed.} Nothing here is a deployment result, a causal explanation, or a congestion reduction
 on a real street. The language model never holds safety authority (constraints and the simulation gate are code),
 retrieved text is untrusted evidence that must be cited by chunk id, and the most permissive status the workflow can
