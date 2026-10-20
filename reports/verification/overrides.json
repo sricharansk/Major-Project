@@ -1,0 +1,15 @@
+{
+  "_comment": "Human-maintained status overrides for reports/verification/evidence_registry.csv. An override can only lower a status (VERIFIED -> PARTIAL/BLOCKED/FAILED) and must carry a reason. Remove the entry once the blocker is cleared.",
+  "DATA-02": {
+    "status": "PARTIAL",
+    "limitations": "Downloads run on the author's workstation (cloud container cannot reach NYC Open Data). speed-links --since 2026-01-01 timed out server-side 6x; link set is 'active since 2026-09-20' (125 links)."
+  },
+  "PACK-01": {
+    "status": "BLOCKED",
+    "limitations": "docker compose build attempted in the development container (reports/verification/docker_smoke.json): Docker Hub rate-limited the base image (HTTP 429; mirror.gcr.io works), and the build container cannot reach deb.debian.org or download.pytorch.org under the environment's network policy, so no image was built. compose config validates; ghcr.io/mlflow/mlflow pull is denied (403) by the same policy."
+  },
+  "PAPER-01": {
+    "status": "PARTIAL",
+    "limitations": "Paper tables are generated from artifacts; results/discussion sections are filled only after the real-data run bibliography entries were checked against publisher records on 2026-10-20 (paper/REFERENCES_STATUS.md; one DOI string still to confirm on IEEE Xplore)."
+  }
+}

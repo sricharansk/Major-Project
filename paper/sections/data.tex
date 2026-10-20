@@ -1,0 +1,14 @@
+\section{Data}
+\label{sec:data}
+All sources are public (Table~\ref{tab:sources}). Speed targets come from the NYC DOT Real-Time Traffic Speed Data
+feed (Socrata \texttt{i4gi-tjb9}), restricted to Manhattan links with geometry, for 2026-01-01 to 2026-10-20. Each
+record carries a floating local timestamp that is localised to \texttt{America/New\_York} and converted to UTC; the
+ambiguous daylight-saving hour is nulled rather than guessed. Records are snapped to a right-labelled 5-minute grid
+per link, averaged within a bin, bounded to physically plausible speeds, and forward-filled causally for at most
+three steps. Context comes from Open-Meteo (historical forecasts for the operational track, the finalised archive
+for the retrospective track), NYC 311 service requests with a declared 24-hour lag, Motor Vehicle Collisions
+(retrospective only; the feed lagged publication by about four months at download time) and NYC permitted events.
+Sampled automated traffic volume counts parameterise simulation demand only. OpenStreetMap supplies geometry for
+the simulated corridor. Every download is logged with URL, time, HTTP status and SHA-256, and a server-side audit of
+dataset identity and observed date ranges precedes every download; the full-year link enumeration timed out
+server-side, so the link set is the 125 links active since 2026-09-20, which is recorded as a limitation.

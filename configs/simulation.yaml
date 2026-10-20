@@ -1,0 +1,22 @@
+simulation:
+  sumo_binary_env: SUMO_BINARY
+  step_length_s: 1.0
+  warmup_s: 300
+  evaluation_s: 3600
+  seeds: [1, 2, 3, 4, 5]
+  min_green_s: 7          # project-defined experimental policy, not an official NYC value
+  max_green_s: 90
+  yellow_s: 3
+  all_red_s: 2
+  ranking_weights: {delay: 0.6, queue: 0.4, side_road_penalty: 1.0, ped_penalty: 1.0}
+  acceptance:
+    min_delay_improvement_pct: 1.0
+    max_side_road_delay_increase_pct: 10.0
+    max_teleports: 0
+scenario:
+  osm_name: west_st_corridor
+  corridor_name_regex: "^(West Street|West Side Highway|Route 9A)$"
+  atr_street_regex: "WEST ST|WEST STREET|WEST SIDE HIGHWAY|ROUTE 9A"
+  fallback_main_vph: 1200        # DECLARED assumption, used only if no ATR counts match the corridor
+  side_vph_assumption: 150       # DECLARED assumption per side-street approach (no matched counts)
+  event_demand_scale: 1.25       # DECLARED stress-scenario surge (not observed)

@@ -1,0 +1,9 @@
+uncertainty:
+  alpha: 0.1                 # nominal 90% intervals
+  method: split_conformal_absolute_residual
+gate:
+  max_interval_width_mph: null   # set from validation data by `uncertainty calibrate` (quantile below)
+  width_quantile_on_val: 0.8
+  max_input_missing_fraction: 0.34
+  max_data_age_minutes: 20
+  min_calibration_samples: 200

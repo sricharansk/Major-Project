@@ -1,0 +1,19 @@
+\section{Introduction}
+Urban traffic-management centres typically observe congestion as it happens. Linking an \emph{advance} forecast to an
+explainable, evidence-grounded and tested operational recommendation remains difficult: traffic depends on recurrent
+demand, neighbouring links, weather, planned events, disruptions and infrastructure condition, and a forecast alone does
+not establish which intervention helps. An LLM-generated signal recommendation is, by itself, not evidence that an
+action is safe or effective.
+
+We study a decision-support pipeline for the scenario of a permitted event near a busy corridor in which rain and a
+nearby collision coincide. The pipeline (i) forecasts link speeds 15, 30 and 60 minutes ahead with a context-gated
+graph spatiotemporal Transformer, (ii) attaches split-conformal prediction intervals, (iii) explains the forecast of
+the actual model with grouped Shapley values, (iv) retrieves operational guidance with a FAISS index, (v) asks a local
+LLM (Qwen2.5-7B-Instruct via Ollama) for schema-constrained candidate actions, (vi) applies deterministic safety
+constraints, and (vii) tests admissible candidates in a SUMO microscopic simulation before human review.
+
+\textbf{Proposed contributions} (stated as proposals; their effects are reported only where measured):
+(1) availability-aware context fusion in the graph forecaster; (2) an explicit uncertainty-and-evidence gate that
+decides whether advisory generation proceeds; (3) a simulation-based candidate gate with side-road protection; and
+(4) a traceable evaluation that links forecast quality, grounding, deferral and simulated intervention outcomes to
+versioned artifacts. We do not claim deployment, real-world congestion reduction or causal explanations.

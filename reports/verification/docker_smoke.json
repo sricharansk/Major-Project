@@ -1,0 +1,25 @@
+{
+  "checked_at": "2026-10-20T17:00:00.477151+00:00",
+  "docker_version": {
+    "cmd": "docker --version",
+    "returncode": 0,
+    "tail": "Docker version 29.9.1, build dfc520d\n"
+  },
+  "daemon": {
+    "cmd": "docker info --format {{.ServerVersion}}",
+    "returncode": 0,
+    "tail": "29.9.1\n"
+  },
+  "compose_config": {
+    "cmd": "docker compose config -q",
+    "returncode": 0,
+    "tail": ""
+  },
+  "compose_build": {
+    "cmd": "docker compose build",
+    "returncode": 1,
+    "tail": "0\n------\n > [dashboard 2/8] RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm -rf /var/lib/apt/lists/*:\n7.352   Could not resolve 'deb.debian.org'\n7.358 Reading package lists...\n7.370 W: Failed to fetch http://deb.debian.org/debian/dists/trixie/InRelease  Could not resolve 'deb.debian.org'\n7.370 W: Failed to fetch http://deb.debian.org/debian/dists/trixie-updates/InRelease  Could not resolve 'deb.debian.org'\n7.370 W: Failed to fetch http://deb.debian.org/debian-security/dists/trixie-security/InRelease  Could not resolve 'deb.debian.org'\n7.370 W: Some index files failed to download. They have been ignored, or old ones used instead.\n7.381 Reading package lists...\n7.391 Building dependency tree...\n7.392 Reading state information...\n7.393 E: Unable to locate package libgomp1\n------\n Image smartcity-dashboard Building \n Image smartcity-api Building \n Image smartcity-worker Building \nDockerfile.dashboard:4\n\n--------------------\n\n   2 |     FROM ${BASE_IMAGE}\n\n   3 |     ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1\n\n   4 | >>> RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm -rf /var/lib/apt/lists/*\n\n   5 |     RUN useradd --create-home --uid 10001 app\n\n   6 |     WORKDIR /app\n\n--------------------\n\ntarget dashboard: failed to solve: process \"/bin/sh -c apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm -rf /var/lib/apt/lists/*\" did not complete successfully: exit code: 100\n\n"
+  },
+  "status": "BLOCKED",
+  "reason": "build container has no outbound network (apt/pip mirrors unreachable under the development environment's network policy)"
+}

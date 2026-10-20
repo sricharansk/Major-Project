@@ -1,0 +1,21 @@
+\section{Related Work}
+\textit{Graph traffic forecasting.} Diffusion-convolutional recurrent networks~\cite{li2018dcrnn}, spatio-temporal graph
+convolution~\cite{yu2018stgcn} and Graph WaveNet~\cite{wu2019graphwavenet} established graph neural networks for
+sensor-network speed forecasting; attention-based variants use graph attention~\cite{brody2022gatv2} and Transformer
+encoders~\cite{vaswani2017attention}. Our model combines GATv2 message passing with a temporal Transformer and adds an
+availability-aware gate over feature groups; we treat it as a project-designed architecture, not a new model family.
+
+\textit{Uncertainty.} Split conformal prediction~\cite{vovk2005algorithmic,angelopoulos2021gentle} gives finite-sample
+marginal coverage under exchangeability; for time series this assumption can fail, motivating adaptive and
+non-exchangeable variants~\cite{barber2023beyond,xu2021enbpi}. We therefore report empirical coverage by horizon and
+scenario.
+
+\textit{Explainability.} SHAP~\cite{lundberg2017shap} attributes predictions to inputs; for tree baselines we use
+TreeSHAP, and for the graph model a grouped KernelSHAP over feature groups and graph neighbourhoods.
+
+\textit{Retrieval-augmented LLMs.} RAG~\cite{lewis2020rag} conditions generation on retrieved passages; we embed passages
+with Sentence-BERT models~\cite{reimers2019sbert} and search them with FAISS~\cite{johnson2019faiss}. The LLM is
+Qwen2.5~\cite{qwen2025qwen25}.
+
+\textit{Simulation.} SUMO~\cite{lopez2018sumo} with TraCI is widely used to evaluate signal control. We use it as a
+scenario-based testbed and do not claim calibration to real demand.

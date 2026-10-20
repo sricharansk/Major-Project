@@ -1,0 +1,9 @@
+rag:
+  embedding_model: sentence-transformers/all-MiniLM-L6-v2
+  normalize_embeddings: true
+  index: faiss_flat_ip
+  chunk_tokens_target: 200     # all-MiniLM-L6-v2 truncates at 256 word-pieces; 450 would be silently truncated
+  chunk_overlap_tokens: 40
+  retrieve_k: 8
+  final_context_k: 4
+  min_score: 0.35              # below this, INSUFFICIENT_EVIDENCE

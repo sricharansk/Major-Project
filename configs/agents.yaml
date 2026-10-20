@@ -1,0 +1,12 @@
+llm:
+  provider: ollama
+  model: qwen2.5:7b
+  base_url_env: OLLAMA_BASE_URL
+  temperature: 0.0
+  num_ctx: 8192
+  max_retries: 2
+  timeout_s: 300
+  prompt_version: advisory_v1
+actions:
+  allowed: [bounded_green_extension, select_prevalidated_program, monitor_only]
+  green_extension_s: {min: 0, max: 10}

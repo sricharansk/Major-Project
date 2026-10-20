@@ -1,0 +1,47 @@
+{
+  "status": "OK",
+  "checked_at": "2026-10-20T16:57:11.537475+00:00",
+  "checks": [
+    {
+      "endpoint": "/health/live",
+      "status_code": 200,
+      "latency_ms": 88.8
+    },
+    {
+      "endpoint": "/health/ready",
+      "status_code": 503,
+      "latency_ms": 2857.7
+    },
+    {
+      "endpoint": "/sources/status",
+      "status_code": 200,
+      "latency_ms": 8.3
+    },
+    {
+      "endpoint": "/road-links",
+      "status_code": 200,
+      "latency_ms": 10.8
+    },
+    {
+      "endpoint": "/experiments",
+      "status_code": 200,
+      "latency_ms": 7.1
+    },
+    {
+      "endpoint": "/evidence/status",
+      "status_code": 200,
+      "latency_ms": 5.9
+    },
+    {
+      "endpoint": "POST /advisories (no token)",
+      "status_code": 401,
+      "expected": 401
+    },
+    {
+      "endpoint": "POST /advisories/{id}/review APPROVED_FOR_DEPLOYMENT",
+      "expected": 422,
+      "status_code": 422
+    }
+  ],
+  "readiness": "not ready (503: a dependency is unavailable, reported as such)"
+}

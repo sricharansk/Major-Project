@@ -1,0 +1,46 @@
+{
+  "run_id": "sim-toy-candidate-s1-20261020T161314-d3c286",
+  "mode": "SIMULATION",
+  "scenario": "toy",
+  "controller": "candidate",
+  "seed": 1,
+  "metrics": {
+    "completed_trips": 60,
+    "mean_travel_time_s": 45.95,
+    "mean_time_loss_s": 17.13233333333333,
+    "mean_waiting_time_s": 11.433333333333334,
+    "mean_stops": 0.5166666666666667,
+    "corridor_mean_time_loss_s": 17.726444444444446,
+    "side_road_mean_time_loss_s": 15.35,
+    "side_road_trips": 15,
+    "loaded": 67,
+    "inserted": 67,
+    "arrived": 67,
+    "waiting_to_insert": 0,
+    "unfinished_trips": 0,
+    "teleports": 0,
+    "mean_corridor_queue_veh": null,
+    "max_corridor_queue_veh": null,
+    "pending_insertions_at_end": 0,
+    "running_at_end": 0,
+    "wall_time_s": 1.27,
+    "pedestrian_waiting_s": null
+  },
+  "sumo_version": "Eclipse SUMO sumo 1.28.0",
+  "network_hash": "554d70aed0ffb2b6",
+  "demand_hash": "9fbeedc6d4000007",
+  "status": "OK",
+  "error": null,
+  "control_log": [
+    true
+  ],
+  "candidate": {
+    "action_type": "bounded_green_extension",
+    "traffic_light_id": "A1",
+    "phase_index": 0,
+    "extension_seconds": 5
+  },
+  "warmup_s": 60,
+  "evaluation_s": 300,
+  "pedestrian_protection": "NOT_EVALUATED (no pedestrian demand in scenario)"
+}

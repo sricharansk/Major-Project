@@ -1,0 +1,9 @@
+\section{Problem Formulation}
+Let $\mathcal{G}=(\mathcal{V},\mathcal{E})$ be a directed graph whose nodes are monitored directed road links and
+whose edges connect a link to links that can receive its traffic. At each 5-minute step $t$ every node $v$ carries a
+feature vector $x_{t,v}$ partitioned into groups $g\in\{$traffic, calendar, weather, infrastructure,
+events, incidents$\}$ with availability indicators $m_{t,v,g}$. Given the last $L=24$ steps, the task is to predict
+observed link speed $y_{t+h,v}$ for $h\in\{3,6,12\}$ steps (15/30/60 min), together with an interval
+$[\hat y-q_h,\hat y+q_h]$. A downstream advisory is admissible only if data quality, interval width, retrieved
+evidence, deterministic constraints and a simulation comparison all pass; otherwise the system returns a distinct
+DEFER or REJECT status. Training minimises a masked Huber loss over observed targets only.

@@ -1,0 +1,5 @@
+graph:
+  endpoint_join_m: 150          # downstream link start must lie within this distance of upstream link end
+  max_heading_change_deg: 100   # reject U-turn-like or crossing connections
+  same_link_name_bonus: true
+  reject_if_reverse_direction: true

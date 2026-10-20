@@ -1,0 +1,14 @@
+project:
+  title: "Predictive Analytics for Smart City Infrastructure - Multi-Horizon Traffic Congestion Forecasting and Explainable Agentic Signal Advisory Using Spatiotemporal Transformers and RAG"
+  timezone: America/New_York
+  study_area: manhattan_dot_speed_links   # bounded study area; NOT citywide validation
+  speed_unit: mph                          # verified from NYC DOT dataset documentation (see data audit)
+  modes: [LIVE, REPLAY, SIMULATION]
+  seed: 42
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  manifests: data/manifests
+  artifacts: artifacts
+  reports: reports

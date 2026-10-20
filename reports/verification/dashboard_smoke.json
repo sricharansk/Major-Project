@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-10-20T16:57:12.365264+00:00",
+  "command": "-m streamlit run /home/user/Major-Project/src/smartcity/dashboard/app.py --server.headless true --server.port 41439 --browser.gatherUsageStats false",
+  "port": 41439,
+  "health_status": 200,
+  "health_body": "ok",
+  "startup_s": 2.0,
+  "index_status": 200,
+  "log_tail": "2026-10-20 16:57:13.431 Could not bind IPv6 wildcard address :::41439; falling back to 0.0.0.0:41439.\n2026-10-20 16:57:13.500 Uvicorn server started on 0.0.0.0:41439\n\n  You can now view your Streamlit app in your browser.\n\n  Local URL: http://localhost:41439\n  Network URL: http://192.0.2.2:41439\n  External URL: http://35.202.184.100:41439\n\n  Stopping...\n",
+  "status": "OK"
+}
