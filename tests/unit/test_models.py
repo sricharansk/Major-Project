@@ -1,6 +1,5 @@
 """Shape / masking tests on small deterministic fixtures (software checks, not project evidence)."""
 
-import numpy as np
 import torch
 
 from smartcity.models.deep import AvailabilityGate, ContextGatedGraphTransformer, GRUForecaster, masked_huber

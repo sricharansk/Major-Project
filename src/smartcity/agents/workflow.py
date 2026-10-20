@@ -180,7 +180,7 @@ def build_graph(tk: Toolkit, checkpointer=None):
                "retrieved_evidence_ids": [e.chunk_id for e in ev]}
         if status != "SUPPORTED":
             out.update(decision=Decision.DEFER_EVIDENCE.value,
-                       decision_reasons=[f"INSUFFICIENT_EVIDENCE: no passage above min_score for query"])
+                       decision_reasons=["INSUFFICIENT_EVIDENCE: no passage above min_score for query"])
         return out
 
     @_timed("recommendation")

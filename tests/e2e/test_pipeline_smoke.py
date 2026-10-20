@@ -12,7 +12,6 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -63,7 +62,13 @@ def test_pipeline_runs_end_to_end(tmp_path):
     cli("features", "build", "--track", "operational")
     cli("train", "baselines")
     cli("train", "proposed", "--max-epochs", "1", "--windows-per-epoch", "64")
+    cli("train", "proposed", "--variants", "ablation_no_gate", "--max-epochs", "1", "--windows-per-epoch", "64")
     cli("evaluate", "forecasts")
+    out = cli("evaluate", "ablations", "--n-boot", "50")
+    assert "ablation_no_gate" in out and "ablation_no_weather" in out
+    assert (tmp_path / "reports" / "experiments" / "ablation_metrics.csv").exists()
     cli("uncertainty", "calibrate")
     assert (tmp_path / "artifacts" / "calibration" / "calibrator.json").exists()
     assert (tmp_path / "reports" / "experiments" / "forecast_metrics.csv").exists()
+    cli("report", "export")
+    assert (tmp_path / "reports" / "verification" / "mlflow_runs.json").exists()

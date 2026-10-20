@@ -138,8 +138,41 @@ def runtime_metrics() -> list[dict]:
     return rows
 
 
+def mlflow_runs() -> list[dict]:
+    """Export the MLflow run table (sqlite store) to reports/verification/mlflow_runs.json so the tracking record
+    travels with the repository without committing mlflow.db."""
+    import os
+
+    try:
+        os.environ.setdefault("MLFLOW_DISABLE_AGENT_HINT", "1")
+        import mlflow
+        from mlflow.tracking import MlflowClient
+    except Exception as exc:  # pragma: no cover - mlflow missing
+        write_json(VER / "mlflow_runs.json", {"status": "BLOCKED", "reason": f"mlflow import failed: {exc}"})
+        return []
+    uri = os.environ.get("MLFLOW_TRACKING_URI", f"sqlite:///{R / 'mlflow.db'}")
+    if uri.startswith("sqlite:///") and not Path(uri[len("sqlite:///"):]).exists():
+        write_json(VER / "mlflow_runs.json", {"status": "NOT_RUN", "reason": f"no tracking store at {uri}"})
+        return []
+    mlflow.set_tracking_uri(uri)
+    client = MlflowClient()
+    rows = []
+    for exp in client.search_experiments():
+        for run in client.search_runs([exp.experiment_id], max_results=500):
+            rows.append({"experiment": exp.name, "run_id": run.info.run_id, "run_name": run.info.run_name,
+                         "status": run.info.status, "start_time_utc": dt.datetime.fromtimestamp(
+                             run.info.start_time / 1000, dt.UTC).isoformat() if run.info.start_time else None,
+                         "params": dict(run.data.params), "metrics": {k: round(v, 5) for k, v in run.data.metrics.items()},
+                         "tags": {k: v for k, v in run.data.tags.items() if not k.startswith("mlflow.")}})
+    write_json(VER / "mlflow_runs.json", {"status": "OK" if rows else "EMPTY", "tracking_uri": uri, "n_runs": len(rows),
+                                          "exported_at": dt.datetime.now(dt.UTC).isoformat(), "runs": rows})
+    return rows
+
+
 def run() -> dict:
     VER.mkdir(parents=True, exist_ok=True)
     ev = evidence_registry()
     rt = runtime_metrics()
-    return {"evidence_rows": len(ev), "verified": sum(r["test_status"] == "VERIFIED" for r in ev), "runtime_rows": len(rt)}
+    ml = mlflow_runs()
+    return {"evidence_rows": len(ev), "verified": sum(r["test_status"] == "VERIFIED" for r in ev), "runtime_rows": len(rt),
+            "mlflow_runs": len(ml)}

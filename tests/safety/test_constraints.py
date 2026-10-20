@@ -1,6 +1,5 @@
 """Safety tests: every malformed / unsafe candidate must be rejected or deferred deterministically."""
 
-import json
 
 import pytest
 from pydantic import ValidationError

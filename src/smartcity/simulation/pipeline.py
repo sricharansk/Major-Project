@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import csv
-import json
 import math
 import re
 
@@ -170,7 +169,6 @@ def declare_demand() -> dict:
 
 
 def build_routes(meta: dict, scenario: dict) -> str:
-    from pathlib import Path
 
     cfg = settings.load("simulation")["simulation"]
     d = meta["demand"]

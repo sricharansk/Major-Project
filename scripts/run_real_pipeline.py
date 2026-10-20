@@ -33,7 +33,10 @@ STAGES = [
     "features build --track retrospective",
     "train baselines --track operational",
     "train proposed --track operational",
+    ("train proposed --track operational --variants ablation_no_gate,ablation_no_weather,ablation_no_infrastructure,"
+     "ablation_no_events,ablation_no_incidents"),
     "evaluate forecasts --track operational",
+    "evaluate ablations --track operational",
     "uncertainty calibrate --track operational",
     "explain alerts --track operational",
     "train baselines --track retrospective",

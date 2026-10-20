@@ -194,6 +194,57 @@ def evaluate_forecasts(track: str = "operational", models: str = "persistence,hi
         typer.echo(f"{r['model']:24s} h={r['horizon_min']:>3} n={r['n_valid_targets']} MAE={r['mae_mph']:.3f} RMSE={r['rmse_mph']:.3f}")
 
 
+@eval_app.command("ablations")
+def evaluate_ablations(track: str = "operational", reference: str = "proposed", n_boot: int = 1000):
+    """Ablation table: test MAE (mean over horizons) of every trained ablation_* variant vs the reference model,
+    with a day-block bootstrap 95% CI on the paired MAE difference. Variants that were not trained are listed as
+    NOT_RUN so the paper table never silently omits them."""
+    import csv as _csv
+
+    from smartcity.training import metrics as M
+    from smartcity.training.data import load_data
+    from smartcity.training.runner import DEEP_VARIANTS
+
+    data = load_data(track)
+    o = data.origins["test"]
+    Y = data.Y[o]
+    day_index = np.asarray(data.times[o]).astype("datetime64[D]").astype("int64")
+    loaded = {r["info"]["model"]: r for r in load_results(track, [reference] + [v for v in DEEP_VARIANTS if v.startswith("ablation_")])}
+    if reference not in loaded:
+        raise typer.BadParameter(f"reference model {reference!r} is not in the {track} registry")
+    ref = loaded[reference]["preds"]["test"]
+    mask = np.isfinite(Y) & np.isfinite(ref)
+    for r in loaded.values():
+        mask &= np.isfinite(r["preds"]["test"])
+    rows = []
+    for v in [reference] + [v for v in DEEP_VARIANTS if v.startswith("ablation_")]:
+        if v not in loaded:
+            rows.append({"variant": v, "track": track, "run_id": "", "mae_mean_mph": "", "delta_vs_proposed_mph": "",
+                         "ci95_low": "", "ci95_high": "", "n_days": "", "status": "NOT_RUN"})
+            continue
+        P = loaded[v]["preds"]["test"]
+        mh = M.by_horizon(Y, P, data.horizon_minutes, mask)
+        mae = float(np.mean([x["mae"] for x in mh.values()]))
+        if v == reference:
+            d = {"mae_diff": 0.0, "ci95": [0.0, 0.0], "n_days": len(np.unique(day_index))}
+        else:
+            d = M.day_block_bootstrap_mae_diff(Y, P, ref, np.repeat(day_index[:, None, None], 1, axis=1)
+                                               .repeat(Y.shape[1], 1).repeat(Y.shape[2], 2), n_boot=n_boot)
+        rows.append({"variant": v, "track": track, "run_id": loaded[v]["info"]["run_id"], "mae_mean_mph": round(mae, 4),
+                     "delta_vs_proposed_mph": round(d.get("mae_diff", 0.0), 4),
+                     "ci95_low": round(d["ci95"][0], 4) if "ci95" in d else "",
+                     "ci95_high": round(d["ci95"][1], 4) if "ci95" in d else "", "n_days": d.get("n_days", ""),
+                     "status": "REFERENCE" if v == reference else "OK"})
+    out = settings.ROOT / "reports" / "experiments" / "ablation_metrics.csv"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "w", newline="") as fh:
+        w = _csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        w.writeheader()
+        w.writerows(rows)
+    for r in rows:
+        typer.echo(f"{r['variant']:28s} MAE={r['mae_mean_mph']} delta={r['delta_vs_proposed_mph']} [{r['ci95_low']}, {r['ci95_high']}] {r['status']}")
+
+
 @unc_app.command("calibrate")
 def uncertainty_calibrate(track: str = "operational", model: str = "proposed"):
     from smartcity.training.data import load_data
@@ -231,9 +282,9 @@ def explain_alerts(track: str = "operational", n_alerts: int = 12):
     from smartcity.training.runner import predict_deep
 
     data, model = _load_frozen(track)
+    reg = read_json(registry_path(track))
     results = load_results(track, ["proposed"])
     # tree baselines need their models for TreeExplainer
-    reg = read_json(registry_path(track))
     for name in ("lightgbm",):
         if name in reg:
             import lightgbm as lgb

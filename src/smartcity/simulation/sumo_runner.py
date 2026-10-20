@@ -8,9 +8,7 @@ labelled mode=SIMULATION.
 
 from __future__ import annotations
 
-import csv
 import hashlib
-import math
 import os
 import subprocess
 import time
@@ -20,7 +18,7 @@ from pathlib import Path
 import numpy as np
 
 from smartcity import settings
-from smartcity.utils import new_run_id, sha256_file, write_json
+from smartcity.utils import new_run_id, write_json
 
 SIM = settings.ROOT / "simulation"
 
