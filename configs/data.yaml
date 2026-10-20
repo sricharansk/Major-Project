@@ -1,0 +1,31 @@
+sources:
+  speeds:      {dataset_id: i4gi-tjb9, role: target, time_col: data_as_of, tz_interpretation: America/New_York}
+  volume:      {dataset_id: 7ym2-wayt, role: demand_profile}
+  events:      {dataset_id: tvpp-9vvx, role: event_context}
+  events_hist: {dataset_id: bkfu-528j, role: event_context_historical}
+  collisions:  {dataset_id: h9gi-nx95, role: retrospective_incident_context}
+  sr311:       {dataset_id: erm2-nwe9, role: infrastructure_context}
+  weather_archive: {endpoint: "https://archive-api.open-meteo.com/v1/archive", role: retrospective_weather}
+  weather_forecast: {endpoint: "https://historical-forecast-api.open-meteo.com/v1/forecast", role: operational_weather_proxy}
+study:
+  borough: Manhattan
+  min_link_coverage: 0.6        # fraction of 5-min bins observed in the training period to keep a link
+grid:
+  frequency_minutes: 5
+  bin_label: right               # value at t aggregates observations in [t-5min, t)
+  lookback_steps: 24
+  horizon_minutes: [15, 30, 60]
+  horizon_steps: [3, 6, 12]
+  max_ffill_steps: 3             # bounded causal forward fill for INPUT features only
+splits:
+  train: 0.60
+  val: 0.15
+  calib: 0.10
+  test: 0.15
+context:
+  event_radius_m: 1000
+  collision_radius_m: 500
+  collision_publication_lag_hours: 24   # assumed; collisions used ONLY in the retrospective track
+  sr311_radius_m: 500
+  sr311_window_hours: 24
+  sr311_publication_lag_hours: 24     # assumed public-availability lag (disclosed assumption)
