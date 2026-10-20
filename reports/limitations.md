@@ -10,8 +10,8 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
    neighbours are therefore often far apart, which limits what a spatial layer can learn. Link set in this run:
    `data/raw/speeds_links/links_since_2026-09-20.json.gz`: 125 links citywide with geometry, of which 26 are in
    Manhattan (the full-year group-by timed out server-side six times, so the set is "links active since
-   2026-09-20", recorded in the fetch log). After the training-coverage eligibility rule, 19 Manhattan links form the
-   modelling grid.
+   2026-09-20", recorded in the fetch log). 19 links carry at least one valid 2026 observation (the grid); after the
+   training-coverage eligibility rule (item 7c) 16 links are modelled, and three of those have no test-period data.
 2. **Observation window.** Speeds cover 2026-01-01 to 2026-10-20 only; seasonality beyond that is not learned.
 3. **Collision publication lag.** The collisions dataset's latest `crash_date` was 2026-06-11 at download time
    (about four months of lag), so collisions are retrospective-only and absent from the test period. The
@@ -48,6 +48,11 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
    no results had been produced on the 0.6 set. Two eligible links lose their feed before or during the evaluation
    period (TBB W to FDR S after 2026-05-29; BQE N to the Manhattan Bridge after 2026-09-02) and appear as
    NOT_EVALUATED in `reports/experiments/link_test_support_<track>.csv`.
+7e. **Compute budget of the reported run.** Every deep model (GRU, temporal Transformer, proposed model, ablations)
+   was trained with `max_train_windows_per_epoch: 4096` (about 8% of the 50,416 training origins, a fresh sample
+   each epoch), early stopping with patience 5 and at most 30 epochs, to finish inside a fixed deadline on a 6 GB
+   laptop GPU. The budget is identical for all deep models and recorded in each run's `config.yaml`; models trained
+   on all windows could rank differently.
 7d. **Advisory corridor vs. forecast links.** The SUMO corridor (West Street) has signalized intersections, but the
    DOT links on it are the dead West Side feeds and the West St S approach to the Brooklyn-Battery Tunnel; the
    forecastable links are otherwise limited-access roads (FDR, BQE, tunnels, bridges). The signal-advisory
@@ -57,20 +62,32 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
 ## Modelling and evaluation
 
 8. **Single seed, single split.** One chronological split and one seed per model; seed variance is not reported.
-   Paired comparisons use a day-block bootstrap, which is the only variance estimate provided.
+   Paired comparisons use a day-block bootstrap, which is the only variance estimate provided. The measured margins
+   between the proposed model, the GRU and the temporal-only Transformer (0.01-0.05 mph MAE) are inside what seeds
+   could change, so no superiority over those two is claimed.
+8a. **Weather features hurt (negative result).** Removing the operational weather group lowers test MAE by 0.046 mph
+   (95% day-block bootstrap CI [-0.069, -0.021]); the re-forecast proxy adds noise on this highway-heavy link set.
+   The result is reported, not tuned away.
 9. **Tree baselines are strided.** XGBoost/LightGBM train on a strided subsample of train origins
    (`max_train_rows`), recorded in each run's config; this may disadvantage them slightly.
 10. **Conformal coverage is marginal.** Split conformal guarantees marginal coverage under exchangeability, which
     traffic time series violate; per-link intervals are only produced where the calibration sample is large enough.
+    Measured: 0.909/0.907/0.903 overall at 15/30/60 min but 0.798/0.794/0.757 on congested targets (speed ratio
+    < 0.5), and the mean interval widths (24.3-29.5 mph) are of the order of the links' typical speeds.
 11. **Explanations describe the model**, not traffic causality. KernelSHAP over feature groups is exact at the group
-    level but uses a background drawn from the calibration partition; neighbour sensitivity perturbs inputs the
-    model may never have seen jointly.
+    level but uses a background of 16 windows drawn from the training partition; neighbour sensitivity perturbs the
+    graph in ways the model never saw during training, and because message passing is directed only a link's
+    incoming edges can change its own prediction (an out-edge-only link shows an exact 0.0 change). Explained points
+    are restricted to (origin, link) pairs with fully observed recent inputs and an observed target; the first pass
+    had selected a dark feed (progress.md, Milestone 3).
 
 ## Knowledge, LLM and agents
 
 12. **Corpus size.** The approved corpus is small (U.S. federal guidance, SUMO documentation, a project-defined
     policy). It is not NYC DOT's signal-timing policy, which is not published in a retrievable form; the
     project-defined policy is labelled as such and must not be read as an agency rule.
+12a. **Chunk length.** 171 of the 1,633 indexed chunks exceed the encoder's 256-token window and are truncated by it
+    (`knowledge/indexes/index_manifest.json`); mostly tables of the PDF manual.
 13. **Retrieval labels** in `knowledge/retrieval_eval_queries.csv` were drafted by the project and are marked
     `drafted_by_project_unreviewed`; recall/MRR are therefore an internal consistency check, not an external benchmark.
 14. **LLM.** A 7B quantised model (`qwen2.5:7b`, Q4_K_M) run through Ollama on the author's workstation; outputs are
@@ -78,7 +95,11 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     The LLM is never the safety boundary.
 15. **Agent evaluation cases** are a handful of REPLAY cases chosen by rule from the test partition (highest
     congestion, stale-data stress, wide-interval stress, insufficient-evidence probe); it is a functional
-    evaluation of the workflow, not a statistical one.
+    evaluation of the workflow, not a statistical one. In the reported run (19 policy-by-case runs, 12 LLM calls)
+    the LLM recommended monitor_only on the one mapped corridor link, so no candidate reached the simulation gate and
+    the SIMULATION_PASSED path is exercised by the software tests only. A first pass of this stage had silently
+    failed before the LLM call (missing `model_run_id`); it was fixed and re-run, and the failed pass is kept on the
+    workstation.
 
 ## Simulation
 
@@ -99,8 +120,21 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     recorded in `reports/verification/environment.json` of that run.
 20. **Cloud container restrictions.** The development container could not reach NYC Open Data, Hugging Face or
     the workstation's Ollama; the recorded-request batch executor (`scripts/ollama_batch.py`) exists for that reason.
-21. **Docker build** is verified only where `reports/verification/docker_smoke.json` says so; otherwise it is
-    BLOCKED with the reason recorded.
+21. **Docker build** is verified on the workstation only (`reports/verification/docker_smoke.json`: compose build
+    OK, 3 images); the development container cannot build images.
+23. **Artifacts not in git.** Model weights, prediction arrays, raw data, the FAISS index, document copies and the two
+    superseded runs (ablation bootstrap, first agents pass) stay on the workstation; run ids, hashes and the
+    stage log are in `reports/verification/`.
+24. **Controller comparison inconclusive (oversaturated testbed).** All 45 runs completed
+    (`reports/experiments/simulation_metrics.csv`), but the declared 1,200 veh/h per direction gridlocks the
+    corridor under every controller: per run 1,236-2,877 completed trips against 3,682-6,725 unfinished and
+    1,330-2,268 teleports (time-to-teleport 300 s). The forecast rule's lower mean time loss per completed trip
+    (739 vs 781 s in the event surge, 806 vs 898 s in the incident) comes with fewer completed trips and as many
+    teleports, i.e. survivorship, and the rule is identical to fixed-time in the routine peak because it only acts
+    when congestion is forecast. No controller ranking or simulated gain is claimed; the paired acceptance check now
+    also records completed trips and teleports and fails a candidate that completes fewer trips than the baseline.
+    Demand calibration from observed counts (no ATR count matched the corridor) is future work; a lower-demand
+    sensitivity run, if executed, is reported as a declared-assumption sensitivity, not as calibration.
 22. **Bibliography.** `paper/REFERENCES_STATUS.md` records the publisher-record check of every entry (2026-10-20);
     the FHWA 2008 Signal Timing Manual and the 2009 MUTCD are superseded editions, cited because they are the
     public-domain texts the corpus holds.

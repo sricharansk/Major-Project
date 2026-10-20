@@ -1,15 +1,39 @@
 \label{sec:limitations}
-The DOT link set is sparse and highway-heavy, so graph neighbours are often distant and the spatial layer has less
-to exploit than on a dense sensor network; the full-year link enumeration timed out server-side and the study uses
-the 26 Manhattan links active since 2026-09-20; about half of their raw records are zero-speed
-no-measurement rows, treated as missing. Monitored segments do not tile the highways, so the graph needs an explicit
-corridor-continuity rule and remains sparse. Operational weather is Open-Meteo's historical-forecast product, a re-forecast
-proxy rather than an archived agency forecast. Collisions lag publication by months and are retrospective only.
-A single seed and a single chronological split are used; the only variance estimate is a day-block bootstrap on
-paired differences. Split conformal intervals carry a marginal guarantee under exchangeability, which traffic series
-violate. The approved corpus is small and the retrieval labels were drafted by the project without external review.
-The language model is a 7B quantised model served locally; its advisories are only as good as the evidence and the
-constraints that follow it. The SUMO testbed is a scenario built from OSM geometry with partly assumed demand and
-default signal programs, not a calibrated digital twin, and contains no pedestrian demand. Container deployment was
-not exercised end to end because of registry rate limits in the development environment. The complete, maintained
-list is in \texttt{reports/limitations.md}.
+\textit{Data.} The DOT link set is sparse and highway-heavy; the full-year link enumeration timed out server-side, so
+the study uses the 26 Manhattan links active since 2026-09-20, of which seven are dead feeds, three more have under
+3\,\% coverage, three lose their feed before or during the test partition (NOT\_EVALUATED) and 16 are modelled; about
+half of all raw records are zero-speed no-measurement rows, treated as missing. Monitored segments do not tile the
+highways and the published polylines stop short of the named link ends, so the graph needs name-based continuity
+rules and remains sparse (16 directed edges, 6 isolated nodes before eligibility). The eligibility threshold was
+lowered from the planned 0.6 to 0.5 training coverage after the coverage audit and before any result on the 0.6 set
+existed; both are recorded. Operational weather is Open-Meteo's historical-forecast product, a re-forecast proxy
+rather than an archived agency forecast. Collisions lag publication by months and are retrospective only.
+
+\textit{Modelling and evaluation.} All deep models were trained under a recorded budget of 4{,}096 windows per epoch
+with early stopping, one seed and one chronological split; the only variance estimate is a day-block bootstrap on
+paired differences, and the proposed model's margin over the GRU and temporal Transformer is inside what seeds could
+change. Split conformal intervals carry a marginal guarantee under exchangeability, which traffic series violate; the
+measured coverage under congestion is 0.76--0.80. Explanations describe the trained model, with a background drawn
+from the training partition; neighbour sensitivity perturbs the graph in ways the model never saw during training,
+and only incoming edges can change a link's own prediction.
+
+\textit{Knowledge, language model and agents.} The approved corpus is small and is not NYC DOT's signal-timing
+policy; the project-defined policy is labelled as such. 171 of 1{,}633 chunks exceed the encoder's 256-token window.
+The retrieval labels were drafted by the project without external review, so recall and MRR are an internal
+consistency check. The language model is a 7B quantised model served locally; its advisories are only as good as the
+evidence and the constraints that follow it. The advisory evaluation is functional (seven cases, four policies, 19
+runs), not statistical, and on the mapped corridor the model proposed no signal change, so the simulation acceptance
+path was not exercised by a real advisory. Two defects were found during the run and fixed before the reported
+numbers were produced (the bootstrap day index, and a missing field that had silently prevented every LLM call in a
+first agent pass); both superseded runs are kept as local evidence and described in \texttt{progress.md}.
+
+\textit{Simulation.} The SUMO testbed is a scenario built from OSM geometry with declared demand and default signal
+programs, not a calibrated digital twin, and contains no pedestrian demand; the mapped DOT links are not the
+forecastable ones, so the controller comparison is a transfer demonstration. Under the declared demand the corridor
+gridlocks under every controller (more unfinished than completed trips, 1{,}300--2{,}300 teleports per run), so the
+controller comparison is inconclusive and no simulated gain is claimed. \textit{Engineering.} Data download,
+training, LLM inference and simulation ran on the authors' workstation (torch 2.11.0+cu128, a recorded deviation from
+the lock file); the development container could not reach the data portals or the model server, and the container
+images were built and smoke-tested on the workstation only. Model weights, prediction arrays, raw data and the FAISS
+index are not in the repository; their hashes and run ids are. The complete, maintained list is in
+\texttt{reports/limitations.md}.

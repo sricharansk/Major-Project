@@ -86,6 +86,30 @@ class Toolkit:
         self.gate_cfg = calibrator["gate_config"]
 
 
+def candidate_passes(r: dict, acc: dict) -> tuple[bool, str]:
+    """Deterministic simulation-gate acceptance for one paired candidate result.
+
+    A candidate passes only if corridor delay improves by at least ``min_delay_improvement_pct``, side-road delay
+    rises by at most ``max_side_road_delay_increase_pct``, it teleports at most ``max_teleports`` vehicles AND it does
+    not complete fewer trips than the baseline by more than ``max_completed_trips_decrease_pct`` (default 0): time
+    loss is a per-completed-trip average, so under saturation a controller can lower it by letting fewer vehicles
+    through (survivorship).  Results written before the completed-trip fields existed are judged on the other three
+    criteria and say so."""
+    d, sr, tp = r.get("delay_improvement_pct"), r.get("side_road_delay_change_pct"), r.get("teleports_candidate", 0)
+    ok = (d is not None and d >= acc["min_delay_improvement_pct"]
+          and (sr is None or sr <= acc["max_side_road_delay_increase_pct"])
+          and tp <= acc["max_teleports"])
+    why = f"delay change {d}% improvement, side-road {sr}%, teleports {tp}"
+    ct = r.get("completed_trips_change_pct")
+    if "completed_trips_change_pct" in r:
+        limit = acc.get("max_completed_trips_decrease_pct", 0.0)
+        ok = ok and ct is not None and ct >= -limit
+        why += f", completed trips {ct}% (limit -{limit}%)"
+    else:
+        why += ", completed trips not recorded (older result)"
+    return ok, why
+
+
 def build_graph(tk: Toolkit, checkpointer=None):
     from smartcity.agents.llm import propose
     from smartcity.safety.constraints import check_response
@@ -282,12 +306,8 @@ def build_graph(tk: Toolkit, checkpointer=None):
             if r.get("status") != "OK":
                 reasons.append(f"{r['candidate_id']}: simulation {r.get('status')} {r.get('error')}")
                 continue
-            ok = (r["delay_improvement_pct"] is not None and r["delay_improvement_pct"] >= acc["min_delay_improvement_pct"]
-                  and (r["side_road_delay_change_pct"] is None or r["side_road_delay_change_pct"] <= acc["max_side_road_delay_increase_pct"])
-                  and r["teleports_candidate"] <= acc["max_teleports"])
-            reasons.append(f"{r['candidate_id']}: delay change {r['delay_improvement_pct']}% improvement, side-road "
-                           f"{r['side_road_delay_change_pct']}%, teleports {r['teleports_candidate']} -> "
-                           f"{'PASS' if ok else 'FAIL'}")
+            ok, why = candidate_passes(r, acc)
+            reasons.append(f"{r['candidate_id']}: {why} -> {'PASS' if ok else 'FAIL'}")
             if ok and (best is None or r["delay_improvement_pct"] > best.get("delay_improvement_pct", -1e9)):
                 best = r
         if best is None:

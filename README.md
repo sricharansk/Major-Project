@@ -65,6 +65,27 @@ make dashboard  # http://localhost:8501
 mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
+## Results of the real-data run (2026-10-20/21, workstation)
+
+Every number is read from `reports/experiments/` and `artifacts/`; `python scripts/results_summary.py` prints them.
+Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 3), `reports/limitations.md`.
+
+* 26 Manhattan DOT links, 7 dead feeds, 16 modelled, 3 without test data; test 2026-09-06..10-20 (45 days,
+  ~144k targets per horizon); all deep models trained under a recorded 4,096-windows-per-epoch budget, one seed.
+* Test MAE (mph, 15/30/60 min): persistence 5.14/6.06/7.29, XGBoost 4.82/5.58/6.31, GRU 4.72/5.37/6.17,
+  temporal Transformer 4.73/5.34/6.18, **proposed 4.77/5.33/6.16** (best at 30/60 min by 0.01-0.03 mph; not a
+  seed-resolvable margin over the GRU/Transformer).
+* Ablations (day-block bootstrap): no gate +0.067 [0.048, 0.086]; no 311 +0.014 [0.002, 0.026];
+  **no weather -0.046 [-0.069, -0.021] (negative result)**.
+* Conformal 90% intervals: coverage 0.91/0.91/0.90 overall, 0.80/0.79/0.76 under congestion; gate defers ~26%,
+  retained MAE 3.72/4.38/5.25.
+* Retrieval: 28 queries, Recall@8 0.818, MRR 0.702 (project-drafted labels). LLM agents: 12/12 schema-valid calls;
+  3/3 fabricated citations without retrieval (all rejected), 0/9 with; constraints reject the unmapped link; the
+  LLM chose monitor-only on the mapped corridor, so no advisory reached the simulation gate.
+* SUMO controller comparison (45 matched-seed runs, real West St corridor): **inconclusive**; the declared demand
+  gridlocks the corridor under every controller (unfinished trips > completed, 1.3k-2.3k teleports per run), so the
+  forecast rule's lower per-trip time loss is survivorship, not improvement (`reports/limitations.md` 16, 24).
+
 ## Honesty rules this repository follows
 
 * No synthetic or illustrative data is presented as a result; test fixtures are labelled as fixtures.

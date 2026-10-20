@@ -6,6 +6,6 @@
   },
   "PAPER-01": {
     "status": "PARTIAL",
-    "limitations": "Paper tables are generated from artifacts; results/discussion sections are filled only after the real-data run bibliography entries were checked against publisher records on 2026-10-20 (paper/REFERENCES_STATUS.md; one DOI string still to confirm on IEEE Xplore)."
+    "limitations": "Results, discussion, limitations and conclusion written from the run artifacts on 2026-10-21 (paper_claims.csv); the simulation subsection and table stay NOT RUN until simulation_metrics.csv is pushed from the workstation; one DOI string (johnson2019faiss) unconfirmed."
   }
 }

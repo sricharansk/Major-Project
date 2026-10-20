@@ -122,7 +122,9 @@ def explain_alert(model, data, origin: int, n: int, h_idx: int, n_bg: int = 16, 
 @torch.no_grad()
 def neighbour_removal(model, data, origins: np.ndarray, from_predict) -> list[dict]:
     """Change in test MAE when graph edges touching each link's neighbours are removed (one link at a time
-    for the most connected links) — a model-sensitivity analysis."""
+    for the most connected links) — a model-sensitivity analysis.  Message passing is directed (source -> target),
+    so only a link's incoming edges can change its own prediction; n_in_edges / n_out_edges are recorded so that an
+    exact 0.0 change on an out-only link (e.g. the most upstream segment of a corridor) is read correctly."""
     rows = []
     ei = data.edge_index
     deg = np.bincount(np.concatenate([ei[0], ei[1]]), minlength=data.X.shape[1]) if ei.size else np.zeros(1)
@@ -137,7 +139,9 @@ def neighbour_removal(model, data, origins: np.ndarray, from_predict) -> list[di
             drop[k] = True
         P = from_predict(model, data, origins, node_drop=drop)
         ok = np.isfinite(Y[:, :, n])
-        rows.append({"link_id": data.meta["link_ids"][n], "n_neighbours": len(nb),
+        n_in = int((ei[1] == n).sum())   # edges INTO n: the only ones that can change n's own prediction (messages
+        n_out = int((ei[0] == n).sum())  # flow source -> target), so an out-only link shows an exact 0.0 change
+        rows.append({"link_id": data.meta["link_ids"][n], "n_neighbours": len(nb), "n_in_edges": n_in, "n_out_edges": n_out,
                      "mae_target_with_graph": float(np.abs(base[:, :, n] - Y[:, :, n])[ok].mean()),
                      "mae_target_neighbour_edges_removed": float(np.abs(P[:, :, n] - Y[:, :, n])[ok].mean()),
                      "mean_abs_prediction_change_mph": float(np.abs(P[:, :, n] - base[:, :, n]).mean()),

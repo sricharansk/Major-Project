@@ -1,12 +1,12 @@
-\begin{table*}[t]\centering\caption{SUMO testbed (SIMULATION): mean over completed matched seeds. Scenario-based testbed with OSM geometry and declared demand; not a calibrated digital twin.}}\label{{tab:sim}}
-\begin{tabular}{llrrrrrr}\toprule Scenario & Controller & Seeds & Time loss (s) & Corridor TL (s) & Side TL (s) & Arrived & Teleports \\ \midrule
-event\_surge & actuated & 5 & 1118.4 & 1877.9 & 965.1 & 3393 & 1667.4 \\
-event\_surge & fixed\_time & 5 & 780.5 & 836.6 & 774.6 & 2494 & 1798.8 \\
-event\_surge & forecast\_rule & 5 & 739.0 & 715.3 & 741.9 & 2395 & 1834.2 \\
-incident\_reduced\_capacity & actuated & 5 & 1070.1 & 1816.3 & 946.1 & 2746 & 1971.2 \\
-incident\_reduced\_capacity & fixed\_time & 5 & 898.4 & 1405.6 & 863.5 & 1784 & 2267.6 \\
-incident\_reduced\_capacity & forecast\_rule & 5 & 806.0 & 1117.3 & 786.2 & 1625 & 2173.6 \\
-routine\_peak & actuated & 5 & 987.5 & 1470.8 & 847.3 & 2993 & 1399.0 \\
-routine\_peak & fixed\_time & 5 & 971.6 & 1647.9 & 829.6 & 2751 & 1330.4 \\
-routine\_peak & forecast\_rule & 5 & 971.6 & 1647.9 & 829.6 & 2751 & 1330.4 \\
+\begin{table*}[t]\centering\caption{SUMO testbed (SIMULATION): mean over completed matched seeds. Scenario-based testbed with OSM geometry and declared demand, not a calibrated digital twin. Time loss is the mean per \emph{completed} trip; completed, unfinished and teleported vehicles are per run, so a lower time loss with fewer completed trips is survivorship, not improvement.}\label{tab:sim}
+\begin{tabular}{llrrrrrrrr}\toprule Scenario & Controller & Seeds & Loaded & Completed & Unfinished & Teleports & Time loss (s) & Corridor TL (s) & Side TL (s) \\ \midrule
+event\_surge & actuated & 5 & 8350 & 2877 & 4957 & 1667 & 1118.4 & 1877.9 & 965.1 \\
+event\_surge & fixed\_time & 5 & 8350 & 2087 & 5856 & 1799 & 780.5 & 836.6 & 774.6 \\
+event\_surge & forecast\_rule & 5 & 8350 & 2014 & 5955 & 1834 & 739.0 & 715.3 & 741.9 \\
+incident\_reduced\_capacity & actuated & 5 & 8350 & 2240 & 5604 & 1971 & 1070.1 & 1816.3 & 946.1 \\
+incident\_reduced\_capacity & fixed\_time & 5 & 8350 & 1384 & 6566 & 2268 & 898.4 & 1405.6 & 863.5 \\
+incident\_reduced\_capacity & forecast\_rule & 5 & 8350 & 1236 & 6725 & 2174 & 806.0 & 1117.3 & 786.2 \\
+routine\_peak & actuated & 5 & 6675 & 2563 & 3682 & 1399 & 987.5 & 1470.8 & 847.3 \\
+routine\_peak & fixed\_time & 5 & 6675 & 2358 & 3924 & 1330 & 971.6 & 1647.9 & 829.6 \\
+routine\_peak & forecast\_rule & 5 & 6675 & 2358 & 3924 & 1330 & 971.6 & 1647.9 & 829.6 \\
 \bottomrule\end{tabular}\end{table*}

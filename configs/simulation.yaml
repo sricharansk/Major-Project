@@ -13,6 +13,7 @@ simulation:
     min_delay_improvement_pct: 1.0
     max_side_road_delay_increase_pct: 10.0
     max_teleports: 0
+    max_completed_trips_decrease_pct: 0.0   # a candidate may not complete fewer trips than the baseline (survivorship guard)
 scenario:
   osm_name: west_st_corridor
   corridor_name_regex: "^(West Street|West Side Highway|Route 9A)$"

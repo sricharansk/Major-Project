@@ -226,11 +226,18 @@ def paired_candidate_eval(meta: dict, scenario: dict, candidate: dict, seeds: li
         return float(np.mean(vals)) if vals else None
     bl, cl = mean(base, "corridor_mean_time_loss_s"), mean(cand, "corridor_mean_time_loss_s")
     bs, cs = mean(base, "side_road_mean_time_loss_s"), mean(cand, "side_road_mean_time_loss_s")
+    # Time loss is averaged over COMPLETED trips only, so a candidate that lets fewer vehicles through can show a lower
+    # time loss by survivorship; completed and unfinished trips are therefore reported and checked by the gate.
+    bc, cc = mean(base, "completed_trips"), mean(cand, "completed_trips")
     return {"candidate_id": candidate["candidate_id"], "scenario": scenario["name"], "seeds_completed": len(ok),
             "status": "OK" if ok else "ERROR", "error": None if ok else (cand[0].get("error") or base[0].get("error")),
             "baseline_corridor_time_loss_s": bl, "candidate_corridor_time_loss_s": cl,
             "delay_improvement_pct": None if not bl or cl is None else round(100 * (bl - cl) / bl, 2),
             "side_road_delay_change_pct": None if not bs or cs is None else round(100 * (cs - bs) / bs, 2),
+            "baseline_completed_trips": bc, "candidate_completed_trips": cc,
+            "completed_trips_change_pct": None if not bc or cc is None else round(100 * (cc - bc) / bc, 2),
+            "unfinished_trips_baseline": mean(base, "unfinished_trips"), "unfinished_trips_candidate": mean(cand, "unfinished_trips"),
+            "teleports_baseline": int(sum(base[i]["metrics"]["teleports"] for i in ok)) if ok else 0,
             "teleports_candidate": int(sum(cand[i]["metrics"]["teleports"] for i in ok)) if ok else 0,
             "control_log": [c["control_log"] for c in cand], "sim_run_ids": [r["run_id"] for r in base + cand],
             "pedestrian_protection": "NOT_EVALUATED"}

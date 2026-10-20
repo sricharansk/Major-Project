@@ -1,4 +1,148 @@
-% Filled from artifacts after the real-data run. Until then this section states only that no result is claimed.
-\textit{Status.} The real-data run is in progress on the authors' workstation; the forecasting, calibration,
-retrieval, advisory and simulation tables above are regenerated when it completes, and this narrative is written
-from them. No quantitative claim is made in this version of the manuscript.
+% Written from the artifacts of the 2026-10-20/21 workstation run. Every number below is read from a file in
+% reports/experiments/, reports/data_audit/, artifacts/ or reports/verification/ (see paper_claims.csv); nothing is
+% computed or rounded by hand beyond the printed precision.
+\subsection{What was actually run}
+\label{sec:res:run}
+All numbers in this section come from one real-data run of the released pipeline on the authors' workstation (Windows
+11, RTX 4050 Laptop GPU with 6\,GB, SUMO 1.28.0, Ollama with \texttt{qwen2.5:7b}), stage by stage, with the stage log,
+run ids and hashes recorded in \texttt{reports/verification/}. Of the 26 Manhattan DOT links, seven West Side
+Highway links report a speed of zero in every 2026 record (the feed's no-measurement encoding) and never enter the
+5-minute grid; of the 19 gridded links, 16 pass the training-coverage rule and form the modelling set, and three of
+those (FDR N to the Triborough Bridge, Triborough Bridge westbound, BQE N to the Manhattan Bridge) have no valid
+observation inside the test partition and are reported as NOT\_EVALUATED in
+\texttt{reports/experiments/link\_test\_support\_operational.csv}. Of 1{,}968{,}303 raw speed records, 978{,}018
+carry a zero speed and 59 exceed the plausibility bound; 990{,}226 are valid and the gridded observed fraction is
+0.611. The chronological partitions over the 84{,}084 grid steps are 60/15/10/15\,\%: calibration covers 2026-08-08
+04:20 to 09-06 08:55\,UTC and the test partition 2026-09-06 09:00 to 2026-10-20 04:00\,UTC (45 days; 144{,}217,
+144{,}213 and 144{,}205 valid targets at 15, 30 and 60 minutes, identical for every model).
+
+To finish inside a fixed compute deadline, every deep model was trained with a recorded budget of 4{,}096 training
+windows per epoch, sampled afresh each epoch without replacement from the 50{,}416 training origins (about 8\,\% of
+them), with early stopping on validation MAE (patience 5, at most 30 epochs) and one seed. The budget is identical for
+the GRU, the temporal Transformer, the proposed model and its ablations, and is stated here because it bounds how far
+each model was trained, not because it is a tuned hyper-parameter. Under it the proposed model stopped after 14 epochs
+(best epoch 8, 2.3 minutes on the GPU, 158{,}403 parameters), the temporal Transformer after 14 (best 8, 1.8 minutes),
+the GRU after 17 (best 11, 6.0 minutes, 41{,}667 parameters) and the no-weather ablation ran the full 30 epochs (best
+24).
+
+\subsection{Multi-horizon forecasting}
+Table~\ref{tab:forecast} gives the test error on the operational track. Every learned model beats persistence and the
+historical average at every horizon, and the three sequence models beat the two gradient-boosted baselines on MAE
+at every horizon. The proposed context-gated GATv2--Transformer has the lowest MAE at 30 and 60 minutes (5.33 and
+6.16\,mph against 5.34/6.18 for the temporal Transformer and 5.37/6.17 for the GRU), the GRU the lowest at 15
+minutes (4.72\,mph against 4.77 for the proposed model), and XGBoost the lowest 60-minute RMSE (8.98 against 9.05).
+Relative to persistence the proposed model reduces MAE by 7\,\%, 12\,\% and 16\,\% at the three horizons and raises
+$R^2$ from 0.55/0.46/0.30 to 0.69/0.63/0.56. The margins between the three deep models are 0.01 to 0.05\,mph, which
+a single seed cannot separate, so this paper does not claim that the proposed architecture forecasts better than a
+well-trained GRU or temporal Transformer on this sparse 16-link graph; it claims that it is at least as accurate
+while carrying the availability gate and the graph layer that the rest of the workflow uses. On the retrospective
+track (reanalysis weather plus collisions and permitted events, contextual analysis only) the proposed model reaches
+4.67, 5.36 and 6.13\,mph (Table~\ref{tab:forecast} is the operational table; the retrospective rows are in
+\texttt{forecast\_metrics.csv}), a small gain at 15 and 60 minutes over the operational 4.77/5.33/6.16, with XGBoost
+and LightGBM at 4.89--4.90, 5.61--5.65 and 6.30--6.39.
+
+\textit{Ablations.} Table~\ref{tab:ablation} reports the mean MAE over the three horizons and a paired day-block
+bootstrap (1{,}000 resamples of the 44 complete test days, 95\,\% percentile interval) of the difference to the
+proposed model (5.419\,mph). Removing the availability gate (plain concatenation) raises MAE by 0.067\,mph
+($[0.048, 0.086]$); removing the 311 infrastructure group raises it by 0.014\,mph ($[0.002, 0.026]$); removing the
+operational weather forecasts \emph{lowers} it by 0.046\,mph ($[-0.069, -0.021]$). The last is a negative result:
+with this data, this budget and the re-forecast weather proxy, the weather features hurt. The no-events and
+no-incidents variants are NOT\_APPLICABLE on the operational track, where those groups do not exist, and are listed
+as such rather than as ablations. An earlier execution of this stage had resampled 5-minute steps instead of days
+(a unit error in the day index) and produced far narrower intervals; it was found during the run, corrected in code,
+re-run, and the superseded file is kept with the run's local evidence.
+
+\subsection{Uncertainty calibration and the reliability gate}
+Split-conformal half-widths fitted on 102{,}301 calibration residuals per horizon are 12.1, 13.5 and 14.8\,mph.
+On the test partition the 90\,\% intervals reach empirical coverage of 0.909, 0.907 and 0.903 (Table~\ref{tab:unc}),
+so the marginal guarantee holds, but the intervals are wide (mean widths 24.3, 26.9 and 29.5\,mph on links whose
+training means lie between 16 and 32\,mph). Conditional coverage is uneven: 0.93 on free-flowing targets (speed ratio
+$\ge 0.8$, $n\approx 98{,}500$), 0.93 on moderate ones, and 0.80, 0.79 and 0.76 at the three horizons under
+congestion (ratio $< 0.5$, $n\approx 23{,}300$); 0.93--0.94 in rush hours against 0.90 outside them; 0.92--0.93 under
+wet weather codes ($n\approx 7{,}900$) against 0.90--0.91 when dry. The reliability gate, whose thresholds are fixed
+on calibration and validation data (interval width at most 38.1\,mph, the 80th percentile of validation widths; at
+most 34\,\% missing recent inputs; data at most 20 minutes old; at least 200 calibration samples), defers 25.5, 25.7
+and 26.1\,\% of test forecasts at the three horizons; the retained forecasts have MAE 3.72, 4.38 and 5.25\,mph against
+4.77, 5.33 and 6.15 for all forecasts, and coverage 0.95, 0.94 and 0.93 (\texttt{artifacts/calibration/deferral\_tradeoff.csv}
+tabulates the full trade-off from 0 to 100\,\% tolerated missing inputs).
+
+\subsection{Explanations of the trained model}
+Exact grouped KernelSHAP (all $2^P$ coalitions, $P=5$ or 6 players, 528 or 1{,}040 model calls and 1.7 to 4.2\,s per
+explanation on the CPU, additivity gap below $10^{-3}$\,mph) was computed on the trained proposed model for 12 test
+points: the six largest predicted 30-minute speed drops, one per link, and six random points, all drawn from the
+132{,}355 of 201{,}616 test (origin, link) pairs whose link had a raw observation at every one of the last six input
+steps and an observed target (the eligibility rule introduced after a first pass had selected a link whose feed had
+been dark for four weeks). Averaged over the 12 points, the mean absolute attribution is 8.22\,mph for the target
+link's own last 30 minutes, 2.04 for its earlier 90 minutes, 1.09 for calendar, 0.52 for graph-neighbour traffic,
+0.19 for weather and 0.09 for 311 requests. In the largest alert, the George Washington Bridge lower-level plaza
+link at 30 minutes, the model predicts 2.25\,mph against a 26.9\,mph background and an observed 1.24\,mph, with
+$-21.3$\,mph attributed to the link's own recent traffic; on FDR N 25th--63rd St it predicts 1.92\,mph (observed 6.83)
+with $-13.9$ from recent traffic and $-3.2$ from the earlier window. One selected point is a clear miss: FDR S
+Catherine Slip to the Brooklyn Bridge predicted 27.1\,mph where 2.48 was observed, a drop not foreseeable from the
+inputs. Shortening the input history confirms the attribution: on a 20{,}665-target test subset the proposed model's
+MAE rises from 5.43\,mph with the full two hours to 6.00 (60 min), 6.29 (30), 6.54 (15) and 7.11 (5 min). Removing
+all edges touching a link's graph neighbours changes its predictions by 1.34\,mph on average for the four-neighbour
+Brooklyn Bridge--FDR N link (MAE 8.57 to 8.58), by 0.91 and 0.87 for FDR S 25th St--Catherine Slip and FDR N
+Catherine Slip--25th St (MAE 5.27 to 5.17 and 8.13 to 7.96, i.e.\ slightly better without the edges) and by 0.67 for
+the Brooklyn--Battery Tunnel eastbound approach, and by exactly 0.0 for West St S at Spring St, whose only remaining
+edges are outgoing (its upstream neighbour is a dead feed), so no message reaches it. The LightGBM TreeSHAP baseline
+attributes 65\,\% of its mean absolute attribution at 15 minutes to traffic lags, 16\,\% to calendar and 4\,\% each
+to weather and link identity. All of these are model sensitivities, not causal effects.
+
+\subsection{Evidence retrieval}
+The approved corpus holds 15 documents (the FHWA 2008 Signal Timing Manual and its chapters 5 and 6, MUTCD 2009
+chapters 4D and 4E, nine SUMO documentation pages pinned to v1.28.0 and the project-defined policy), 1{,}633 chunks
+embedded with all-MiniLM-L6-v2 into a FAISS inner-product index; 171 chunks exceed the encoder's 256-token window and
+are truncated by it (recorded in \texttt{index\_manifest.json}). On the 28 project-labelled queries the index reaches
+Recall@8 of 0.818 and MRR of 0.702, and the support-status decision (SUPPORTED against INSUFFICIENT\_EVIDENCE at a
+0.35 score threshold) matches the label on 27 of 28 queries (0.964, Table~\ref{tab:ret}). The labels were drafted by
+the project and have not been reviewed externally.
+
+\subsection{Advisory workflow}
+Table~\ref{tab:adv} lists all 19 policy-by-case runs (REPLAY mode on test-partition forecast origins). The deterministic
+gates fired as designed under every policy: the stale-data stress case (inputs aged six steps) ended in DEFER\_DATA,
+the wide-interval stress case (forced 99\,mph width) and the observed rainy period, whose intervals of 44--46\,mph exceed
+the 38.1\,mph cap, in DEFER\_UNCERTAINTY, and the out-of-scope query in DEFER\_EVIDENCE, each without an LLM call. The
+model was called 12 times (one attempt each, 1{,}790 to 3{,}604 prompt tokens, 181 to 258 completion tokens, 16 to
+126\,s per call with the first, cold call slowest) and returned schema-valid JSON every time
+(\texttt{reports/experiments/llm\_calls.csv}). Without retrieval it cited an evidence id that does not exist in all
+three cases (for example \texttt{EVIDENCE\_123456}), and the citation check rejected all three; with retrieval, no
+invalid citation occurred in nine calls. On the routine rush-hour case (FDR S Catherine Slip--Brooklyn Bridge, a link
+without a reviewed DOT-to-SUMO mapping) the constraint layer rejected the candidate under every policy that keeps it,
+while the RAG-without-constraints policy passed the same candidate to human review. On the two cases on the mapped
+West Street link the model recommended monitoring only, which passes all 13 checks (pedestrian protection
+NOT\_EVALUATED) and ends in PENDING\_HUMAN\_REVIEW; because no signal change was proposed, the simulation gate was
+never invoked by a real advisory and the SIMULATION\_PASSED path remains exercised only by the software tests.
+End-to-end latency is 19 to 30\,s per advisory after the first call.
+
+\subsection{Simulation testbed}
+\label{sec:res:sim}
+The West Street corridor extracted from OpenStreetMap has 82 corridor edges, 22 signalised intersections and 25
+side-street entries; demand is 1{,}200 vehicles per hour and direction on the corridor and 150 per side approach,
+both declared assumptions because no automated count matched the corridor, and the three scenarios are a routine
+peak, an event surge (demand $\times 1.25$) and an incident that reduces one corridor edge to 2.5\,m/s for 20
+minutes. Two DOT links map to the corridor with high confidence, but they are the West Side feeds that carry no
+usable speed data and the Brooklyn--Battery Tunnel approach, so the testbed is a transfer demonstration on a real
+corridor with declared demand rather than a digital twin of a forecast link. All 45 matched-seed runs (three
+scenarios, fixed-time, actuated and forecast-informed-rule controllers, five seeds, 300\,s warm-up and 3{,}600\,s
+evaluation, SUMO 1.28.0, 9{,}661\,s of wall time) completed, and Table~\ref{tab:sim} reports their means. The
+result is \emph{inconclusive}, and we report it as such: the declared demand oversaturates the corridor under every
+controller. Of 6{,}675 (routine) or 8{,}350 (surge and incident) loaded vehicles per run, only 1{,}236 to 2{,}877
+complete their trip within the evaluation window, 3{,}682 to 6{,}725 remain unfinished, and 1{,}330 to 2{,}268
+vehicles per run are teleported by SUMO after waiting 300\,s in gridlock. Mean time loss per completed trip is
+971.6\,s (fixed-time), 987.5 (actuated) and 971.6 (forecast rule) in the routine peak, where the rule never
+activates because congestion is not forecast and therefore reproduces fixed-time exactly; 780.5, 1{,}118.4 and 739.0
+in the event surge; and 898.4, 1{,}070.1 and 806.0 in the incident scenario. The forecast rule's lower time loss
+in the two stress scenarios is survivorship, not improvement: it completes fewer trips than fixed-time (2{,}014
+against 2{,}087 in the surge, 1{,}236 against 1{,}384 in the incident) and teleports as many or more, while the
+actuated controller completes the most trips (2{,}877 and 2{,}240) at the highest time loss per completed trip. Under
+gridlock the per-trip metrics measure which vehicles got through rather than how well the corridor was served, so no
+controller ranking is claimed, the acceptance rule now counts completed trips and teleports alongside delay, and
+calibrating the declared demand against observed counts is the first item of future work. Pedestrian performance is
+NOT\_EVALUATED because the scenarios contain no pedestrian demand.
+
+\subsection{Runtime}
+Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs 5.7\,ms for the
+proposed model, 2.2 for the temporal Transformer, 0.7 for the GRU and about 0.1 for XGBoost; a FAISS query takes
+tens of milliseconds after the first (model-loading) call; the full per-link runtime table is
+\texttt{reports/experiments/runtime\_metrics.csv}.
