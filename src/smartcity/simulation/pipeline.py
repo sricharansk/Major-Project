@@ -5,7 +5,11 @@ from __future__ import annotations
 import csv
 import hashlib
 import math
+import os
 import re
+import subprocess
+import sys
+import xml.etree.ElementTree as ET
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
@@ -274,6 +278,63 @@ def build_routes(meta: dict, scenario: dict) -> str:
     return str(p)
 
 
+def _expanded_vehicles(routes: Path, out: Path) -> Path:
+    """tlsCycleAdaptation.py reads <vehicle> elements only: expand each fixed-route flow into its equally spaced
+    departures (what SUMO generates for vehsPerHour) as the retiming input; the simulation itself keeps the flows."""
+    root = ET.parse(routes).getroot()
+    res = ET.Element("routes")
+    for vt in root.findall("vType"):
+        res.append(vt)
+    veh = []
+    for fl in root.findall("flow"):
+        if fl.find("route") is None:
+            raise RuntimeError("signal retiming needs fixed routes (route_choice: fixed_free_flow)")
+        b, e, vph = float(fl.get("begin")), float(fl.get("end")), float(fl.get("vehsPerHour"))
+        t, i = b, 0
+        while vph > 0 and t < e:
+            veh.append((t, f"{fl.get('id')}.{i}", fl.find("route").get("edges"), fl.get("type", "car")))
+            t, i = t + 3600.0 / vph, i + 1
+    for t, vid, edges, vtype in sorted(veh):
+        v = ET.SubElement(res, "vehicle", id=vid, type=vtype, depart=f"{t:.2f}")
+        ET.SubElement(v, "route", edges=edges)
+    ET.ElementTree(res).write(out, encoding="utf-8", xml_declaration=True)
+    return out
+
+
+def retime_signals(meta: dict, routes: str, name: str) -> dict:
+    """Webster re-timing of the static programs for one demand file (SUMO tools/tlsCycleAdaptation.py)."""
+    cfg = settings.load("simulation")["simulation"]
+    rt = _scfg().get("retiming", {})
+    veh = _expanded_vehicles(Path(routes), SIM / "demand" / f"{name}.vehicles.rou.xml")
+    out = SIM / "networks" / f"{CFG_NAME}.{name}.webster.add.xml"
+    cmd = [sys.executable, str(Path(sr.sumo_home()) / "tools" / "tlsCycleAdaptation.py"),
+           "-n", str(settings.ROOT / meta["network"]["static"]), "-r", str(veh), "-o", str(out),
+           "-b", str(cfg["warmup_s"]), "-y", str(cfg["yellow_s"]), "-a", str(cfg["all_red_s"]), "-g", str(cfg["min_green_s"]),
+           "--min-cycle", str(rt.get("min_cycle_s", 20)), "--max-cycle", str(rt.get("max_cycle_s", 120)),
+           "-H", str(rt.get("saturation_headway_s", 2.0)), "-p", "webster"]
+    r = subprocess.run(cmd, capture_output=True, text=True, check=False, env={**os.environ, "SUMO_HOME": sr.sumo_home()})
+    if r.returncode != 0 or not out.exists():
+        raise RuntimeError(f"tlsCycleAdaptation failed: {(r.stderr or r.stdout)[-1500:]}")
+    return {"method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)", "tls_additional": str(out.relative_to(settings.ROOT)),
+            "sha16": sr.file_hash(out), "for_demand": name, "options": cmd[4:]}
+
+
+def retimed_inventory(meta: dict, add_file: str) -> dict:
+    """The TLS inventory with the retimed green durations (same phase indices and states), for the constraint layer."""
+    inv = {t: {**v, "phases": [dict(p) for p in v["phases"]]} for t, v in meta["tls_inventory"].items()}
+    for tl in ET.parse(settings.ROOT / add_file).getroot().iter("tlLogic"):
+        if tl.get("id") not in inv:
+            continue
+        phases = inv[tl.get("id")]["phases"]
+        new = tl.findall("phase")
+        if [p.get("state") for p in new] != [p["state"] for p in phases]:
+            raise RuntimeError(f"retimed program for {tl.get('id')} changed the phase states")
+        for p, n in zip(phases, new):
+            p["duration"] = p["minDur"] = p["maxDur"] = float(n.get("duration"))
+        inv[tl.get("id")]["programs"] = sorted(set(inv[tl.get("id")].get("programs", [])) | {tl.get("programID")})
+    return inv
+
+
 def scenarios(meta: dict) -> list[dict]:
     sc = _scfg()
     c = meta["corridor"]
@@ -292,8 +353,11 @@ def scenarios(meta: dict) -> list[dict]:
          "forecast_congested": True,
          "description": "STRESS SCENARIO: configured collision-like capacity reduction (speed cap 2.5 m/s for 20 min) plus surge"},
     ]
+    timing = meta.get("signal_timing") or {}
     for s in out:
         s["demand"] = flow_demand(meta, s)
+        if timing.get("tls_additional"):  # the plan re-timed for the routine demand also runs the stress scenarios
+            s["tls_additional"] = timing["tls_additional"]
     return out
 
 
@@ -338,24 +402,38 @@ def select_side_demand() -> dict:
     prep = SIM / "scenarios" / "prepared.json"
     meta = read_json(prep)
     net = settings.ROOT / meta["network"]["static"]
+    for k in ("side_demand_scale", "side_demand_selection"):
+        meta["demand"].pop(k, None)
+    meta.pop("signal_timing", None)
+    meta.pop("tls_inventory_active", None)
     routine = next(s for s in scenarios(meta) if s["name"] == "routine_peak")
-    jobs = []
+    timing_mode = _scfg().get("signal_timing", "netconvert_guess")
+    jobs, timings = [], {}
     for scale in cfg["side_scales"]:
         scen = {**routine, "name": f"sweep_side{round(100 * scale):03d}", "side_demand_scale": scale,
                 "description": f"DEMAND SELECTION: routine_peak with side demand x{scale} (fixed-time baseline only)"}
         scen["demand"] = flow_demand(meta, scen)
         routes = build_routes(meta, scen)
+        if timing_mode == "webster_retimed":  # each level is tested with the plan re-timed for that level's demand
+            timings[scale] = retime_signals(meta, routes, scen["name"])
+            scen["tls_additional"] = timings[scale]["tls_additional"]
         jobs += [(net, routes, scen, "fixed_time", s) for s in cfg["seeds"]]
     rows = run_many(jobs)
-    sel = {"rule": cfg, **apply_selection_rule(rows, cfg), "network_static_sha256": meta["network"]["static_sha256"],
+    sel = {"rule": cfg, "signal_timing": timing_mode, "retimed_programs": {str(k): v for k, v in timings.items()},
+           **apply_selection_rule(rows, cfg), "network_static_sha256": meta["network"]["static_sha256"],
            "network_static_content_sha256": meta["network"].get("static_content_sha256")}
     selected = sel["selected_side_demand_scale"]
+    # one record per signal-timing protocol (earlier protocols stay as evidence); demand_selection.json is the active one
+    write_json(SIM / "scenarios" / f"demand_selection_{timing_mode}.json", sel)
     write_json(SIM / "scenarios" / "demand_selection.json", sel)
-    export_sim_rows(rows, settings.ROOT / "reports" / "experiments" / "simulation_demand_selection.csv")
+    export_sim_rows(rows, settings.ROOT / "reports" / "experiments" / f"simulation_demand_selection_{timing_mode}.csv")
     if selected is not None:
         meta["demand"]["side_demand_scale"] = selected
-        meta["demand"]["side_demand_selection"] = "simulation/scenarios/demand_selection.json"
-        write_json(prep, meta)
+        meta["demand"]["side_demand_selection"] = f"simulation/scenarios/demand_selection_{timing_mode}.json"
+        if selected in timings:
+            meta["signal_timing"] = timings[selected]
+            meta["tls_inventory_active"] = retimed_inventory(meta, timings[selected]["tls_additional"])
+    write_json(prep, meta)
     return sel
 
 
@@ -416,11 +494,11 @@ def export_sim_rows(rows: list[dict], path=None):
     keys = sorted({k for r in rows for k in r["metrics"]})
     with open(path, "w", newline="") as fh:
         w = csv.writer(fh)
-        dkeys = ["route_choice", "main_nb_vph", "main_sb_vph", "side_vph_per_approach"]
+        dkeys = ["route_choice", "main_nb_vph", "main_sb_vph", "side_vph_per_approach", "signal_timing"]
         w.writerow(["run_id", "mode", "scenario", "controller", "seed", "status", "error", "sumo_version", "network_hash",
                     "demand_hash", "warmup_s", "evaluation_s", "pedestrian_protection", *dkeys, *keys])
         for r in rows:
-            dem = r.get("demand") or {}
+            dem = {**(r.get("demand") or {}), "signal_timing": r.get("signal_timing") or "netconvert_guess"}
             w.writerow([r["run_id"], r["mode"], r["scenario"], r["controller"], r["seed"], r["status"], r["error"],
                         r["sumo_version"], r["network_hash"], r["demand_hash"], r["warmup_s"], r["evaluation_s"],
                         r["pedestrian_protection"], *[dem.get(k) for k in dkeys], *[r["metrics"].get(k) for k in keys]])

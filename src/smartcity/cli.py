@@ -424,10 +424,11 @@ def sim_context(track_data=None) -> dict:
             mp[r["dot_link_id"]] = r["mapping_confidence"] == "high" and r["review_status"].startswith("auto_checked_reviewed")
     scen = next(s for s in pipeline.scenarios(meta) if s["name"] == "event_surge")
     seeds = settings.load("simulation")["simulation"]["seeds"][:3]
+    inventory = meta.get("tls_inventory_active") or meta["tls_inventory"]  # re-timed durations when a plan was re-timed
     allowed_tls = {t: {"green_phases": [p["index"] for p in v["phases"] if p["green"]],
                        "green_durations_s": {p["index"]: p["duration"] for p in v["phases"] if p["green"]},
-                       "corridor_phase": meta["corridor_phase"].get(t)} for t, v in meta["tls_inventory"].items()}
-    return {"mapping_valid_by_link": mp, "tls_inventory": meta["tls_inventory"], "allowed_tls": allowed_tls,
+                       "corridor_phase": meta["corridor_phase"].get(t)} for t, v in inventory.items()}
+    return {"mapping_valid_by_link": mp, "tls_inventory": inventory, "allowed_tls": allowed_tls,
             "network_id": f"sumo:{meta['network']['static_sha256'][:12]}",
             "description": "SIMULATION testbed (OSM geometry, declared demand): " + scen["description"],
             "evaluate_candidate": lambda c: pipeline.paired_candidate_eval(meta, scen, c, seeds)}

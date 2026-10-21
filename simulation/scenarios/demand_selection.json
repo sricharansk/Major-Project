@@ -15,53 +15,272 @@
     "max_teleports": 0,
     "max_unfinished_frac": 0.01
   },
+  "signal_timing": "webster_retimed",
+  "retimed_programs": {
+    "1.0": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.sweep_side100.webster.add.xml",
+      "sha16": "0b1d08bf07769020",
+      "for_demand": "sweep_side100",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side100.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.sweep_side100.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    },
+    "0.75": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.sweep_side075.webster.add.xml",
+      "sha16": "f53392bfebd079ef",
+      "for_demand": "sweep_side075",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side075.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.sweep_side075.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    },
+    "0.5": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.sweep_side050.webster.add.xml",
+      "sha16": "4c08737ea2988b1d",
+      "for_demand": "sweep_side050",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side050.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.sweep_side050.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    },
+    "0.25": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.sweep_side025.webster.add.xml",
+      "sha16": "2b41c33881ee540a",
+      "for_demand": "sweep_side025",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side025.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.sweep_side025.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    },
+    "0.0": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.sweep_side000.webster.add.xml",
+      "sha16": "cf93dc0e08272638",
+      "for_demand": "sweep_side000",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side000.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.sweep_side000.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    }
+  },
   "per_scale": [
     {
       "side_demand_scale": 1.0,
       "admissible": false,
       "run_ids": [
-        "sim-sweep_side100-fixed_time-s101-20261021T010527-69d561",
-        "sim-sweep_side100-fixed_time-s102-20261021T010527-4ca163",
-        "sim-sweep_side100-fixed_time-s103-20261021T010527-886136"
+        "sim-sweep_side100-fixed_time-s101-20261021T012317-78945e",
+        "sim-sweep_side100-fixed_time-s102-20261021T012317-652b2e",
+        "sim-sweep_side100-fixed_time-s103-20261021T012317-ce4a1e"
+      ],
+      "teleports": [
+        49,
+        45,
+        48
+      ],
+      "unfinished_trips": [
+        1331,
+        1336,
+        1338
+      ],
+      "loaded": [
+        7085,
+        7085,
+        7085
       ]
     },
     {
       "side_demand_scale": 0.75,
       "admissible": false,
       "run_ids": [
-        "sim-sweep_side075-fixed_time-s101-20261021T010527-6e22b6",
-        "sim-sweep_side075-fixed_time-s102-20261021T010608-78ea94",
-        "sim-sweep_side075-fixed_time-s103-20261021T010612-331ecc"
+        "sim-sweep_side075-fixed_time-s101-20261021T012317-2d5d3b",
+        "sim-sweep_side075-fixed_time-s102-20261021T012345-3cb73d",
+        "sim-sweep_side075-fixed_time-s103-20261021T012348-6257a5"
+      ],
+      "teleports": [
+        49,
+        50,
+        47
+      ],
+      "unfinished_trips": [
+        1007,
+        1004,
+        990
+      ],
+      "loaded": [
+        6060,
+        6060,
+        6060
       ]
     },
     {
       "side_demand_scale": 0.5,
       "admissible": false,
       "run_ids": [
-        "sim-sweep_side050-fixed_time-s101-20261021T010615-cf2618",
-        "sim-sweep_side050-fixed_time-s102-20261021T010616-b2100b",
-        "sim-sweep_side050-fixed_time-s103-20261021T010648-9e30e9"
+        "sim-sweep_side050-fixed_time-s101-20261021T012348-46f816",
+        "sim-sweep_side050-fixed_time-s102-20261021T012348-259088",
+        "sim-sweep_side050-fixed_time-s103-20261021T012413-d37e93"
+      ],
+      "teleports": [
+        40,
+        44,
+        43
+      ],
+      "unfinished_trips": [
+        620,
+        669,
+        635
+      ],
+      "loaded": [
+        5060,
+        5060,
+        5060
       ]
     },
     {
       "side_demand_scale": 0.25,
       "admissible": false,
       "run_ids": [
-        "sim-sweep_side025-fixed_time-s101-20261021T010649-6e2cba",
-        "sim-sweep_side025-fixed_time-s102-20261021T010651-bbed9a",
-        "sim-sweep_side025-fixed_time-s103-20261021T010654-f37a8e"
+        "sim-sweep_side025-fixed_time-s101-20261021T012413-22bf46",
+        "sim-sweep_side025-fixed_time-s102-20261021T012413-e7cb8d",
+        "sim-sweep_side025-fixed_time-s103-20261021T012416-364a82"
+      ],
+      "teleports": [
+        21,
+        17,
+        17
+      ],
+      "unfinished_trips": [
+        364,
+        362,
+        332
+      ],
+      "loaded": [
+        4035,
+        4035,
+        4035
       ]
     },
     {
       "side_demand_scale": 0.0,
       "admissible": false,
       "run_ids": [
-        "sim-sweep_side000-fixed_time-s101-20261021T010715-dad534",
-        "sim-sweep_side000-fixed_time-s102-20261021T010720-de1592",
-        "sim-sweep_side000-fixed_time-s103-20261021T010721-ffbe99"
+        "sim-sweep_side000-fixed_time-s101-20261021T012435-039b32",
+        "sim-sweep_side000-fixed_time-s102-20261021T012435-e9a07b",
+        "sim-sweep_side000-fixed_time-s103-20261021T012438-431ca5"
+      ],
+      "teleports": [
+        0,
+        0,
+        0
+      ],
+      "unfinished_trips": [
+        131,
+        129,
+        131
+      ],
+      "loaded": [
+        3010,
+        3010,
+        3010
       ]
     }
   ],
   "selected_side_demand_scale": null,
-  "network_static_sha256": "08d79f88f6f4ba7d1c3c2a669e3247b7cc6af5141ed1f3ca4feda697c416b78e"
+  "network_static_sha256": "08d79f88f6f4ba7d1c3c2a669e3247b7cc6af5141ed1f3ca4feda697c416b78e",
+  "network_static_content_sha256": "9d0205f013bacefd3efe65c05d82b71a287aa25bc0bcd6cf6db8c279b8f3a8a8"
 }

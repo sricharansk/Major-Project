@@ -5,7 +5,7 @@
    routes those at insertion on current travel times) and once with one fixed free-flow route per flow. Reported:
    teleports, route replacements by the rerouting device, and the share of mainline vehicles whose route leaves
    West Street.
-2. Signal capacity. For every corridor signal, the green time of the corridor through movement in the netconvert
+2. Signal capacity. For every signal on each mainline route, the green time of the movements that route makes, in the netconvert
    program and a rough capacity estimate lanes * saturation_flow * g/C (saturation flow is a nominal assumption).
 
 Outputs: reports/experiments/simulation_testbed_audit.json, reports/experiments/simulation_signal_capacity.csv.
@@ -66,31 +66,38 @@ def route_choice_audit(meta: dict, tmp: Path) -> dict:
     return out
 
 
-def capacity_audit(meta: dict) -> list[dict]:
+def capacity_audit(meta: dict, add_file: str | None = None, label: str = "netconvert_guess") -> list[dict]:
     import sumolib
 
     net = sumolib.net.readNet(str(settings.ROOT / meta["network"]["static"]), withPrograms=True)
+    retimed = {}
+    if add_file:  # same phase states, re-timed durations (checked by pipeline.retimed_inventory)
+        retimed = {t: [float(ph["duration"]) for ph in v["phases"]] for t, v in p.retimed_inventory(meta, add_file).items()}
     rows = []
-    for tag in ("northbound", "southbound"):
-        ids = set(meta["corridor"][tag])
+    c = meta["corridor"]
+    for tag, ins, outs in (("northbound", c["nb_entries"], c["nb_exits"]), ("southbound", c["sb_entries"], c["sb_exits"])):
+        # only movements the mainline flow actually makes: consecutive edges of its fixed route (entry -> exit)
+        path, _ = net.getFastestPath(net.getEdge(ins[0]), net.getEdge(outs[-1]), vClass="passenger")
+        steps = {(a.getID(), b.getID()) for a, b in zip(path, path[1:])}
         for tl in net.getTrafficLights():
-            through = [(a, i) for a, b, i in tl.getConnections() if a.getEdge().getID() in ids and b.getEdge().getID() in ids]
+            through = [(a, i) for a, b, i in tl.getConnections() if (a.getEdge().getID(), b.getEdge().getID()) in steps]
             if not through:
                 continue
             phases = next(iter(tl.getPrograms().values())).getPhases()
-            cycle = sum(ph.duration for ph in phases)
-            green = sum(ph.duration for ph in phases if any(ph.state[i] in "Gg" for _, i in through))
+            dur = retimed.get(tl.getID()) or [ph.duration for ph in phases]
+            cycle = sum(dur)
+            green = sum(d for ph, d in zip(phases, dur) if any(ph.state[i] in "Gg" for _, i in through))
             lanes = len({a.getID() for a, _ in through})
-            rows.append({"direction": tag, "tls_id": tl.getID(), "through_lanes": lanes, "cycle_s": cycle,
+            rows.append({"program": label, "direction": tag, "tls_id": tl.getID(), "through_lanes": lanes, "cycle_s": cycle,
                          "corridor_green_s": green, "g_over_c": round(green / cycle, 3),
                          "est_capacity_vph": round(lanes * SATURATION_VPHPL * green / cycle)})
-    return sorted(rows, key=lambda r: (r["direction"], r["est_capacity_vph"]))
+    return sorted(rows, key=lambda r: (r["program"], r["direction"], r["est_capacity_vph"]))
 
 
-def direction_breakdown(scale: float = 0.0) -> list[dict]:
+def direction_breakdown(scale: float = 0.0, timing: str = "netconvert_guess") -> list[dict]:
     """Mainline completed trips and mean time loss per direction in the demand-selection runs at one side scale
     (read from the runs' tripinfo.xml; trips departing after warm-up, as in the run metrics)."""
-    sel = read_json(p.SIM / "scenarios" / "demand_selection.json")
+    sel = read_json(p.SIM / "scenarios" / f"demand_selection_{timing}.json")
     warmup = settings.load("simulation")["simulation"]["warmup_s"]
     rows = []
     for entry in sel["per_scale"]:
@@ -105,7 +112,7 @@ def direction_breakdown(scale: float = 0.0) -> list[dict]:
                 if float(t.get("depart")) >= warmup and t.get("id").startswith("main_"):
                     tl.setdefault(t.get("id").split(".")[0], []).append(float(t.get("timeLoss")))
             for flow, v in sorted(tl.items()):
-                rows.append({"run_id": run_id, "flow": flow, "completed": len(v), "mean_time_loss_s": round(sum(v) / len(v), 1)})
+                rows.append({"signal_timing": timing, "run_id": run_id, "flow": flow, "completed": len(v), "mean_time_loss_s": round(sum(v) / len(v), 1)})
     return rows
 
 
@@ -114,6 +121,10 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as d:
         routing = route_choice_audit(meta, Path(d))
     cap = capacity_audit(meta)
+    sel_w = p.SIM / "scenarios" / "demand_selection_webster_retimed.json"
+    plan0 = read_json(sel_w)["retimed_programs"].get("0.0", {}).get("tls_additional") if sel_w.exists() else None
+    if plan0:  # the plan re-timed for the zero-side-demand routine peak (the least loaded level tested)
+        cap += capacity_audit(meta, plan0, "webster_retimed_side0")
     exp = settings.ROOT / "reports" / "experiments"
     with open(exp / "simulation_signal_capacity.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(cap[0].keys()))
@@ -125,11 +136,14 @@ def main() -> None:
            "osm_sha256": meta["network"]["osm_sha256"], "route_choice_audit": {"demand": DECLARED, "seed": 1, **routing},
            "signal_capacity": {"saturation_flow_vphpl_assumed": SATURATION_VPHPL,
                                "observed_main_vph": demand["main_veh_per_hour_per_direction"],
-                               "min_est_capacity_vph": {t: min(r["est_capacity_vph"] for r in cap if r["direction"] == t)
+                               "min_est_capacity_vph": {f"{g}:{t}": min(r["est_capacity_vph"] for r in cap
+                                                                       if r["direction"] == t and r["program"] == g)
+                                                        for g in sorted({r["program"] for r in cap})
                                                         for t in ("northbound", "southbound")},
                                "signals_below_observed_demand": [r for r in cap if r["est_capacity_vph"]
                                                                  < demand["main_veh_per_hour_per_direction"]]},
-           "mainline_by_direction_side_scale_0": direction_breakdown(0.0)}
+           "mainline_by_direction_side_scale_0": direction_breakdown(0.0) + (
+               direction_breakdown(0.0, "webster_retimed") if sel_w.exists() else [])}
     write_json(exp / "simulation_testbed_audit.json", rep)
     print(rep["route_choice_audit"])
     print(rep["signal_capacity"])

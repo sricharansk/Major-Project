@@ -59,6 +59,8 @@ forecast reliability, evidence support) plus a text policy filter must pass. Can
 protective TraCI wrapper that refuses non-green phases and out-of-bound durations, and compared with the fixed-time
 baseline on matched seeds; a candidate passes only if corridor delay improves by at least 1\%, side-road delay rises by
 at most 10\% and no vehicle teleports. Each flow drives one fixed free-flow route so that demand stays on the corridor,
-and the testbed itself must first pass a baseline test: the side-street demand level is the largest at which the
+the fixed-time programs are re-timed for the routine demand with Webster's method (SUMO
+\texttt{tlsCycleAdaptation.py}; a declared assumption, not NYC timing plans), and the testbed itself must first pass a
+baseline test: the side-street demand level is the largest at which the
 fixed-time baseline, on development seeds, has no teleport and at most 1\% unfinished trips; without such a level no
 candidate is scored (NOT\_EVALUATED). Pedestrian performance is not modelled and is reported as NOT\_EVALUATED.

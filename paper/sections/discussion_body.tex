@@ -42,9 +42,10 @@ the testbed instead of the controllers changed the diagnosis twice. The first su
 the cause: the observed weekday West Street count (1{,}389\,veh/h) is higher than the declared 1{,}200. What the
 audit found was a testbed that was not measuring the corridor at all, because SUMO's insertion routing sent half of
 the mainline through the Lower Manhattan grid, and, once routes were fixed, a corridor whose generated signal timing
-gives the northbound through movement roughly a third of the capacity the observed flow needs. A controller comparison
-on such a testbed would rank signal plans by how they cope with an artefact of netconvert's signal guessing, so the
-preregistered selection rule stops it, and the advisory gate refuses to judge candidates on it. The lesson for
+gives the northbound mainline about 1{,}000\,veh/h where 1{,}389 are observed. Re-timing the programs with Webster's
+method serves the northbound flow but leaves a southbound delay the audit cannot explain, so the testbed still fails
+its own baseline. A controller comparison on such a testbed would rank signal plans by how they cope with modelling
+artefacts, so the preregistered selection rule stops it, and the advisory gate refuses to judge candidates on it. The lesson for
 simulation-gated advisory is that the gate's testbed needs its own acceptance test, run on the baseline alone,
 before any candidate is scored against it.
 

@@ -108,7 +108,9 @@ class ProtectedController:
         if tls_id not in tl.getIDList():
             self.log.append({"tls": tls_id, "refused": "unknown tls"})
             return False
-        logic = tl.getAllProgramLogics(tls_id)[0]
+        active = tl.getProgram(tls_id)  # with a re-timed program loaded, the first logic is not the running one
+        logic = next((lg for lg in tl.getAllProgramLogics(tls_id) if lg.programID == active),
+                     tl.getAllProgramLogics(tls_id)[0])
         phases = list(logic.phases)
         if not (0 <= phase_index < len(phases)):
             self.log.append({"tls": tls_id, "refused": f"phase {phase_index} missing"})
@@ -157,6 +159,10 @@ def run_scenario(net_file: Path, route_file: Path, scenario: dict, controller: s
            "--end", str(end + 1800), "--step-length", str(cfg["step_length_s"]), "--tripinfo-output", str(tripinfo),
            "--summary-output", str(summary), "--time-to-teleport", "300", "--no-step-log", "true",
            "--duration-log.disable", "true", "--no-warnings", "true", "--max-depart-delay", "900"]
+    timing = None
+    if scenario.get("tls_additional") and controller != "actuated":  # the actuated baseline keeps its own programs
+        cmd += ["-a", str(settings.ROOT / scenario["tls_additional"])]
+        timing = f"webster_retimed:{file_hash(settings.ROOT / scenario['tls_additional'])}"
     label = run_id
     t0 = time.time()
     status, err = "OK", None
@@ -225,7 +231,7 @@ def run_scenario(net_file: Path, route_file: Path, scenario: dict, controller: s
     res = {"run_id": run_id, "mode": "SIMULATION", "scenario": scenario["name"], "controller": controller, "seed": seed,
            "metrics": metrics, "sumo_version": sumo_version(), "network_hash": file_hash(net_file),
            "demand_hash": file_hash(route_file), "status": status, "error": err, "control_log": applied,
-           "candidate": candidate, "demand": scenario.get("demand"), "warmup_s": cfg["warmup_s"], "evaluation_s": cfg["evaluation_s"],
+           "candidate": candidate, "demand": scenario.get("demand"), "signal_timing": timing, "warmup_s": cfg["warmup_s"], "evaluation_s": cfg["evaluation_s"],
            "pedestrian_protection": "NOT_EVALUATED (no pedestrian demand in scenario)"}
     write_json(out_dir / "result.json", res)
     return res

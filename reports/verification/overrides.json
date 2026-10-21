@@ -10,6 +10,6 @@
   },
   "SIM-02": {
     "status": "PARTIAL",
-    "limitations": "The 45 matched-seed runs in simulation_metrics.csv (2026-10-20) are SUPERSEDED: the 2026-10-21 testbed audit (reports/experiments/simulation_testbed_audit.json) found bare from/to flows re-routed by SUMO at insertion (1,120 of 2,189 mainline routes off West Street) and a 0.2 m NB entry stub. Under the corrected protocol (fixed routes, observed ATR mainline demand) no side-demand level passes the preregistered baseline test (simulation/scenarios/demand_selection.json), so the corrected controller comparison is NOT_RUN; the netconvert-guessed signal timing is the binding constraint."
+    "limitations": "The 45 matched-seed runs in simulation_metrics.csv (2026-10-20) are SUPERSEDED: the 2026-10-21 testbed audit (reports/experiments/simulation_testbed_audit.json) found bare from/to flows re-routed by SUMO at insertion (1,120 of 2,189 mainline routes off West Street) and a 0.2 m NB entry stub. Under the corrected protocol (fixed routes, observed ATR mainline demand) no side-demand level passes the preregistered baseline test with either the netconvert programs or Webster re-timed programs (simulation/scenarios/demand_selection_*.json), so the corrected controller comparison is NOT_RUN."
   }
 }
