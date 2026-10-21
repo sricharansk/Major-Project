@@ -1,0 +1,110 @@
+{
+  "generated_at": "2026-10-21T01:14:29Z",
+  "mode": "SIMULATION (testbed audit, not a controller comparison)",
+  "sumo_version": "Eclipse SUMO sumo 1.28.0",
+  "network_static_content_sha256": "9d0205f013bacefd3efe65c05d82b71a287aa25bc0bcd6cf6db8c279b8f3a8a8",
+  "osm_sha256": "2294123962c8a7becf4674f6c9292ddee4582ef75e6bb038bd160376aff61e39",
+  "route_choice_audit": {
+    "demand": {
+      "main_veh_per_hour_per_direction": 1200,
+      "side_veh_per_hour_per_approach": 150
+    },
+    "seed": 1,
+    "dynamic_insertion": {
+      "route_file_sha16": "b8ffe0aa3cf65003",
+      "loaded": 6675,
+      "inserted": 5690,
+      "teleports": {
+        "total": 680,
+        "jam": 242,
+        "yield": 384,
+        "wrongLane": 54
+      },
+      "route_replacements": {
+        "device.rerouting": 1853
+      },
+      "mainline_vehicles": 2189,
+      "mainline_routes_leaving_west_street": 1120
+    },
+    "fixed_free_flow": {
+      "route_file_sha16": "8544081c1402d229",
+      "loaded": 6675,
+      "inserted": 4225,
+      "teleports": {
+        "total": 1044,
+        "jam": 532,
+        "yield": 430,
+        "wrongLane": 82
+      },
+      "route_replacements": {},
+      "mainline_vehicles": 1452,
+      "mainline_routes_leaving_west_street": 0
+    }
+  },
+  "signal_capacity": {
+    "saturation_flow_vphpl_assumed": 1800,
+    "observed_main_vph": 1389.0,
+    "min_est_capacity_vph": {
+      "northbound": 520,
+      "southbound": 1860
+    },
+    "signals_below_observed_demand": [
+      {
+        "direction": "northbound",
+        "tls_id": "joinedS_246858654_42451375_cluster_1772136801_246923513_4145439094_4207802391",
+        "through_lanes": 2,
+        "cycle_s": 90,
+        "corridor_green_s": 13,
+        "g_over_c": 0.144,
+        "est_capacity_vph": 520
+      },
+      {
+        "direction": "northbound",
+        "tls_id": "GS_42451370",
+        "through_lanes": 2,
+        "cycle_s": 90,
+        "corridor_green_s": 25,
+        "g_over_c": 0.278,
+        "est_capacity_vph": 1000
+      }
+    ]
+  },
+  "mainline_by_direction_side_scale_0": [
+    {
+      "run_id": "sim-sweep_side000-fixed_time-s101-20261021T010715-dad534",
+      "flow": "main_nb",
+      "completed": 1051,
+      "mean_time_loss_s": 413.8
+    },
+    {
+      "run_id": "sim-sweep_side000-fixed_time-s101-20261021T010715-dad534",
+      "flow": "main_sb",
+      "completed": 1231,
+      "mean_time_loss_s": 1113.6
+    },
+    {
+      "run_id": "sim-sweep_side000-fixed_time-s102-20261021T010720-de1592",
+      "flow": "main_nb",
+      "completed": 1043,
+      "mean_time_loss_s": 412.8
+    },
+    {
+      "run_id": "sim-sweep_side000-fixed_time-s102-20261021T010720-de1592",
+      "flow": "main_sb",
+      "completed": 1215,
+      "mean_time_loss_s": 1154.8
+    },
+    {
+      "run_id": "sim-sweep_side000-fixed_time-s103-20261021T010721-ffbe99",
+      "flow": "main_nb",
+      "completed": 1054,
+      "mean_time_loss_s": 409.3
+    },
+    {
+      "run_id": "sim-sweep_side000-fixed_time-s103-20261021T010721-ffbe99",
+      "flow": "main_sb",
+      "completed": 1219,
+      "mean_time_loss_s": 1151.9
+    }
+  ]
+}

@@ -20,6 +20,7 @@ Usage (run from the repository root)::
     python src/smartcity/ingestion/fetch.py events
     python src/smartcity/ingestion/fetch.py sr311 --start 2025-10-01 --end 2026-10-19
     python src/smartcity/ingestion/fetch.py osm --bbox 40.700,-74.020,40.880,-73.900 --name manhattan_major
+    python src/smartcity/ingestion/fetch.py osm --bbox 40.700,-74.020,40.737,-74.000 --name west_st_corridor --kind all
     python src/smartcity/ingestion/fetch.py hf-model
 """
 
@@ -343,12 +344,72 @@ def cmd_weather(args) -> None:
         print(name, status, len(body))
 
 
+OSM_HIGHWAY = {
+    "major": "motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary",
+    "all": "motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link"
+           "|residential|unclassified|living_street",
+}
+OSM_API = "https://api.openstreetmap.org/api/0.6/map"
+
+
+def _osm_record(name: str, body: bytes, endpoint: str, query: str, bbox: str, status: int, **extra) -> None:
+    out_dir = RAW / "osm"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{name}.osm"
+    path.write_bytes(body)
+    rec = {"source": "osm", "file": path.name, "url": endpoint, "query": query, "bbox": bbox,
+           "retrieved_at_utc": utcnow(), "http_status": status, "bytes": len(body),
+           "sha256": hashlib.sha256(body).hexdigest(), "license": "ODbL 1.0 (c) OpenStreetMap contributors", **extra}
+    with open(out_dir / "fetch_log.jsonl", "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(rec) + "\n")
+    print(f"osm {name}: {len(body)} bytes from {endpoint}")
+
+
+def _osm_api_extract(s: float, w: float, n: float, e: float, highway_re: str, tile_deg: float) -> tuple[bytes, list[str]]:
+    """Same content as the Overpass query, built from OSM API 0.6 ``map`` tiles: ways whose ``highway`` tag matches,
+    all their nodes (also outside the bbox, like Overpass ``>``), and traffic-signal nodes inside the bbox."""
+    import re
+    import xml.etree.ElementTree as ET
+
+    pat = re.compile(f"^({highway_re})$")
+    nodes, ways, urls = {}, {}, []
+    lat = s
+    while lat < n - 1e-9:
+        lon = w
+        while lon < e - 1e-9:
+            tb = (round(lon, 6), round(lat, 6), round(min(lon + tile_deg, e), 6), round(min(lat + tile_deg, n), 6))
+            _, body, url = http_get(OSM_API, {"bbox": ",".join(map(str, tb))}, timeout=300, retries=4, accept="application/xml")
+            urls.append(url)
+            root = ET.fromstring(body)
+            for nd in root.findall("node"):
+                nodes[nd.get("id")] = nd
+            for wy in root.findall("way"):
+                ways[wy.get("id")] = wy
+            lon += tile_deg
+        lat += tile_deg
+    keep_ways = [wy for wy in ways.values()
+                 if any(t.get("k") == "highway" and pat.match(t.get("v", "")) for t in wy.findall("tag"))]
+    keep_nodes = {nd.get("ref") for wy in keep_ways for nd in wy.findall("nd")}
+    for nid, nd in nodes.items():
+        if (any(t.get("k") == "highway" and t.get("v") == "traffic_signals" for t in nd.findall("tag"))
+                and s <= float(nd.get("lat")) <= n and w <= float(nd.get("lon")) <= e):
+            keep_nodes.add(nid)
+    missing = [r for r in keep_nodes if r not in nodes]
+    if missing:  # way nodes outside every tile: the map call returns them, so this means a truncated response
+        raise RuntimeError(f"{len(missing)} referenced nodes missing from the OSM API tiles")
+    out = ET.Element("osm", version="0.6", generator="smartcity fetch.py (OSM API 0.6 map tiles, Overpass-equivalent filter)")
+    ET.SubElement(out, "bounds", minlat=str(s), minlon=str(w), maxlat=str(n), maxlon=str(e))
+    for nid in sorted(keep_nodes, key=int):
+        out.append(nodes[nid])
+    for wy in sorted(keep_ways, key=lambda x: int(x.get("id"))):
+        out.append(wy)
+    return ET.tostring(out, encoding="utf-8", xml_declaration=True), urls
+
+
 def cmd_osm(args) -> None:
     s, w, n, e = (float(x) for x in args.bbox.split(","))
-    if args.kind == "major":
-        filt = '["highway"~"^(motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary)$"]'
-    else:
-        filt = '["highway"~"^(motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|residential|unclassified|living_street)$"]'
+    highway_re = OSM_HIGHWAY[args.kind]
+    filt = f'["highway"~"^({highway_re})$"]'
     query = f"""[out:xml][timeout:300];
 (
   way{filt}({s},{w},{n},{e});
@@ -356,23 +417,20 @@ def cmd_osm(args) -> None:
 );
 (._;>;);
 out meta;"""
-    for endpoint in ("https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"):
-        try:
-            status, body, url = http_get(endpoint, {"data": query}, timeout=400, retries=3)
-            out_dir = RAW / "osm"
-            out_dir.mkdir(parents=True, exist_ok=True)
-            path = out_dir / f"{args.name}.osm"
-            path.write_bytes(body)
-            rec = {"source": "osm", "file": path.name, "url": endpoint, "query": query, "bbox": args.bbox,
-                   "retrieved_at_utc": utcnow(), "http_status": status, "bytes": len(body),
-                   "sha256": hashlib.sha256(body).hexdigest(), "license": "ODbL 1.0 (c) OpenStreetMap contributors"}
-            with open(out_dir / "fetch_log.jsonl", "a", encoding="utf-8") as fh:
-                fh.write(json.dumps(rec) + "\n")
-            print(f"osm {args.name}: {len(body)} bytes from {endpoint}")
-            return
-        except Exception as exc:
-            print(f"overpass {endpoint} failed: {exc}", file=sys.stderr)
-    raise SystemExit("all Overpass endpoints failed")
+    if args.source in ("auto", "overpass"):
+        for endpoint in ("https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"):
+            try:
+                status, body, url = http_get(endpoint, {"data": query}, timeout=400, retries=3)
+                _osm_record(args.name, body, endpoint, query, args.bbox, status)
+                return
+            except Exception as exc:
+                print(f"overpass {endpoint} failed: {exc}", file=sys.stderr)
+        if args.source == "overpass":
+            raise SystemExit("all Overpass endpoints failed")
+    # Fallback for networks that block Overpass: the OSM editing API, filtered locally with the same rules.
+    body, urls = _osm_api_extract(s, w, n, e, highway_re, args.tile_deg)
+    _osm_record(args.name, body, OSM_API, f"tiles={len(urls)} tile_deg={args.tile_deg}; local filter equivalent to: {query}",
+                args.bbox, 200, tile_urls=urls)
 
 
 def cmd_hf_model(args) -> None:
@@ -433,6 +491,9 @@ def main(argv=None) -> None:
     p.set_defaults(fn=cmd_weather)
     p = sub.add_parser("osm"); p.add_argument("--bbox", required=True, help="south,west,north,east")
     p.add_argument("--name", required=True); p.add_argument("--kind", choices=["major", "all"], default="major")
+    p.add_argument("--source", choices=["auto", "overpass", "osmapi"], default="auto",
+                   help="auto: Overpass, then the OSM API 0.6 map call if every Overpass endpoint fails")
+    p.add_argument("--tile-deg", type=float, default=0.01, help="OSM API tile size (the API caps nodes per call)")
     p.set_defaults(fn=cmd_osm)
     p = sub.add_parser("hf-model"); p.add_argument("--repo", default="sentence-transformers/all-MiniLM-L6-v2")
     p.set_defaults(fn=cmd_hf_model)

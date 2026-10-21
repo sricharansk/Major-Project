@@ -36,11 +36,17 @@ so the simulation gate's acceptance rule has been exercised by tests, not by a r
 gap rather than fill it with a hand-written candidate.
 
 \textit{Simulation.} The controller comparison is the clearest example of a result that a less careful reading
-would have turned into a gain: the forecast-informed rule shows 5 to 10\,\% lower time loss per completed trip in
-the two stress scenarios, but it completes fewer trips and teleports a comparable number of vehicles, because the declared
-1{,}200 vehicles per hour and direction gridlock the corridor under every controller. The honest conclusion is that
-the testbed's demand, not its controllers, determined the outcome; it tells us to calibrate demand from observed
-counts before any controller claim, and it is why the acceptance rule counts completed trips and teleports.
+would have turned into a gain: in the first 45 runs the forecast-informed rule shows 5 to 10\,\% lower time loss per
+completed trip in the two stress scenarios, but it completes fewer trips under an oversaturated corridor. Auditing
+the testbed instead of the controllers changed the diagnosis twice. The first suspect, the declared demand, was not
+the cause: the observed weekday West Street count (1{,}389\,veh/h) is higher than the declared 1{,}200. What the
+audit found was a testbed that was not measuring the corridor at all, because SUMO's insertion routing sent half of
+the mainline through the Lower Manhattan grid, and, once routes were fixed, a corridor whose generated signal timing
+gives the northbound through movement roughly a third of the capacity the observed flow needs. A controller comparison
+on such a testbed would rank signal plans by how they cope with an artefact of netconvert's signal guessing, so the
+preregistered selection rule stops it, and the advisory gate refuses to judge candidates on it. The lesson for
+simulation-gated advisory is that the gate's testbed needs its own acceptance test, run on the baseline alone,
+before any candidate is scored against it.
 
 \textit{What is not claimed.} Nothing here is a deployment result, a causal explanation, or a congestion reduction
 on a real street. The language model never holds safety authority (constraints and the simulation gate are code),

@@ -80,9 +80,12 @@ def write_flows(path: Path, flows: list[dict], begin: int, end: int):
     ET.SubElement(root, "vType", id="car", accel="2.6", decel="4.5", sigma="0.5", length="5", minGap="2.5",
                   maxSpeed="20")
     for f in flows:
-        ET.SubElement(root, "flow", id=f["id"], type="car", begin=str(begin), end=str(end),
-                      vehsPerHour=f"{f['veh_per_hour']:.1f}", departLane="best", departSpeed="max",
-                      **{"from": f["from"], "to": f["to"]})
+        # with an explicit route SUMO keeps it; a bare from/to flow is routed at insertion on current travel times
+        ends = {} if f.get("route") else {"from": f["from"], "to": f["to"]}
+        fl = ET.SubElement(root, "flow", id=f["id"], type="car", begin=str(begin), end=str(end),
+                           vehsPerHour=f"{f['veh_per_hour']:.1f}", departLane="best", departSpeed="max", **ends)
+        if f.get("route"):
+            ET.SubElement(fl, "route", edges=" ".join(f["route"]))
     ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
     return path
 
@@ -222,7 +225,7 @@ def run_scenario(net_file: Path, route_file: Path, scenario: dict, controller: s
     res = {"run_id": run_id, "mode": "SIMULATION", "scenario": scenario["name"], "controller": controller, "seed": seed,
            "metrics": metrics, "sumo_version": sumo_version(), "network_hash": file_hash(net_file),
            "demand_hash": file_hash(route_file), "status": status, "error": err, "control_log": applied,
-           "candidate": candidate, "warmup_s": cfg["warmup_s"], "evaluation_s": cfg["evaluation_s"],
+           "candidate": candidate, "demand": scenario.get("demand"), "warmup_s": cfg["warmup_s"], "evaluation_s": cfg["evaluation_s"],
            "pedestrian_protection": "NOT_EVALUATED (no pedestrian demand in scenario)"}
     write_json(out_dir / "result.json", res)
     return res

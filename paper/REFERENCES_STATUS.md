@@ -3,8 +3,9 @@
 Each entry was checked on 2026-10-20 from the development container by web search against the publisher's or
 repository's own record (IJCAI proceedings, ACL Anthology, PMLR, NeurIPS proceedings, Springer, Project Euclid,
 IEEE Xplore, ACM/CIKM anthology, arXiv, FHWA). `CHECKED` means title, authors, venue, year and (where given) pages
-or identifier matched; a note records anything corrected or still open. Direct DOI/Crossref/arXiv API access is
-denied by the container's network policy, so checks used the publisher pages returned by search.
+or identifier matched; a note records anything corrected or still open. Direct DOI/Crossref/arXiv API access was
+denied by the container's network policy on 2026-10-20, so those checks used the publisher pages returned by search;
+Crossref became reachable on 2026-10-21 and was used for the remaining open entry.
 
 | key | identifier | type | status | note |
 |---|---|---|---|---|
@@ -20,7 +21,7 @@ denied by the container's network policy, so checks used the publisher pages ret
 | lundberg2017shap | arXiv:1705.07874 | peer-reviewed (NeurIPS 2017) | CHECKED | NeurIPS 30 proceedings record |
 | lewis2020rag | arXiv:2005.11401 | peer-reviewed (NeurIPS 2020) | CHECKED | NeurIPS 33 per UCL Discovery record |
 | reimers2019sbert | 10.18653/v1/D19-1410 | peer-reviewed (EMNLP-IJCNLP 2019) | CHECKED | pages 3982--3992 per ACL Anthology |
-| johnson2019faiss | 10.1109/TBDATA.2019.2921572 | peer-reviewed (IEEE TBD 7(3)) | CHECKED_PARTIAL | volume 7, issue 3, pages 535--547 confirmed (IEEE Xplore document 8733051); the DOI string itself was not shown by the search result and should be confirmed on Xplore before submission |
+| johnson2019faiss | 10.1109/TBDATA.2019.2921572 | peer-reviewed (IEEE TBD 7(3)) | CHECKED | DOI confirmed on Crossref on 2026-10-21 (api.crossref.org/works/10.1109/TBDATA.2019.2921572): title, authors Johnson/Douze/Jegou, IEEE Transactions on Big Data 7(3), pages 535--547, issue date 2021-07-01 all match the bib entry |
 | qwen2025qwen25 | arXiv:2412.15115 | preprint | CHECKED | v1 2024-12-19, v2 2025-01-03; bib year 2024 kept |
 | lopez2018sumo | 10.1109/ITSC.2018.8569938 | peer-reviewed (ITSC 2018) | CHECKED | pages 2575--2582; SUMO's requested reference publication |
 | rozemberczki2021pgt | 10.1145/3459637.3482014 | peer-reviewed (CIKM 2021) | CHECKED | pages 4564--4573 |
@@ -31,3 +32,4 @@ denied by the container's network policy, so checks used the publisher pages ret
 | mutcd2009 | FHWA MUTCD 2009 | government manual | CHECKED | 2009 Edition HTML at mutcd.fhwa.dot.gov; later editions exist, the 2009 text is what the corpus holds |
 | nycdotspeeds | dataset i4gi-tjb9 | dataset | CHECKED (server-side audit) | identity and date range verified by `fetch.py audit` on 2026-10-20 |
 | openmeteo | open-meteo.com | API | CHECKED (fetch log) | archive and historical-forecast endpoints returned HTTP 200 on 2026-10-20 |
+| sumodocs_routing | SUMO v1_28_0 docs, Demand/Automatic_Routing.md | software documentation | CHECKED | fetched from the v1_28_0 tag on 2026-10-21; quoted behaviour: flows with from/to are routed automatically at insertion |

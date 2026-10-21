@@ -79,6 +79,8 @@ REQS = [
 
 def evidence_registry() -> list[dict]:
     over = json.loads((VER / "overrides.json").read_text()) if (VER / "overrides.json").exists() else {}
+    # a fresh checkout gives every file a new mtime; an artifact whose hash is unchanged keeps the time it was verified
+    prev = {r["requirement_id"]: r for r in _csv("reports/verification/evidence_registry.csv")}
     rows = []
     for rid, comp, fn, impl, cmd, art in REQS:
         if "*" in art:  # per-run artifact: the newest run that carries it (run ids are timestamped)
@@ -97,11 +99,14 @@ def evidence_registry() -> list[dict]:
         o = over.get(rid, {})
         if o.get("status"):
             status = o["status"]
+        h = sha256_file(p)[:16] if p.exists() and p.is_file() else ""
+        when = dt.datetime.fromtimestamp(p.stat().st_mtime, dt.timezone.utc).isoformat() if p.exists() else ""
+        old = prev.get(rid, {})
+        if h and old.get("artifact_hash") == h and old.get("artifact_path") == art and old.get("last_verified_at"):
+            when = old["last_verified_at"]
         rows.append({"requirement_id": rid, "component": comp, "required_function": fn, "implementation_path": impl,
                      "test_command": cmd, "test_status": status, "artifact_path": art if p.exists() else "",
-                     "artifact_hash": sha256_file(p)[:16] if p.exists() and p.is_file() else "",
-                     "last_verified_at": dt.datetime.fromtimestamp(p.stat().st_mtime, dt.timezone.utc).isoformat()
-                     if p.exists() else "", "limitations": o.get("limitations", "")})
+                     "artifact_hash": h, "last_verified_at": when, "limitations": o.get("limitations", "")})
     with open(VER / "evidence_registry.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
         w.writeheader()
