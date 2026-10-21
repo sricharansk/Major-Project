@@ -63,7 +63,11 @@ python src/smartcity/ingestion/fetch.py speed-links --since 2026-09-20 && python
 python -m smartcity.cli simulation prepare        # netconvert, corridor, DOT->SUMO mapping, ATR demand
 python -m smartcity.cli simulation select-demand  # preregistered baseline test; exits 1 (NOT_RUN) if no level passes
 python -m smartcity.cli simulation evaluate       # controller comparison, only after a level was selected
-python scripts/sim_testbed_audit.py               # route-choice and signal-capacity audit
+python scripts/sim_testbed_audit.py               # route-choice and signal-capacity audit (2026-10-21 protocols)
+python src/smartcity/ingestion/fetch.py counts --dataset classification --street-like "WEST ST"
+python src/smartcity/ingestion/fetch.py speed-profile --link 4456494 --start 2026-04-01 --end 2026-10-20
+python scripts/sim_testbed_audit.py --protocol v4_counts2025_webster_noturnlanes   # capacity + observed-speed check
+python scripts/sim_turnlane_check.py              # with vs without OSM turn-lane restrictions
 ```
 
 `fetch.py osm` falls back to the OSM editing API when Overpass is unreachable. Set `scenario.signal_timing` in
@@ -101,10 +105,11 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
 * SUMO: the first 45-run controller comparison (2026-10-20) is **superseded**. A testbed audit
   (`scripts/sim_testbed_audit.py`, 2026-10-21) found that its bare from/to flows let SUMO re-route at insertion
   (1,120 of 2,189 mainline vehicles sent off West Street) and that the NB flow was inserted on a 0.2 m stub edge.
-  With fixed routes, the observed weekday ATR count (1,389 veh/h, NB Gansevoort St, 2014) and a preregistered
-  side-demand selection rule, **no demand level passes the testbed's own baseline test**, neither with netconvert's
-  guessed signal programs nor with Webster re-timed ones (best: 4.3 % unfinished, rule <= 1 %), so the corrected
-  controller comparison is **NOT RUN** and the advisory simulation gate returns NOT_EVALUATED
+  With fixed routes and a preregistered side-demand selection rule, **no demand level passes the testbed's own
+  baseline test** under any corrected protocol: 2014 ATR count with netconvert or Webster programs, or 2025
+  two-direction counts (2,510 NB / 2,444 SB veh/h) without OSM turn-lane restrictions. With the 2025 counts the
+  mapped link runs at **5.8 mph in simulation vs 10.95 mph observed** in the weekday PM peak. The corrected controller
+  comparison is **NOT RUN** and the advisory simulation gate returns NOT_EVALUATED
   (`reports/limitations.md` 16, 24; paper Table "SUMO testbed audit").
 
 ## Honesty rules this repository follows

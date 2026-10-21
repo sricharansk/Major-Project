@@ -149,5 +149,97 @@ def main() -> None:
     print(rep["signal_capacity"])
 
 
+MPH_PER_MPS = 2.236936
+
+
+def observed_speed_profile(link_id: str) -> dict:
+    """Weekday hour-of-day mean speed of a DOT link from the stored `fetch.py speed-profile` response."""
+    from smartcity.preprocessing.raw import raw_dir, read_json_gz
+
+    files = sorted(raw_dir("speeds_profile").glob(f"link{link_id}_*_weekday_hourly.json.gz"))
+    if not files:
+        raise SystemExit(f"NOT_RUN: no speed profile for link {link_id} (run fetch.py speed-profile)")
+    rows = read_json_gz(files[-1])
+    hours = {int(r["hh"]): (float(r["mean_speed_mph"]), int(r["n"])) for r in rows}
+    pm = [hours[h] for h in (16, 17, 18) if h in hours]
+    return {"file": files[-1].name, "by_hour": {h: round(v, 2) for h, (v, _) in sorted(hours.items())},
+            "pm_peak_16_19_mph": round(sum(v * n for v, n in pm) / sum(n for _, n in pm), 2), "pm_peak_records": sum(n for _, n in pm)}
+
+
+def simulated_link_speed(meta: dict, routes: Path, plan: str | None, edges: list[str], seeds: list[int], tmp: Path) -> list[dict]:
+    """Space-mean speed over a mapped DOT link's SUMO edges in the evaluation window (plain SUMO, edgeData output)."""
+    import sumolib
+
+    cfg = settings.load("simulation")["simulation"]
+    net = sumolib.net.readNet(str(settings.ROOT / meta["network"]["static"]))
+    t0, t1 = cfg["warmup_s"], cfg["warmup_s"] + cfg["evaluation_s"]
+    out = []
+    for seed in seeds:
+        ed_add = tmp / f"ed{seed}.add.xml"
+        ed_out = tmp / f"edgedata{seed}.xml"
+        ed_add.write_text(f'<additional><edgeData id="ed" file="{ed_out}" begin="{t0}" end="{t1}" excludeEmpty="true"/></additional>')
+        adds = f"{settings.ROOT / plan},{ed_add}" if plan else str(ed_add)
+        cmd = [sr.binary(), "-n", str(settings.ROOT / meta["network"]["static"]), "-r", str(routes), "-a", adds,
+               "--seed", str(seed), "--end", str(t1 + 1800), "--time-to-teleport", "300", "--max-depart-delay", "900",
+               "--no-step-log", "true", "--no-warnings", "true"]
+        r = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        if r.returncode != 0:
+            raise RuntimeError(f"sumo failed: {r.stderr[-800:]}")
+        ed = {e.get("id"): e.attrib for e in ET.parse(ed_out).getroot().iter("edge")}
+        length = sum(net.getEdge(e).getLength() for e in edges)
+        ttime = sum(net.getEdge(e).getLength() / max(float(ed[e]["speed"]), 0.01) for e in edges if e in ed)
+        out.append({"seed": seed, "space_mean_speed_mph": round(length / ttime * MPH_PER_MPS, 2), "edges": len(edges),
+                    "length_m": round(length, 1)})
+    return out
+
+
+def main_protocol(label: str) -> None:
+    """Audit of one corrected protocol on the current network: route-aware capacity of the generated and re-timed
+    programs, mainline outcome by direction at zero side demand, and simulated vs observed speed on the mapped
+    forecast link (4456494, West St S Spring St - BBT portal) in the weekday PM peak."""
+    meta = read_json(p.SIM / "scenarios" / "prepared.json")
+    sel = read_json(p.SIM / "scenarios" / f"demand_selection_{label}.json")
+    plan0 = sel["retimed_programs"].get("0.0", {}).get("tls_additional")
+    cap = capacity_audit(meta) + (capacity_audit(meta, plan0, f"{label}_side0") if plan0 else [])
+    exp = settings.ROOT / "reports" / "experiments"
+    with open(exp / f"simulation_signal_capacity_{label}.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(cap[0].keys()))
+        w.writeheader()
+        w.writerows(cap)
+    dem = meta["demand"].get("main_veh_per_hour_by_direction") or {}
+    need = {"northbound": dem.get("nb"), "southbound": dem.get("sb")}
+    with open(settings.ROOT / "simulation" / "mappings" / "dot_to_sumo.csv") as fh:
+        mapped = {r["dot_link_id"]: r["sumo_edge_id"].split(";") for r in csv.DictReader(fh) if r["mapping_confidence"] == "high"}
+    link = "4456494"
+    obs = observed_speed_profile(link)
+    with tempfile.TemporaryDirectory() as d:
+        sim = simulated_link_speed(meta, p.SIM / "demand" / "sweep_side000.rou.xml", plan0, mapped[link],
+                                   settings.load("simulation")["demand_selection"]["seeds"], Path(d))
+    rep = {"generated_at": utcnow_iso(), "protocol_id": label, "mode": "SIMULATION (testbed audit, not a controller comparison)",
+           "sumo_version": sr.sumo_version(), "network_static_content_sha256": meta["network"].get("static_content_sha256"),
+           "osm_turn_lanes": meta["network"].get("osm_turn_lanes"), "demand_source": meta["demand"].get("source"),
+           "observed_main_vph": dem,
+           "signal_capacity": {"saturation_flow_vphpl_assumed": SATURATION_VPHPL,
+                               "min_est_capacity_vph": {f"{g}:{t}": min(r["est_capacity_vph"] for r in cap
+                                                                       if r["direction"] == t and r["program"] == g)
+                                                        for g in sorted({r["program"] for r in cap})
+                                                        for t in ("northbound", "southbound")},
+                               "signals_at_or_below_observed_demand": [r for r in cap if need.get(r["direction"])
+                                                                       and r["est_capacity_vph"] <= need[r["direction"]]]},
+           "mainline_by_direction_side_scale_0": direction_breakdown(0.0, label),
+           "speed_validation": {"dot_link_id": link, "sumo_edges": mapped[link], "observed": obs,
+                                "simulated_side_scale_0": sim,
+                                "note": "observed: NYC DOT speeds, weekday 16-19 h local, Apr-Oct 2026; simulated: routine "
+                                        "peak with no side-street demand, development seeds, space-mean speed 300-3900 s"}}
+    write_json(exp / f"simulation_testbed_audit_{label}.json", rep)
+    print(json.dumps({k: rep[k] for k in ("signal_capacity", "speed_validation")}, indent=1)[:3000])
+
+
 if __name__ == "__main__":
-    main()
+    import json
+    import sys
+
+    if len(sys.argv) > 1 and sys.argv[1] == "--protocol":
+        main_protocol(sys.argv[2])
+    else:
+        main()

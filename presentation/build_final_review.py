@@ -593,9 +593,10 @@ box(s, 0.5, 6.0, 6.3, 1.3, [[("12 of 12 LLM responses were schema-valid. Without
 box(s, 7.2, 1.9, 6.3, 0.4, [[("SUMO testbed outcome (simulation only)", True, NAVY, 16)]], TNR, 16, margin=0.02, after=0)
 sim = [("Protocol", "Unfinished*", "Result"),
        ("First comparison, 20 Oct (45 runs)", "—", "Withdrawn"),
-       ("Corrected, generated signal timing", "17.7 %", "Fails test"),
-       ("Corrected, Webster re-timed signals", "4.3 %", "Fails test")]
-gt = s.shapes.add_table(len(sim), 3, Inches(7.2), Inches(2.35), Inches(6.3), Inches(2.2))
+       ("2014 count, generated signal timing", "17.7 %", "Fails test"),
+       ("2014 count, Webster re-timed signals", "4.3 %", "Fails test"),
+       ("2025 counts, Webster, no turn-lane limits", "10.1 %", "Fails test")]
+gt = s.shapes.add_table(len(sim), 3, Inches(7.2), Inches(2.35), Inches(6.3), Inches(2.45))
 gt.name = "Simulation protocols"
 tbl = gt.table
 for ci, wv in enumerate((3.6, 1.3, 1.4)):
@@ -609,12 +610,12 @@ for ri, row in enumerate(sim):
         cell.fill.solid()
         cell.fill.fore_color.rgb = NAVY if ri == 0 else (TINT if ri % 2 else WHITE)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
-box(s, 7.2, 4.7, 6.3, 2.6, [
-    [("* Share of vehicles not finishing with no side-street traffic; the preregistered test allows at most 1 % and no stuck vehicles.", False, MUTED, 12)],
-    [("The first comparison let SUMO re-route 1,120 of 2,189 main-road vehicles off West Street, so it did not test the corridor.", False, INK, 14)],
-    [("After re-timing, northbound traffic flows (all 1,389 trips finish), but southbound vehicles still lose about 17 minutes each; the cause is not yet identified.", False, INK, 14)],
-    [("The test was not relaxed, so the controller comparison is reported as not run.", True, INK, 14)]],
-    TNR, 14, margin=0.04, after=6)
+box(s, 7.2, 4.9, 6.3, 2.45, [
+    [("* Vehicles not finishing with no side-street traffic; the preregistered test allows at most 1 % and no stuck vehicles.", False, MUTED, 12)],
+    [("The first comparison let SUMO re-route 1,120 of 2,189 main-road vehicles off West Street, so it did not test the corridor.", False, INK, 13)],
+    [("With real 2025 counts (2,510 NB / 2,444 SB veh/h) the modelled link runs at 5.8\u00a0mph; the real street runs at 10.95\u00a0mph in the PM peak.", False, INK, 13)],
+    [("The test was not relaxed: the comparison is reported as not run, and 10.95\u00a0mph is now the calibration target.", True, INK, 13)]],
+    TNR, 13, margin=0.04, after=5)
 
 # ---------------------------------------------------------------- 17. timeline: planned (24-hour plan) vs completed
 s = S[16]
@@ -652,8 +653,8 @@ for k, (name, a, b, st) in enumerate(plan):
     box(s, 11.95, y, 1.6, 0.33, [[("Completed" if st == "done" else "Partial", True, OK if st == "done" else WARN, 12)]],
         ARIAL, 12, anchor=MSO_ANCHOR.MIDDLE, margin=0.02, after=0)
 box(s, 0.5, 6.92, 13.0, 0.45, [[("Bars: planned window (project specification). Colour: actual status, 19–21 Oct 2026 (repository history). "
-                                "Next milestones: reviewed West St signal timing plans → controller comparison; multi-seed training; "
-                                "paper submission.", False, MUTED, 11)]], ARIAL, 11, margin=0.02, after=0)
+                                "Next milestones: calibrate West St signal timing to the observed 10.95 mph (or obtain DOT timing plans) → "
+                                "controller comparison; multi-seed training; paper submission.", False, MUTED, 11)]], ARIAL, 11, margin=0.02, after=0)
 
 # ---------------------------------------------------------------- 18. references (IEEE)
 s = S[17]

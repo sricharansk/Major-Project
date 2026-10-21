@@ -20,6 +20,11 @@ scenario:
   osm_bbox: "40.700,-74.020,40.737,-74.000"   # south,west,north,east; reproduces the 2026-10-20 corridor edge set
   corridor_name_regex: "^(West Street|West Side Highway|Route 9A)$"
   atr_street_regex: "WEST ST|WEST STREET|WEST SIDE HIGHWAY|ROUTE 9A"
+  # Recent counts first: the most recent year in which one of these datasets has weekday PM-peak counts in BOTH
+  # directions on the corridor street replaces the ATR figure (kept in the record). 2026-10-21: Vehicle
+  # Classification Counts on West St at Spring St - W Houston St, 29-30 Apr 2025.
+  count_sources: [classification, volume_hist]
+  count_street_regex: "^(WEST ST|WEST STREET)( NB| SB)?$"
   atr_weekdays_only: true        # routine PM peak = Mon-Fri 16:00-19:00 hourly totals
   atr_by_direction: true         # use the NB and SB medians separately when both directions were counted
   fallback_main_vph: 1200        # DECLARED assumption, used only if no ATR counts match the corridor
@@ -31,6 +36,11 @@ scenario:
   # and is kept only to reproduce the superseded 2026-10-20 runs.
   route_choice: fixed_free_flow
   min_entry_edge_m: 20           # netconvert junction joining can leave stub edges (0.2 m) at a chain start
+  # OSM turn:lanes tags as hard lane restrictions (netconvert --osm.turn-lanes). false since 2026-10-21: with them, a
+  # right-turn-only lane on the 45 m link south of Chambers St forces through traffic to merge within 45 m and the SB
+  # queue ends at that junction; without them the lane also carries through traffic. DECLARED simplification: it can
+  # overstate capacity where real lanes are turn-only.
+  osm_turn_lanes: false
   # netconvert_guess: the programs netconvert generates (--tls.guess-signals), which split green about equally between
   # stages and gave the West St NB through movement ~520 veh/h at Battery Place (testbed audit 2026-10-21).
   # webster_retimed: the fixed-time programs re-timed by SUMO's tools/tlsCycleAdaptation.py (Webster's method) for the
@@ -43,6 +53,8 @@ scenario:
 # comparison does not use, take the largest scale in the grid at which every seed has at most max_teleports teleports
 # and leaves at most max_unfinished_frac of loaded vehicles unfinished. Stress scenarios then reuse the selected scale.
 demand_selection:
+  # earlier records: netconvert_guess (2014 ATR count, OSM turn lanes, generated programs), webster_retimed (same, re-timed)
+  protocol_id: v4_counts2025_webster_noturnlanes
   side_scales: [1.0, 0.75, 0.5, 0.25, 0.0]
   seeds: [101, 102, 103]
   max_teleports: 0

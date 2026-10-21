@@ -51,3 +51,45 @@ def test_candidate_is_not_judged_on_a_testbed_without_admissible_demand():
                                                                  "side_veh_per_hour_per_approach": 150}}
     with pytest.raises(RuntimeError, match="NOT_EVALUATED"):
         paired_candidate_eval(meta, {"name": "event_surge"}, {"candidate_id": "c1"}, [1])
+
+
+def _counts_frame(rows):
+    import polars as pl
+
+    hour_cols = {16: "_4_00_5_00pm", 17: "_5_00_6_00pm", 18: "_6_00_7_00pm"}
+    out = []
+    for name, direction, date, cls, vph in rows:
+        out.append({"roadway_name": name, "from": "Spring St", "to": "W Houston St", "direction": direction, "date": date,
+                    "veh_class_type": cls, **{c: str(vph) for c in hour_cols.values()}})
+    return pl.DataFrame(out)
+
+
+def test_recent_two_direction_counts_takes_the_latest_year_with_both_directions(monkeypatch):
+    from smartcity.preprocessing import raw
+    from smartcity.simulation import pipeline
+
+    data = {
+        "classification": _counts_frame([
+            ("West St NB", "NB", "2025-04-29T00:00:00.000", "Autos", 2000), ("West St NB", "NB", "2025-04-29T00:00:00.000", "Taxi", 500),
+            ("West St SB", "SB", "2025-04-29T00:00:00.000", "Autos", 2400),
+            ("West St NB", "NB", "2026-01-06T00:00:00.000", "Autos", 9999),           # newer, but one direction only
+            ("West St SB", "SB", "2025-04-26T00:00:00.000", "Autos", 7777),           # a Saturday: excluded
+            ("Joe DiMaggio Hwy/West Side Hwy", "SB", "2025-04-29T00:00:00.000", "Autos", 5555)]),  # other street
+        "volume_hist": _counts_frame([("West Street", "NB", "2019-10-08T00:00:00.000", "", 1500),
+                                      ("West Street", "SB", "2019-10-08T00:00:00.000", "", 1600)]),
+    }
+    monkeypatch.setattr(raw, "read_socrata", lambda src, prefix=None: data[src])
+    rec = pipeline.recent_two_direction_counts({"count_sources": ["classification", "volume_hist"],
+                                                "count_street_regex": "^(WEST ST|WEST STREET)( NB| SB)?$"})
+    assert rec["count_source"] == "classification" and rec["count_year"] == 2025
+    assert rec["vph"] == {"nb": 2500.0, "sb": 2400.0}  # classes summed per hour; weekend and other street ignored
+
+
+def test_no_two_direction_year_returns_none(monkeypatch):
+    from smartcity.preprocessing import raw
+    from smartcity.simulation import pipeline
+
+    one = _counts_frame([("West St NB", "NB", "2025-04-29T00:00:00.000", "Autos", 2000)])
+    monkeypatch.setattr(raw, "read_socrata", lambda src, prefix=None: one)
+    assert pipeline.recent_two_direction_counts({"count_sources": ["classification"],
+                                                 "count_street_regex": "^(WEST ST)( NB| SB)?$"}) is None

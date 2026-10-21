@@ -17,6 +17,7 @@ Usage (run from the repository root)::
     python src/smartcity/ingestion/fetch.py weather --start 2025-10-01 --end 2026-10-19
     python src/smartcity/ingestion/fetch.py collisions --start 2025-10-01 --end 2026-10-19
     python src/smartcity/ingestion/fetch.py volume --start-year 2024
+    python src/smartcity/ingestion/fetch.py counts --dataset classification --street-like "WEST ST"
     python src/smartcity/ingestion/fetch.py events
     python src/smartcity/ingestion/fetch.py sr311 --start 2025-10-01 --end 2026-10-19
     python src/smartcity/ingestion/fetch.py osm --bbox 40.700,-74.020,40.880,-73.900 --name manhattan_major
@@ -53,6 +54,8 @@ DATASETS = {
     "events_hist": "bkfu-528j",  # NYC Permitted Event Information - Historical (candidate)
     "collisions": "h9gi-nx95",  # Motor Vehicle Collisions - Crashes
     "sr311": "erm2-nwe9",  # 311 Service Requests from 2010 to Present (candidate)
+    "classification": "96ay-ea4r",  # Vehicle Classification Counts (2011 - 2025): hourly counts by class and direction
+    "volume_hist": "btm5-ppia",  # Traffic Volume Counts (Historical): hourly counts by direction
 }
 
 # 311 complaint types plausibly related to road capacity / signal operation.
@@ -188,6 +191,8 @@ def cmd_audit(args) -> None:
         "events_hist": "start_date_time",
         "collisions": "crash_date",
         "sr311": "created_date",
+        "classification": "date",
+        "volume_hist": "date",
     }
     for key, ds in DATASETS.items():
         entry: dict = {"dataset_id": ds}
@@ -288,6 +293,33 @@ def cmd_volume(args) -> None:
         name = f"volume_{(args.boro or 'all').lower()}_{yr}"
         n = socrata_paged("volume", ds, name, {"$where": where, "$order": ":id"})
         print(f"{name}: {n}", flush=True)
+
+
+def cmd_speed_profile(args) -> None:
+    """Server-side weekday hour-of-day mean speed for one DOT link (calibration target for the SUMO testbed).
+    ``data_as_of`` is NYC local time, so the hours are local; zero speeds (the feed's no-measurement code) are excluded."""
+    ds = DATASETS["speeds"]
+    p = {"$select": "date_extract_hh(data_as_of) AS hh, avg(speed::number) AS mean_speed_mph, count(*) AS n",
+         "$where": (f"link_id = '{int(args.link)}' AND speed::number > 0 AND data_as_of >= '{args.start}' "
+                    f"AND data_as_of < '{args.end}' AND date_extract_dow(data_as_of) BETWEEN 1 AND 5"),
+         "$group": "hh", "$order": "hh"}
+    status, body, url = http_get(f"{SOCRATA}/resource/{ds}.json", p, timeout=600)
+    rows = json.loads(body)
+    if not isinstance(rows, list):
+        raise RuntimeError(f"unexpected response: {str(rows)[:300]}")
+    store("speeds_profile", f"link{int(args.link)}_{args.start}_{args.end}_weekday_hourly", url, p, status, body, len(rows))
+    print(f"link {args.link}: {len(rows)} hours")
+
+
+def cmd_counts(args) -> None:
+    """Hourly count records for one street from the classification or historical volume-count datasets (bounded by
+    street name; these datasets carry no borough field)."""
+    ds = DATASETS[args.dataset]
+    like = args.street_like.upper().replace("'", "''")
+    slug = "".join(ch if ch.isalnum() else "_" for ch in args.street_like.lower()).strip("_")
+    n = socrata_paged(args.dataset, ds, f"{args.dataset}_{slug}",
+                      {"$where": f"upper(roadway_name) like '%{like}%'", "$order": ":id"})
+    print(f"{args.dataset} street~{args.street_like}: {n} rows")
 
 
 def cmd_events(args) -> None:
@@ -482,6 +514,11 @@ def main(argv=None) -> None:
     p.add_argument("--borough", default="Manhattan"); p.set_defaults(fn=cmd_collisions)
     p = sub.add_parser("volume"); p.add_argument("--start-year", type=int, default=2024); p.add_argument("--boro", default="Manhattan")
     p.set_defaults(fn=cmd_volume)
+    p = sub.add_parser("speed-profile"); p.add_argument("--link", required=True); p.add_argument("--start", required=True)
+    p.add_argument("--end", required=True); p.set_defaults(fn=cmd_speed_profile)
+    p = sub.add_parser("counts"); p.add_argument("--dataset", choices=["classification", "volume_hist"], required=True)
+    p.add_argument("--street-like", required=True, help="case-insensitive substring of roadway_name, e.g. 'WEST ST'")
+    p.set_defaults(fn=cmd_counts)
     p = sub.add_parser("events"); p.add_argument("--borough", default="Manhattan"); p.add_argument("--since", default="2025-01-01")
     p.set_defaults(fn=cmd_events)
     p = sub.add_parser("sr311"); p.add_argument("--start", required=True); p.add_argument("--end", required=True)
