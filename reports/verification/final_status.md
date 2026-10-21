@@ -1,7 +1,7 @@
 # Final status
 
-Last updated: 2026-10-21 07:00 IST / 01:30 UTC (after the real-data run on the workstation and the SUMO testbed
-audit in the development container, `progress.md` Milestone 4). Statuses follow `progress.md`; evidence paths are in
+Last updated: 2026-10-21 07:35 IST / 02:05 UTC (after the real-data run on the workstation, the SUMO testbed
+audit in the development container, `progress.md` Milestone 4, and the final-review deck in `presentation/`). Statuses follow `progress.md`; evidence paths are in
 this repository unless marked "workstation".
 
 | Component | Status | Evidence | Notes |
@@ -23,10 +23,11 @@ this repository unless marked "workstation".
 | Dashboard | VERIFIED (software) | `reports/verification/dashboard_smoke.json` | |
 | MLflow tracking + export | VERIFIED | `reports/verification/mlflow_runs.json` (workstation export) | |
 | Docker packaging | VERIFIED (workstation) | `reports/verification/docker_smoke.json` | compose build OK, 3 images 4.67 GB; the development container cannot build images |
-| Paper | VERIFIED (draft complete) | `paper/main.pdf` (10 pages, rebuilt 2026-10-21), `paper/tables/*.tex`, `reports/verification/paper_claims.csv` (C01-C28) | every results/discussion/limitations/conclusion statement written from artifacts; 24/24 references CHECKED; only the author block remains for the authors |
+| Paper | VERIFIED (draft complete) | `paper/main.pdf` (10 pages, rebuilt 2026-10-21), `paper/tables/*.tex`, `reports/verification/paper_claims.csv` (C01-C28) | every results/discussion/limitations/conclusion statement written from artifacts; 24/24 references CHECKED; author block has the student; co-authors and order still to confirm |
+| Final review presentation | VERIFIED | `presentation/Final_Review_S_K_Sricharan_25MML1010.pptx` (19 slides, VIT template) and PDF | built from committed result files by `presentation/build_final_review.py`; rebuild reproduces it |
 
 Open items (need the authors or the workstation):
-1. Paper author block (names, order, affiliation).
+1. Paper: confirm co-authors and author order (the student is filled in).
 2. Simulation: an admissible testbed needs reviewed NYC DOT signal timing plans for West St and recent two-direction
    counts (or an explicit, documented decision by the authors to change the preregistered rule); only then can
    `simulation evaluate` and an advisory reaching the simulation gate be run.

@@ -6,7 +6,7 @@
   },
   "PAPER-01": {
     "status": "PARTIAL",
-    "limitations": "Results, discussion, limitations and conclusion (including the superseded SUMO comparison and the 2026-10-21 testbed audit) are written from the run artifacts and listed in paper_claims.csv; all 24 bibliography entries are CHECKED (johnson2019faiss DOI confirmed on Crossref 2026-10-21). Open: the author block (names, order, affiliation) must be supplied by the authors."
+    "limitations": "Results, discussion, limitations and conclusion (including the superseded SUMO comparison and the testbed audit) are written from the run artifacts and listed in paper_claims.csv; 24/24 references CHECKED. Author block filled with the student (S K Sricharan, VIT Chennai); co-authors and author order (e.g. the guide) are to be confirmed by the authors before submission."
   },
   "SIM-02": {
     "status": "PARTIAL",
