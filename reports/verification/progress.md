@@ -234,6 +234,34 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Paper: results, limitations, discussion and conclusion updated; two dataset references added (26/26 CHECKED);
   claims C29-C33. Tests: 2 new unit tests for the count selection.
 
+### Milestone 7: multi-seed study and agent re-run (workstation, 2026-10-21 03:35-04:45 UTC)
+- Continued from branch `claude/nifty-dijkstra-u5kjbw` (7738d68). The three CPU seed-42 runs of the development
+  container have no stored predictions, so their records moved to
+  `artifacts/models/multi_seed_runs_container_cpu_seed42.json` and all nine runs were trained on the workstation
+  GPU (RTX 4050, torch 2.11.0+cu128) with `scripts/multi_seed_study.py train`, then `analyze` (exit 0).
+- REPRODUCIBILITY CHECK: seed 42 reproduced the main-run GRU (17 epochs, best 11, val MAE 5.4763) and temporal
+  Transformer (14, 8, 5.4062) exactly, but not the proposed model (25 epochs, best 19, 5.3584 vs 14, 8, 5.3880). The
+  only difference to the temporal Transformer is the GATv2 layer (non-deterministic CUDA scatter); runner and model
+  code paths for seeding and sampling are unchanged since the main run. The container CPU run gave 21 epochs, val
+  5.3556.
+- RESULT (`reports/experiments/multi_seed_summary.csv`, `multi_seed_metrics.csv`; 144,205 shared 60-min targets):
+  seed-mean test MAE 15/30/60 min: proposed 4.688/5.339/6.153 (s.d. 0.063/0.032/0.015), GRU 4.666/5.370/6.184,
+  temporal Transformer 4.723/5.375/6.233. Paired day-block bootstrap (44 days, 1,000 resamples) of the seed-averaged
+  MAE difference: Transformer minus proposed +0.035/+0.037/+0.080 (all intervals above zero); GRU minus proposed
+  -0.021 [-0.040, -0.004] / +0.032 [0.010, 0.052] / +0.031 [0.007, 0.056]. Reading: proposed lower than the
+  Transformer at every horizon and the GRU at 30/60 min, GRU lower at 15 min; small (0.02-0.08 mph), three seeds,
+  per-seed ranges overlap, the bootstrap does not include between-seed variance. One Transformer seed (1) stopped
+  at best epoch 2. Paper: new generated Table `tab:multiseed` (`paper sync`), results/discussion/limitations/
+  conclusion/abstract updated; claims C34-C37; C05/C16 notes updated; deck rebuilt (conclusions slide adds the
+  3-seed row; next-milestones footer) and its PDF re-exported with PowerPoint.
+- AGENTS RE-RUN (`agents evaluate`, 411 s, then `report export`): same 19 decisions as on 2026-10-20; 12/12 LLM calls
+  schema-valid, all monitor_only, so the corrected simulation gate was again not reached; 3/3 invented evidence ids
+  without retrieval (rejected), 0/9 with. `llm_calls.csv` is rebuilt from all traces and now holds both passes (24).
+  The paper's token ranges were corrected from the file (892-3,619 prompt, 157-321 completion tokens).
+- Counts fetched once for the SUMO work: `fetch.py counts --dataset classification --street-like "WEST ST"` (70
+  rows) and `--dataset volume_hist` (144 rows) into `data/raw/{classification,volume_hist}/` with fetch logs.
+- Not done here: `paper/main.pdf` rebuild (no LaTeX on the workstation).
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
@@ -265,17 +293,17 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   second pass covered 23 of 64 planned checks before the session limit; limitations, conclusion, method, data,
   experiments, final_status, progress, README and paper_claims were not independently re-checked in that pass.
 
-### Milestone 7: multi-seed study prepared (development container, 2026-10-21 03:30-03:50 UTC)
+### Milestone 6b: multi-seed study prepared (development container, 2026-10-21 03:30-03:50 UTC; the runs are Milestone 7)
 - The other account's session (branch `claude/nifty-dijkstra-u5kjbw`, 3 unmerged commits) is merged: `scripts/multi_seed_study.py`,
   `runner.train_deep(seed=...)`, `reports/verification/container_reproduction.json` (independent re-download reproduced
   1,968,303 raw rows, graph hash d8c69a468b82cbda, feature schema hash 1d63c3fe45a729be and the same splits).
-- Its three CPU seed-42 runs (proposed, gru, temporal_transformer; torch 2.14.1, container) are kept in
-  `artifacts/models/multi_seed_runs.json` under `runs_without_predictions`: their weights and prediction arrays are not
-  committed, so they cannot be analysed here and seed 42 is re-run on the workstation GPU. The CPU proposed run's
+- Its three CPU seed-42 runs (proposed, gru, temporal_transformer; torch 2.14.1, container) are kept as records in
+  `artifacts/models/multi_seed_runs_container_cpu_seed42.json`: their weights and prediction arrays are not
+  committed, so they cannot be analysed here and seed 42 was re-run on the workstation GPU (Milestone 7). The CPU proposed run's
   4.689/5.327/6.116 mph reported by that session is not reproducible from the repository and is not used.
 - `train-all` (resumable, seed-major) and portable artifact paths added; 3 unit tests. Workstation instructions:
   `docs/laptop_run.md` section 5 (counts fetch, 9 seed runs, `analyze`, `agents evaluate`, export, paper sync).
-- Multi-seed results, the agents re-run on the corrected simulation gate and the counts fetch: NOT RUN (workstation).
+- Multi-seed results, the agents re-run on the corrected simulation gate and the counts fetch were then run on the workstation (Milestone 7).
 - Independent audit of PRs #12-#15 (code, claims C23-C33, deck literals): no fabricated or wrong number; every
   simulation figure recomputes from the committed `result.json` files. Fixed from its findings: a run with missing
   summary metrics could have passed the admissibility test as 0 <= 0 (`run_admissible` now requires complete evidence;
@@ -284,3 +312,33 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   deck rebuilt); the deck README now says the builder holds literals checked against the result files; the audit
   script no longer overwrites the cited turn-lane-network audit with an audit of another network; limitation 25
   records which testbed inputs trace to derived files only.
+
+### Milestone 8: IEEE Word paper (development container, 2026-10-21)
+- `paper/ieee_conference_paper.docx` built from the conference's A4 Word template (`paper/word/IEEE_conference-template-A4.docx`)
+  by `paper/word/build_ieee_docx.py` (`make paper-docx`): text in `paper/word/paper_content.py` follows `paper/main.tex`
+  with the PR #16 corrections; tables are read from the generated `paper/tables/*.tex` and
+  `reports/data_audit/source_inventory.csv`, so no table number is typed by hand. Formatting follows the guideline the
+  student supplied (abstract 247 words without citations, seven alphabetical keywords, Roman section numbers, table
+  titles above tables, references numbered by first appearance). Author block: S K Sricharan and Dr. R. Srinivasa
+  Perumal (confirmed by the student). The first-page footer keeps the template's copyright placeholder for the conference.
+- Check: every number in the Word body text was matched against `paper/sections`, `paper/tables`, `references.bib` and
+  `source_inventory.csv` by script (no unmatched figure); LibreOffice renders 9 A4 pages.
+- Built before the multi-seed study landed: that build says all forecasting figures are single-seed. The Word paper is
+  rebuilt from `paper_content.py` once its text carries the Milestone 7 figures (claims C34-C37).
+- Rebuilt on 506de48 with the three-seed results: seed table from `paper/tables/multi_seed.tex`, the seeds paragraph,
+  both agent passes (24 LLM calls) and the updated abstract (245 words), discussion, limitations and conclusion, in the
+  same wording as the LaTeX sections. Also fixed in LaTeX: `results.tex` input `tables/multi_seed` twice and
+  `results_body.tex` still said the study had not been run; `main.pdf` rebuilt (11 pages).
+
+### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
+- Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
+  branch (Milestone 8, PR #17) on top of PR #16. Conflicts resolved by keeping the PR #16 wording corrections (nearly ten
+  months of data, about 44 test days, 0.01-0.06 mph single-seed margins, retained-coverage sentence) and the
+  workstation's multi-seed paragraphs, table (`tab:multiseed`), claims C34-C37 and limitation 8/8b.
+- Verified the workstation figures against the committed files before use: `multi_seed_summary.csv` seed means
+  4.6878/5.3388/6.1533 (proposed), 4.6664/5.3703/6.1840 (GRU), 4.7233/5.3755/6.2331 (Transformer) equal the means of the
+  nine runs in `multi_seed_metrics.csv`; bootstrap intervals as in C35; `multi_seed_runs.json` lists 9 CUDA runs with
+  the epochs quoted in C36; `llm_calls.csv` holds 24 calls. `paper sync` regenerated identical tables.
+- `paper/main.pdf` rebuilt with TeX Live; the final-review deck rebuilt from the merged builder (three-seed observation,
+  0.01-0.06 mph single-seed margin). The multi-seed unit test now checks the table format the workstation's `paper.py` writes.
+- Still NOT RUN: the corrected SUMO controller comparison (authors' calibration decision, open item 2).

@@ -91,16 +91,19 @@ Every number is read from `reports/experiments/` and `artifacts/`; `python scrip
 Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 3), `reports/limitations.md`.
 
 * 26 Manhattan DOT links, 7 dead feeds, 16 modelled, 3 without test data; test 2026-09-06..10-20 (about 44 days over 45 calendar dates,
-  ~144k targets per horizon); all deep models trained under a recorded 4,096-windows-per-epoch budget, one seed.
+  ~144k targets per horizon); all deep models trained under a recorded 4,096-windows-per-epoch budget; the three deep
+  forecasters also over seeds 42/1/2.
 * Test MAE (mph, 15/30/60 min): persistence 5.14/6.06/7.29, XGBoost 4.82/5.58/6.31, GRU 4.71/5.37/6.17,
-  temporal Transformer 4.73/5.34/6.18, **proposed 4.77/5.33/6.15** (best at 30/60 min by 0.01-0.02 mph; not a
-  seed-resolvable margin over the GRU/Transformer).
+  temporal Transformer 4.73/5.34/6.18, **proposed 4.77/5.33/6.15** (main run, seed 42; best at 30/60 min by 0.01-0.02 mph).
+* Three seeds (seed-mean MAE 15/30/60): proposed 4.69/5.34/6.15, GRU 4.67/5.37/6.18, temporal Transformer
+  4.72/5.38/6.23; proposed lower than the Transformer at every horizon and than the GRU at 30/60 min by 0.03-0.08 mph
+  (day-block bootstrap intervals exclude zero), GRU lower at 15 min; small and preliminary (3 seeds).
 * Ablations (day-block bootstrap): no gate +0.067 [0.048, 0.086]; no 311 +0.014 [0.002, 0.026];
   **no weather -0.046 [-0.069, -0.021] (negative result)**.
 * Conformal 90% intervals: coverage 0.91/0.91/0.90 overall, 0.80/0.79/0.76 under congestion; gate defers ~26%,
   retained MAE 3.72/4.38/5.25.
-* Retrieval: 28 queries, Recall@8 0.818, MRR 0.702 (project-drafted labels). LLM agents: 12/12 schema-valid calls;
-  3/3 fabricated citations without retrieval (all rejected), 0/9 with; constraints reject the unmapped link; the
+* Retrieval: 28 queries, Recall@8 0.818, MRR 0.702 (project-drafted labels). LLM agents (two passes): 24/24 schema-valid calls;
+  per pass 3/3 fabricated citations without retrieval (all rejected), 0/9 with; constraints reject the unmapped link; the
   LLM chose monitor-only on the mapped corridor, so no advisory reached the simulation gate.
 * SUMO: the first 45-run controller comparison (2026-10-20) is **superseded**. A testbed audit
   (`scripts/sim_testbed_audit.py`, 2026-10-21) found that its bare from/to flows let SUMO re-route at insertion

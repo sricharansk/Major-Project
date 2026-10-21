@@ -6,9 +6,10 @@ cases under four policies that switch off retrieval, the constraint layer or the
 results support some of the proposals in Section~\ref{sec:intro} and not others.
 
 \textit{Forecasting.} The accuracy gain of the proposed model over persistence (7--16\,\% MAE) is real and consistent
-across horizons, its margin over the tree baselines is consistent in sign (0.05--0.25\,mph) though at 15\,min no
-larger than the GRU margin, and its margin over the GRU and the temporal-only Transformer is
-within what a single seed can resolve. Two measured facts explain why the spatial layer adds little here: the graph
+across horizons, and its margin over the tree baselines is consistent in sign (0.05--0.25\,mph) though at 15\,min no
+larger than the GRU margin. Over three seeds its margin over the temporal-only Transformer
+(0.04--0.08\,mph) and over the GRU at 30 and 60 minutes (0.03\,mph) is consistent across test days, while the GRU is
+better at 15 minutes; these are small effects from three seeds, not a decisive architectural advantage. Two measured facts explain why the spatial layer adds little here: the graph
 is sparse (16 nodes with usable data, most of them limited-access highway segments whose monitored neighbours are
 kilometres away) and the explanations attribute 0.52\,mph of mean absolute effect to neighbour traffic against
 8.22\,mph to the link's own last half hour. The neighbour-removal analysis shows the layer is not inert (prediction

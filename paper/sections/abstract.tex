@@ -12,8 +12,9 @@ safety constraints, and are designed to be evaluated against a baseline controll
 being queued for human review.
 All data are public and all reported figures are generated from stored artifacts of a single-day pipeline execution on
 nearly ten months (1 January to 20 October 2026) of NYC DOT speeds (16 usable links). On the 44-day test partition the proposed model reaches an MAE of
-4.77, 5.33 and 6.15\,mph at 15, 30 and 60 minutes, 7--16\,\% below persistence and below both tree baselines, but
-within 0.06\,mph of a GRU and a temporal-only Transformer; the availability gate improves MAE by 0.07\,mph (bootstrap
+4.77, 5.33 and 6.15\,mph at 15, 30 and 60 minutes, 7--16\,\% below persistence and below both tree baselines; over
+three seeds it is 0.03--0.08\,mph below a temporal-only Transformer at every horizon and a GRU at 30 and 60 minutes,
+while the GRU is better at 15 minutes; the availability gate improves MAE by 0.07\,mph (bootstrap
 interval excluding zero) while the operational weather features worsen it by 0.05\,mph, a negative result. Conformal
 intervals reach 0.90--0.91 coverage overall but 0.76--0.80 under congestion, while the deterministic reliability gate
 (input-missingness and interval-width thresholds fixed on the calibration partition) defers 26\,\% of test targets

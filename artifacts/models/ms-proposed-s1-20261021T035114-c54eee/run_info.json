@@ -1,0 +1,18 @@
+{
+  "run_id": "ms-proposed-s1-20261021T035114-c54eee",
+  "model": "proposed",
+  "best_epoch": 21,
+  "best_val_mae": 5.343357086181641,
+  "epochs_run": 27,
+  "train_time_s": 301.1455602645874,
+  "infer_latency_ms_per_origin": 5.406019318889941,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "d8a3a124eeb2f54f03e92268de16cd0c59ef6c842657e82579268a6a073b72a1",
+  "n_params": 158403,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\ms-proposed-s1-20261021T035114-c54eee",
+  "train_device": "cuda",
+  "cudnn_enabled": true,
+  "stopped_reason": "early_stopping",
+  "max_minutes_per_model": null,
+  "seed": 1
+}

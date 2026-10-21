@@ -2,7 +2,7 @@
 PY ?= python
 
 .PHONY: install test lint doctor audit preprocess graph features baselines proposed ablations evaluate calibrate \
-        explain rag simulation agents export paper verify api dashboard worker
+        explain rag simulation agents export paper paper-docx verify api dashboard worker
 
 install:
 	$(PY) -m pip install -e .[dev]
@@ -61,6 +61,9 @@ export:
 
 paper:
 	$(PY) -m smartcity.cli paper sync && cd paper && pdflatex -interaction=nonstopmode main.tex && bibtex main && pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex
+
+paper-docx:
+	$(PY) paper/word/build_ieee_docx.py
 
 verify:
 	$(PY) -m smartcity.cli verify all

@@ -346,7 +346,7 @@ for i, p in enumerate(tf.paragraphs):
         for rr in p.runs:
             style(rr, ARIAL, 22, NAVY, bold=True)
 stats = [("1,968,303", "raw speed records processed"), ("16", "Manhattan links modelled"),
-         ("7", "forecasting models compared"), ("73", "automated tests (all suites)")]
+         ("7", "forecasting models compared"), ("66", "automated tests passing")]
 for k, (v, lab) in enumerate(stats):
     box(S[8], 0.5 + k * 3.3, 5.45, 3.0, 1.75, [[(v, True, NAVY, 34)], [(lab, False, INK, 15)]], ARIAL, 15,
         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, bg=TINT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, after=2,
@@ -425,7 +425,7 @@ cols = [
         "Shared contracts frozen first: forecast, uncertainty, evidence, candidate action, decision",
         "A stage runner executes the real-data pipeline in fixed order with a stage log",
         "Only the recommendation node calls the LLM; every gate is deterministic code",
-        "73 automated tests: unit, leakage, safety, integration, end-to-end"]),
+        "66 automated tests: unit, leakage, safety, integration, end-to-end"]),
 ]
 for k, (head, items) in enumerate(cols):
     box(s, 0.5 + k * 4.0, 1.95, 3.75, 5.35, [[(head, True, NAVY, 18)]] + [[(it, False, INK, 15)] for it in items], TNR, 15,
@@ -477,6 +477,7 @@ drop(body_ph(s))
 box(s, 0.5, 1.9, 6.5, 0.4, [[("Performance metrics (test period 6 Sep – 20 Oct 2026)", True, NAVY, 16)]], TNR, 16, margin=0.02, after=0)
 data = [("Metric", "15 min", "30 min", "60 min"),
         ("Proposed model MAE (mph)", "4.77", "5.33", "6.15"),
+        ("Proposed, mean of 3 seeds (mph)", "4.69", "5.34", "6.15"),
         ("Persistence MAE (mph)", "5.14", "6.06", "7.29"),
         ("90 % interval coverage", "0.909", "0.907", "0.903"),
         ("Coverage under congestion", "0.798", "0.794", "0.757"),
@@ -499,8 +500,9 @@ box(s, 0.5, 5.85, 6.5, 1.45, [[("Validation of approach", True, NAVY, 16)],
       "bootstrap for ablations; a preregistered simulation baseline test; failed runs kept and reported.", False, INK, 14)]],
     TNR, 14, margin=0.02, after=3)
 box(s, 7.4, 1.9, 6.1, 5.4, [[("Observations", True, NAVY, 18)],
-    [("The proposed model beats persistence by 7–16 % and both tree models, but stays within 0.01–0.05 mph of the GRU and "
-      "temporal Transformer with one seed, so no superiority is claimed.", False, INK, 15)],
+    [("The proposed model beats persistence by 7–16 % and both tree models. Over three seeds it is 0.03–0.08 mph below the "
+      "temporal Transformer at every horizon and the GRU at 30/60 min; the GRU is better at 15 min. Small, not decisive.",
+      False, INK, 15)],
     [("The availability-aware gate helps (MAE +0.067 mph when removed); operational weather features hurt (−0.046 mph), "
       "a negative result.", False, INK, 15)],
     [("Intervals meet 90 % overall but under-cover congestion, the regime that matters for advisories.", False, INK, 15)],
@@ -654,7 +656,7 @@ for k, (name, a, b, st) in enumerate(plan):
         ARIAL, 12, anchor=MSO_ANCHOR.MIDDLE, margin=0.02, after=0)
 box(s, 0.5, 6.92, 13.0, 0.45, [[("Bars: planned window (project specification). Colour: actual status, 19–21 Oct 2026 (repository history). "
                                 "Next milestones: calibrate West St signal timing to the observed 10.95 mph (or obtain DOT timing plans) → "
-                                "controller comparison; multi-seed training; paper submission.", False, MUTED, 11)]], ARIAL, 11, margin=0.02, after=0)
+                                "controller comparison; more seeds without the compute budget; paper submission.", False, MUTED, 11)]], ARIAL, 11, margin=0.02, after=0)
 
 # ---------------------------------------------------------------- 18. references (IEEE)
 s = S[17]
