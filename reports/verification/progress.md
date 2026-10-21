@@ -106,14 +106,14 @@ Stage log: `reports/verification/stage_log.jsonl` (every stage rc=0 after the fi
   (`forecast_metrics.csv`). Retrospective proposed 4.666/5.355/6.126. Runs: proposed-20261020T201110-0e333f
   (14 epochs, best 8, val 5.388), gru-20261020T200131-e3eef3, temporal_transformer-20261020T200802-d8bdfb,
   proposed-20261020T210211-4a0685 (retrospective).
-- Ablations (`ablation_metrics.csv`, 44 complete test days, 1000 bootstrap resamples): no gate +0.067 [0.048, 0.086];
+- Ablations (`ablation_metrics.csv`, 44 test days with a valid paired target, 1000 bootstrap resamples (code default)): no gate +0.067 [0.048, 0.086];
   no weather -0.046 [-0.069, -0.021] (NEGATIVE RESULT: weather features hurt); no infrastructure +0.014 [0.002,
   0.026]; no events / no incidents NOT_APPLICABLE on the operational track.
 - DEFECT FOUND AND FIXED during the run: `evaluate ablations` cast epoch seconds straight to datetime64[D], so the
   "day-block" bootstrap resampled 12,601 five-minute origins as if they were days and its intervals were far too
   narrow. Fixed (`datetime64[s]` first), re-run; the superseded CSV is kept on the workstation as evidence.
-- Calibration (`uncertainty_metrics.csv`, `artifacts/calibration/`): q = 12.13/13.47/14.77 mph on 102,301
-  calibration residuals; test coverage 0.909/0.907/0.903; congested (<0.5 ratio) 0.798/0.794/0.757; rush hour
+- Calibration (`uncertainty_metrics.csv`, `artifacts/calibration/`): q = 12.13/13.47/14.77 mph on 102,301/102,299/102,302
+  calibration residuals (15/30/60 min); test coverage 0.909/0.907/0.903; congested (<0.5 ratio) 0.798/0.794/0.757; rush hour
   0.938/0.934/0.926; wet 0.926/0.927/0.917. Gate at its configured operating point (width <= 38.10 mph, missing
   <= 0.34, age <= 20 min): deferral 25.5/25.7/26.1 %, retained MAE 3.717/4.381/5.250 (all: 4.773/5.331/6.155),
   retained coverage 0.948/0.939/0.930 (`deferral_tradeoff.csv`).
@@ -191,7 +191,7 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - DECISION: re-time the fixed-time programs with Webster's method (SUMO `tlsCycleAdaptation.py`, tool defaults,
   phase states unchanged) for each tested demand level, a declared assumption; same selection rule.
 - RESULT, Webster programs (15 runs): no level admissible; with no side demand 129-131 of 3,010 unfinished (4.3 %),
-  0 teleports, NB serves all 1,389 trips (195-197 s time loss) but SB loses 1,014-1,038 s per trip (cause not
+  0 teleports, NB completes 1,389 trips, its hourly flow (195-197 s time loss) but SB loses 1,014-1,038 s per trip (cause not
   identified; every SB signal estimate >= 2,040 veh/h). The rule was not relaxed. Corrected controller comparison:
   NOT_RUN. The advisory simulation gate now raises NOT_EVALUATED (-> ERROR_TOOL with cause) on such a testbed.
 - Tests: 66 passed in the container (unit, leakage, safety, integration incl. PostGIS 16 and SUMO, e2e). Paper rebuilt
@@ -251,3 +251,36 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   for the authors) or obtain NYC DOT timing plans.
 - Agents on the corrected testbed: to re-run on the workstation (`agents evaluate`); with no admissible testbed any
   signal-change candidate now ends in ERROR_TOOL (NOT_EVALUATED) instead of a simulation verdict.
+
+## 2026-10-21 (post-merge verification)
+
+- Independent re-check of the paper and status files against the artifacts (two passes: simulation numbers, then
+  every quantitative claim in abstract, results, discussion). Corrections merged in PR #11 (simulation: wall time
+  9,645 s, per-run ranges, mapped links 4616325 dead feed + 4456494 modelled) and in the follow-up PR: 60-min proposed
+  MAE 6.15 (not 6.16), GRU 15-min 4.71, retrospective 30-min 5.35, deep-model margins 0.01-0.06 mph, 50,415 training
+  origins (half-open range), per-horizon calibration counts, LLM token/latency ranges over all 12 calls (892-3,604 /
+  157-278 / 15-126 s), gate retained-MAE reduction 15-22 % (not 'a third'), stress cases run under the full system
+  only, 'single-day pipeline execution' instead of 'one end-to-end run' (early stages were re-run; the stage log
+  shows four baseline passes), 'nearly ten months' of data, test window about 44 days over 45 calendar dates. The
+  second pass covered 23 of 64 planned checks before the session limit; limitations, conclusion, method, data,
+  experiments, final_status, progress, README and paper_claims were not independently re-checked in that pass.
+
+### Milestone 7: multi-seed study prepared (development container, 2026-10-21 03:30-03:50 UTC)
+- The other account's session (branch `claude/nifty-dijkstra-u5kjbw`, 3 unmerged commits) is merged: `scripts/multi_seed_study.py`,
+  `runner.train_deep(seed=...)`, `reports/verification/container_reproduction.json` (independent re-download reproduced
+  1,968,303 raw rows, graph hash d8c69a468b82cbda, feature schema hash 1d63c3fe45a729be and the same splits).
+- Its three CPU seed-42 runs (proposed, gru, temporal_transformer; torch 2.14.1, container) are kept in
+  `artifacts/models/multi_seed_runs.json` under `runs_without_predictions`: their weights and prediction arrays are not
+  committed, so they cannot be analysed here and seed 42 is re-run on the workstation GPU. The CPU proposed run's
+  4.689/5.327/6.116 mph reported by that session is not reproducible from the repository and is not used.
+- `train-all` (resumable, seed-major) and portable artifact paths added; 3 unit tests. Workstation instructions:
+  `docs/laptop_run.md` section 5 (counts fetch, 9 seed runs, `analyze`, `agents evaluate`, export, paper sync).
+- Multi-seed results, the agents re-run on the corrected simulation gate and the counts fetch: NOT RUN (workstation).
+- Independent audit of PRs #12-#15 (code, claims C23-C33, deck literals): no fabricated or wrong number; every
+  simulation figure recomputes from the committed `result.json` files. Fixed from its findings: a run with missing
+  summary metrics could have passed the admissibility test as 0 <= 0 (`run_admissible` now requires complete evidence;
+  the gates also refuse to run if the `demand_selection` block is removed; 2 tests); a withdrawn ~520 veh/h figure in a
+  `configs/simulation.yaml` comment; "completes all N trips" wording; the deck's test count (66 -> 73 collected,
+  deck rebuilt); the deck README now says the builder holds literals checked against the result files; the audit
+  script no longer overwrites the cited turn-lane-network audit with an audit of another network; limitation 25
+  records which testbed inputs trace to derived files only.

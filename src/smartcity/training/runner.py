@@ -131,17 +131,18 @@ def predict_deep(model, data: ForecastData, origins: np.ndarray, keep=None, batc
 
 
 def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_epochs: int | None = None,
-               windows_per_epoch: int | None = None, max_minutes: float | None = None) -> dict:
+               windows_per_epoch: int | None = None, max_minutes: float | None = None, seed: int | None = None) -> dict:
     tcfg = settings.load("training")["training"]
     mcfg = {k: v for k, v in settings.load("model")["model"].items() if k not in ("name", "lookback_steps", "horizon_steps")}
-    seed_all(tcfg["seed"])
+    seed = tcfg["seed"] if seed is None else seed  # the multi-seed study passes its own; everything else uses the config
+    seed_all(seed)
     torch.set_num_threads(4)
     run_id = run_id or new_run_id(variant)
     d = _run_dir(run_id)
     max_minutes = max_minutes or tcfg.get("max_minutes_per_model") or None
     cfg = {"variant": variant, "spec": DEEP_VARIANTS[variant], "model": mcfg, "training": tcfg,
            "max_epochs_override": max_epochs, "windows_per_epoch": windows_per_epoch,
-           "max_minutes_per_model": max_minutes}
+           "max_minutes_per_model": max_minutes, "seed": seed}
     dev = resolve_device(tcfg.get("device"))
     cfg["resolved_device"] = str(dev)
     # Training the GRU with cuDNN on Windows/CUDA 12.8 (torch 2.11) crashed the process at exit (0xC0000409) after
@@ -156,7 +157,7 @@ def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_
     ei = torch.from_numpy(data.edge_index).to(dev)
     tr, va = data.origins["train"], data.origins["val"]
     va_sub = va[:: max(1, len(va) // 1500)]  # fixed validation subset (same every epoch)
-    rng = np.random.default_rng(tcfg["seed"])
+    rng = np.random.default_rng(seed)
     best, best_ep, bad, history, skipped = np.inf, -1, 0, [], 0
     stopped_reason = "max_epochs"
     epochs = max_epochs or tcfg["max_epochs"]
@@ -220,7 +221,7 @@ def train_deep(variant: str, data: ForecastData, run_id: str | None = None, max_
             "skipped_batches_no_target": skipped, "model_sha256": sha256_file(d / "model.pt"),
             "n_params": sum(p.numel() for p in model.parameters()), "artifact_dir": str(d),
             "train_device": str(dev), "cudnn_enabled": cfg["cudnn_enabled"], "stopped_reason": stopped_reason,
-            "max_minutes_per_model": max_minutes}
+            "max_minutes_per_model": max_minutes, "seed": seed}
     write_json(d / "run_info.json", info)
     return {"info": info, "preds": preds}
 

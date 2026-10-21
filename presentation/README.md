@@ -4,9 +4,10 @@
 final-review template (`assets/final_review_template.pptx`) with its slide order, headings and font rules. A PDF copy
 is alongside it.
 
-Every number in the deck comes from a committed result file (`reports/experiments/*.csv`,
-`reports/experiments/simulation_testbed_audit.json`, `reports/verification/final_status.md`); simulation figures are
-SUMO outputs, not real-street measurements.
+Every number in the deck was copied from a committed result file (`reports/experiments/*.csv`,
+`reports/experiments/simulation_testbed_audit.json`, `reports/verification/final_status.md`) and checked against it;
+the builder holds them as literals, so after any artifact change the literals must be re-checked and the deck rebuilt.
+Simulation figures are SUMO outputs, not real-street measurements.
 
 ## Rebuild
 

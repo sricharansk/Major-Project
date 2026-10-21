@@ -42,7 +42,9 @@ scenario:
   # overstate capacity where real lanes are turn-only.
   osm_turn_lanes: false
   # netconvert_guess: the programs netconvert generates (--tls.guess-signals), which split green about equally between
-  # stages and gave the West St NB through movement ~520 veh/h at Battery Place (testbed audit 2026-10-21).
+  # stages and gave the West St NB through movement ~1,000 veh/h at GS_42451370 (route-aware testbed audit
+  # 2026-10-21; an earlier ~520 veh/h reading at Battery Place counted a movement the corrected route does not make
+  # and was withdrawn).
   # webster_retimed: the fixed-time programs re-timed by SUMO's tools/tlsCycleAdaptation.py (Webster's method) for the
   # routine-peak demand being tested; phase order and states are unchanged, only green durations change. A DECLARED
   # assumption (not NYC DOT timing plans), fixed here before any controller comparison under this protocol.

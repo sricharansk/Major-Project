@@ -1,0 +1,18 @@
+{
+  "run_id": "ms-gru-s42-20261021T031702-414bed",
+  "model": "gru",
+  "best_epoch": 11,
+  "best_val_mae": 5.488156318664551,
+  "epochs_run": 17,
+  "train_time_s": 143.88109588623047,
+  "infer_latency_ms_per_origin": 0.20828785172398814,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "ba36f7127944335d1a4fdc3913aa970cfeeb89e69bf429db62d22b7cba3ccad3",
+  "n_params": 41667,
+  "artifact_dir": "/home/user/Major-Project/artifacts/models/ms-gru-s42-20261021T031702-414bed",
+  "train_device": "cpu",
+  "cudnn_enabled": true,
+  "stopped_reason": "early_stopping",
+  "max_minutes_per_model": null,
+  "seed": 42
+}

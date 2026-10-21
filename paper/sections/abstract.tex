@@ -7,15 +7,17 @@ forecaster consumes a directed road-link graph built from NYC DOT real-time spee
 Temporal signal, fuses weather, 311 and calendar context through an availability-aware gate, and is calibrated
 with split conformal prediction. Explanations are computed on the trained model with grouped KernelSHAP. Advisories
 are drafted by a locally hosted large language model that must cite passages retrieved from an allowlisted corpus
-of federal signal-timing guidance and a project-defined policy, are checked by deterministic safety constraints,
-and are evaluated against a baseline controller in SUMO with matched seeds before being queued for human review.
-All data are public and all reported figures are generated from stored artifacts of one end-to-end run on nine
-months of 2026 NYC DOT speeds (16 usable links). On the 45-day test partition the proposed model reaches an MAE of
+(federal signal-timing guidance, a project-defined policy and SUMO documentation), are checked by deterministic
+safety constraints, and are designed to be evaluated against a baseline controller in SUMO with matched seeds before
+being queued for human review.
+All data are public and all reported figures are generated from stored artifacts of a single-day pipeline execution on
+nearly ten months (1 January to 20 October 2026) of NYC DOT speeds (16 usable links). On the 44-day test partition the proposed model reaches an MAE of
 4.77, 5.33 and 6.15\,mph at 15, 30 and 60 minutes, 7--16\,\% below persistence and below both tree baselines, but
-within 0.05\,mph of a GRU and a temporal-only Transformer; the availability gate improves MAE by 0.07\,mph (bootstrap
+within 0.06\,mph of a GRU and a temporal-only Transformer; the availability gate improves MAE by 0.07\,mph (bootstrap
 interval excluding zero) while the operational weather features worsen it by 0.05\,mph, a negative result. Conformal
-intervals reach 0.90--0.91 coverage overall but 0.76--0.80 under congestion, which the deterministic gate converts
-into a 26\,\% deferral rate. Retrieval removes fabricated citations (3 of 3 without it, 0 of 9 with it), and the
+intervals reach 0.90--0.91 coverage overall but 0.76--0.80 under congestion, while the deterministic reliability gate
+(input-missingness and interval-width thresholds fixed on the calibration partition) defers 26\,\% of test targets
+and raises coverage on the retained subset to 0.93--0.95. Retrieval removes fabricated citations (3 of 3 without it, 0 of 9 with it), and the
 constraint layer, not the model, decides admissibility; no advisory reached the simulation gate because the model
 chose monitoring on the mapped corridor. A first 45-run SUMO controller comparison is superseded: an audit showed
 that SUMO had re-routed half of the corridor traffic off West Street, and after correction neither the generated nor

@@ -93,3 +93,25 @@ def test_no_two_direction_year_returns_none(monkeypatch):
     monkeypatch.setattr(raw, "read_socrata", lambda src, prefix=None: one)
     assert pipeline.recent_two_direction_counts({"count_sources": ["classification"],
                                                  "count_street_regex": "^(WEST ST)( NB| SB)?$"}) is None
+
+
+def test_missing_metrics_never_pass_the_rule():
+    """A run whose summary.xml was not parsed has no loaded/unfinished counts; it must fail, not pass as 0 <= 0."""
+    from smartcity.simulation.pipeline import run_admissible
+
+    r = _run(1.0)
+    r["metrics"] = {"teleports": 0}
+    assert run_admissible(r, CFG) is False
+    assert run_admissible({**_run(1.0), "metrics": {"teleports": 0, "unfinished_trips": 0, "loaded": 0}}, CFG) is False
+    assert run_admissible(_run(1.0), CFG) is True
+    sel = apply_selection_rule([r, _run(1.0)], CFG)
+    assert sel["selected_side_demand_scale"] is None
+
+
+def test_gates_refuse_to_run_without_the_preregistered_rule(monkeypatch):
+    from smartcity.simulation import pipeline
+
+    monkeypatch.setattr(pipeline.settings, "load", lambda name: {"simulation": {"seeds": [1]}})
+    meta = {"network": {"static": "unused.net.xml"}, "demand": {"side_demand_scale": 0.5}}
+    with pytest.raises(RuntimeError, match="demand_selection"):
+        paired_candidate_eval(meta, {"name": "event_surge"}, {"candidate_id": "c1"}, [1])
