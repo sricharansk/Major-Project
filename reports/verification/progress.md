@@ -342,3 +342,8 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - `paper/main.pdf` rebuilt with TeX Live; the final-review deck rebuilt from the merged builder (three-seed observation,
   0.01-0.06 mph single-seed margin). The multi-seed unit test now checks the table format the workstation's `paper.py` writes.
 - Still NOT RUN: the corrected SUMO controller comparison (authors' calibration decision, open item 2).
+- Verification pass after the merge: GitHub Actions run 58 on 807f67d ran lint and the full `pytest -q tests` (unit, leakage,
+  safety, PostGIS and SUMO integration, e2e) with a PostGIS service container: 75 passed. The deck's test-count literal
+  (66, from the workstation build) and the model card's single-seed statements are updated to this state; the evidence
+  registry keeps the workstation export of 2026-10-21 04:41 UTC (a container export would overwrite the MLflow run list
+  with an empty one, so `report export` is not re-run here).
