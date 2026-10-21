@@ -234,6 +234,34 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Paper: results, limitations, discussion and conclusion updated; two dataset references added (26/26 CHECKED);
   claims C29-C33. Tests: 2 new unit tests for the count selection.
 
+### Milestone 7: multi-seed study and agent re-run (workstation, 2026-10-21 03:35-04:45 UTC)
+- Continued from branch `claude/nifty-dijkstra-u5kjbw` (7738d68). The three CPU seed-42 runs of the development
+  container have no stored predictions, so their records moved to
+  `artifacts/models/multi_seed_runs_container_cpu_seed42.json` and all nine runs were trained on the workstation
+  GPU (RTX 4050, torch 2.11.0+cu128) with `scripts/multi_seed_study.py train`, then `analyze` (exit 0).
+- REPRODUCIBILITY CHECK: seed 42 reproduced the main-run GRU (17 epochs, best 11, val MAE 5.4763) and temporal
+  Transformer (14, 8, 5.4062) exactly, but not the proposed model (25 epochs, best 19, 5.3584 vs 14, 8, 5.3880). The
+  only difference to the temporal Transformer is the GATv2 layer (non-deterministic CUDA scatter); runner and model
+  code paths for seeding and sampling are unchanged since the main run. The container CPU run gave 21 epochs, val
+  5.3556.
+- RESULT (`reports/experiments/multi_seed_summary.csv`, `multi_seed_metrics.csv`; 144,205 shared 60-min targets):
+  seed-mean test MAE 15/30/60 min: proposed 4.688/5.339/6.153 (s.d. 0.063/0.032/0.015), GRU 4.666/5.370/6.184,
+  temporal Transformer 4.723/5.375/6.233. Paired day-block bootstrap (44 days, 1,000 resamples) of the seed-averaged
+  MAE difference: Transformer minus proposed +0.035/+0.037/+0.080 (all intervals above zero); GRU minus proposed
+  -0.021 [-0.040, -0.004] / +0.032 [0.010, 0.052] / +0.031 [0.007, 0.056]. Reading: proposed lower than the
+  Transformer at every horizon and the GRU at 30/60 min, GRU lower at 15 min; small (0.02-0.08 mph), three seeds,
+  per-seed ranges overlap, the bootstrap does not include between-seed variance. One Transformer seed (1) stopped
+  at best epoch 2. Paper: new generated Table `tab:multiseed` (`paper sync`), results/discussion/limitations/
+  conclusion/abstract updated; claims C34-C37; C05/C16 notes updated; deck rebuilt (conclusions slide adds the
+  3-seed row; next-milestones footer) and its PDF re-exported with PowerPoint.
+- AGENTS RE-RUN (`agents evaluate`, 411 s, then `report export`): same 19 decisions as on 2026-10-20; 12/12 LLM calls
+  schema-valid, all monitor_only, so the corrected simulation gate was again not reached; 3/3 invented evidence ids
+  without retrieval (rejected), 0/9 with. `llm_calls.csv` is rebuilt from all traces and now holds both passes (24).
+  The paper's token ranges were corrected from the file (892-3,619 prompt, 157-321 completion tokens).
+- Counts fetched once for the SUMO work: `fetch.py counts --dataset classification --street-like "WEST ST"` (70
+  rows) and `--dataset volume_hist` (144 rows) into `data/raw/{classification,volume_hist}/` with fetch logs.
+- Not done here: `paper/main.pdf` rebuild (no LaTeX on the workstation).
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK

@@ -1,0 +1,18 @@
+{
+  "run_id": "ms-gru-s42-20261021T034250-d25f42",
+  "model": "gru",
+  "best_epoch": 11,
+  "best_val_mae": 5.476261933644612,
+  "epochs_run": 17,
+  "train_time_s": 263.53530263900757,
+  "infer_latency_ms_per_origin": 0.8982378815329366,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "6776580221909e6a6686a7314595b906f37be9be6029fb6029b25d21229647a8",
+  "n_params": 41667,
+  "artifact_dir": "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\artifacts\\models\\ms-gru-s42-20261021T034250-d25f42",
+  "train_device": "cuda",
+  "cudnn_enabled": false,
+  "stopped_reason": "early_stopping",
+  "max_minutes_per_model": null,
+  "seed": 42
+}

@@ -11,8 +11,9 @@ of federal signal-timing guidance and a project-defined policy, are checked by d
 and are evaluated against a baseline controller in SUMO with matched seeds before being queued for human review.
 All data are public and all reported figures are generated from stored artifacts of one end-to-end run on nine
 months of 2026 NYC DOT speeds (16 usable links). On the 45-day test partition the proposed model reaches an MAE of
-4.77, 5.33 and 6.15\,mph at 15, 30 and 60 minutes, 7--16\,\% below persistence and below both tree baselines, but
-within 0.05\,mph of a GRU and a temporal-only Transformer; the availability gate improves MAE by 0.07\,mph (bootstrap
+4.77, 5.33 and 6.15\,mph at 15, 30 and 60 minutes, 7--16\,\% below persistence and below both tree baselines; over
+three seeds it is 0.03--0.08\,mph below a temporal-only Transformer at every horizon and a GRU at 30 and 60 minutes,
+while the GRU is better at 15 minutes; the availability gate improves MAE by 0.07\,mph (bootstrap
 interval excluding zero) while the operational weather features worsen it by 0.05\,mph, a negative result. Conformal
 intervals reach 0.90--0.91 coverage overall but 0.76--0.80 under congestion, which the deterministic gate converts
 into a 26\,\% deferral rate. Retrieval removes fabricated citations (3 of 3 without it, 0 of 9 with it), and the

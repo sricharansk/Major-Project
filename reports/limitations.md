@@ -66,10 +66,17 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
 
 ## Modelling and evaluation
 
-8. **Single seed, single split.** One chronological split and one seed per model; seed variance is not reported.
-   Paired comparisons use a day-block bootstrap, which is the only variance estimate provided. The measured margins
-   between the proposed model, the GRU and the temporal-only Transformer (0.01-0.05 mph MAE) are inside what seeds
-   could change, so no superiority over those two is claimed.
+8. **Three seeds, single split.** One chronological split. The GRU, temporal Transformer and proposed model were
+   re-trained with seeds 42, 1 and 2 (`reports/experiments/multi_seed_summary.csv`); the other models and the
+   ablations have one seed. Over three seeds the proposed model is 0.03-0.08 mph below the temporal Transformer at
+   every horizon and the GRU at 30/60 min, and the GRU is better at 15 min (day-block bootstrap intervals exclude
+   zero). The bootstrap describes test-day variation of the seed-averaged errors, not between-seed variance; three
+   seeds give a crude spread (s.d. 0.01-0.08 mph) and the per-seed ranges overlap, so the advantage is small and
+   preliminary, not decisive.
+8b. **GPU non-determinism of the graph layer.** Re-running seed 42 on the same GPU reproduced the GRU and the
+   temporal Transformer exactly but not the proposed model (25 vs 14 epochs; validation MAE 5.358 vs 5.388). The only
+   difference is the GATv2 layer, whose CUDA scatter operations are not bit-reproducible; the proposed model can be
+   re-trained but a given run cannot be re-created exactly.
 8a. **Weather features hurt (negative result).** Removing the operational weather group lowers test MAE by 0.046 mph
    (95% day-block bootstrap CI [-0.069, -0.021]); the re-forecast proxy adds noise on this highway-heavy link set.
    The result is reported, not tuned away.
@@ -100,8 +107,8 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     The LLM is never the safety boundary.
 15. **Agent evaluation cases** are a handful of REPLAY cases chosen by rule from the test partition (highest
     congestion, stale-data stress, wide-interval stress, insufficient-evidence probe); it is a functional
-    evaluation of the workflow, not a statistical one. In the reported run (19 policy-by-case runs, 12 LLM calls)
-    the LLM recommended monitor_only on the one mapped corridor link, so no candidate reached the simulation gate and
+    evaluation of the workflow, not a statistical one. In both passes (19 policy-by-case runs and 12 LLM calls each, 2026-10-20 and 2026-10-21)
+    the LLM recommended monitor_only on every call, including the one mapped corridor link, so no candidate reached the simulation gate and
     the SIMULATION_PASSED path is exercised by the software tests only. A first pass of this stage had silently
     failed before the LLM call (missing `model_run_id`); it was fixed and re-run, and the failed pass is kept on the
     workstation.

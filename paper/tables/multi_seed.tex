@@ -1,0 +1,9 @@
+\begin{table*}[t]\centering\caption{Deep forecasters over seeds: test MAE (mph), mean $\pm$ s.d. [min, max] over seeds, and the paired day-block bootstrap of the seed-averaged MAE difference to the proposed model (95\% interval; positive: proposed lower). Seeds 1, 2, 42; same GPU, data, budget and code for every run; period 2026-09-06 09:00:00+00:00 .. 2026-10-20 04:00:00+00:00 UTC; n = 144205 valid 60-min targets.}\label{tab:multiseed}
+\begin{tabular}{llll}\toprule
+Model & 15 min & 30 min & 60 min \\ \midrule
+proposed (3 seeds) & 4.688 $\pm$ 0.063 [4.650, 4.760] & 5.339 $\pm$ 0.032 [5.302, 5.364] & 6.153 $\pm$ 0.015 [6.139, 6.170] \\
+gru (3 seeds) & 4.666 $\pm$ 0.057 [4.604, 4.715] & 5.370 $\pm$ 0.020 [5.349, 5.389] & 6.184 $\pm$ 0.010 [6.174, 6.194] \\
+\quad minus proposed & $\Delta$ -0.021 [-0.040, -0.004] & $\Delta$ +0.032 [+0.010, +0.052] & $\Delta$ +0.031 [+0.007, +0.056] \\
+temporal\_transformer (3 seeds) & 4.723 $\pm$ 0.032 [4.687, 4.749] & 5.375 $\pm$ 0.033 [5.338, 5.398] & 6.233 $\pm$ 0.075 [6.184, 6.320] \\
+\quad minus proposed & $\Delta$ +0.035 [+0.019, +0.051] & $\Delta$ +0.037 [+0.018, +0.054] & $\Delta$ +0.080 [+0.054, +0.104] \\
+\bottomrule\end{tabular}\end{table*}

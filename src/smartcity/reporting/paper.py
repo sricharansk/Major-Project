@@ -81,6 +81,34 @@ def ablation_table():
     _write("ablation.tex", "\n".join(lines))
 
 
+def multi_seed_table():
+    rows = _rows("reports/experiments/multi_seed_summary.csv")
+    cap = "Deep forecasters over seeds: test MAE (mph), mean $\\pm$ s.d. [min, max] over seeds, and the paired day-block bootstrap of the seed-averaged MAE difference to the proposed model (95\\% interval; positive: proposed lower)"
+    if not rows:
+        return _write("multi_seed.tex", not_run(cap, "tab:multiseed"))
+    hs = [h for h in (15, 30, 60) if f"mae_{h}m_mean" in rows[0]]
+    seeds = rows[0]["seeds"].replace(";", ", ")
+    lines = [f"\\begin{{table*}}[t]\\centering\\caption{{{cap}. Seeds {seeds}; same GPU, data, budget and code for every run; "
+             f"period {_esc(rows[0]['evaluation_period_utc'])} UTC; n = {rows[0]['n_valid_targets_60m']} valid 60-min targets.}}"
+             "\\label{tab:multiseed}",
+             "\\begin{tabular}{l" + "l" * len(hs) + "}\\toprule",
+             "Model & " + " & ".join(f"{h} min" for h in hs) + " \\\\ \\midrule"]
+    order = sorted(rows, key=lambda r: (r["model"] != "proposed", r["model"]))
+    for r in order:
+        cells = [f"{_f(r[f'mae_{h}m_mean'], 3)} $\\pm$ {_f(r.get(f'mae_{h}m_sd'), 3)} "
+                 f"[{_f(r[f'mae_{h}m_min'], 3)}, {_f(r[f'mae_{h}m_max'], 3)}]" for h in hs]
+        lines.append(f"{_esc(r['model'])} ({r['n_seeds']} seeds) & " + " & ".join(cells) + " \\\\")
+        if r.get(f"diff_vs_proposed_{hs[0]}m") not in (None, ""):
+            diffs = []
+            for h in hs:
+                lo_hi = r.get(f"diff_vs_proposed_{h}m_ci95", "").strip("[]").split(",")
+                ci = f"[{float(lo_hi[0]):+.3f}, {float(lo_hi[1]):+.3f}]" if len(lo_hi) == 2 else ""
+                diffs.append(f"$\\Delta$ {float(r[f'diff_vs_proposed_{h}m']):+.3f} {ci}")
+            lines.append("\\quad minus proposed & " + " & ".join(diffs) + " \\\\")
+    lines.append("\\bottomrule\\end{tabular}\\end{table*}\n")
+    _write("multi_seed.tex", "\n".join(lines))
+
+
 def uncertainty_table():
     rows = [r for r in _rows("reports/experiments/uncertainty_metrics.csv") if r["group"] == "all"]
     cap = "Split-conformal intervals: empirical test coverage (nominal 90\\%) and width"
@@ -223,7 +251,7 @@ def sources_table():
 
 
 def sync() -> str:
-    for fn in (forecast_table, ablation_table, uncertainty_table, simulation_table, simulation_audit_table, retrieval_table,
-               advisory_table, sources_table):
+    for fn in (forecast_table, multi_seed_table, ablation_table, uncertainty_table, simulation_table, simulation_audit_table,
+               retrieval_table, advisory_table, sources_table):
         fn()
     return "tables: " + ", ".join(sorted(p.name for p in T.glob("*.tex")))

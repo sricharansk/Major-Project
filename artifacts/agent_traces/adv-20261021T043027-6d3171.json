@@ -1,0 +1,219 @@
+{
+  "run_id": "adv-20261021T043027-6d3171",
+  "thread_id": "adv-20261021T043027-6d3171",
+  "mode": "REPLAY",
+  "case": {
+    "name": "routine_rush_hour",
+    "origin": 77939,
+    "link_index": 13,
+    "case_id": "case-routine_rush_hour-77939-13",
+    "auto_review": {
+      "action": "pending"
+    },
+    "policy": "llm_without_retrieval"
+  },
+  "forecast_origin": "2026-09-28T20:00:00+00:00",
+  "data_quality": {
+    "data_age_minutes": 0.0,
+    "input_missing_fraction": 0.0,
+    "source_timestamp_utc": "2026-09-28T20:00:00+00:00",
+    "stale_stress_steps": 0
+  },
+  "forecast": {
+    "link_id": "4616341",
+    "link_index": 13,
+    "horizons": [
+      {
+        "horizon_minutes": 15,
+        "predicted_speed_mph": 9.090421676635742,
+        "displayed_speed_mph": 9.090421676635742,
+        "lower_mph": -1.5315055847167969,
+        "upper_mph": 19.71234893798828,
+        "interval_level": 0.9,
+        "observed_speed_mph": 6.829999923706055
+      },
+      {
+        "horizon_minutes": 30,
+        "predicted_speed_mph": 9.314260482788086,
+        "displayed_speed_mph": 9.314260482788086,
+        "lower_mph": -3.2682933807373047,
+        "upper_mph": 21.896814346313477,
+        "interval_level": 0.9,
+        "observed_speed_mph": 4.96999979019165
+      },
+      {
+        "horizon_minutes": 60,
+        "predicted_speed_mph": 11.101858139038086,
+        "displayed_speed_mph": 11.101858139038086,
+        "lower_mph": -3.133880615234375,
+        "upper_mph": 25.337596893310547,
+        "interval_level": 0.9,
+        "observed_speed_mph": 4.96999979019165
+      }
+    ],
+    "train_reference_speed_mph": 26.19737434387207,
+    "congestion_ratio_30min": 0.35554175622820844,
+    "model_run_id": "proposed-20261020T201110-0e333f",
+    "speed_unit": "mph"
+  },
+  "forecast_artifact_id": "proposed-20261020T201110-0e333f",
+  "calibration_artifact_id": "artifacts/calibration/calibrator.json",
+  "uncertainty": {
+    "eligible": true,
+    "reasons": [],
+    "interval_widths": {
+      "15": 21.243854522705078,
+      "30": 25.16510772705078,
+      "60": 28.471477508544922
+    },
+    "gate_config": {
+      "max_interval_width_mph": 38.0967597961426,
+      "width_quantile_on_val": 0.8,
+      "max_input_missing_fraction": 0.34,
+      "max_data_age_minutes": 20,
+      "min_calibration_samples": 200
+    }
+  },
+  "explanation": {
+    "explanation_id": "xai-20261021T043031-a20e72",
+    "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+    "link_id": "4616341",
+    "link_index": 13,
+    "horizon_minutes": 30,
+    "origin_index": 77939,
+    "origin_utc": 1790625600,
+    "background": "16 windows sampled from TRAIN partition (seed 42)",
+    "players": [
+      "traffic_target_last30min",
+      "traffic_target_30_120min",
+      "traffic_graph_neighbours",
+      "calendar",
+      "weather",
+      "infrastructure"
+    ],
+    "neighbours": [
+      "4616333"
+    ],
+    "group_contributions": {
+      "traffic_target_last30min": -10.156673149496338,
+      "traffic_target_30_120min": 0.09098892832518467,
+      "traffic_graph_neighbours": 0.36317384522449575,
+      "calendar": -3.664203737151512,
+      "weather": -0.0430890303319611,
+      "infrastructure": -0.10902614045964244
+    },
+    "base_value": 22.833089439262494,
+    "prediction": 9.314260155372722,
+    "additivity_gap": 0.0,
+    "observed_target_mph": 4.96999979019165,
+    "recent_target_steps_observed": 6,
+    "recent_steps": 6,
+    "runtime_s": 4.726154327392578,
+    "model_calls": 1040,
+    "note": "Attributions describe model sensitivity, not causal effects."
+  },
+  "explanation_artifact_id": "xai-20261021T043031-a20e72",
+  "retrieval": {
+    "query": "Forecast speed drop to 36% of typical on an urban monitored road link within 30 minutes. Which bounded signal timing adjustment such as extending green time is permitted while preserving minimum green, yellow change and red clearance intervals and pedestrian clearance?",
+    "status": "DISABLED",
+    "evidence": []
+  },
+  "retrieved_evidence_ids": [],
+  "llm": {
+    "status": "OK",
+    "attempts": [
+      {
+        "attempt": 0,
+        "raw": "{\n  \"forecast_run_id\": \"case-routine_rush_hour-77939-13\",\n  \"recommendation_type\": \"monitor_only\",\n  \"target_network_id\": \"sumo:b434b4f28666\",\n  \"candidates\": [\n    {\n      \"candidate_id\": \"monitor_only_1\",\n      \"action_type\": \"monitor_only\",\n      \"evidence_ids\": [\n        \"retrieval_disabled\"\n      ],\n      \"rationale\": \"Given the lack of available evidence and the current forecast indicating a routine rush hour scenario, monitoring the current traffic conditions is recommended.\"\n    }\n  ],\n  \"uncertainty_note\": \"The forecast uncertainty is within acceptable limits, but due to the absence of specific evidence, a monitor-only approach is advised.\"\n}",
+        "latency_s": 17.5829975605011,
+        "model_digest": null,
+        "request_hash": null,
+        "prompt_tokens": 894,
+        "completion_tokens": 167,
+        "schema_valid": true
+      }
+    ],
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "prompt_version": "advisory_v1",
+    "response": {
+      "forecast_run_id": "case-routine_rush_hour-77939-13",
+      "recommendation_type": "monitor_only",
+      "target_network_id": "sumo:b434b4f28666",
+      "candidates": [
+        {
+          "candidate_id": "monitor_only_1",
+          "action_type": "monitor_only",
+          "traffic_light_id": null,
+          "phase_index": null,
+          "extension_seconds": null,
+          "program_id": null,
+          "evidence_ids": [
+            "retrieval_disabled"
+          ],
+          "rationale": "Given the lack of available evidence and the current forecast indicating a routine rush hour scenario, monitoring the current traffic conditions is recommended."
+        }
+      ],
+      "uncertainty_note": "The forecast uncertainty is within acceptable limits, but due to the absence of specific evidence, a monitor-only approach is advised.",
+      "limitations": [],
+      "requires_human_review": true
+    }
+  },
+  "candidate_actions": [
+    {
+      "candidate_id": "monitor_only_1",
+      "action_type": "monitor_only",
+      "traffic_light_id": null,
+      "phase_index": null,
+      "extension_seconds": null,
+      "program_id": null,
+      "evidence_ids": [
+        "retrieval_disabled"
+      ],
+      "rationale": "Given the lack of available evidence and the current forecast indicating a routine rush hour scenario, monitoring the current traffic conditions is recommended."
+    }
+  ],
+  "constraint_results": [
+    {
+      "candidate_id": "monitor_only_1",
+      "checks": {
+        "network_mapping_valid": "FAIL",
+        "action_type_allowed": "PASS",
+        "signal_exists": "PASS",
+        "phase_exists": "PASS",
+        "parameter_in_bounds": "PASS",
+        "minimum_green_preserved": "PASS",
+        "maximum_green_preserved": "PASS",
+        "clearance_preserved": "PASS",
+        "pedestrian_protection_available": "NOT_EVALUATED",
+        "side_road_protection_available": "PASS",
+        "source_freshness_acceptable": "PASS",
+        "forecast_reliability_acceptable": "PASS",
+        "retrieval_support_acceptable": "FAIL",
+        "rationale_policy": "PASS"
+      },
+      "passed": false,
+      "reasons": [
+        "network_mapping_valid: no reviewed DOT->SUMO mapping",
+        "retrieval_support_acceptable: evidence ids not in retrieved set: ['retrieval_disabled']"
+      ]
+    }
+  ],
+  "decision": "REJECT_CONSTRAINT",
+  "decision_reasons": [
+    "network_mapping_valid: no reviewed DOT->SUMO mapping",
+    "retrieval_support_acceptable: evidence ids not in retrieved set: ['retrieval_disabled']"
+  ],
+  "errors": [],
+  "timings": {
+    "quality": 0.0,
+    "forecast": 0.01,
+    "uncertainty": 0.0,
+    "explanation": 4.805,
+    "retrieval": 0.0,
+    "recommendation": 17.595,
+    "safety": 0.0
+  },
+  "started_at": "2026-10-21T04:30:27Z",
+  "finished_at": "2026-10-21T04:30:49Z"
+}
