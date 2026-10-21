@@ -325,6 +325,10 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   `source_inventory.csv` by script (no unmatched figure); LibreOffice renders 9 A4 pages.
 - Built before the multi-seed study landed: that build says all forecasting figures are single-seed. The Word paper is
   rebuilt from `paper_content.py` once its text carries the Milestone 7 figures (claims C34-C37).
+- Rebuilt on 506de48 with the three-seed results: seed table from `paper/tables/multi_seed.tex`, the seeds paragraph,
+  both agent passes (24 LLM calls) and the updated abstract (245 words), discussion, limitations and conclusion, in the
+  same wording as the LaTeX sections. Also fixed in LaTeX: `results.tex` input `tables/multi_seed` twice and
+  `results_body.tex` still said the study had not been run; `main.pdf` rebuilt (11 pages).
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
