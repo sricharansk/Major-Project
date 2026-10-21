@@ -110,9 +110,11 @@ phase existence, min/max green, clearance intervals, mapping review status. The 
 
 ## 10. Simulation (`smartcity.simulation`)
 
-A SUMO network is built from OSM geometry for the study corridor; demand comes from matched ATR counts where they
-exist (weekday 16-19 h complete hourly totals) and from declared assumptions otherwise (all written to
-`simulation/scenarios/prepared.json`). Every flow drives one fixed free-flow route (SUMO would otherwise route
+A SUMO network is built from OSM geometry for the study corridor (OSM turn-lane restrictions optional, off by
+default); mainline demand comes from the most recent weekday counts on the corridor street in both directions
+(classification or historical volume counts), else from ATR counts (weekday 16-19 h complete hourly totals), else
+from declared assumptions (all written to `simulation/scenarios/prepared.json`). The simulated speed on the mapped DOT
+link is compared with the observed weekday PM-peak speed (`scripts/sim_testbed_audit.py --protocol <id>`). Every flow drives one fixed free-flow route (SUMO would otherwise route
 from/to flows at insertion on current travel times), entries skip stub edges, and the fixed-time programs are
 optionally re-timed with Webster's method (`signal_timing` in `configs/simulation.yaml`). Before any comparison the
 testbed must pass a preregistered baseline test (`simulation select-demand`): the side-street demand level is the

@@ -135,7 +135,8 @@ def simulation_audit_table():
     signal-timing protocol (netconvert programs; Webster re-timed programs)."""
     cap = "SUMO testbed audit (SIMULATION)"
     audit_p = R / "reports" / "experiments" / "simulation_testbed_audit.json"
-    protocols = [("netconvert_guess", "netconvert programs"), ("webster_retimed", "Webster re-timed programs")]
+    protocols = [("netconvert_guess", "2014 count, netconvert programs"), ("webster_retimed", "2014 count, Webster programs"),
+                 ("v4_counts2025_webster_noturnlanes", "2025 counts, no OSM turn-lane restrictions, Webster programs")]
     sweeps = {m: _rows(f"reports/experiments/simulation_demand_selection_{m}.csv") for m, _ in protocols}
     if not any(sweeps.values()) or not audit_p.exists():
         return _write("simulation_audit.tex", not_run(cap, "tab:simaudit"))
@@ -148,7 +149,8 @@ def simulation_audit_table():
     head = ("\\begin{table}[t]\\centering\\caption{" + cap + ". Top: routine peak at the 2026-10-20 declared demand ("
             f"{ra['demand']['main_veh_per_hour_per_direction']}/{ra['demand']['side_veh_per_hour_per_approach']} veh/h "
             "per direction/side approach), netconvert programs, seed 1. Below: preregistered side-demand selection on the "
-            "routine peak, fixed-time only, observed ATR mainline demand, three development seeds, mean per run; a level "
+            "routine peak, fixed-time only, observed mainline demand (2014 ATR count: 1,389 veh/h per direction; 2025 "
+            "classification counts: 2,510 NB / 2,444 SB veh/h), three development seeds, mean per run; a level "
             "is admissible only with no teleport and at most 1\\,\\% unfinished in every seed. Selected level: "
             f"{_esc(picked)}." + "}\\label{tab:simaudit}\\small")
     lines = [head, "\\resizebox{\\columnwidth}{!}{%",

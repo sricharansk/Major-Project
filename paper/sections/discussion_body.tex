@@ -49,9 +49,10 @@ the mainline through the Lower Manhattan grid, and, once routes were fixed, a co
 gives the northbound mainline about 1{,}000\,veh/h where 1{,}389 are observed. Re-timing the programs with Webster's
 method serves the northbound flow but leaves a southbound delay the audit cannot explain, so the testbed still fails
 its own baseline. A controller comparison on such a testbed would rank signal plans by how they cope with modelling
-artefacts, so the preregistered selection rule stops it, and the advisory gate refuses to judge candidates on it. The lesson for
-simulation-gated advisory is that the gate's testbed needs its own acceptance test, run on the baseline alone,
-before any candidate is scored against it.
+artefacts, so the preregistered selection rule stops it, and the advisory gate refuses to judge candidates on it. A comparison with
+observed speed confirmed the diagnosis: with recent counts the modelled corridor runs at about half the observed PM-peak
+speed. The lesson for simulation-gated advisory is that the gate's testbed needs its own acceptance test, run on the
+baseline alone and checked against observed traffic, before any candidate is scored against it.
 
 \textit{What is not claimed.} Nothing here is a deployment result, a causal explanation, or a congestion reduction
 on a real street. The language model never holds safety authority (constraints and the simulation gate are code),

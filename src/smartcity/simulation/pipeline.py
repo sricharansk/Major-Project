@@ -37,8 +37,9 @@ def prepare() -> dict:
         raise SystemExit(f"NOT_RUN: missing OSM extract {osm}")
     nets = SIM / "networks"
     nets.mkdir(parents=True, exist_ok=True)
-    static = sr.netconvert(osm, nets / f"{CFG_NAME}.static.net.xml", "static")
-    actuated = sr.netconvert(osm, nets / f"{CFG_NAME}.actuated.net.xml", "actuated")
+    turn_lanes = sc.get("osm_turn_lanes", True)
+    static = sr.netconvert(osm, nets / f"{CFG_NAME}.static.net.xml", "static", turn_lanes)
+    actuated = sr.netconvert(osm, nets / f"{CFG_NAME}.actuated.net.xml", "actuated", turn_lanes)
     net = sumolib.net.readNet(str(static), withPrograms=True)
     pat = re.compile(sc["corridor_name_regex"], re.I)
     corridor = [e for e in net.getEdges() if e.getName() and pat.search(e.getName()) and e.allows("passenger")]
@@ -108,9 +109,16 @@ def prepare() -> dict:
                          "nb_chain_starts": [e.getID() for e in nb_raw], "sb_chain_starts": [e.getID() for e in sb_raw]},
             "tls_corridor": list(corr_tls), "corridor_phase": corridor_phase, "side_entry_edges": sorted(side_in),
             "tls_inventory": corr_tls, "demand": demand, "mapping_summary": mapping["summary"]}
-    meta["network"].update(static_content_sha256=net_content_hash(static), actuated_content_sha256=net_content_hash(actuated))
+    meta["network"].update(static_content_sha256=net_content_hash(static), actuated_content_sha256=net_content_hash(actuated),
+                           osm_turn_lanes=turn_lanes, dead_end_corridor_lanes=dead_lanes(net, corridor_ids))
     write_json(SIM / "scenarios" / "prepared.json", meta)
     return meta
+
+
+def dead_lanes(net, corridor_ids: set) -> list[str]:
+    """Corridor lanes with no outgoing connection on edges that do continue (vehicles must leave them in the queue)."""
+    return sorted(ln.getID() for eid in corridor_ids for ln in net.getEdge(eid).getLanes()
+                  if net.getEdge(eid).getOutgoing() and not ln.getOutgoing())
 
 
 def net_content_hash(p) -> str:
@@ -167,8 +175,65 @@ def map_dot_links(net, corridor_ids: set) -> dict:
     return {"rows": rows, "summary": {"candidates": len(rows), "high": sum(r["mapping_confidence"] == "high" for r in rows)}}
 
 
+PM_HOURS = {16: "_4_00_5_00pm", 17: "_5_00_6_00pm", 18: "_6_00_7_00pm"}
+
+
+def hourly_street_counts(source: str, street_regex: str):
+    """Weekday 16-19 h hourly totals (all vehicle classes summed) per location, direction and date from the
+    classification or historical volume-count datasets (wide hourly columns)."""
+    import polars as pl
+
+    from smartcity.preprocessing.raw import read_socrata
+
+    try:
+        v = read_socrata(source)
+    except Exception:
+        return None
+    if v.is_empty() or "roadway_name" not in v.columns:
+        return None
+    v = v.filter(pl.col("roadway_name").str.strip_chars().str.contains(f"(?i){street_regex}"))
+    if not v.height:
+        return None
+    long = pl.concat([v.select(pl.col("roadway_name"), pl.col("from"), pl.col("to"), pl.col("direction"),
+                               pl.col("date").str.slice(0, 10).str.to_date().alias("date"), pl.lit(hh).alias("hh"),
+                               pl.col(col).cast(pl.Float64, strict=False).alias("vol"))
+                      for hh, col in PM_HOURS.items() if col in v.columns])
+    return (long.filter(pl.col("vol").is_not_null() & (pl.col("date").dt.weekday() <= 5))
+            .group_by(["roadway_name", "from", "to", "direction", "date", "hh"]).agg(pl.col("vol").sum())
+            .with_columns(pl.lit(source).alias("source"), pl.col("direction").str.to_lowercase()))
+
+
+def recent_two_direction_counts(sc: dict) -> dict | None:
+    """The most recent year in which some configured count source has weekday PM-peak counts in BOTH directions on
+    the corridor street; per-direction medians of the hourly totals in that year."""
+    import polars as pl
+
+    frames = [f for f in (hourly_street_counts(src, sc["count_street_regex"]) for src in sc.get("count_sources", []))
+              if f is not None and f.height]
+    if not frames:
+        return None
+    h = pl.concat(frames).with_columns(pl.col("date").dt.year().alias("yr"))
+    both = (h.group_by(["source", "yr"]).agg(pl.col("direction").n_unique().alias("nd"),
+                                             (pl.col("direction").is_in(["nb", "sb"])).all().alias("nbsb"))
+            .filter((pl.col("nd") == 2) & pl.col("nbsb")).sort(["yr", "source"], descending=[True, False]))
+    if not both.height:
+        return None
+    src, yr = both.row(0)[0], both.row(0)[1]
+    sel = h.filter((pl.col("source") == src) & (pl.col("yr") == yr))
+    by_dir = (sel.group_by("direction").agg(pl.col("vol").median().alias("median_pm_peak_vph"), pl.len().alias("n_hours"),
+                                            pl.col("date").unique().sort().cast(pl.Utf8).str.join("; ").alias("days"),
+                                            (pl.col("from") + " – " + pl.col("to")).unique().sort().str.join("; ")
+                                            .alias("locations"))
+              .sort("direction"))
+    dirs = {r["direction"]: round(r["median_pm_peak_vph"], 0) for r in by_dir.to_dicts()}
+    return {"source": f"NYC Open Data {src} counts, weekday 16-19 h hourly totals (all vehicle classes), {yr}",
+            "count_source": src, "count_year": int(yr), "by_direction": by_dir.to_dicts(), "vph": dirs,
+            "candidates": both.select("source", "yr").to_dicts()}
+
+
 def declare_demand() -> dict:
-    """Corridor demand from NYC ATR counts on the corridor street (if present); otherwise declared values."""
+    """Corridor demand from counts on the corridor street (recent two-direction counts first, then NYC ATR counts);
+    otherwise declared values."""
     from smartcity.preprocessing.raw import read_socrata
     import polars as pl
 
@@ -219,6 +284,16 @@ def declare_demand() -> dict:
                 elif len(dirs) == 1:
                     out["assumptions"].append(f"main demand: the only qualifying count direction ({next(iter(dirs)).upper()}) "
                                               "is applied to both corridor directions")
+    if sc.get("count_sources"):
+        rec = recent_two_direction_counts(sc)
+        if rec:  # a recent two-direction count replaces the ATR figure, which stays in the record
+            out["atr_record"] = {k: out.pop(k) for k in ("source", "atr_by_direction", "atr_rows", "atr_years",
+                                                          "atr_excluded_weekend", "main_veh_per_hour_by_direction")
+                                 if k in out}
+            out["assumptions"] = [a for a in out["assumptions"] if not a.startswith("main demand: the only")]
+            out.update(source=rec["source"], count_record=rec,
+                       main_veh_per_hour_by_direction={"nb": rec["vph"]["nb"], "sb": rec["vph"]["sb"]},
+                       main_veh_per_hour_per_direction=round((rec["vph"]["nb"] + rec["vph"]["sb"]) / 2, 0))
     out["route_choice"] = sc.get("route_choice", "dynamic_insertion")
     if out["route_choice"] == "fixed_free_flow":
         out["assumptions"][1] = ("routes: one fixed free-flow fastest path per flow (sumolib, passenger class); no dynamic "
@@ -301,12 +376,12 @@ def _expanded_vehicles(routes: Path, out: Path) -> Path:
     return out
 
 
-def retime_signals(meta: dict, routes: str, name: str) -> dict:
+def retime_signals(meta: dict, routes: str, name: str, label: str = "") -> dict:
     """Webster re-timing of the static programs for one demand file (SUMO tools/tlsCycleAdaptation.py)."""
     cfg = settings.load("simulation")["simulation"]
     rt = _scfg().get("retiming", {})
     veh = _expanded_vehicles(Path(routes), SIM / "demand" / f"{name}.vehicles.rou.xml")
-    out = SIM / "networks" / f"{CFG_NAME}.{name}.webster.add.xml"
+    out = SIM / "networks" / f"{CFG_NAME}.{label + '.' if label else ''}{name}.webster.add.xml"
     cmd = [sys.executable, str(Path(sr.sumo_home()) / "tools" / "tlsCycleAdaptation.py"),
            "-n", str(settings.ROOT / meta["network"]["static"]), "-r", str(veh), "-o", str(out),
            "-b", str(cfg["warmup_s"]), "-y", str(cfg["yellow_s"]), "-a", str(cfg["all_red_s"]), "-g", str(cfg["min_green_s"]),
@@ -408,6 +483,7 @@ def select_side_demand() -> dict:
     meta.pop("tls_inventory_active", None)
     routine = next(s for s in scenarios(meta) if s["name"] == "routine_peak")
     timing_mode = _scfg().get("signal_timing", "netconvert_guess")
+    label = cfg.get("protocol_id") or timing_mode
     jobs, timings = [], {}
     for scale in cfg["side_scales"]:
         scen = {**routine, "name": f"sweep_side{round(100 * scale):03d}", "side_demand_scale": scale,
@@ -415,7 +491,7 @@ def select_side_demand() -> dict:
         scen["demand"] = flow_demand(meta, scen)
         routes = build_routes(meta, scen)
         if timing_mode == "webster_retimed":  # each level is tested with the plan re-timed for that level's demand
-            timings[scale] = retime_signals(meta, routes, scen["name"])
+            timings[scale] = retime_signals(meta, routes, scen["name"], label)
             scen["tls_additional"] = timings[scale]["tls_additional"]
         jobs += [(net, routes, scen, "fixed_time", s) for s in cfg["seeds"]]
     rows = run_many(jobs)
@@ -423,13 +499,15 @@ def select_side_demand() -> dict:
            **apply_selection_rule(rows, cfg), "network_static_sha256": meta["network"]["static_sha256"],
            "network_static_content_sha256": meta["network"].get("static_content_sha256")}
     selected = sel["selected_side_demand_scale"]
-    # one record per signal-timing protocol (earlier protocols stay as evidence); demand_selection.json is the active one
-    write_json(SIM / "scenarios" / f"demand_selection_{timing_mode}.json", sel)
+    # one record per protocol (earlier protocols stay as evidence); demand_selection.json is the active one
+    sel.update(protocol_id=label, osm_turn_lanes=meta["network"].get("osm_turn_lanes", True),
+               demand_source=meta["demand"].get("source"))
+    write_json(SIM / "scenarios" / f"demand_selection_{label}.json", sel)
     write_json(SIM / "scenarios" / "demand_selection.json", sel)
-    export_sim_rows(rows, settings.ROOT / "reports" / "experiments" / f"simulation_demand_selection_{timing_mode}.csv")
+    export_sim_rows(rows, settings.ROOT / "reports" / "experiments" / f"simulation_demand_selection_{label}.csv")
     if selected is not None:
         meta["demand"]["side_demand_scale"] = selected
-        meta["demand"]["side_demand_selection"] = f"simulation/scenarios/demand_selection_{timing_mode}.json"
+        meta["demand"]["side_demand_selection"] = f"simulation/scenarios/demand_selection_{label}.json"
         if selected in timings:
             meta["signal_timing"] = timings[selected]
             meta["tls_inventory_active"] = retimed_inventory(meta, timings[selected]["tls_additional"])

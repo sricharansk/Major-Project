@@ -209,6 +209,31 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Paper author block: S K Sricharan, School of Computer Science and Engineering, VIT Chennai (Reg. No. 25MML1010);
   co-authors and order remain for the authors to confirm.
 
+### Milestone 6: recent counts, turn-lane diagnosis and a speed check for the SUMO testbed (2026-10-21 02:05-02:55 UTC)
+- NYC Open Data catalog searched for signal timing and counts. No dataset publishes phase timings; Vision Zero
+  `d8dp-wfee` lists West Street (Battery Pl - W 57 St 2014; 57 St - Morris St 2019) as re-timed for 25 mph progression.
+- `fetch.py counts` (new): Vehicle Classification Counts `96ay-ea4r` and historical volume counts `btm5-ppia` for West St.
+  Weekday two-direction counts exist for 2025 (Spring St - W Houston St, 29-30 Apr: PM-peak medians NB 2,510, SB 2,444
+  veh/h), 2019, 2017, 2015 and 2014. DECISION: demand from the most recent year with both directions (config
+  `count_sources`); the 2014 ATR figure stays in `prepared.json` as `atr_record`.
+- DIAGNOSIS (southbound delay under the Webster programs): edge data show the SB queue ending at the West St / Chambers St
+  signal. A first reading blamed corridor lanes with no outgoing connection; checking showed those lanes exist with and
+  without `--osm.turn-lanes`, so that reading was dropped. The difference is a right-turn-only lane (from OSM turn:lanes)
+  on the 45 m link south of Chambers St that forces through traffic to merge. `scripts/sim_turnlane_check.py`: with the
+  2014 count, no side demand and Webster programs, SB time loss 1,014-1,038 s and 129-131 unfinished with the
+  restrictions, 346-380 s and 0 unfinished without (`simulation_turnlane_check.json`). DECISION: `osm_turn_lanes: false`,
+  declared as a simplification that can overstate capacity.
+- RESULT, protocol `v4_counts2025_webster_noturnlanes` (15 runs, same preregistered rule): no level admissible; with no
+  side demand 523-568 of 5,368 unfinished, 0 teleports; NB completes 2,520-2,524 trips (247-248 s), SB 1,877-1,922
+  (1,199-1,226 s); one SB signal ~2,278 veh/h of estimated capacity for 2,444 demanded. A first v4 pass was repeated after
+  the plan files were renamed per protocol; results were identical, the duplicate run folders were removed.
+- Speed check (`fetch.py speed-profile`, new): link 4456494 weekday PM peak (16-19 h, Apr-Oct 2026, 3,692 records)
+  10.95 mph observed vs 5.79-5.85 mph simulated on its 8 mapped SUMO edges
+  (`simulation_testbed_audit_v4_counts2025_webster_noturnlanes.json`). The testbed is too slow; the comparison stays
+  NOT_RUN and 10.95 mph is the calibration target. The rule was not relaxed.
+- Paper: results, limitations, discussion and conclusion updated; two dataset references added (26/26 CHECKED);
+  claims C29-C33. Tests: 2 new unit tests for the count selection.
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
@@ -221,8 +246,9 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   base image is now a build arg), but the build container cannot reach deb.debian.org or download.pytorch.org
   under the environment's network policy, and ghcr.io/mlflow is denied (403). To be built on the workstation.
 - Bibliography: CLEARED 2026-10-21 (24/24 CHECKED, `paper/REFERENCES_STATUS.md`). Paper author block: student filled in; co-authors and order to confirm.
-- Simulation: no admissible testbed (Milestone 4); needs reviewed NYC signal timing plans and recent two-direction
-  counts, or an explicitly accepted relaxation of the preregistered rule by the authors.
+- Simulation: no admissible testbed (Milestones 4 and 6). Recent two-direction counts are now used; what remains is
+  signal timing: calibrate splits and 25 mph progression to the observed 10.95 mph PM-peak speed (a calibration choice
+  for the authors) or obtain NYC DOT timing plans.
 - Agents on the corrected testbed: to re-run on the workstation (`agents evaluate`); with no admissible testbed any
   signal-change candidate now ends in ERROR_TOOL (NOT_EVALUATED) instead of a simulation verdict.
 
