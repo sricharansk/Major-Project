@@ -30,7 +30,7 @@ advisory workflow ends at a simulation-only recommendation that a human reviews.
 Design and interfaces: [docs/architecture.md](docs/architecture.md), [docs/api.md](docs/api.md),
 [docs/data_dictionary.md](docs/data_dictionary.md), [docs/methodology.md](docs/methodology.md),
 [docs/model_card.md](docs/model_card.md), [docs/demo.md](docs/demo.md). Known limits: [reports/limitations.md](reports/limitations.md).
-Verification state: [reports/verification/final_status.md](reports/verification/final_status.md).
+Verification state: [reports/verification/final_status.md](reports/verification/final_status.md). Final review deck: [presentation/](presentation/).
 
 ## Quick start
 
@@ -89,7 +89,7 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
 * 26 Manhattan DOT links, 7 dead feeds, 16 modelled, 3 without test data; test 2026-09-06..10-20 (45 days,
   ~144k targets per horizon); all deep models trained under a recorded 4,096-windows-per-epoch budget, one seed.
 * Test MAE (mph, 15/30/60 min): persistence 5.14/6.06/7.29, XGBoost 4.82/5.58/6.31, GRU 4.72/5.37/6.17,
-  temporal Transformer 4.73/5.34/6.18, **proposed 4.77/5.33/6.16** (best at 30/60 min by 0.01-0.03 mph; not a
+  temporal Transformer 4.73/5.34/6.18, **proposed 4.77/5.33/6.15** (best at 30/60 min by 0.01-0.03 mph; not a
   seed-resolvable margin over the GRU/Transformer).
 * Ablations (day-block bootstrap): no gate +0.067 [0.048, 0.086]; no 311 +0.014 [0.002, 0.026];
   **no weather -0.046 [-0.069, -0.021] (negative result)**.
