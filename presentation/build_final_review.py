@@ -1,6 +1,7 @@
-"""Fill the VIT final-review template (assets/final_review_template_19_slides.pptx) with the project's verified content."""
+"""Fill the VIT final-review template (assets/final_review_template_24_slides.pptx) with the project's verified content."""
 import copy
 import sys
+from pathlib import Path
 
 from lxml import etree
 from PIL import Image
@@ -14,6 +15,7 @@ from pptx.oxml.ns import qn
 from pptx.util import Emu, Inches, Pt
 
 SRC, OUT, LOGO = sys.argv[1], sys.argv[2], sys.argv[3]
+DASH = Path(__file__).resolve().parent / "assets" / "dashboard"
 ARIAL, TNR = "Arial", "Times New Roman"
 NAVY = RGBColor(0x1F, 0x49, 0x7D)      # theme dk2
 BLUE = RGBColor(0x54, 0x8D, 0xD4)      # template title band (dk2 at 60 %)
@@ -200,6 +202,9 @@ for p in paras:
             for rr in p.runs[1:]:
                 rr._r.getparent().remove(rr._r)
 last = [p for p in paras if "".join(r.text for r in p.runs).startswith("TIMELINE")][0]
+last.runs[0].text = "RESULTS & OUTCOMES"
+for rr in last.runs[1:]:
+    rr._r.getparent().remove(rr._r)
 new = copy.deepcopy(last._p)
 last._p.addnext(new)
 for tnode in new.iter(qn("a:t")):
@@ -619,49 +624,149 @@ box(s, 7.2, 4.9, 6.3, 2.45, [
     [("The test was not relaxed: the comparison is reported as not run, and 10.95\u00a0mph is now the calibration target.", True, INK, 13)]],
     TNR, 13, margin=0.04, after=5)
 
-# ---------------------------------------------------------------- 17. timeline: planned (24-hour plan) vs completed
-s = S[16]
+# ---------------------------------------------------------------- 17-20. outcome: the working dashboard (screenshots)
+MODE_COLOUR = {"REPLAY": RGBColor(0xC2, 0x5E, 0x00), "SIMULATION": RGBColor(0x6A, 0x3F, 0xA0), "LIVE": OK}
+
+
+def shot(slide, x, y, w, name, page, mode):
+    """One dashboard screenshot with its page name and the mode label the page itself shows."""
+    path = DASH / f"{name}.png"
+    iw, ih = Image.open(path).size
+    h = w * ih / iw
+    label = [(page, True, NAVY, 14)]
+    label += [("   Mode shown: ", False, MUTED, 12), (mode, True, MODE_COLOUR[mode], 12)] if mode else \
+             [("   (status page, no mode label)", False, MUTED, 12)]
+    box(slide, x, y, w, 0.36, [label], ARIAL, 14, margin=0.02, after=0, anchor=MSO_ANCHOR.BOTTOM)
+    pic = slide.shapes.add_picture(str(path), Inches(x), Inches(y + 0.42), Inches(w), Inches(h))
+    pic.line.color.rgb = RGBColor(0xC9, 0xD3, 0xE0)
+    pic.line.width = Pt(1)
+    pic.name = f"Dashboard: {page}"
+    return y + 0.42 + h
+
+
+DASH_NOTE = ("Screenshots of the project's Streamlit dashboard (src/smartcity/dashboard/app.py) captured on 21 Oct 2026; every "
+             "number on them is read from committed result files. Live NYC feeds were not reachable from the capture "
+             "machine, so no LIVE view is shown.")
+pairs = [
+    (("overview", "Overview & status", None), ("data_audit", "Data audit & provenance", "REPLAY")),
+    (("experiments", "Experiment results", "REPLAY"), ("uncertainty", "Uncertainty & reliability", "REPLAY")),
+    (("explainability", "Explainability (proposed model)", "REPLAY"), ("agent", "Agent trace & advisory", "REPLAY")),
+]
+for k, (left, right) in enumerate(pairs):
+    s = S[16 + k]
+    set_title(s, f"8. OUTCOME: WORKING DASHBOARD ({k + 1}/4)")
+    drop(body_ph(s))
+    bottom = max(shot(s, 0.55, 1.75, 6.25, *left), shot(s, 7.2, 1.75, 6.25, *right))
+    box(s, 0.55, bottom + 0.08, 12.9, 0.5, [[(DASH_NOTE, False, MUTED, 11)]], ARIAL, 11, margin=0.02, after=0)
+s = S[19]
+set_title(s, "8. OUTCOME: WORKING DASHBOARD (4/4)")
+drop(body_ph(s))
+bottom = shot(s, 0.55, 1.75, 6.25, "sumo", "SUMO comparisons", "SIMULATION")
+box(s, 0.55, bottom + 0.08, 12.9, 0.5, [[(DASH_NOTE, False, MUTED, 11)]], ARIAL, 11, margin=0.02, after=0)
+box(s, 7.2, 2.17, 6.25, 4.78, [
+    [("What the dashboard shows, and what it does not", True, NAVY, 17)],
+    [("The SUMO page states the first 45-run comparison is SUPERSEDED and the controller comparison NOT RUN, so it "
+      "shows no simulated gain.", False, INK, 14)],
+    [("Agent traces end in PENDING_HUMAN_REVIEW, DEFER or REJECT; approval is for simulation only and nothing is "
+      "sent to real signals.", False, INK, 14)],
+    [("Not captured yet: the Multi-horizon forecast and Traffic map pages need the trained model file and processed "
+      "data held on the training laptop; they will be captured there for the final version.", False, INK, 14)],
+    [("The Experiment results page shows the seed-42 runs; the three-seed results are on slide 21.", False, INK, 14)]],
+    ARIAL, 14, bg=TINT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, margin=0.18, after=8, name="Dashboard notes")
+for p in list(s.shapes)[-1].text_frame.paragraphs[1:]:
+    bullet(p)
+
+# ---------------------------------------------------------------- 21. results and outcomes (replaces the Gantt chart)
+s = S[20]
+set_title(s, "9. RESULTS & OUTCOMES")
 drop(next(sh for sh in s.shapes if sh.name == "TextBox 2"))
-plan = [("Hardware audit, repository, source checks", 0, 1, "done"),
-        ("Real-data download, database, schema reports", 1, 3, "done"),
-        ("Preprocessing, graph, features, leakage tests", 2, 5, "done"),
-        ("Baselines and proposed-model training", 4, 8, "done"),
-        ("Calibration and model explanations", 6, 10, "done"),
-        ("Corpus, FAISS, real LLM, RAG evaluation", 7, 11, "done"),
-        ("SUMO mapping, demand, baseline controllers", 9, 14, "partial"),
-        ("LangGraph, constraints, worker, human review", 11, 16, "done"),
-        ("FastAPI, dashboard, MLflow tracking", 13, 18, "done"),
-        ("End-to-end tests, ablations, paired simulation", 16, 21, "partial"),
-        ("README, Docker verification, clean-up", 20, 23, "done"),
-        ("Freeze artifacts, status report, final review", 23, 24, "done")]
-x0, x1 = 4.75, 11.75           # chart area for hours 0..24
-hx = (x1 - x0) / 24
-box(s, 0.5, 1.85, 4.2, 0.35, [[("Phase (planned hours in the 24-hour plan)", True, NAVY, 12)]], ARIAL, 12, margin=0.02, after=0)
-box(s, 11.95, 1.85, 1.6, 0.35, [[("Status", True, NAVY, 12)]], ARIAL, 12, margin=0.02, after=0)
-for h in range(0, 25, 4):
-    box(s, x0 + h * hx - 0.25, 1.85, 0.5, 0.35, [[(f"{h} h", True, NAVY, 11)]], ARIAL, 11, align=PP_ALIGN.CENTER, margin=0, after=0)
-    gl = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x0 + h * hx), Inches(2.22), Inches(x0 + h * hx), Inches(6.85))
-    gl.line.color.rgb = RGBColor(0xD5, 0xDD, 0xE8)
-    gl.line.width = Pt(0.75)
-for k, (name, a, b, st) in enumerate(plan):
-    y = 2.27 + k * 0.385
-    box(s, 0.5, y, 4.2, 0.33, [[(name, False, INK, 12)]], ARIAL, 12, anchor=MSO_ANCHOR.MIDDLE, margin=0.02, after=0)
-    bar = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x0 + a * hx), Inches(y + 0.05), Inches((b - a) * hx), Inches(0.24))
-    bar.fill.solid()
-    bar.fill.fore_color.rgb = OK if st == "done" else WARN
-    bar.line.fill.background()
-    bar.shadow.inherit = False
-    bar.name = f"Planned {name}"
-    box(s, 11.95, y, 1.6, 0.33, [[("Completed" if st == "done" else "Partial", True, OK if st == "done" else WARN, 12)]],
-        ARIAL, 12, anchor=MSO_ANCHOR.MIDDLE, margin=0.02, after=0)
-box(s, 0.5, 6.92, 13.0, 0.45, [[("Bars: planned window (project specification). Colour: actual status, 19–21 Oct 2026 (repository history). "
-                                "Next milestones: calibrate West St signal timing to the observed 10.95 mph (or obtain DOT timing plans) → "
-                                "controller comparison; more seeds without the compute budget; paper submission.", False, MUTED, 11)]], ARIAL, 11, margin=0.02, after=0)
+box(s, 0.55, 1.75, 12.9, 0.4, [[("Held-out test period 6 Sep – 20 Oct 2026, 16 Manhattan links; advisory and retrieval results "
+                                 "from the REPLAY workflow runs", False, MUTED, 14)]], ARIAL, 14, margin=0.02, after=0)
+box(s, 0.55, 2.2, 6.6, 0.4, [[("Test MAE (mph): mean ± s.d. over seeds 42, 1 and 2", True, NAVY, 16)]], ARIAL, 16,
+    margin=0.02, after=0)
+ms = [("Model", "15 min", "30 min", "60 min"),
+      ("Proposed GATv2–Transformer", "4.69 ± 0.06", "5.34 ± 0.03", "6.15 ± 0.02"),
+      ("GRU", "4.67 ± 0.06", "5.37 ± 0.02", "6.18 ± 0.01"),
+      ("Temporal Transformer", "4.72 ± 0.03", "5.38 ± 0.03", "6.23 ± 0.08"),
+      ("Proposed, seed 42 only", "4.77", "5.33", "6.15"),
+      ("Persistence", "5.14", "6.06", "7.29")]
+gt = s.shapes.add_table(len(ms), 4, Inches(0.55), Inches(2.65), Inches(6.6), Inches(2.7))
+gt.name = "Three-seed results"
+tbl = gt.table
+for ci, wv in enumerate((2.85, 1.25, 1.25, 1.25)):
+    tbl.columns[ci].width = Inches(wv)
+for ri, row in enumerate(ms):
+    for ci, val in enumerate(row):
+        cell = tbl.cell(ri, ci)
+        fill(cell.text_frame, [[(val, ri == 0 or ri == 1, WHITE if ri == 0 else (MUTED if ri >= 4 else INK), 14)]], ARIAL, 14,
+             align=PP_ALIGN.LEFT if ci == 0 else PP_ALIGN.CENTER, after=0)
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = NAVY if ri == 0 else (TINT if ri % 2 else WHITE)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+box(s, 0.55, 5.45, 6.6, 1.9, [
+    [("Paired day-block bootstrap (44 test days): the proposed model is lower than the temporal Transformer at every horizon "
+      "(0.035 / 0.037 / 0.080 mph) and than the GRU at 30 and 60 min (0.032 / 0.031); the GRU is lower at 15 min (0.021). "
+      "All intervals exclude zero, but with three seeds the advantage is small, not decisive.", False, INK, 13)],
+    [("Source: reports/experiments/multi_seed_summary.csv (nine GPU runs, 21 Oct 2026).", False, MUTED, 11)]],
+    ARIAL, 13, margin=0.02, after=4)
+stats = [("7–16 %", "lower MAE than persistence (seed 42 run)"),
+         ("0.91 / 0.91 / 0.90", "coverage of the 90 % conformal intervals; 0.76–0.80 under congestion"),
+         ("15–22 %", "lower MAE on forecasts the reliability gate keeps (≈26 % deferred)"),
+         ("24 / 24", "local-LLM responses schema-valid over two workflow passes (qwen2.5 7B)"),
+         ("3 of 3 → 0 of 9", "advisories citing non-existent evidence, without vs with retrieval"),
+         ("19", "workflow runs per pass: 7 pending human review, 5 rejected by safety checks, 7 deferred")]
+for k, (v, lab) in enumerate(stats):
+    cx, cy = 7.5 + (k % 2) * 3.0, 2.2 + (k // 2) * 1.62
+    box(s, cx, cy, 2.85, 1.47, [[(v, True, NAVY, 20)], [(lab, False, INK, 12)]], ARIAL, 12, align=PP_ALIGN.CENTER,
+        anchor=MSO_ANCHOR.MIDDLE, bg=TINT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, margin=0.1, after=3, name=f"Result {k + 1}")
+box(s, 0.55, 7.05, 12.9, 0.5, [
+    [("Also measured: ", True, NAVY, 12),
+     ("removing the availability-aware gate raises MAE by 0.067 mph (95 % CI 0.048–0.086); removing operational weather features "
+      "lowers it by 0.046 mph (a negative result). No simulated controller gain is claimed: the SUMO testbed fails its own "
+      "baseline test (5.8 vs 10.95 mph).", False, INK, 12)]],
+    ARIAL, 12, margin=0.02, after=0)
+
+# ---------------------------------------------------------------- 22. results and outcomes: status, deliverables, next steps
+s = S[21]
+set_title(s, "9. RESULTS & OUTCOMES (CONTD.)")
+drop(next(sh for sh in s.shapes if sh.name == "TextBox 2"))
+cols = [
+    ("Implemented and verified", OK, [
+        "Real-data pipeline on NYC DOT speeds, 1 Jan – 20 Oct 2026, with provenance hashes",
+        "Seven forecasting models on identical targets; three-seed study of the deep models; ablations",
+        "Conformal intervals, reliability gate and grouped SHAP on the trained model",
+        "FAISS retrieval over 15 approved documents; local LLM with schema validation",
+        "LangGraph workflow with 13 deterministic safety checks",
+        "FastAPI, PostGIS jobs, Streamlit, MLflow, Docker Compose"]),
+    ("Partial or not run", WARN, [
+        "SUMO controller comparison NOT RUN; the first 45-run comparison is superseded",
+        "No real advisory has reached the simulation gate (the LLM chose monitor-only in both passes)",
+        "Only three seeds; the proposed model is not bit-reproducible on GPU at a fixed seed",
+        "Road graph is sparse: 26 nodes, 16 edges",
+        "Intervals under-cover congested periods"]),
+    ("Outcomes and next steps", NAVY, [
+        "IEEE conference paper (LaTeX and Word), every claim traced in the claims ledger",
+        "GitHub repository with tests, runbooks and result files",
+        "Next: calibrate West St signal timing to 10.95 mph or obtain NYC DOT timing plans, then run the comparison",
+        "Next: more seeds without the compute budget",
+        "Next: paper submission"]),
+]
+for k, (head, colr, items) in enumerate(cols):
+    cx = 0.55 + k * 4.37
+    box(s, cx, 1.85, 4.1, 0.5, [[(head, True, WHITE, 17)]], ARIAL, 17, anchor=MSO_ANCHOR.MIDDLE, bg=colr,
+        shape=MSO_SHAPE.ROUNDED_RECTANGLE, margin=0.15, after=0, name=f"{head} header")
+    box(s, cx, 2.45, 4.1, 4.9, [[(t, False, INK, 14)] for t in items], ARIAL, 14, bg=TINT,
+        shape=MSO_SHAPE.ROUNDED_RECTANGLE, margin=0.15, after=7, bullets=True, name=head)
 
 # ---------------------------------------------------------------- 18. references (IEEE)
-s = S[17]
+s = S[22]
 set_title(s, "REFERENCES")
 box(s, 0.6, 1.95, 12.8, 5.35, [[(REF[i], False, INK, 14)] for i in range(1, 13)], TNR, 14, margin=0.04, after=5)
+
+for i, slide in enumerate(S, start=1):
+    for fld in slide._element.iter(qn("a:fld")):
+        if fld.get("type") == "slidenum":
+            fld.find(qn("a:t")).text = str(i)
 
 prs.save(OUT)
 print("saved", OUT)

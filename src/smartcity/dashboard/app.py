@@ -157,6 +157,7 @@ elif page == "Uncertainty & reliability":
 
 elif page == "Explainability":
     st.title("Explanations of the proposed model")
+    mode_badge("REPLAY")
     s = json_or_state(ROOT / "artifacts" / "explanations" / "explanations_summary.json")
     if s:
         st.caption(s["explained_model"] + " — grouped KernelSHAP; sensitivities, not causal effects.")
@@ -220,22 +221,56 @@ elif page == "Agent trace & advisory":
 elif page == "SUMO comparisons":
     st.title("SUMO comparisons")
     mode_badge("SIMULATION")
-    df = csv_or_state(ROOT / "reports" / "experiments" / "simulation_metrics.csv")
-    if df is not None:
-        st.caption("Scenario-based microscopic simulation testbed using real-world road geometry (OSM) and declared "
-                   "demand assumptions. Not a calibrated digital twin; not real-world gains.")
-        st.dataframe(df, hide_index=True, use_container_width=True)
-        metric = st.selectbox("Metric", [c for c in df.columns if c.startswith(("mean_", "side_", "corridor_", "teleports",
-                                                                                  "unfinished", "arrived"))])
-        agg = df.groupby(["scenario", "controller"])[metric].mean().reset_index()
-        st.plotly_chart(go.Figure([go.Bar(name=s, x=g["controller"], y=g[metric]) for s, g in agg.groupby("scenario")]),
-                        use_container_width=True)
+    st.caption("Scenario-based microscopic simulation testbed using real-world road geometry (OSM) and declared "
+               "demand assumptions. Not a calibrated digital twin; not real-world gains.")
+    exp = ROOT / "reports" / "experiments"
+    claims_path = ROOT / "reports" / "verification" / "paper_claims.csv"
+    claims = pd.read_csv(claims_path).fillna("") if claims_path.exists() else pd.DataFrame()
+    superseded = set()
+    if len(claims):
+        sim = claims[claims["evidence_artifact"].str.contains("simulation", case=False)]
+        for _, c in sim[sim["status"] == "SUPERSEDED"].iterrows():
+            superseded.update(p.strip() for p in c["evidence_artifact"].split(";"))
+            st.error(f"**SUPERSEDED ({c['claim_id']})** {c['claim']}: {c['notes']}")
+        not_run = sim[(sim["claim"] + " " + sim["notes"]).str.contains("NOT RUN")]
+        if len(not_run):
+            latest = not_run.loc[not_run["claim_id"].str.lstrip("C").astype(int).idxmax()]
+            st.warning(f"**Controller comparison: NOT RUN.** ({latest['claim_id']}) {latest['claim']}; {latest['notes']}.")
+    st.subheader("Testbed audit: preregistered demand-selection runs (fixed-time only)")
+    # newest protocol first, by the latest run timestamp recorded in each sweep (file mtimes do not survive git)
+    sweeps = sorted(exp.glob("simulation_demand_selection_*.csv"),
+                    key=lambda p: pd.read_csv(p, usecols=["run_id"])["run_id"].str.split("-").str[-2].max(), reverse=True)
+    if not sweeps:
+        st.warning("NOT_RUN: no demand-selection sweep")
+    for p in sweeps:
+        sw = pd.read_csv(p)
+        cols = [c for c in ("scenario", "seed", "main_nb_vph", "main_sb_vph", "side_vph_per_approach", "loaded",
+                            "completed_trips", "unfinished_trips", "teleports", "corridor_mean_time_loss_s")
+                if c in sw.columns]
+        with st.expander(f"{p.stem.removeprefix('simulation_demand_selection_')} ({len(sw)} runs)", expanded=p == sweeps[0]):
+            st.dataframe(sw[cols], hide_index=True, use_container_width=True)
+    sm = exp / "simulation_metrics.csv"
+    rel = str(sm.relative_to(ROOT)).replace("\\", "/")
+    label = "SUPERSEDED: " if rel in superseded else ""
+    with st.expander(f"{label}first controller comparison ({rel})", expanded=not label):
+        df = csv_or_state(sm)
+        if df is not None:
+            if label:
+                st.caption("Kept as a record only; no controller ranking is claimed from these runs.")
+            st.dataframe(df, hide_index=True, use_container_width=True)
+            metric = st.selectbox("Metric", [c for c in df.columns if c.startswith(("mean_", "side_", "corridor_",
+                                                                                      "teleports", "unfinished",
+                                                                                      "arrived"))])
+            agg = df.groupby(["scenario", "controller"])[metric].mean().reset_index()
+            st.plotly_chart(go.Figure([go.Bar(name=s, x=g["controller"], y=g[metric])
+                                       for s, g in agg.groupby("scenario")]), use_container_width=True)
     sc = ROOT / "simulation" / "scenarios" / "scenarios.json"
     if sc.exists():
         st.json(json.loads(sc.read_text()))
 
 elif page == "Experiment results":
     st.title("Experiment results")
+    mode_badge("REPLAY")
     for name, rows in service.experiments().items():
         st.subheader(name)
         if rows:
