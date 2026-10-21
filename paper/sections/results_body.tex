@@ -155,18 +155,24 @@ declared demand), because traffic can no longer leave it.
 
 \textit{Corrected protocol: comparison not run.} Side-street demand has no matched count, so its level was to be
 chosen by a rule fixed in \texttt{configs/simulation.yaml} before any comparison: on the routine peak, under the
-fixed-time baseline only and on three development seeds that the comparison does not use, the largest scale of the
-declared 150\,veh/h at which every seed has no teleport and at most 1\,\% of loaded vehicles unfinished. No scale
-qualifies (Table~\ref{tab:simaudit}): even with no side-street demand at all, 533 of 3{,}010 loaded vehicles per run
-remain unfinished and the mean time loss is 804\,s. The binding constraint is the signal timing that netconvert
-generated: at the joined Battery Place signal the northbound through movement receives 13\,s of a 90\,s cycle on two
-lanes, about 520\,veh/h at a nominal saturation flow of 1{,}800\,veh/h per lane, and the next northbound signal about
-1{,}000\,veh/h, both below the observed 1{,}389\,veh/h (\texttt{simulation\_signal\_capacity.csv}). Southbound, every
-corridor signal's estimate is at least 1{,}860\,veh/h, yet in the zero-side-demand runs the southbound mainline loses
-1{,}114 to 1{,}155\,s per trip against 409 to 414\,s northbound; green shares do not explain this and the audit does not
-identify its cause. Under the preregistered rule the corrected controller comparison is NOT RUN, and the advisory
-simulation gate now returns NOT\_EVALUATED (ERROR\_TOOL with its cause) rather than judging a candidate on a testbed
-that cannot serve its own baseline.
+fixed-time baseline only and on three development seeds that the comparison does not use, the largest fraction of the
+declared 150\,veh/h at which every seed has no teleport and at most 1\,\% of loaded vehicles unfinished. With the
+programs netconvert generates, no level qualifies (Table~\ref{tab:simaudit}): even with no side-street demand at all,
+533 of 3{,}010 loaded vehicles per run remain unfinished and the mean time loss is 804\,s. Counting only the movements
+each mainline route makes, the guessed programs give the northbound mainline 25\,s of a 90\,s cycle on two lanes at
+one signal, about 1{,}000\,veh/h at a nominal saturation flow of 1{,}800\,veh/h per lane and below the observed
+1{,}389\,veh/h (\texttt{simulation\_signal\_capacity.csv}). We therefore re-timed the fixed-time programs for the
+demand being tested with Webster's method as implemented in SUMO's \texttt{tlsCycleAdaptation.py} (tool defaults;
+phase order and states unchanged), a declared assumption fixed before any comparison under this protocol, and
+applied the same selection rule. Re-timing raises every mainline signal's estimate to at least 1{,}800\,veh/h
+northbound and 2{,}040 southbound and removes most of the saturation: with the full declared side demand 5{,}220 to
+5{,}229 trips complete per run instead of about 2{,}300, and with no side demand teleports stay at zero and the
+northbound mainline completes all 1{,}389 trips at 195 to 197\,s of time loss. No level qualifies, however: even
+without side demand 129 to 131 vehicles per run (4.3\,\%) remain unfinished, and the southbound mainline loses 1{,}014
+to 1{,}038\,s per trip; green shares do not explain this and the audit does not identify its cause. Under the
+preregistered rule the corrected controller comparison is NOT RUN, and the advisory simulation gate returns
+NOT\_EVALUATED (ERROR\_TOOL with its cause) rather than judging a candidate on a testbed that cannot serve its own
+baseline. We did not relax the rule after seeing these results.
 
 \subsection{Runtime}
 Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs 5.7\,ms for the

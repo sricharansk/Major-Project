@@ -12,7 +12,8 @@ in `reports/experiments/` and are generated, never typed.
   server-side before anything is downloaded; results are in `reports/data_audit/source_inventory.csv`.
 * **Context sources**: Open-Meteo historical forecast (operational weather) and archive (retrospective weather), NYC Automated Traffic Volume Counts (`7ym2-wayt`, sampled ATR
   counts used only for SUMO demand), NYC permitted events (`tvpp-9vvx` current, `bkfu-528j` historical), Motor Vehicle
-  Collisions (`h9gi-nx95`), 311 service requests (`erm2-nwe9`), OpenStreetMap via Overpass (geometry for SUMO).
+  Collisions (`h9gi-nx95`), 311 service requests (`erm2-nwe9`), OpenStreetMap via Overpass or the OSM editing API
+  (geometry for SUMO).
 * **Observation-time rules** (`configs/data.yaml`): collisions and historical events have no reliable announcement
   time, so they are used only in the *retrospective* feature track; 311 is used operationally with a declared 24 h
   lag; the operational track uses Open-Meteo *historical forecasts* (what a forecast issued at the time would have
@@ -110,7 +111,13 @@ phase existence, min/max green, clearance intervals, mapping review status. The 
 ## 10. Simulation (`smartcity.simulation`)
 
 A SUMO network is built from OSM geometry for the study corridor; demand comes from matched ATR counts where they
-exist and from declared assumptions otherwise (all written to `simulation/scenarios/prepared.json`). The
+exist (weekday 16-19 h complete hourly totals) and from declared assumptions otherwise (all written to
+`simulation/scenarios/prepared.json`). Every flow drives one fixed free-flow route (SUMO would otherwise route
+from/to flows at insertion on current travel times), entries skip stub edges, and the fixed-time programs are
+optionally re-timed with Webster's method (`signal_timing` in `configs/simulation.yaml`). Before any comparison the
+testbed must pass a preregistered baseline test (`simulation select-demand`): the side-street demand level is the
+largest at which the fixed-time baseline, on development seeds, has no teleport and at most 1 % unfinished trips;
+without one, `simulation evaluate` stops with NOT_RUN and the advisory gate returns NOT_EVALUATED. The
 `ProtectedController` applies only bounded green extensions or pre-validated programs through TraCI. Baseline and
 candidate run with matched seeds; the comparison reports corridor and side-road time loss, arrivals and teleports.
 The testbed is a scenario, not a calibrated digital twin, and all its outputs are labelled SIMULATION.

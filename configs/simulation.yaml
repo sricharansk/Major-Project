@@ -31,6 +31,13 @@ scenario:
   # and is kept only to reproduce the superseded 2026-10-20 runs.
   route_choice: fixed_free_flow
   min_entry_edge_m: 20           # netconvert junction joining can leave stub edges (0.2 m) at a chain start
+  # netconvert_guess: the programs netconvert generates (--tls.guess-signals), which split green about equally between
+  # stages and gave the West St NB through movement ~520 veh/h at Battery Place (testbed audit 2026-10-21).
+  # webster_retimed: the fixed-time programs re-timed by SUMO's tools/tlsCycleAdaptation.py (Webster's method) for the
+  # routine-peak demand being tested; phase order and states are unchanged, only green durations change. A DECLARED
+  # assumption (not NYC DOT timing plans), fixed here before any controller comparison under this protocol.
+  signal_timing: webster_retimed
+  retiming: {min_cycle_s: 20, max_cycle_s: 120, saturation_headway_s: 2.0}   # tool defaults
 # Side-street demand has no matched counts, so its level is chosen by a rule fixed here BEFORE the controller
 # comparison: on the routine_peak scenario, under the fixed-time baseline only, on development seeds that the
 # comparison does not use, take the largest scale in the grid at which every seed has at most max_teleports teleports
