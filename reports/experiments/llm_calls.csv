@@ -11,3 +11,15 @@ adv-20261020T212321-3c25f9,rag_without_constraints,mapped_corridor_rush_hour,oll
 adv-20261020T212346-37c555,rag_constraints_without_simulation,routine_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,1790,222,20.09,monitor_only,1,2,REJECT_CONSTRAINT,REPLAY
 adv-20261020T212409-099c9d,rag_constraints_without_simulation,mapped_corridor_alert,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3582,278,25.77,monitor_only,1,4,PENDING_HUMAN_REVIEW,REPLAY
 adv-20261020T212439-a8cc65,rag_constraints_without_simulation,mapped_corridor_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3604,215,21.79,monitor_only,1,2,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261021T042808-4457fd,full_system,routine_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,1792,274,51.76,monitor_only,1,2,REJECT_CONSTRAINT,REPLAY
+adv-20261021T042913-ce2a61,full_system,mapped_corridor_alert,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3597,259,33.92,monitor_only,1,4,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261021T042952-77b06b,full_system,mapped_corridor_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3619,220,29.83,monitor_only,1,2,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261021T043027-6d3171,llm_without_retrieval,routine_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,894,167,17.58,monitor_only,1,1,REJECT_CONSTRAINT,REPLAY
+adv-20261021T043049-b4865d,llm_without_retrieval,mapped_corridor_alert,ollama,qwen2.5:7b,advisory_v1,0,OK,True,2793,179,21.19,monitor_only,1,1,REJECT_CONSTRAINT,REPLAY
+adv-20261021T043115-bf3109,llm_without_retrieval,mapped_corridor_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,2795,182,22.76,monitor_only,1,1,REJECT_CONSTRAINT,REPLAY
+adv-20261021T043143-66b3d2,rag_without_constraints,routine_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,1792,261,28.04,monitor_only,1,2,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261021T043216-99095f,rag_without_constraints,mapped_corridor_alert,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3597,259,30.99,monitor_only,1,4,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261021T043252-38b42e,rag_without_constraints,mapped_corridor_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3619,215,19.42,monitor_only,1,2,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261021T043316-927b0c,rag_constraints_without_simulation,routine_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,1792,260,19.89,monitor_only,1,2,REJECT_CONSTRAINT,REPLAY
+adv-20261021T043340-9374e9,rag_constraints_without_simulation,mapped_corridor_alert,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3597,321,27.44,monitor_only,1,4,PENDING_HUMAN_REVIEW,REPLAY
+adv-20261021T043410-63bde3,rag_constraints_without_simulation,mapped_corridor_rush_hour,ollama,qwen2.5:7b,advisory_v1,0,OK,True,3619,210,18.8,monitor_only,1,2,PENDING_HUMAN_REVIEW,REPLAY

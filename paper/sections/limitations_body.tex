@@ -10,9 +10,11 @@ existed; both are recorded. Operational weather is Open-Meteo's historical-forec
 rather than an archived agency forecast. Collisions lag publication by months and are retrospective only.
 
 \textit{Modelling and evaluation.} All deep models were trained under a recorded budget of 4{,}096 windows per epoch
-with early stopping, one seed and one chronological split; the only variance estimate is a day-block bootstrap on
-paired differences, and the proposed model's margin over the GRU and temporal Transformer is inside what seeds could
-change. The multi-seed study that would measure this is not yet run. Split conformal intervals carry a marginal guarantee under exchangeability, which traffic series violate; the
+with early stopping and one chronological split. The three deep models were compared over only three seeds
+(Table~\ref{tab:multiseed}); the day-block bootstrap describes test-day variation of the seed-averaged errors and does
+not estimate between-seed variance, and the per-seed ranges overlap. On the GPU the proposed model is not
+bit-reproducible at a fixed seed (GATv2 scatter operations), whereas the GRU and temporal Transformer are; a reported
+proposed-model run can therefore be re-trained but not re-created exactly. Split conformal intervals carry a marginal guarantee under exchangeability, which traffic series violate; the
 measured coverage under congestion is 0.76--0.80. Explanations describe the trained model, with a background drawn
 from the training partition; neighbour sensitivity perturbs the graph in ways the model never saw during training,
 and only incoming edges can change a link's own prediction.

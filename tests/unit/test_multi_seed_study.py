@@ -42,4 +42,7 @@ def test_run_dir_falls_back_to_run_id_folder(tmp_path, monkeypatch):
 def test_committed_manifest_has_no_analysable_cpu_runs():
     man = json.loads((ROOT / "artifacts" / "models" / "multi_seed_runs.json").read_text())
     assert all(r.get("train_device") != "cpu" for r in man["runs"])
-    assert all("note" in r for r in man["runs_without_predictions"])
+    assert all("note" in r for r in man.get("runs_without_predictions", []))
+    cpu = json.loads((ROOT / "artifacts" / "models" / "multi_seed_runs_container_cpu_seed42.json").read_text())
+    assert cpu["runs"] and all(r.get("train_device") == "cpu" for r in cpu["runs"])
+    assert {r["run_id"] for r in cpu["runs"]}.isdisjoint({r["run_id"] for r in man["runs"]})

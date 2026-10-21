@@ -82,29 +82,29 @@ def ablation_table():
 
 
 def multi_seed_table():
-    """Seed study of the three deep models (scripts/multi_seed_study.py analyze -> multi_seed_summary.csv): per model the
-    seed mean and spread of the test MAE per horizon and the paired day-block bootstrap of the seed-averaged MAE
-    difference to the proposed model. NOT RUN until the workstation has produced the summary."""
     rows = _rows("reports/experiments/multi_seed_summary.csv")
-    cap = ("Multi-seed study of the deep forecasters (test MAE, mph): mean $\\pm$ sd over seeds, and the paired day-block "
-           "bootstrap of the seed-averaged MAE difference to the proposed model (95\\% interval)")
+    cap = "Deep forecasters over seeds: test MAE (mph), mean $\\pm$ s.d. [min, max] over seeds, and the paired day-block bootstrap of the seed-averaged MAE difference to the proposed model (95\\% interval; positive: proposed lower)"
     if not rows:
-        return _write("multi_seed.tex", not_run(cap, "tab:seeds"))
-    hs = [h for h in ("15", "30", "60") if f"mae_{h}m_mean" in rows[0]]
-    head = " & ".join(f"MAE {h}" for h in hs) + " & " + " & ".join(f"$\\Delta$ {h}" for h in hs)
-    lines = [f"\\begin{{table*}}[t]\\centering\\caption{{{cap}}}\\label{{tab:seeds}}",
-             f"\\begin{{tabular}}{{ll{'r' * len(hs)}{'l' * len(hs)}}}\\toprule Model & Seeds & {head} \\\\ \\midrule"]
-    for r in rows:
-        maes = []
-        for h in hs:
-            sd = r.get(f"mae_{h}m_sd")
-            maes.append(_f(r.get(f"mae_{h}m_mean")) + (f" $\\pm$ {_f(sd, 3)}" if sd not in (None, "", "None") else ""))
-        diffs = []
-        for h in hs:
-            d, ci = r.get(f"diff_vs_proposed_{h}m"), r.get(f"diff_vs_proposed_{h}m_ci95")
-            diffs.append("ref." if d in (None, "") else f"{float(d):+.3f} {_esc(ci or '')}")
-        lines.append(f"{_esc(r['model'])} & {_esc(r.get('seeds', ''))} & " + " & ".join(maes) + " & " + " & ".join(diffs)
-                     + " \\\\")
+        return _write("multi_seed.tex", not_run(cap, "tab:multiseed"))
+    hs = [h for h in (15, 30, 60) if f"mae_{h}m_mean" in rows[0]]
+    seeds = rows[0]["seeds"].replace(";", ", ")
+    lines = [f"\\begin{{table*}}[t]\\centering\\caption{{{cap}. Seeds {seeds}; same GPU, data, budget and code for every run; "
+             f"period {_esc(rows[0]['evaluation_period_utc'])} UTC; n = {rows[0]['n_valid_targets_60m']} valid 60-min targets.}}"
+             "\\label{tab:multiseed}",
+             "\\begin{tabular}{l" + "l" * len(hs) + "}\\toprule",
+             "Model & " + " & ".join(f"{h} min" for h in hs) + " \\\\ \\midrule"]
+    order = sorted(rows, key=lambda r: (r["model"] != "proposed", r["model"]))
+    for r in order:
+        cells = [f"{_f(r[f'mae_{h}m_mean'], 3)} $\\pm$ {_f(r.get(f'mae_{h}m_sd'), 3)} "
+                 f"[{_f(r[f'mae_{h}m_min'], 3)}, {_f(r[f'mae_{h}m_max'], 3)}]" for h in hs]
+        lines.append(f"{_esc(r['model'])} ({r['n_seeds']} seeds) & " + " & ".join(cells) + " \\\\")
+        if r.get(f"diff_vs_proposed_{hs[0]}m") not in (None, ""):
+            diffs = []
+            for h in hs:
+                lo_hi = r.get(f"diff_vs_proposed_{h}m_ci95", "").strip("[]").split(",")
+                ci = f"[{float(lo_hi[0]):+.3f}, {float(lo_hi[1]):+.3f}]" if len(lo_hi) == 2 else ""
+                diffs.append(f"$\\Delta$ {float(r[f'diff_vs_proposed_{h}m']):+.3f} {ci}")
+            lines.append("\\quad minus proposed & " + " & ".join(diffs) + " \\\\")
     lines.append("\\bottomrule\\end{tabular}\\end{table*}\n")
     _write("multi_seed.tex", "\n".join(lines))
 
@@ -251,7 +251,7 @@ def sources_table():
 
 
 def sync() -> str:
-    for fn in (forecast_table, ablation_table, multi_seed_table, uncertainty_table, simulation_table, simulation_audit_table,
+    for fn in (forecast_table, multi_seed_table, ablation_table, uncertainty_table, simulation_table, simulation_audit_table,
                retrieval_table, advisory_table, sources_table):
         fn()
     return "tables: " + ", ".join(sorted(p.name for p in T.glob("*.tex")))

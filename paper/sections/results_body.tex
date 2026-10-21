@@ -40,9 +40,27 @@ at every horizon. The proposed context-gated GATv2--Transformer has the lowest M
 minutes (4.71\,mph against 4.77 for the proposed model), and XGBoost the lowest 60-minute RMSE (8.98 against 9.05).
 Relative to persistence the proposed model reduces MAE by 7\,\%, 12\,\% and 16\,\% at the three horizons and raises
 $R^2$ from 0.55/0.46/0.30 to 0.69/0.63/0.56. The margins between the three deep models are 0.01 to 0.06\,mph, which
-a single seed cannot separate, so this paper does not claim that the proposed architecture forecasts better than a
-well-trained GRU or temporal Transformer on this sparse 16-link graph; it claims that it is comparably accurate (within
-0.06\,mph MAE of both at every horizon) while carrying the availability gate and the graph layer that the rest of the workflow uses. On the retrospective
+a single seed cannot separate.
+
+\textit{Seeds.} The three deep models were therefore retrained with seeds 42, 1 and 2 on the same GPU, data, budget and
+code (Table~\ref{tab:multiseed}; nine runs, each evaluated on one shared valid-target mask). Two checks came first.
+Re-running seed 42 reproduced the GRU and the temporal Transformer exactly (same stopping epoch and validation MAE to
+four decimals) but not the proposed model (25 epochs and validation MAE 5.358 against 14 and 5.388): the only
+difference between the proposed model and the temporal Transformer is the GATv2 layer, whose scatter operations on the
+GPU are not bit-reproducible, so on this hardware a fixed seed does not fix the proposed model. The same seed trained
+on a CPU in the development container stopped at a different epoch again (21 epochs, validation MAE 5.356; its
+predictions are not stored, so it is not part of the comparison). Over three seeds the proposed model
+has a seed-mean MAE of 4.69, 5.34 and 6.15\,mph (standard deviation 0.06, 0.03 and 0.02 across seeds), the GRU 4.67,
+5.37 and 6.18 and the temporal Transformer 4.72, 5.38 and 6.23. A paired day-block bootstrap (44 test days) of the
+seed-averaged MAE difference puts the proposed model below the temporal Transformer at every horizon (by 0.035, 0.037
+and 0.080\,mph, intervals excluding zero) and below the GRU at 30 and 60 minutes (0.032 and 0.031\,mph, intervals
+$[0.010, 0.052]$ and $[0.007, 0.056]$), while the GRU is lower at 15 minutes (by 0.021\,mph, $[0.004, 0.040]$). These
+intervals describe day-to-day variation of the test errors for the seed-averaged models; with three seeds they do not
+estimate between-seed variance, the per-seed ranges overlap, and one temporal-Transformer seed stopped at epoch 2,
+which raises that model's 60-minute mean. The supported reading is therefore narrow: the proposed model is at least as
+accurate as both deep baselines and has a small, consistent advantage of 0.03--0.08\,mph at 30 and 60 minutes, while the
+GRU is the better 15-minute forecaster; it is not a demonstration that graph attention is decisive on this sparse
+16-link network. On the retrospective
 track (reanalysis weather plus collisions and permitted events, contextual analysis only) the proposed model reaches
 4.67, 5.35 and 6.13\,mph (Table~\ref{tab:forecast} is the operational table; the retrospective rows are in
 \texttt{forecast\_metrics.csv}), a small gain at 15 and 60 minutes over the operational 4.77/5.33/6.15, with XGBoost
@@ -113,11 +131,13 @@ gates fired as designed (the three stress cases were run under the full system o
 policy): the stale-data stress case (inputs aged six steps) ended in DEFER\_DATA,
 the wide-interval stress case (forced 99\,mph width) and the observed rainy period, whose intervals of 44--46\,mph exceed
 the 38.1\,mph cap, in DEFER\_UNCERTAINTY, and the out-of-scope query in DEFER\_EVIDENCE, each without an LLM call. The
-model was called 12 times (one attempt each, 892 to 3{,}604 prompt tokens, 157 to 278 completion tokens, 15 to
-126\,s per call with the first, cold call slowest) and returned schema-valid JSON every time
-(\texttt{reports/experiments/llm\_calls.csv}). Without retrieval it cited an evidence id that does not exist in all
-three cases (for example \texttt{EVIDENCE\_123456}), and the citation check rejected all three; with retrieval, no
-invalid citation occurred in nine calls. On the routine rush-hour case (FDR S Catherine Slip--Brooklyn Bridge, a link
+model was called 12 times per pass, and the stage was run twice (2026-10-20 and, after the simulation-gate
+correction, 2026-10-21): 24 calls, one attempt each, 892 to 3{,}619 prompt tokens, 157 to 321 completion tokens and
+15 to 126\,s per call (the first, cold call slowest; 18 to 52\,s in the second pass), all returning schema-valid JSON
+and all recommending monitoring only (\texttt{reports/experiments/llm\_calls.csv}). Both passes reached the same 19
+decisions. Without retrieval the model cited an evidence id that does not exist in all three cases of each pass (for
+example \texttt{EVIDENCE\_123456}), and the citation check rejected every one; with retrieval, no invalid citation
+occurred in nine calls per pass. On the routine rush-hour case (FDR S Catherine Slip--Brooklyn Bridge, a link
 without a reviewed DOT-to-SUMO mapping) the constraint layer rejected the candidate under every policy that keeps it,
 while the RAG-without-constraints policy passed the same candidate to human review. On the two cases on the mapped
 West Street link the model recommended monitoring only, which passes all 13 checks (pedestrian protection

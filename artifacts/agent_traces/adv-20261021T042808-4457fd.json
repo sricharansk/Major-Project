@@ -1,0 +1,261 @@
+{
+  "run_id": "adv-20261021T042808-4457fd",
+  "thread_id": "adv-20261021T042808-4457fd",
+  "mode": "REPLAY",
+  "case": {
+    "name": "routine_rush_hour",
+    "origin": 77939,
+    "link_index": 13,
+    "case_id": "case-routine_rush_hour-77939-13",
+    "auto_review": {
+      "action": "pending"
+    },
+    "policy": "full_system"
+  },
+  "forecast_origin": "2026-09-28T20:00:00+00:00",
+  "data_quality": {
+    "data_age_minutes": 0.0,
+    "input_missing_fraction": 0.0,
+    "source_timestamp_utc": "2026-09-28T20:00:00+00:00",
+    "stale_stress_steps": 0
+  },
+  "forecast": {
+    "link_id": "4616341",
+    "link_index": 13,
+    "horizons": [
+      {
+        "horizon_minutes": 15,
+        "predicted_speed_mph": 9.090421676635742,
+        "displayed_speed_mph": 9.090421676635742,
+        "lower_mph": -1.5315055847167969,
+        "upper_mph": 19.71234893798828,
+        "interval_level": 0.9,
+        "observed_speed_mph": 6.829999923706055
+      },
+      {
+        "horizon_minutes": 30,
+        "predicted_speed_mph": 9.314260482788086,
+        "displayed_speed_mph": 9.314260482788086,
+        "lower_mph": -3.2682933807373047,
+        "upper_mph": 21.896814346313477,
+        "interval_level": 0.9,
+        "observed_speed_mph": 4.96999979019165
+      },
+      {
+        "horizon_minutes": 60,
+        "predicted_speed_mph": 11.101858139038086,
+        "displayed_speed_mph": 11.101858139038086,
+        "lower_mph": -3.133880615234375,
+        "upper_mph": 25.337596893310547,
+        "interval_level": 0.9,
+        "observed_speed_mph": 4.96999979019165
+      }
+    ],
+    "train_reference_speed_mph": 26.19737434387207,
+    "congestion_ratio_30min": 0.35554175622820844,
+    "model_run_id": "proposed-20261020T201110-0e333f",
+    "speed_unit": "mph"
+  },
+  "forecast_artifact_id": "proposed-20261020T201110-0e333f",
+  "calibration_artifact_id": "artifacts/calibration/calibrator.json",
+  "uncertainty": {
+    "eligible": true,
+    "reasons": [],
+    "interval_widths": {
+      "15": 21.243854522705078,
+      "30": 25.16510772705078,
+      "60": 28.471477508544922
+    },
+    "gate_config": {
+      "max_interval_width_mph": 38.0967597961426,
+      "width_quantile_on_val": 0.8,
+      "max_input_missing_fraction": 0.34,
+      "max_data_age_minutes": 20,
+      "min_calibration_samples": 200
+    }
+  },
+  "explanation": {
+    "explanation_id": "xai-20261021T042813-275a0f",
+    "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+    "link_id": "4616341",
+    "link_index": 13,
+    "horizon_minutes": 30,
+    "origin_index": 77939,
+    "origin_utc": 1790625600,
+    "background": "16 windows sampled from TRAIN partition (seed 42)",
+    "players": [
+      "traffic_target_last30min",
+      "traffic_target_30_120min",
+      "traffic_graph_neighbours",
+      "calendar",
+      "weather",
+      "infrastructure"
+    ],
+    "neighbours": [
+      "4616333"
+    ],
+    "group_contributions": {
+      "traffic_target_last30min": -10.156673149496338,
+      "traffic_target_30_120min": 0.09098892832518467,
+      "traffic_graph_neighbours": 0.36317384522449575,
+      "calendar": -3.664203737151512,
+      "weather": -0.0430890303319611,
+      "infrastructure": -0.10902614045964244
+    },
+    "base_value": 22.833089439262494,
+    "prediction": 9.314260155372722,
+    "additivity_gap": 0.0,
+    "observed_target_mph": 4.96999979019165,
+    "recent_target_steps_observed": 6,
+    "recent_steps": 6,
+    "runtime_s": 5.179674386978149,
+    "model_calls": 1040,
+    "note": "Attributions describe model sensitivity, not causal effects."
+  },
+  "explanation_artifact_id": "xai-20261021T042813-275a0f",
+  "retrieval": {
+    "query": "Forecast speed drop to 36% of typical on an urban monitored road link within 30 minutes. Which bounded signal timing adjustment such as extending green time is permitted while preserving minimum green, yellow change and red clearance intervals and pedestrian clearance?",
+    "status": "SUPPORTED",
+    "evidence": [
+      {
+        "chunk_id": "fhwa_signal_timing_manual_2008#c0736",
+        "document_id": "fhwa_signal_timing_manual_2008",
+        "title": "FHWA Traffic Signal Timing Manual (FHWA-HOP-08-024)",
+        "authority": "official_guidance",
+        "score": 0.7134623527526855,
+        "text": "experienced by users from the non-recurring congestion. One way to achieve this objective would be to sustain and/or increase the throughput of traffic at certain intersections by increasing the green time for those movements. Traffic signals with modified timing settings perform this function by essentially \u201cflushing\u201d the preferred movement. While increasing the roadway throughput, signal timing can also help to su stain or increase corridor capacity during an event. For example, during an evacuation from a hurricane, longer green times at signal lights for the preferred movement could enable an arterial to serve greater traffic volumes per hour. Signal timing is modified during these events to meet other objectives beside s those related to traffic operations and arterial performance, such as enhanc ing public safety. Traffic lights, for example, operating with these modified settings could reduce delays for emergency responders traveling to an incident on the roadway (9). Another goal of changing signal timing would be to guide motorists to a ce rtain destination, which could be the venue for a planned",
+        "source_url": "https://ops.fhwa.dot.gov/publications/fhwahop08024/fhwa_hop_08_024.pdf"
+      },
+      {
+        "chunk_id": "fhwa_stm_ch5#c0043",
+        "document_id": "fhwa_stm_ch5",
+        "title": "FHWA Traffic Signal Timing Manual, Chapter 5: Basic Signal Timing Procedure",
+        "authority": "official_guidance",
+        "score": 0.6685608625411987,
+        "text": "is that there is a reduction in available green time for other phases. At intersections where the timing for minor movements is restricted (e.g., to split times under coordinated operation (see Chapter 6)), the extra time for a red clearance interval comes from the remaining phases at the intersection. In cases where major movements are already at or near saturation, the reduction in capacity associated with providing red clearance intervals for safety reasons should be accounted for in an operational analysis. The MUTCD provides guidance on the application and duration of the yellow change and red clearance intervals. It recommends that the interval durations shall be predetermined based on individual intersection conditions, such as approach speed and intersection width. The MUTCD advises that the yellow change interval should last approximately 3 to 6 seconds, with the longer intervals being used on higher-speed approaches. It also advises that the red clearance interval should not exceed 6 seconds. A recent survey conducted by The Urban Transportation Monitor indicated that practitioners who used a standard",
+        "source_url": "https://ops.fhwa.dot.gov/publications/fhwahop08024/chapter5.htm"
+      },
+      {
+        "chunk_id": "fhwa_signal_timing_manual_2008#c0745",
+        "document_id": "fhwa_signal_timing_manual_2008",
+        "title": "FHWA Traffic Signal Timing Manual (FHWA-HOP-08-024)",
+        "authority": "official_guidance",
+        "score": 0.6675183176994324,
+        "text": "determined that this signal timing modification resulted in reduced delay at intersections and thus increased \u201croadway mobility\u201d along major artierials (15). In spite of these performance improvements, it is still uncertain wheth e r modifying existing signal timing plans would be necessary for maintaining or improving the level of service at an intersection. Fewer vehicles on the roadway during inclement weat her result in lower delays and thus the overall performance of the signalized intersection would not significantly decrease even with revised signal timing settings. Results in a few studies show that corridor operations would not be \u201cradically affected\u201d by bad weather, thereby making a modified signal timing plan less necessary (13). The retiming of traffic signals in bad weather could be beneficial from a safety perspective. In particular, increasing the \u201cambe r-all-red interval\u201d co uld improve drivers\u2019 ability to either pass through or stop at the intersection safely. At the same time , changing signal timing plans during bad weather could help to reduce traffic speeds that are unsafe for the",
+        "source_url": "https://ops.fhwa.dot.gov/publications/fhwahop08024/fhwa_hop_08_024.pdf"
+      },
+      {
+        "chunk_id": "fhwa_signal_timing_manual_2008#c0326",
+        "document_id": "fhwa_signal_timing_manual_2008",
+        "title": "FHWA Traffic Signal Timing Manual (FHWA-HOP-08-024)",
+        "authority": "official_guidance",
+        "score": 0.664237380027771,
+        "text": "Federal Highway Administration, Washington, D.C., March 2002. 16 ITE Technical Committee 18 (P.S. Parsonson, Chair). \"Small-Area Detection at Intersection Approaches.\" Traffic Engineering. Institute of Transportation Engineers, Washington, D.C., February 1974, pp. 8-17 17 Zegeer, C.V., and R.C. Deen. \"Green-Extension Systems at High-Speed Intersections.\" ITE Journal. Institute of Transportation Engineers, Washington, D.C., November, 1978, pp. 19-24 4-31 18 Chang, M.S., C.J. Messer, and A.J. Santiago. \"Timing Traffic Signal Change Intervals Based on Driver Behavior.\" Transportation Research Record No. 1027. Transportation Research Board, National Research Council, Washington, D.C., 1985, pp. 20-30. 19 A Policy on Geometric Design of Highways and Streets. American Association of State and Highway Transportation Officials, Washington, D.C., 2004 20 Lin, F.B. \u201cOptimal Timing Settings and Detector Lengths of Presence Mode Full-Actuated Control.\u201d Transportation Research Record No. 1010. Transportation Research Board, National Research Council, Washington, D.C., 1985, pp. 37-45 4-32 5-i CHAPTER 5 BASIC SIGNAL TIMING CONTROLLER PARAMETERS TABLE OF CONTENTS 5.0 BASIC SIGNAL TIMING PROCEDURE AND CONTROLLER PARAMETERS...................5-1 5.1 Terminology and Key Definitions .......................................................................................5-1 5.2 Modes of Traffic Signal Operation",
+        "source_url": "https://ops.fhwa.dot.gov/publications/fhwahop08024/fhwa_hop_08_024.pdf"
+      }
+    ]
+  },
+  "retrieved_evidence_ids": [
+    "fhwa_signal_timing_manual_2008#c0736",
+    "fhwa_stm_ch5#c0043",
+    "fhwa_signal_timing_manual_2008#c0745",
+    "fhwa_signal_timing_manual_2008#c0326"
+  ],
+  "llm": {
+    "status": "OK",
+    "attempts": [
+      {
+        "attempt": 0,
+        "raw": "{\n  \"forecast_run_id\": \"case-routine_rush_hour-77939-13\",\n  \"recommendation_type\": \"monitor_only\",\n  \"target_network_id\": \"sumo:b434b4f28666\",\n  \"candidates\": [\n    {\n      \"candidate_id\": \"c0001\",\n      \"action_type\": \"monitor_only\",\n      \"evidence_ids\": [\"fhwa_signal_timing_manual_2008#c0736\", \"fhwa_signal_timing_manual_2008#c0745\"],\n      \"rationale\": \"Based on the evidence from the FHWA Traffic Signal Timing Manual (FHWA-HOP-08-024), increasing the green time for certain movements can help to sustain or increase the throughput of traffic at certain intersections. This could be beneficial during the planned-event demand surge, as it may help to manage the increased traffic volume. However, given the current forecast and the uncertainty in the data, it is recommended to monitor the performance of the intersection without making any changes for now.\"\n    }\n  ],\n  \"uncertainty_note\": \"The forecast indicates a high level of uncertainty, with the predicted speed varying significantly over the forecasted horizons. Given this, any proposed changes should be monitored closely.\"\n}",
+        "latency_s": 51.75799918174744,
+        "model_digest": null,
+        "request_hash": null,
+        "prompt_tokens": 1792,
+        "completion_tokens": 274,
+        "schema_valid": true
+      }
+    ],
+    "provider": "ollama",
+    "model": "qwen2.5:7b",
+    "prompt_version": "advisory_v1",
+    "response": {
+      "forecast_run_id": "case-routine_rush_hour-77939-13",
+      "recommendation_type": "monitor_only",
+      "target_network_id": "sumo:b434b4f28666",
+      "candidates": [
+        {
+          "candidate_id": "c0001",
+          "action_type": "monitor_only",
+          "traffic_light_id": null,
+          "phase_index": null,
+          "extension_seconds": null,
+          "program_id": null,
+          "evidence_ids": [
+            "fhwa_signal_timing_manual_2008#c0736",
+            "fhwa_signal_timing_manual_2008#c0745"
+          ],
+          "rationale": "Based on the evidence from the FHWA Traffic Signal Timing Manual (FHWA-HOP-08-024), increasing the green time for certain movements can help to sustain or increase the throughput of traffic at certain intersections. This could be beneficial during the planned-event demand surge, as it may help to manage the increased traffic volume. However, given the current forecast and the uncertainty in the data, it is recommended to monitor the performance of the intersection without making any changes for now."
+        }
+      ],
+      "uncertainty_note": "The forecast indicates a high level of uncertainty, with the predicted speed varying significantly over the forecasted horizons. Given this, any proposed changes should be monitored closely.",
+      "limitations": [],
+      "requires_human_review": true
+    }
+  },
+  "candidate_actions": [
+    {
+      "candidate_id": "c0001",
+      "action_type": "monitor_only",
+      "traffic_light_id": null,
+      "phase_index": null,
+      "extension_seconds": null,
+      "program_id": null,
+      "evidence_ids": [
+        "fhwa_signal_timing_manual_2008#c0736",
+        "fhwa_signal_timing_manual_2008#c0745"
+      ],
+      "rationale": "Based on the evidence from the FHWA Traffic Signal Timing Manual (FHWA-HOP-08-024), increasing the green time for certain movements can help to sustain or increase the throughput of traffic at certain intersections. This could be beneficial during the planned-event demand surge, as it may help to manage the increased traffic volume. However, given the current forecast and the uncertainty in the data, it is recommended to monitor the performance of the intersection without making any changes for now."
+    }
+  ],
+  "constraint_results": [
+    {
+      "candidate_id": "c0001",
+      "checks": {
+        "network_mapping_valid": "FAIL",
+        "action_type_allowed": "PASS",
+        "signal_exists": "PASS",
+        "phase_exists": "PASS",
+        "parameter_in_bounds": "PASS",
+        "minimum_green_preserved": "PASS",
+        "maximum_green_preserved": "PASS",
+        "clearance_preserved": "PASS",
+        "pedestrian_protection_available": "NOT_EVALUATED",
+        "side_road_protection_available": "PASS",
+        "source_freshness_acceptable": "PASS",
+        "forecast_reliability_acceptable": "PASS",
+        "retrieval_support_acceptable": "PASS",
+        "rationale_policy": "PASS"
+      },
+      "passed": false,
+      "reasons": [
+        "network_mapping_valid: no reviewed DOT->SUMO mapping"
+      ]
+    }
+  ],
+  "decision": "REJECT_CONSTRAINT",
+  "decision_reasons": [
+    "network_mapping_valid: no reviewed DOT->SUMO mapping"
+  ],
+  "errors": [],
+  "timings": {
+    "quality": 0.0,
+    "forecast": 0.028,
+    "uncertainty": 0.0,
+    "explanation": 5.269,
+    "retrieval": 2.733,
+    "recommendation": 51.765,
+    "safety": 0.004
+  },
+  "started_at": "2026-10-21T04:28:08Z",
+  "finished_at": "2026-10-21T04:29:08Z"
+}

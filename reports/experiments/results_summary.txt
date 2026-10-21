@@ -82,25 +82,25 @@ routine_peak       fixed_time       OK       seeds=5 {'arrived': 2751.0, 'comple
 routine_peak       forecast_rule    OK       seeds=5 {'arrived': 2751.0, 'completed_trips': 2357.6, 'corridor_mean_time_loss_s': 1647.874, 'inserted': 4863.6, 'loaded': 6675.0, 'max_corridor_queue_veh': 1025.4, 'mean_corridor_queue_veh': 607.314, 'mean_stops': 14.237, 'mean_time_loss_s': 971.59, 'mean_travel_time_s': 1199.476, 'mean_waiting_time_s': 848.209, 'pending_insertions_at_end': 0.0, 'running_at_end': 2078.2, 'side_road_mean_time_loss_s': 829.59, 'side_road_trips': 1978.0, 'teleports': 1330.4, 'unfinished_trips': 3924.0, 'waiting_to_insert': 0.0, 'wall_time_s': 177.062}
 
 == advisory_metrics
-full_system    routine_rush_hour            decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=0 viol=1/1 sim= lat=134.74s mode=REPLAY
+full_system    routine_rush_hour            decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=0 viol=1/1 sim= lat=59.82s mode=REPLAY
 full_system    rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.02s mode=REPLAY
 full_system    stale_data_stress            decision=DEFER_DATA llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.01s mode=REPLAY
-full_system    wide_interval_stress         decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.03s mode=REPLAY
-full_system    insufficient_evidence        decision=DEFER_EVIDENCE llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=5.43s mode=REPLAY
-full_system    mapped_corridor_alert        decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=113.49s mode=REPLAY
-full_system    mapped_corridor_rush_hour    decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=28.5s mode=REPLAY
-llm_without_retrieval routine_rush_hour            decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=1 viol=1/1 sim= lat=19.01s mode=REPLAY
-llm_without_retrieval rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.02s mode=REPLAY
-llm_without_retrieval mapped_corridor_alert        decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=1 viol=1/1 sim= lat=19.76s mode=REPLAY
-llm_without_retrieval mapped_corridor_rush_hour    decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=1 viol=1/1 sim= lat=19.43s mode=REPLAY
-rag_without_constraints routine_rush_hour            decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=1/1 sim= lat=27.95s mode=REPLAY
+full_system    wide_interval_stress         decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.02s mode=REPLAY
+full_system    insufficient_evidence        decision=DEFER_EVIDENCE llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=4.94s mode=REPLAY
+full_system    mapped_corridor_alert        decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=38.95s mode=REPLAY
+full_system    mapped_corridor_rush_hour    decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=34.78s mode=REPLAY
+llm_without_retrieval routine_rush_hour            decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=1 viol=1/1 sim= lat=22.43s mode=REPLAY
+llm_without_retrieval rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.03s mode=REPLAY
+llm_without_retrieval mapped_corridor_alert        decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=1 viol=1/1 sim= lat=26.21s mode=REPLAY
+llm_without_retrieval mapped_corridor_rush_hour    decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=1 viol=1/1 sim= lat=27.79s mode=REPLAY
+rag_without_constraints routine_rush_hour            decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=1/1 sim= lat=33.11s mode=REPLAY
 rag_without_constraints rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.02s mode=REPLAY
-rag_without_constraints mapped_corridor_alert        decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=28.16s mode=REPLAY
-rag_without_constraints mapped_corridor_rush_hour    decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=24.88s mode=REPLAY
-rag_constraints_without_simulation routine_rush_hour            decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=0 viol=1/1 sim= lat=23.9s mode=REPLAY
-rag_constraints_without_simulation rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.02s mode=REPLAY
-rag_constraints_without_simulation mapped_corridor_alert        decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=29.52s mode=REPLAY
-rag_constraints_without_simulation mapped_corridor_rush_hour    decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=25.66s mode=REPLAY
+rag_without_constraints mapped_corridor_alert        decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=35.99s mode=REPLAY
+rag_without_constraints mapped_corridor_rush_hour    decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=24.28s mode=REPLAY
+rag_constraints_without_simulation routine_rush_hour            decision=REJECT_CONSTRAINT llm=OK attempts=1 cand=1 invalid_cit=0 viol=1/1 sim= lat=23.26s mode=REPLAY
+rag_constraints_without_simulation rain_period                  decision=DEFER_UNCERTAINTY llm= attempts=0 cand=0 invalid_cit=0 viol=0/0 sim= lat=0.01s mode=REPLAY
+rag_constraints_without_simulation mapped_corridor_alert        decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=30.76s mode=REPLAY
+rag_constraints_without_simulation mapped_corridor_rush_hour    decision=PENDING_HUMAN_REVIEW llm=OK attempts=1 cand=1 invalid_cit=0 viol=0/1 sim= lat=23.09s mode=REPLAY
 
 == explanations artifacts\explanations\explanations_summary.json: proposed (context-gated GATv2-Transformer) run proposed-20261020T201110-0e333f
   global mean |SHAP| by group (mph): {'traffic_target_last30min': 8.215548689636027, 'traffic_target_30_120min': 2.0367366874097543, 'calendar': 1.087744362980794, 'weather': 0.1945128857053928, 'infrastructure': 0.08916011229098714, 'traffic_graph_neighbours': 0.5177961868735458}
@@ -115,6 +115,18 @@ ablation_no_weather          epochs=30 best_ep=24 best_val_mae=5.347 train=6.6mi
 gru                          epochs= 7 best_ep= 1 best_val_mae=5.661 train=16.9min dev=cuda stop=None params=41667 lat=0.4258501313052644
 gru                          epochs= 7 best_ep= 1 best_val_mae=5.661 train=17.4min dev=cuda stop=None params=41667 lat=0.4615216451583898
 gru                          epochs=17 best_ep=11 best_val_mae=5.476 train=6.0min dev=cuda stop=None params=41667 lat=0.6790706424729785
+gru                          epochs=23 best_ep=17 best_val_mae=5.439 train=6.6min dev=cuda stop=early_stopping params=41667 lat=0.6266574179990908
+gru                          epochs=15 best_ep= 9 best_val_mae=5.475 train=5.1min dev=cuda stop=early_stopping params=41667 lat=0.9436063960983341
+gru                          epochs=17 best_ep=11 best_val_mae=5.488 train=2.4min dev=cpu stop=early_stopping params=41667 lat=0.20828785172398814
+gru                          epochs=17 best_ep=11 best_val_mae=5.476 train=4.4min dev=cuda stop=early_stopping params=41667 lat=0.8982378815329366
+proposed                     epochs=27 best_ep=21 best_val_mae=5.343 train=5.0min dev=cuda stop=early_stopping params=158403 lat=5.406019318889941
+proposed                     epochs=15 best_ep= 9 best_val_mae=5.407 train=3.6min dev=cuda stop=early_stopping params=158403 lat=5.510858728454072
+proposed                     epochs=21 best_ep=15 best_val_mae=5.356 train=9.3min dev=cpu stop=early_stopping params=158403 lat=2.42947251179343
+proposed                     epochs=25 best_ep=19 best_val_mae=5.358 train=5.0min dev=cuda stop=early_stopping params=158403 lat=5.102595169670421
+temporal_transformer         epochs= 8 best_ep= 2 best_val_mae=5.487 train=0.8min dev=cuda stop=early_stopping params=158403 lat=2.2295638215266544
+temporal_transformer         epochs=15 best_ep= 9 best_val_mae=5.418 train=2.7min dev=cuda stop=early_stopping params=158403 lat=2.6241478376204643
+temporal_transformer         epochs=14 best_ep= 8 best_val_mae=5.397 train=3.3min dev=cpu stop=early_stopping params=158403 lat=0.5332467745395041
+temporal_transformer         epochs=14 best_ep= 8 best_val_mae=5.406 train=1.6min dev=cuda stop=early_stopping params=158403 lat=1.9315507958573148
 proposed                     epochs=14 best_ep= 8 best_val_mae=5.388 train=2.3min dev=cuda stop=None params=158403 lat=5.692540705274962
 proposed                     epochs=25 best_ep=19 best_val_mae=5.344 train=7.4min dev=cuda stop=None params=166851 lat=6.642122059036423
 temporal_transformer         epochs= 9 best_ep= 3 best_val_mae=5.544 train=10.4min dev=cuda stop=None params=158403 lat=1.07293665934135
