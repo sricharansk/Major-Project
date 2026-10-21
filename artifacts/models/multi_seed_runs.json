@@ -13,6 +13,34 @@
       "train_device": "cpu",
       "stopped_reason": "early_stopping",
       "model_sha256": "533bde4d66acffd974e80278c09989aa26a6e9dc6cc3e39fad1ac83b6ea3c1fc"
+    },
+    {
+      "variant": "gru",
+      "seed": 42,
+      "track": "operational",
+      "run_id": "ms-gru-s42-20261021T031702-414bed",
+      "artifact_dir": "/home/user/Major-Project/artifacts/models/ms-gru-s42-20261021T031702-414bed",
+      "best_epoch": 11,
+      "epochs_run": 17,
+      "best_val_mae": 5.488156318664551,
+      "train_time_s": 143.88109588623047,
+      "train_device": "cpu",
+      "stopped_reason": "early_stopping",
+      "model_sha256": "ba36f7127944335d1a4fdc3913aa970cfeeb89e69bf429db62d22b7cba3ccad3"
+    },
+    {
+      "variant": "temporal_transformer",
+      "seed": 42,
+      "track": "operational",
+      "run_id": "ms-temporal_transformer-s42-20261021T031940-3c572b",
+      "artifact_dir": "/home/user/Major-Project/artifacts/models/ms-temporal_transformer-s42-20261021T031940-3c572b",
+      "best_epoch": 8,
+      "epochs_run": 14,
+      "best_val_mae": 5.397111097971599,
+      "train_time_s": 198.20843482017517,
+      "train_device": "cpu",
+      "stopped_reason": "early_stopping",
+      "model_sha256": "eb81fa1f3bc1d90daccccea39d9088dea4fc3acf2cf257c48a30cfae06092206"
     }
   ]
 }
