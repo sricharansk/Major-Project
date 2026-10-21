@@ -36,8 +36,9 @@ Ablations with bootstrap CIs: `reports/experiments/ablation_metrics.csv`. Confor
 
 ## Evaluation protocol
 
-Chronological splits with purge gaps; scalers fitted on train; one seed; early stopping on validation MAE; test
-touched once per model. Identical origins and target mask for all models.
+Chronological splits with purge gaps; scalers fitted on train; seed 42 for the main run and seeds 42, 1, 2 for the
+three-seed comparison of the deep models (`reports/experiments/multi_seed_summary.csv`); early stopping on validation
+MAE; test touched once per model. Identical origins and target mask for all models.
 
 ## Explainability
 
@@ -49,7 +50,9 @@ Grouped exact KernelSHAP on this model (not a surrogate) for alert cases, plus n
 * Operational weather is Open-Meteo's historical-forecast product, a re-forecast proxy for what was knowable at
   the time, not an archived agency forecast.
 * DOT links are a sparse, highway-heavy selection, not a full street network; neighbours are often distant.
-* Single seed; variance across seeds is not reported.
+* Three seeds for the deep models only (seed-mean MAE 4.69/5.34/6.15 mph; GRU 4.67/5.37/6.18; temporal Transformer
+  4.72/5.38/6.23); baselines and ablations are single-seed. On the GPU the model is not bit-reproducible at a fixed
+  seed (GATv2 scatter).
 * Context sources are sparse in time; the gate was designed for that but the ablation table is the evidence, not
   the design intent.
 * See `reports/limitations.md` for the full list, including anything BLOCKED in this run.
