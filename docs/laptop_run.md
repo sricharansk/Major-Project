@@ -106,3 +106,33 @@ python -m pytest -q tests\unit tests\safety
 Hand back as in section 4 (`git add reports artifacts/models/multi_seed_runs.json artifacts/models/ms-* artifacts/agent_traces paper/tables`;
 weights and prediction arrays stay ignored) and post the branch name in the project thread. Report the multi-seed
 summary lines verbatim; do not round them into a ranking.
+
+## 6. Follow-up 2026-10-21 (b): calibrated SUMO testbed, controller comparison, dashboard screenshots
+
+The corrected testbed (protocol v4) fails the preregistered rule and runs West Street at 5.8 mph simulated against
+10.95 mph observed, so the comparison is NOT RUN. Protocol v5 (`configs/simulation.yaml`, `split_calibration`,
+fixed before any run) calibrates the corridor green share so that the fixed-time baseline reproduces the observed
+speed; the admissibility rule is unchanged. This is a calibrated scenario testbed, not NYC DOT timing, and the
+paper will say so. Everything below is SIMULATION; nothing touches real signals.
+
+```powershell
+cd "C:\Users\S.K. Sricharan\Downloads\MAJOR PROJECT - FINAL YEAR\PROJECT\repo"
+git fetch origin && git checkout -B claude/laptop-sumo-calibration origin/main
+.\.venv\Scripts\Activate.ps1
+python -m smartcity.cli simulation prepare            # rebuilds the network from data/raw/osm (hashes must match prepared.json)
+python -m smartcity.cli simulation calibrate-splits   # 7 factors x 3 seeds, fixed-time only (~20 runs, about 1 h with 4 workers)
+python -m smartcity.cli simulation select-demand      # side-demand rule under the calibrated plan (5 levels x 3 seeds)
+python -m smartcity.cli simulation evaluate           # 3 scenarios x 3 controllers x 5 seeds = 45 runs, only if a level was selected
+python -m smartcity.cli agents evaluate               # the simulation gate can now be reached (Ollama qwen2.5:7b)
+python -m smartcity.cli report export
+python -m smartcity.cli paper sync
+```
+
+If `calibrate-splits` or `select-demand` exits with NOT_RUN, stop there and commit what was produced: the failure is
+a result. Also capture the dashboard pages for the deck (REPLAY mode): `streamlit run src/smartcity/dashboard/app.py`,
+save "Multi-horizon forecast" as `presentation/assets/dashboard/forecast_laptop.png` and "Traffic map" as
+`presentation/assets/dashboard/traffic_map_laptop.png` (about 1600 px wide).
+
+Hand back: `git add reports simulation/scenarios simulation/mappings artifacts/agent_traces paper/tables presentation/assets/dashboard`
+(network and demand files stay ignored; their hashes are in `prepared.json` and the calibration record), commit with
+the usual trailers, `git push -u origin claude/laptop-sumo-calibration`, and post the branch name in the thread.

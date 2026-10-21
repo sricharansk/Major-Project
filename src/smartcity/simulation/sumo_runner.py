@@ -162,10 +162,14 @@ def run_scenario(net_file: Path, route_file: Path, scenario: dict, controller: s
            "--end", str(end + 1800), "--step-length", str(cfg["step_length_s"]), "--tripinfo-output", str(tripinfo),
            "--summary-output", str(summary), "--time-to-teleport", "300", "--no-step-log", "true",
            "--duration-log.disable", "true", "--no-warnings", "true", "--max-depart-delay", "900"]
-    timing = None
+    timing, adds = None, []
     if scenario.get("tls_additional") and controller != "actuated":  # the actuated baseline keeps its own programs
-        cmd += ["-a", str(settings.ROOT / scenario["tls_additional"])]
-        timing = f"webster_retimed:{file_hash(settings.ROOT / scenario['tls_additional'])}"
+        adds.append(str(settings.ROOT / scenario["tls_additional"]))
+        kind = scenario.get("signal_timing_kind", "webster_retimed")
+        timing = f"{kind}:{file_hash(settings.ROOT / scenario['tls_additional'])}"
+    adds += [str(settings.ROOT / a) for a in scenario.get("extra_additionals", [])]  # e.g. edgeData outputs
+    if adds:
+        cmd += ["-a", ",".join(adds)]
     label = run_id
     t0 = time.time()
     status, err = "OK", None

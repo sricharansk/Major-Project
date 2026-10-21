@@ -155,7 +155,9 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     observed in the weekday PM peak. West Street is re-timed for 25 mph progression in reality (Vision Zero, 2014 and
     2019); the testbed's programs are uncoordinated. The rule was never relaxed. The comparison is NOT_RUN and the
     advisory gate returns NOT_EVALUATED; the observed 10.95 mph is the calibration target for signal splits and
-    progression, or NYC DOT timing plans are needed.
+    progression, or NYC DOT timing plans are needed. A calibrated protocol (v5, `split_calibration`) is prepared: if it selects a
+    program, the comparison is a scenario testbed calibrated to one observed speed, not a digital twin, and will be
+    labelled so; until the workstation runs it the comparison stays NOT RUN.
 22. **Bibliography.** `paper/REFERENCES_STATUS.md` records the publisher-record check of every entry (2026-10-20);
     the FHWA 2008 Signal Timing Manual and the 2009 MUTCD are superseded editions, cited because they are the
     public-domain texts the corpus holds.

@@ -48,7 +48,12 @@ scenario:
   # webster_retimed: the fixed-time programs re-timed by SUMO's tools/tlsCycleAdaptation.py (Webster's method) for the
   # routine-peak demand being tested; phase order and states are unchanged, only green durations change. A DECLARED
   # assumption (not NYC DOT timing plans), fixed here before any controller comparison under this protocol.
-  signal_timing: webster_retimed
+  # calibrated_splits (protocol v5, 2026-10-21): the Webster plan for the routine peak with no side demand, with the
+  # corridor green of every corridor signal scaled by one factor chosen by `simulation calibrate-splits` so that the
+  # fixed-time baseline reproduces the observed PM-peak speed on the mapped DOT link (split_calibration below). A
+  # DECLARED calibration: the testbed becomes a scenario calibrated to one observed speed, not a digital twin; the
+  # same plan is then used at every side-demand level and by every controller.
+  signal_timing: calibrated_splits
   retiming: {min_cycle_s: 20, max_cycle_s: 120, saturation_headway_s: 2.0}   # tool defaults
 # Side-street demand has no matched counts, so its level is chosen by a rule fixed here BEFORE the controller
 # comparison: on the routine_peak scenario, under the fixed-time baseline only, on development seeds that the
@@ -56,8 +61,23 @@ scenario:
 # and leaves at most max_unfinished_frac of loaded vehicles unfinished. Stress scenarios then reuse the selected scale.
 demand_selection:
   # earlier records: netconvert_guess (2014 ATR count, OSM turn lanes, generated programs), webster_retimed (same, re-timed)
-  protocol_id: v4_counts2025_webster_noturnlanes
+  # earlier protocol: v4_counts2025_webster_noturnlanes (Webster re-timed per level; no admissible level)
+  protocol_id: v5_counts2025_calibrated_splits
   side_scales: [1.0, 0.75, 0.5, 0.25, 0.0]
   seeds: [101, 102, 103]
   max_teleports: 0
   max_unfinished_frac: 0.01
+# Signal-split calibration, fixed here on 2026-10-21 BEFORE any run (src/smartcity/simulation/calibrate.py). It does
+# not change the admissibility rule above: a factor counts only if every development seed passes it, and among those
+# the factor whose seed-mean space-mean speed on the mapped link is closest to the observed value is taken, provided
+# the gap is within tolerance_mph; otherwise nothing is selected and the comparison stays NOT RUN.
+split_calibration:
+  protocol_id: v5_counts2025_calibrated_splits
+  dot_link_id: "4456494"
+  target_speed_mph: 10.95     # NYC DOT speeds, link 4456494, weekday 16-19 h local, 1 Apr-20 Oct 2026, 3,692 records
+  target_source: reports/experiments/simulation_testbed_audit_v4_counts2025_webster_noturnlanes.json (speed_validation.observed)
+  tolerance_mph: 1.5
+  green_factors: [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5]
+  side_demand_scale: 0.0      # calibration at zero side demand, as the v4 speed validation
+  seeds: [101, 102, 103]      # development seeds; the comparison uses simulation.seeds
+  max_cycle_s: 120

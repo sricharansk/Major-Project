@@ -35,6 +35,10 @@ Open items (need the authors or the workstation):
    matches reality: either calibrate splits and 25 mph progression to the observed 10.95 mph PM-peak speed (a
    calibration decision for the authors) or obtain NYC DOT timing plans; only then can `simulation evaluate` and an
    advisory reaching the simulation gate be run.
+   Protocol v5 (`split_calibration`, 2026-10-21) is prepared for the workstation: the corridor green share of the Webster
+   plan is scaled by one factor chosen so that the fixed-time baseline reproduces the observed 10.95 mph on link 4456494,
+   subject to the unchanged admissibility rule (`docs/laptop_run.md` section 6). NOT RUN until the workstation runs it;
+   if it runs, the comparison is reported as a calibrated scenario testbed, not a digital twin.
 3. DONE 2026-10-21: `agents evaluate` re-run on the workstation against the corrected simulation gate (same 19 decisions;
    the LLM again chose monitor_only, so the gate was not reached).
 5. DONE 2026-10-21: multi-seed study (seeds 42, 1, 2 for proposed, GRU and temporal Transformer; nine GPU runs on the
