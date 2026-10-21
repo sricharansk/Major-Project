@@ -3,8 +3,15 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import math
+import os
 import re
+import subprocess
+import sys
+import xml.etree.ElementTree as ET
+from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
 
 import numpy as np
 
@@ -63,13 +70,25 @@ def prepare() -> dict:
         if best is not None:
             corridor_phase[tid] = best
     # entry/exit edges
+    def insertable(e, ids):
+        # junction joining can leave a stub (0.2 m) at a chain start: vehicles cannot be inserted on it at any useful
+        # rate, so walk downstream along an unbranched corridor chain to the first edge of usable length
+        seen = set()
+        while e.getLength() < sc.get("min_entry_edge_m", 0) and e.getID() not in seen:
+            seen.add(e.getID())
+            nxt = [o for o in e.getOutgoing() if o.getID() in ids]
+            if len(nxt) != 1:
+                break
+            e = nxt[0]
+        return e
+
     def chain_ends(edges):
         ids = {e.getID() for e in edges}
         starts = [e for e in edges if not any(i.getID() in ids for i in e.getIncoming())]
         ends = [e for e in edges if not any(o.getID() in ids for o in e.getOutgoing())]
-        return starts, ends
-    nb_s, nb_e = chain_ends(nb)
-    sb_s, sb_e = chain_ends(sb)
+        return starts, [insertable(e, ids) for e in starts], ends
+    nb_raw, nb_s, nb_e = chain_ends(nb)
+    sb_raw, sb_s, sb_e = chain_ends(sb)
     # side streets: non-corridor passenger edges entering corridor TLS junctions
     side_in = set()
     for tid, v in corr_tls.items():
@@ -85,11 +104,20 @@ def prepare() -> dict:
             "corridor": {"name_regex": sc["corridor_name_regex"], "n_edges": len(corridor), "northbound": [e.getID() for e in nb],
                          "southbound": [e.getID() for e in sb],
                          "nb_entries": [e.getID() for e in nb_s], "nb_exits": [e.getID() for e in nb_e],
-                         "sb_entries": [e.getID() for e in sb_s], "sb_exits": [e.getID() for e in sb_e]},
+                         "sb_entries": [e.getID() for e in sb_s], "sb_exits": [e.getID() for e in sb_e],
+                         "nb_chain_starts": [e.getID() for e in nb_raw], "sb_chain_starts": [e.getID() for e in sb_raw]},
             "tls_corridor": list(corr_tls), "corridor_phase": corridor_phase, "side_entry_edges": sorted(side_in),
             "tls_inventory": corr_tls, "demand": demand, "mapping_summary": mapping["summary"]}
+    meta["network"].update(static_content_sha256=net_content_hash(static), actuated_content_sha256=net_content_hash(actuated))
     write_json(SIM / "scenarios" / "prepared.json", meta)
     return meta
+
+
+def net_content_hash(p) -> str:
+    """SHA-256 of a .net.xml without netconvert's leading comment (it embeds the run time and absolute input path,
+    so the plain file hash changes on every conversion of the same extract)."""
+    b = re.sub(rb"<!--.*?-->", b"", Path(p).read_bytes(), count=1, flags=re.DOTALL)
+    return hashlib.sha256(b).hexdigest()
 
 
 def map_dot_links(net, corridor_ids: set) -> dict:
@@ -157,39 +185,154 @@ def declare_demand() -> dict:
         pat = sc["atr_street_regex"]
         sel = v.filter(pl.col("street").str.contains(f"(?i){pat}"))
         if sel.height:
-            sel = sel.with_columns(pl.col("vol").cast(pl.Float64, strict=False), pl.col("hh").cast(pl.Int32, strict=False))
-            hourly = (sel.group_by(["requestid", "segmentid", "direction", "yr", "m", "d", "hh"]).agg(pl.col("vol").sum())
-                      .filter(pl.col("hh").is_between(16, 18)))
+            sel = sel.with_columns(pl.col("vol").cast(pl.Float64, strict=False), pl.col("hh").cast(pl.Int32, strict=False),
+                                   pl.date(pl.col("yr").cast(pl.Int32), pl.col("m").cast(pl.Int32),
+                                           pl.col("d").cast(pl.Int32)).alias("date"))
+            hourly = (sel.group_by(["requestid", "segmentid", "street", "fromst", "direction", "date", "hh"])
+                      .agg(pl.col("vol").sum(), pl.len().alias("n_intervals"))
+                      .filter(pl.col("hh").is_between(16, 18) & (pl.col("n_intervals") == 4)))  # complete hours only
+            if sc.get("atr_weekdays_only"):
+                excluded = hourly.filter(pl.col("date").dt.weekday() > 5)
+                if excluded.height:  # kept in the record: counted, but not a weekday peak
+                    out["atr_excluded_weekend"] = (excluded.group_by(["direction", "fromst"])
+                                                   .agg(pl.col("vol").median().alias("median_pm_peak_vph"),
+                                                        pl.len().alias("n_hours"),
+                                                        pl.col("date").unique().sort().cast(pl.Utf8).str.join("; ").alias("days"))
+                                                   .sort("direction").to_dicts())
+                hourly = hourly.filter(pl.col("date").dt.weekday() <= 5)
             if hourly.height:
-                by_dir = hourly.group_by("direction").agg(pl.col("vol").median().alias("median_pm_peak_vph"),
-                                                          pl.len().alias("n_hours"))
+                by_dir = (hourly.group_by("direction")
+                          .agg(pl.col("vol").median().alias("median_pm_peak_vph"), pl.len().alias("n_hours"),
+                               pl.col("date").n_unique().alias("n_days"), pl.col("date").min().cast(pl.Utf8).alias("first_day"),
+                               pl.col("date").max().cast(pl.Utf8).alias("last_day"),
+                               pl.col("fromst").unique().sort().str.join("; ").alias("count_locations"))
+                          .sort("direction"))
                 med = float(by_dir["median_pm_peak_vph"].median())
-                out.update(source=f"NYC ATR counts 7ym2-wayt, street~/{pat}/, 16-19h hourly medians",
+                out.update(source=f"NYC ATR counts 7ym2-wayt, street~/{pat}/, "
+                                  f"{'weekday ' if sc.get('atr_weekdays_only') else ''}16-19h complete hourly totals, medians",
                            main_veh_per_hour_per_direction=round(med, 0),
                            atr_by_direction=by_dir.to_dicts(), atr_rows=sel.height,
                            atr_years=sorted(set(sel["yr"].to_list())))
+                dirs = {r["direction"].lower(): round(r["median_pm_peak_vph"], 0) for r in by_dir.to_dicts()}
+                if sc.get("atr_by_direction") and {"nb", "sb"} <= set(dirs):
+                    out["main_veh_per_hour_by_direction"] = {"nb": dirs["nb"], "sb": dirs["sb"]}
+                elif len(dirs) == 1:
+                    out["assumptions"].append(f"main demand: the only qualifying count direction ({next(iter(dirs)).upper()}) "
+                                              "is applied to both corridor directions")
+    out["route_choice"] = sc.get("route_choice", "dynamic_insertion")
+    if out["route_choice"] == "fixed_free_flow":
+        out["assumptions"][1] = ("routes: one fixed free-flow fastest path per flow (sumolib, passenger class); no dynamic "
+                                 "route choice and no turning-ratio calibration")
     return out
+
+
+_NETS: dict = {}
+
+
+def _net(meta: dict):
+    import sumolib
+
+    p = str(settings.ROOT / meta["network"]["static"])
+    if p not in _NETS:
+        _NETS[p] = sumolib.net.readNet(p)
+    return _NETS[p]
+
+
+def flow_demand(meta: dict, scenario: dict) -> dict:
+    """Vehicles per hour actually written for a scenario (for the run record)."""
+    d = meta["demand"]
+    scale = scenario.get("demand_scale", 1.0)
+    by_dir = d.get("main_veh_per_hour_by_direction") or {}
+    side_scale = scenario.get("side_demand_scale", d.get("side_demand_scale", 1.0))
+    return {"route_choice": d.get("route_choice", "dynamic_insertion"), "demand_scale": scale,
+            "main_nb_vph": by_dir.get("nb", d["main_veh_per_hour_per_direction"]) * scale,
+            "main_sb_vph": by_dir.get("sb", d["main_veh_per_hour_per_direction"]) * scale,
+            "side_demand_scale": side_scale,
+            "side_vph_per_approach": d["side_veh_per_hour_per_approach"] * scale * side_scale}
 
 
 def build_routes(meta: dict, scenario: dict) -> str:
 
     cfg = settings.load("simulation")["simulation"]
-    d = meta["demand"]
-    scale = scenario.get("demand_scale", 1.0)
+    dem = flow_demand(meta, scenario)
     flows = []
     c = meta["corridor"]
-    main = d["main_veh_per_hour_per_direction"] * scale
     for tag, ins, outs in (("nb", c["nb_entries"], c["nb_exits"]), ("sb", c["sb_entries"], c["sb_exits"])):
         if ins and outs:
-            flows.append({"id": f"main_{tag}", "from": ins[0], "to": outs[-1], "veh_per_hour": main})
+            flows.append({"id": f"main_{tag}", "from": ins[0], "to": outs[-1], "veh_per_hour": dem[f"main_{tag}_vph"]})
     exits = c["nb_exits"] + c["sb_exits"]
     for i, e in enumerate(meta["side_entry_edges"]):
-        flows.append({"id": f"side_{i}", "from": e, "to": exits[i % len(exits)] if exits else e,
-                      "veh_per_hour": d["side_veh_per_hour_per_approach"] * scale})
+        if dem["side_vph_per_approach"] > 0:
+            flows.append({"id": f"side_{i}", "from": e, "to": exits[i % len(exits)] if exits else e,
+                          "veh_per_hour": dem["side_vph_per_approach"]})
+    if dem["route_choice"] == "fixed_free_flow":
+        net = _net(meta)
+        for f in flows:
+            path, _ = net.getFastestPath(net.getEdge(f["from"]), net.getEdge(f["to"]), vClass="passenger")
+            if not path:  # an unroutable flow would silently vanish from the demand; fail instead
+                raise RuntimeError(f"no passenger route for {f['id']}: {f['from']} -> {f['to']}")
+            f["route"] = [e.getID() for e in path]
     p = SIM / "demand" / f"{scenario['name']}.rou.xml"
     p.parent.mkdir(parents=True, exist_ok=True)
     sr.write_flows(p, flows, 0, cfg["warmup_s"] + cfg["evaluation_s"])
     return str(p)
+
+
+def _expanded_vehicles(routes: Path, out: Path) -> Path:
+    """tlsCycleAdaptation.py reads <vehicle> elements only: expand each fixed-route flow into its equally spaced
+    departures (what SUMO generates for vehsPerHour) as the retiming input; the simulation itself keeps the flows."""
+    root = ET.parse(routes).getroot()
+    res = ET.Element("routes")
+    for vt in root.findall("vType"):
+        res.append(vt)
+    veh = []
+    for fl in root.findall("flow"):
+        if fl.find("route") is None:
+            raise RuntimeError("signal retiming needs fixed routes (route_choice: fixed_free_flow)")
+        b, e, vph = float(fl.get("begin")), float(fl.get("end")), float(fl.get("vehsPerHour"))
+        t, i = b, 0
+        while vph > 0 and t < e:
+            veh.append((t, f"{fl.get('id')}.{i}", fl.find("route").get("edges"), fl.get("type", "car")))
+            t, i = t + 3600.0 / vph, i + 1
+    for t, vid, edges, vtype in sorted(veh):
+        v = ET.SubElement(res, "vehicle", id=vid, type=vtype, depart=f"{t:.2f}")
+        ET.SubElement(v, "route", edges=edges)
+    ET.ElementTree(res).write(out, encoding="utf-8", xml_declaration=True)
+    return out
+
+
+def retime_signals(meta: dict, routes: str, name: str) -> dict:
+    """Webster re-timing of the static programs for one demand file (SUMO tools/tlsCycleAdaptation.py)."""
+    cfg = settings.load("simulation")["simulation"]
+    rt = _scfg().get("retiming", {})
+    veh = _expanded_vehicles(Path(routes), SIM / "demand" / f"{name}.vehicles.rou.xml")
+    out = SIM / "networks" / f"{CFG_NAME}.{name}.webster.add.xml"
+    cmd = [sys.executable, str(Path(sr.sumo_home()) / "tools" / "tlsCycleAdaptation.py"),
+           "-n", str(settings.ROOT / meta["network"]["static"]), "-r", str(veh), "-o", str(out),
+           "-b", str(cfg["warmup_s"]), "-y", str(cfg["yellow_s"]), "-a", str(cfg["all_red_s"]), "-g", str(cfg["min_green_s"]),
+           "--min-cycle", str(rt.get("min_cycle_s", 20)), "--max-cycle", str(rt.get("max_cycle_s", 120)),
+           "-H", str(rt.get("saturation_headway_s", 2.0)), "-p", "webster"]
+    r = subprocess.run(cmd, capture_output=True, text=True, check=False, env={**os.environ, "SUMO_HOME": sr.sumo_home()})
+    if r.returncode != 0 or not out.exists():
+        raise RuntimeError(f"tlsCycleAdaptation failed: {(r.stderr or r.stdout)[-1500:]}")
+    return {"method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)", "tls_additional": str(out.relative_to(settings.ROOT)),
+            "sha16": sr.file_hash(out), "for_demand": name, "options": cmd[4:]}
+
+
+def retimed_inventory(meta: dict, add_file: str) -> dict:
+    """The TLS inventory with the retimed green durations (same phase indices and states), for the constraint layer."""
+    inv = {t: {**v, "phases": [dict(p) for p in v["phases"]]} for t, v in meta["tls_inventory"].items()}
+    for tl in ET.parse(settings.ROOT / add_file).getroot().iter("tlLogic"):
+        if tl.get("id") not in inv:
+            continue
+        phases = inv[tl.get("id")]["phases"]
+        new = tl.findall("phase")
+        if [p.get("state") for p in new] != [p["state"] for p in phases]:
+            raise RuntimeError(f"retimed program for {tl.get('id')} changed the phase states")
+        for p, n in zip(phases, new):
+            p["duration"] = p["minDur"] = p["maxDur"] = float(n.get("duration"))
+        inv[tl.get("id")]["programs"] = sorted(set(inv[tl.get("id")].get("programs", [])) | {tl.get("programID")})
+    return inv
 
 
 def scenarios(meta: dict) -> list[dict]:
@@ -199,7 +342,7 @@ def scenarios(meta: dict) -> list[dict]:
     cfg = settings.load("simulation")["simulation"]
     base = {"corridor_edges": c["northbound"] + c["southbound"], "side_prefix": "side_",
             "corridor_phase": meta["corridor_phase"]}
-    return [
+    out = [
         {**base, "name": "routine_peak", "demand_scale": 1.0, "incident": None, "forecast_congested": False,
          "description": "routine PM-peak demand (declared from ATR medians where available)"},
         {**base, "name": "event_surge", "demand_scale": sc["event_demand_scale"], "incident": None,
@@ -210,16 +353,101 @@ def scenarios(meta: dict) -> list[dict]:
          "forecast_congested": True,
          "description": "STRESS SCENARIO: configured collision-like capacity reduction (speed cap 2.5 m/s for 20 min) plus surge"},
     ]
+    timing = meta.get("signal_timing") or {}
+    for s in out:
+        s["demand"] = flow_demand(meta, s)
+        if timing.get("tls_additional"):  # the plan re-timed for the routine demand also runs the stress scenarios
+            s["tls_additional"] = timing["tls_additional"]
+    return out
+
+
+def _run_job(job: tuple) -> dict:
+    net, routes, scen, ctrl, seed = job
+    return sr.run_scenario(net, routes, scen, ctrl, seed)
+
+
+def run_many(jobs: list[tuple]) -> list[dict]:
+    """Independent SUMO processes in parallel; results keep the job order."""
+    workers = int(settings.load("simulation")["simulation"].get("workers", 1))
+    if workers <= 1 or len(jobs) <= 1:
+        return [_run_job(j) for j in jobs]
+    with ProcessPoolExecutor(max_workers=workers) as ex:
+        return list(ex.map(_run_job, jobs))
+
+
+def apply_selection_rule(rows: list[dict], cfg: dict) -> dict:
+    """A scale is admissible only if every one of its runs completed with at most max_teleports teleports and at most
+    max_unfinished_frac of loaded vehicles unfinished; the largest admissible scale is selected (None if none)."""
+    per_scale = []
+    for scale in cfg["side_scales"]:
+        rs = [r for r in rows if r["demand"]["side_demand_scale"] == scale]
+        ok = bool(rs) and all(
+            r["status"] == "OK" and r["metrics"].get("teleports", 0) <= cfg["max_teleports"]
+            and (r["metrics"].get("unfinished_trips") or 0) <= cfg["max_unfinished_frac"] * (r["metrics"].get("loaded") or 0)
+            for r in rs)
+        per_scale.append({"side_demand_scale": scale, "admissible": ok, "run_ids": [r["run_id"] for r in rs],
+                          "teleports": [r["metrics"].get("teleports") for r in rs],
+                          "unfinished_trips": [r["metrics"].get("unfinished_trips") for r in rs],
+                          "loaded": [r["metrics"].get("loaded") for r in rs]})
+    admissible = [p["side_demand_scale"] for p in per_scale if p["admissible"]]
+    return {"per_scale": per_scale, "selected_side_demand_scale": max(admissible) if admissible else None}
+
+
+def select_side_demand() -> dict:
+    """Preregistered side-demand selection (configs/simulation.yaml demand_selection) on routine_peak, fixed-time only.
+
+    Every grid scale is run and reported (the saturation curve is a result); the selected scale is written into
+    prepared.json so the controller comparison and the advisory simulation gate use it."""
+    cfg = settings.load("simulation")["demand_selection"]
+    prep = SIM / "scenarios" / "prepared.json"
+    meta = read_json(prep)
+    net = settings.ROOT / meta["network"]["static"]
+    for k in ("side_demand_scale", "side_demand_selection"):
+        meta["demand"].pop(k, None)
+    meta.pop("signal_timing", None)
+    meta.pop("tls_inventory_active", None)
+    routine = next(s for s in scenarios(meta) if s["name"] == "routine_peak")
+    timing_mode = _scfg().get("signal_timing", "netconvert_guess")
+    jobs, timings = [], {}
+    for scale in cfg["side_scales"]:
+        scen = {**routine, "name": f"sweep_side{round(100 * scale):03d}", "side_demand_scale": scale,
+                "description": f"DEMAND SELECTION: routine_peak with side demand x{scale} (fixed-time baseline only)"}
+        scen["demand"] = flow_demand(meta, scen)
+        routes = build_routes(meta, scen)
+        if timing_mode == "webster_retimed":  # each level is tested with the plan re-timed for that level's demand
+            timings[scale] = retime_signals(meta, routes, scen["name"])
+            scen["tls_additional"] = timings[scale]["tls_additional"]
+        jobs += [(net, routes, scen, "fixed_time", s) for s in cfg["seeds"]]
+    rows = run_many(jobs)
+    sel = {"rule": cfg, "signal_timing": timing_mode, "retimed_programs": {str(k): v for k, v in timings.items()},
+           **apply_selection_rule(rows, cfg), "network_static_sha256": meta["network"]["static_sha256"],
+           "network_static_content_sha256": meta["network"].get("static_content_sha256")}
+    selected = sel["selected_side_demand_scale"]
+    # one record per signal-timing protocol (earlier protocols stay as evidence); demand_selection.json is the active one
+    write_json(SIM / "scenarios" / f"demand_selection_{timing_mode}.json", sel)
+    write_json(SIM / "scenarios" / "demand_selection.json", sel)
+    export_sim_rows(rows, settings.ROOT / "reports" / "experiments" / f"simulation_demand_selection_{timing_mode}.csv")
+    if selected is not None:
+        meta["demand"]["side_demand_scale"] = selected
+        meta["demand"]["side_demand_selection"] = f"simulation/scenarios/demand_selection_{timing_mode}.json"
+        if selected in timings:
+            meta["signal_timing"] = timings[selected]
+            meta["tls_inventory_active"] = retimed_inventory(meta, timings[selected]["tls_additional"])
+    write_json(prep, meta)
+    return sel
 
 
 def paired_candidate_eval(meta: dict, scenario: dict, candidate: dict, seeds: list[int]) -> dict:
     """Matched-seed comparison candidate vs fixed-time baseline on one scenario."""
+    if settings.load("simulation").get("demand_selection") and "side_demand_scale" not in meta["demand"]:
+        # a testbed that saturates under its own baseline would reject every candidate for the testbed's reasons;
+        # the workflow turns this into ERROR_TOOL with the cause instead of a REJECT_SIMULATION verdict
+        raise RuntimeError("NOT_EVALUATED: the SUMO testbed has no admissible demand level "
+                           "(simulation/scenarios/demand_selection.json), so a candidate cannot be judged on it")
     net = settings.ROOT / meta["network"]["static"]
     routes = build_routes(meta, scenario)
-    base, cand = [], []
-    for s in seeds:
-        base.append(sr.run_scenario(net, routes, scenario, "fixed_time", s))
-        cand.append(sr.run_scenario(net, routes, scenario, "candidate", s, candidate=candidate))
+    base = run_many([(net, routes, scenario, "fixed_time", s) for s in seeds])
+    cand = [sr.run_scenario(net, routes, scenario, "candidate", s, candidate=candidate) for s in seeds]
     ok = [i for i in range(len(seeds)) if base[i]["status"] == "OK" and cand[i]["status"] == "OK"]
     def mean(rs, k):
         vals = [rs[i]["metrics"].get(k) for i in ok if rs[i]["metrics"].get(k) is not None]
@@ -246,17 +474,18 @@ def paired_candidate_eval(meta: dict, scenario: dict, candidate: dict, seeds: li
 def evaluate_controllers(seeds: list[int] | None = None) -> list[dict]:
     """Fixed-time vs actuated vs deterministic forecast-informed rule on all scenarios, matched seeds."""
     meta = read_json(SIM / "scenarios" / "prepared.json")
+    if settings.load("simulation").get("demand_selection") and "side_demand_scale" not in meta["demand"]:
+        raise SystemExit("NOT_RUN: side demand not selected; run `simulation select-demand` first "
+                         "(no admissible scale, or the selection was never run)")
     seeds = seeds or settings.load("simulation")["simulation"]["seeds"]
-    rows = []
     write_json(SIM / "scenarios" / "scenarios.json", scenarios(meta))
+    jobs = []
     for scen in scenarios(meta):
         routes = build_routes(meta, scen)
         for ctrl in ("fixed_time", "actuated", "forecast_rule"):
             net = settings.ROOT / meta["network"]["actuated" if ctrl == "actuated" else "static"]
-            for s in seeds:
-                r = sr.run_scenario(net, routes, scen, ctrl, s)
-                rows.append(r)
-    return rows
+            jobs += [(net, routes, scen, ctrl, s) for s in seeds]
+    return run_many(jobs)
 
 
 def export_sim_rows(rows: list[dict], path=None):
@@ -265,10 +494,12 @@ def export_sim_rows(rows: list[dict], path=None):
     keys = sorted({k for r in rows for k in r["metrics"]})
     with open(path, "w", newline="") as fh:
         w = csv.writer(fh)
+        dkeys = ["route_choice", "main_nb_vph", "main_sb_vph", "side_vph_per_approach", "signal_timing"]
         w.writerow(["run_id", "mode", "scenario", "controller", "seed", "status", "error", "sumo_version", "network_hash",
-                    "demand_hash", "warmup_s", "evaluation_s", "pedestrian_protection", *keys])
+                    "demand_hash", "warmup_s", "evaluation_s", "pedestrian_protection", *dkeys, *keys])
         for r in rows:
+            dem = {**(r.get("demand") or {}), "signal_timing": r.get("signal_timing") or "netconvert_guess"}
             w.writerow([r["run_id"], r["mode"], r["scenario"], r["controller"], r["seed"], r["status"], r["error"],
                         r["sumo_version"], r["network_hash"], r["demand_hash"], r["warmup_s"], r["evaluation_s"],
-                        r["pedestrian_protection"], *[r["metrics"].get(k) for k in keys]])
+                        r["pedestrian_protection"], *[dem.get(k) for k in dkeys], *[r["metrics"].get(k) for k in keys]])
     return path

@@ -1,0 +1,69 @@
+{
+ "rule": {
+  "side_scales": [
+   1.0,
+   0.75,
+   0.5,
+   0.25,
+   0.0
+  ],
+  "seeds": [
+   101,
+   102,
+   103
+  ],
+  "max_teleports": 0,
+  "max_unfinished_frac": 0.01
+ },
+ "per_scale": [
+  {
+   "side_demand_scale": 1.0,
+   "admissible": false,
+   "run_ids": [
+    "sim-sweep_side100-fixed_time-s101-20261021T010527-69d561",
+    "sim-sweep_side100-fixed_time-s102-20261021T010527-4ca163",
+    "sim-sweep_side100-fixed_time-s103-20261021T010527-886136"
+   ]
+  },
+  {
+   "side_demand_scale": 0.75,
+   "admissible": false,
+   "run_ids": [
+    "sim-sweep_side075-fixed_time-s101-20261021T010527-6e22b6",
+    "sim-sweep_side075-fixed_time-s102-20261021T010608-78ea94",
+    "sim-sweep_side075-fixed_time-s103-20261021T010612-331ecc"
+   ]
+  },
+  {
+   "side_demand_scale": 0.5,
+   "admissible": false,
+   "run_ids": [
+    "sim-sweep_side050-fixed_time-s101-20261021T010615-cf2618",
+    "sim-sweep_side050-fixed_time-s102-20261021T010616-b2100b",
+    "sim-sweep_side050-fixed_time-s103-20261021T010648-9e30e9"
+   ]
+  },
+  {
+   "side_demand_scale": 0.25,
+   "admissible": false,
+   "run_ids": [
+    "sim-sweep_side025-fixed_time-s101-20261021T010649-6e2cba",
+    "sim-sweep_side025-fixed_time-s102-20261021T010651-bbed9a",
+    "sim-sweep_side025-fixed_time-s103-20261021T010654-f37a8e"
+   ]
+  },
+  {
+   "side_demand_scale": 0.0,
+   "admissible": false,
+   "run_ids": [
+    "sim-sweep_side000-fixed_time-s101-20261021T010715-dad534",
+    "sim-sweep_side000-fixed_time-s102-20261021T010720-de1592",
+    "sim-sweep_side000-fixed_time-s103-20261021T010721-ffbe99"
+   ]
+  }
+ ],
+ "selected_side_demand_scale": null,
+ "network_static_sha256": "08d79f88f6f4ba7d1c3c2a669e3247b7cc6af5141ed1f3ca4feda697c416b78e",
+ "signal_timing": "netconvert_guess",
+ "retimed_programs": {}
+}

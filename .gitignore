@@ -22,3 +22,6 @@ paper/*.bbl
 paper/*.blg
 paper/*.out
 paper/*.synctex.gz
+# derived by `simulation prepare` / `select-demand` from the OSM extract; hashes are in simulation/scenarios/prepared.json
+simulation/networks/
+simulation/demand/

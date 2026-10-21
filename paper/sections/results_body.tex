@@ -126,31 +126,61 @@ End-to-end latency is 19 to 30\,s per advisory after the first call.
 \subsection{Simulation testbed}
 \label{sec:res:sim}
 The West Street corridor extracted from OpenStreetMap has 82 corridor edges, 22 signalised intersections and 25
-side-street entries; demand is 1{,}200 vehicles per hour and direction on the corridor and 150 per side approach,
-both declared assumptions because no automated count matched the corridor, and the three scenarios are a routine
-peak, an event surge (demand $\times 1.25$) and an incident that, at the same $\times 1.25$ demand, reduces one
-corridor edge to 2.5\,m/s for 20 minutes. Two DOT links map to the corridor with high confidence: a dead West Side feed with no usable speed data
-(11th Ave S Gansevoort--West St at Spring St) and the modelled West St S Spring St--Brooklyn--Battery Tunnel portal
+side-street entries. Two DOT links map to the corridor with high confidence: a dead West Side feed with no usable speed
+data (11th Ave S Gansevoort--West St at Spring St) and the modelled West St S Spring St--Brooklyn--Battery Tunnel portal
 link. The scenarios' demand and congestion flags are declared rather than derived from that link's observed or
-forecast speeds, so the testbed is a transfer demonstration on a real corridor with declared demand rather than a
-digital twin of a forecast link. All 45 matched-seed runs (three
-scenarios, fixed-time, actuated and forecast-informed-rule controllers, five seeds, 300\,s warm-up and 3{,}600\,s
-evaluation, SUMO 1.28.0, 9{,}645\,s of wall time) completed, and Table~\ref{tab:sim} reports their means. The
-result is \emph{inconclusive}, and we report it as such: the declared demand oversaturates the corridor under every
-controller. Of 6{,}675 (routine) or 8{,}350 (surge and incident) loaded vehicles per run, only 1{,}003 to 3{,}441
-complete their trip within the evaluation window, 3{,}257 to 6{,}979 remain unfinished, and 1{,}091 to 2{,}386
-vehicles per run are teleported by SUMO after waiting 300\,s in gridlock. Mean time loss per completed trip is
-971.6\,s (fixed-time), 987.5 (actuated) and 971.6 (forecast rule) in the routine peak, where the rule never
-activates because congestion is not forecast and therefore reproduces fixed-time exactly; 780.5, 1{,}118.4 and 739.0
-in the event surge; and 898.4, 1{,}070.1 and 806.0 in the incident scenario. The forecast rule's lower time loss
-in the two stress scenarios is survivorship, not improvement: it completes fewer trips than fixed-time (2{,}014
-against 2{,}087 in the surge, 1{,}236 against 1{,}384 in the incident) and teleports a comparable number of vehicles (1{,}834 against 1{,}799 in the surge, 2{,}174 against 2{,}268 in
-the incident), while the
-actuated controller completes the most trips (2{,}877 and 2{,}240) at the highest time loss per completed trip. Under
-gridlock the per-trip metrics measure which vehicles got through rather than how well the corridor was served, so no
-controller ranking is claimed, the acceptance rule now counts completed trips and teleports alongside delay, and
-calibrating the declared demand against observed counts is the first item of future work. Pedestrian performance is
-NOT\_EVALUATED because the scenarios contain no pedestrian demand.
+forecast speeds, so the testbed is a transfer demonstration on a real corridor rather than a digital twin of a
+forecast link. Pedestrian performance is NOT\_EVALUATED because the scenarios contain no pedestrian demand.
+
+\textit{First comparison (2026-10-20, superseded).} With 1{,}200 vehicles per hour and direction on the corridor and
+150 per side approach, both declared, and three scenarios (routine peak; event surge, demand $\times 1.25$; an
+incident that at the same surge caps one corridor edge at 2.5\,m/s for 20 minutes), all 45 matched-seed runs (fixed-time,
+actuated and forecast-informed-rule controllers, five seeds, 300\,s warm-up and 3{,}600\,s evaluation, SUMO 1.28.0,
+9{,}645\,s of wall time) completed (Table~\ref{tab:sim}). The corridor was oversaturated under every controller: of
+6{,}675 (routine) or 8{,}350 (surge and incident) loaded vehicles per run only 1{,}003 to 3{,}441 completed their trip,
+3{,}257 to 6{,}979 remained unfinished and 1{,}091 to 2{,}386 were teleported after waiting 300\,s. The forecast rule's
+lower time loss per completed trip in the two stress scenarios (739.0 and 806.0\,s against 780.5 and 898.4 for
+fixed-time) came with fewer completed trips (2{,}014 against 2{,}087; 1{,}236 against 1{,}384), i.e.\ survivorship,
+and we claimed no controller ranking.
+
+\textit{Testbed audit (2026-10-21).} To find out why, the corridor was rebuilt in the development container from the
+OSM editing API (Overpass is blocked there) for the box 40.700--40.737\,N, 74.000--74.020\,W with the same highway
+filter. It reproduces the workstation corridor exactly (the same 82 corridor edges, 22 signals, corridor phases, entry
+and exit edges and both DOT mappings; 24 of 25 side entries keep their edge id, the 25th is the same FDR Drive approach
+under another OSM way id), and the original design run on it reproduces the oversaturated regime (routine peak,
+fixed-time, seed 1: 2{,}981 completed, 3{,}294 unfinished and 928 teleports, against 2{,}746, 3{,}527 and 1{,}157 on
+the workstation). The audit found two defects behind Table~\ref{tab:sim}. First, demand was written as bare
+from/to flows, which SUMO routes at insertion on the current travel times~\cite{sumodocs_routing}: at the declared
+demand the rerouting device replaced 1{,}853 routes and sent 1{,}120 of 2{,}189 mainline vehicles off West Street into
+the Lower Manhattan grid (Table~\ref{tab:simaudit}), so the 45 runs did not compare controllers on the corridor.
+Second, the northbound chain began on a 0.2\,m stub left by junction joining, which throttled northbound insertion.
+Both are corrected (one fixed free-flow route per flow; the entry moves to the first corridor edge of at least 20\,m),
+and the mainline demand now comes from the only weekday NYC automated traffic count on the corridor, northbound at
+Gansevoort Street on 6--10 October 2014 (15 complete PM-peak hours, median 1{,}389 veh/h), applied to both directions;
+the only southbound count (Bloomfield Street, 7--8 March 2015, median 2{,}074 veh/h) fell on a weekend and is excluded
+by the weekday rule. Fixed routes make the corridor more congested, not less (1{,}044 teleports against 680 at the
+declared demand), because traffic can no longer leave it.
+
+\textit{Corrected protocol: comparison not run.} Side-street demand has no matched count, so its level was to be
+chosen by a rule fixed in \texttt{configs/simulation.yaml} before any comparison: on the routine peak, under the
+fixed-time baseline only and on three development seeds that the comparison does not use, the largest fraction of the
+declared 150\,veh/h at which every seed has no teleport and at most 1\,\% of loaded vehicles unfinished. With the
+programs netconvert generates, no level qualifies (Table~\ref{tab:simaudit}): even with no side-street demand at all,
+533 of 3{,}010 loaded vehicles per run remain unfinished and the mean time loss is 804\,s. Counting only the movements
+each mainline route makes, the guessed programs give the northbound mainline 25\,s of a 90\,s cycle on two lanes at
+one signal, about 1{,}000\,veh/h at a nominal saturation flow of 1{,}800\,veh/h per lane and below the observed
+1{,}389\,veh/h (\texttt{simulation\_signal\_capacity.csv}). We therefore re-timed the fixed-time programs for the
+demand being tested with Webster's method as implemented in SUMO's \texttt{tlsCycleAdaptation.py} (tool defaults;
+phase order and states unchanged), a declared assumption fixed before any comparison under this protocol, and
+applied the same selection rule. Re-timing raises every mainline signal's estimate to at least 1{,}800\,veh/h
+northbound and 2{,}040 southbound and removes most of the saturation: with the full declared side demand 5{,}220 to
+5{,}229 trips complete per run instead of about 2{,}300, and with no side demand teleports stay at zero and the
+northbound mainline completes all 1{,}389 trips at 195 to 197\,s of time loss. No level qualifies, however: even
+without side demand 129 to 131 vehicles per run (4.3\,\%) remain unfinished, and the southbound mainline loses 1{,}014
+to 1{,}038\,s per trip; green shares do not explain this and the audit does not identify its cause. Under the
+preregistered rule the corrected controller comparison is NOT RUN, and the advisory simulation gate returns
+NOT\_EVALUATED (ERROR\_TOOL with its cause) rather than judging a candidate on a testbed that cannot serve its own
+baseline. We did not relax the rule after seeing these results.
 
 \subsection{Runtime}
 Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs 5.7\,ms for the

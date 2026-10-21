@@ -21,7 +21,10 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
    operational weather knowledge is approximated, not reproduced. The retrospective track uses the finalised archive.
 5. **Events.** The historical permitted-events dataset has free-text locations and no announcement timestamp; it is
    used only retrospectively and matched by street name, which is approximate.
-6. **Volume.** ATR counts are sampled, not continuous; they only parameterise SUMO demand.
+6. **Volume.** ATR counts are sampled, not continuous; they only parameterise SUMO demand. The only weekday count on
+   the West St corridor is northbound at Gansevoort St, 6-10 Oct 2014 (median PM-peak 1,389 veh/h), twelve years older
+   than the speed data and applied to both directions; the only southbound count (Bloomfield St, 7-8 Mar 2015) is a
+   weekend and is excluded by the weekday rule. Side-street demand has no matched count.
 7. **Daylight-saving ambiguity.** The repeated 01:00-02:00 local hour on the fall-back day is nulled, not resolved.
 7a. **Zero speeds in the feed.** About half of the raw Manhattan speed records (978,018 of 1,968,303 in the 2026
    download) carry `speed <= 0`. The feed uses 0 where no travel time was measured in the interval, so these records
@@ -107,8 +110,9 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
 
 16. **Not a digital twin.** The SUMO network is OSM geometry for one corridor with demand from matched ATR counts
     where available and declared assumptions otherwise (`simulation/scenarios/prepared.json`); signal programs are
-    netconvert defaults, not NYC DOT's plans. Simulation gains are relative between controllers on the same seeds
-    and say nothing about the real street.
+    netconvert's guessed programs or those programs re-timed by Webster's method (`tlsCycleAdaptation.py`), never
+    NYC DOT's plans. Routes are one fixed free-flow path per flow: no route choice is modelled. Simulation gains, if
+    any are ever measured, are relative between controllers on the same seeds and say nothing about the real street.
 17. **Pedestrians.** Scenarios contain no pedestrian demand, so pedestrian impact is NOT_EVALUATED, which is
     reported rather than assumed neutral.
 18. **Link-to-signal mapping** is automatic with a review flag; only `high` confidence, reviewed mappings are
@@ -120,23 +124,29 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     workstation (Windows, RTX 4050, CUDA 12.8, torch 2.11.0+cu128), which deviates from `requirements.lock`
     (torch 2.14.1, CUDA 13 build) because the installed driver supports at most CUDA 12.8. The deviation is
     recorded in `reports/verification/environment.json` of that run.
-20. **Cloud container restrictions.** The development container could not reach NYC Open Data, Hugging Face or
-    the workstation's Ollama; the recorded-request batch executor (`scripts/ollama_batch.py`) exists for that reason.
+20. **Cloud container restrictions.** On 2026-10-20 the development container could not reach NYC Open Data,
+    Hugging Face or the workstation's Ollama; the recorded-request batch executor (`scripts/ollama_batch.py`) exists
+    for that reason. On 2026-10-21 it reached NYC Open Data, Crossref and the OSM editing API (not Overpass), and the
+    SUMO testbed audit ran there; it still has no model weights (not in git) and no Ollama, so forecasting and agent
+    stages cannot be re-run in it.
 21. **Docker build** is verified on the workstation only (`reports/verification/docker_smoke.json`: compose build
     OK, 3 images); the development container cannot build images.
 23. **Artifacts not in git.** Model weights, prediction arrays, raw data, the FAISS index, document copies and the two
     superseded runs (ablation bootstrap, first agents pass) stay on the workstation; run ids, hashes and the
     stage log are in `reports/verification/`.
-24. **Controller comparison inconclusive (oversaturated testbed).** All 45 runs completed
-    (`reports/experiments/simulation_metrics.csv`), but the declared 1,200 veh/h per direction gridlocks the
-    corridor under every controller: per run 1,003-3,441 completed trips against 3,257-6,979 unfinished and
-    1,091-2,386 teleports (time-to-teleport 300 s). The forecast rule's lower mean time loss per completed trip
-    (739 vs 780 s in the event surge, 806 vs 898 s in the incident) comes with fewer completed trips and a comparable number
-    of teleports (surge 1,834 vs 1,799; incident 2,174 vs 2,268), i.e. survivorship, and the rule is identical to fixed-time in the routine peak because it only acts
-    when congestion is forecast. No controller ranking or simulated gain is claimed; the paired acceptance check now
-    also records completed trips and teleports and fails a candidate that completes fewer trips than the baseline.
-    Demand calibration from observed counts (no ATR count matched the corridor) is future work; a lower-demand
-    sensitivity run, if executed, is reported as a declared-assumption sensitivity, not as calibration.
+24. **Controller comparison superseded, corrected comparison not run.** The 45 runs of 2026-10-20
+    (`reports/experiments/simulation_metrics.csv`) all completed but were oversaturated under every controller (per
+    run 1,003-3,441 completed against 3,257-6,979 unfinished, 1,091-2,386 teleports); the forecast rule's lower time
+    loss per completed trip was survivorship. The 2026-10-21 audit (`reports/experiments/simulation_testbed_audit.json`)
+    found why the runs do not measure the corridor: bare from/to flows are routed by SUMO at insertion on current travel
+    times, which sent 1,120 of 2,189 mainline vehicles off West Street, and the NB flow was inserted on a 0.2 m stub
+    edge. After fixing both and using the ATR mainline count, a side-demand level was to be chosen by a rule fixed in
+    `configs/simulation.yaml` (routine peak, fixed-time only, development seeds 101-103, no teleport and <= 1 %
+    unfinished). No level passes with netconvert's programs (with no side demand 533 of 3,010 unfinished; the NB
+    mainline gets ~1,000 veh/h of green capacity at one signal) or with Webster re-timed programs (130 of 3,010, 4.3 %;
+    SB time loss ~1,030 s per trip, cause not identified). The rule was not relaxed after the result. The corrected
+    comparison is NOT_RUN and the advisory simulation gate returns NOT_EVALUATED. A testbed that passes needs reviewed
+    signal timing plans and recent two-direction counts.
 22. **Bibliography.** `paper/REFERENCES_STATUS.md` records the publisher-record check of every entry (2026-10-20);
     the FHWA 2008 Signal Timing Manual and the 2009 MUTCD are superseded editions, cited because they are the
     public-domain texts the corpus holds.

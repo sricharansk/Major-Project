@@ -30,7 +30,7 @@ advisory workflow ends at a simulation-only recommendation that a human reviews.
 Design and interfaces: [docs/architecture.md](docs/architecture.md), [docs/api.md](docs/api.md),
 [docs/data_dictionary.md](docs/data_dictionary.md), [docs/methodology.md](docs/methodology.md),
 [docs/model_card.md](docs/model_card.md), [docs/demo.md](docs/demo.md). Known limits: [reports/limitations.md](reports/limitations.md).
-Verification state: [reports/verification/final_status.md](reports/verification/final_status.md).
+Verification state: [reports/verification/final_status.md](reports/verification/final_status.md). Final review deck: [presentation/](presentation/).
 
 ## Quick start
 
@@ -53,6 +53,22 @@ python scripts/run_real_pipeline.py                             # all stages, in
 
 Stage order and prerequisites (Ollama, SUMO, sentence-transformer weights) are in [docs/laptop_run.md](docs/laptop_run.md);
 `make <target>` wraps each stage.
+
+### Simulation testbed (SUMO 1.28.0; runs without the forecasting data)
+
+```bash
+python src/smartcity/ingestion/fetch.py osm --bbox 40.700,-74.020,40.737,-74.000 --name west_st_corridor --kind all
+python src/smartcity/ingestion/fetch.py volume --start-year 2009 --boro Manhattan   # ATR counts for corridor demand
+python src/smartcity/ingestion/fetch.py speed-links --since 2026-09-20 && python -m smartcity.cli graph build
+python -m smartcity.cli simulation prepare        # netconvert, corridor, DOT->SUMO mapping, ATR demand
+python -m smartcity.cli simulation select-demand  # preregistered baseline test; exits 1 (NOT_RUN) if no level passes
+python -m smartcity.cli simulation evaluate       # controller comparison, only after a level was selected
+python scripts/sim_testbed_audit.py               # route-choice and signal-capacity audit
+```
+
+`fetch.py osm` falls back to the OSM editing API when Overpass is unreachable. Set `scenario.signal_timing` in
+`configs/simulation.yaml` to `netconvert_guess` or `webster_retimed` and `route_choice` to `dynamic_insertion` to
+reproduce the earlier protocols.
 
 ### Services
 
@@ -82,9 +98,14 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
 * Retrieval: 28 queries, Recall@8 0.818, MRR 0.702 (project-drafted labels). LLM agents: 12/12 schema-valid calls;
   3/3 fabricated citations without retrieval (all rejected), 0/9 with; constraints reject the unmapped link; the
   LLM chose monitor-only on the mapped corridor, so no advisory reached the simulation gate.
-* SUMO controller comparison (45 matched-seed runs, real West St corridor): **inconclusive**; the declared demand
-  gridlocks the corridor under every controller (unfinished trips > completed, 1.1k-2.4k teleports per run), so the
-  forecast rule's lower per-trip time loss is survivorship, not improvement (`reports/limitations.md` 16, 24).
+* SUMO: the first 45-run controller comparison (2026-10-20) is **superseded**. A testbed audit
+  (`scripts/sim_testbed_audit.py`, 2026-10-21) found that its bare from/to flows let SUMO re-route at insertion
+  (1,120 of 2,189 mainline vehicles sent off West Street) and that the NB flow was inserted on a 0.2 m stub edge.
+  With fixed routes, the observed weekday ATR count (1,389 veh/h, NB Gansevoort St, 2014) and a preregistered
+  side-demand selection rule, **no demand level passes the testbed's own baseline test**, neither with netconvert's
+  guessed signal programs nor with Webster re-timed ones (best: 4.3 % unfinished, rule <= 1 %), so the corrected
+  controller comparison is **NOT RUN** and the advisory simulation gate returns NOT_EVALUATED
+  (`reports/limitations.md` 16, 24; paper Table "SUMO testbed audit").
 
 ## Honesty rules this repository follows
 
