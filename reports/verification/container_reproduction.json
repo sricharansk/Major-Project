@@ -1,0 +1,27 @@
+{
+ "generated_at": "2026-10-21T02:55:33Z",
+ "what": "Independent re-download and re-processing of the forecasting data in the development container, compared with the workstation run of 2026-10-20",
+ "download": {
+  "speeds_raw_rows": 1968303,
+  "workstation_speeds_raw_rows": 1968303,
+  "speeds_partition_files": 65,
+  "sr311_oct_1_20_rows": 4204,
+  "events_hist_rows": 116480,
+  "events_current_rows": 9030,
+  "note": "events_current is a live feed (workstation 9,137); collisions after June are empty (publication lag), as on the workstation"
+ },
+ "preprocessing_equal_to_workstation": {
+  "grid_steps": 84084,
+  "grid_links": 19,
+  "grid_observed_fraction": 0.6109329267224004
+ },
+ "graph_hash": "d8c69a468b82cbda",
+ "workstation_graph_hash": "d8c69a468b82cbda",
+ "feature_schema_hash": "1d63c3fe45a729be",
+ "workstation_feature_schema_hash": "1d63c3fe45a729be",
+ "splits_equal": true,
+ "split_times_equal": true,
+ "features_file_sha256": "5124b0a2149a09be70f42576af8e842785c9e8b4bbc5f9559b3680b4e3fd6718",
+ "workstation_features_file_sha256": "24cf2fed8352168ca38db1377fe06a7a94a99662aae0f269d4dc68ef3d549af3",
+ "limitations": "The feature archive checksum covers the compressed .npz file, which embeds archive metadata, and the workstation arrays are not in the repository, so array contents could not be compared directly; the preprocessed grid checksum differs for the same reason. Row counts, grid statistics, graph hash, feature schema hash and split boundaries are identical."
+}
