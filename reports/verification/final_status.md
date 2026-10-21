@@ -27,7 +27,9 @@ this repository unless marked "workstation".
 | Final review presentation | VERIFIED | `presentation/Final_Review_S_K_Sricharan_25MML1010.pptx` (19 slides, VIT template) and PDF | built from committed result files by `presentation/build_final_review.py`; rebuild reproduces it |
 
 Open items (need the authors or the workstation):
-1. Paper: confirm co-authors and author order (the student is filled in).
+1. Paper: author block confirmed by the student on 2026-10-21 (S K Sricharan; Dr. R. Srinivasa Perumal, guide). The
+   IEEE Word version is `paper/ieee_conference_paper.docx` (built by `make paper-docx`); `paper/main.tex` carries the
+   same author block.
 2. Simulation: recent two-direction counts are now in use (2025). An admissible testbed needs signal timing that
    matches reality: either calibrate splits and 25 mph progression to the observed 10.95 mph PM-peak speed (a
    calibration decision for the authors) or obtain NYC DOT timing plans; only then can `simulation evaluate` and an

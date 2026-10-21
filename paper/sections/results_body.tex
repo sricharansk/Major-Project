@@ -28,7 +28,9 @@ the GRU, the temporal Transformer, the proposed model and its ablations, and is 
 each model was trained, not because it is a tuned hyper-parameter. Under it the proposed model stopped after 14 epochs
 (best epoch 8, 2.3 minutes on the GPU, 158{,}403 parameters), the temporal Transformer after 14 (best 8, 1.8 minutes),
 the GRU after 17 (best 11, 6.0 minutes, 41{,}667 parameters) and the no-weather ablation ran the full 30 epochs (best
-24).
+24). A multi-seed study (seeds 42, 1 and 2 for the proposed model, the GRU and the temporal Transformer) is
+prepared but had not been run when this version was written; every forecasting figure reported here is from seed 42
+alone.
 
 \subsection{Multi-horizon forecasting}
 Table~\ref{tab:forecast} gives the test error on the operational track. Every learned model beats persistence and the

@@ -276,3 +276,15 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - `train-all` (resumable, seed-major) and portable artifact paths added; 3 unit tests. Workstation instructions:
   `docs/laptop_run.md` section 5 (counts fetch, 9 seed runs, `analyze`, `agents evaluate`, export, paper sync).
 - Multi-seed results, the agents re-run on the corrected simulation gate and the counts fetch: NOT RUN (workstation).
+
+### Milestone 8: IEEE Word paper (development container, 2026-10-21)
+- `paper/ieee_conference_paper.docx` built from the conference's A4 Word template (`paper/word/IEEE_conference-template-A4.docx`)
+  by `paper/word/build_ieee_docx.py` (`make paper-docx`): text in `paper/word/paper_content.py` follows `paper/main.tex`
+  with the PR #16 corrections; tables are read from the generated `paper/tables/*.tex` and
+  `reports/data_audit/source_inventory.csv`, so no table number is typed by hand. Formatting follows the guideline the
+  student supplied (abstract 247 words without citations, seven alphabetical keywords, Roman section numbers, table
+  titles above tables, references numbered by first appearance). Author block: S K Sricharan and Dr. R. Srinivasa
+  Perumal (confirmed by the student). The first-page footer keeps the template's copyright placeholder for the conference.
+- Check: every number in the Word body text was matched against `paper/sections`, `paper/tables`, `references.bib` and
+  `source_inventory.csv` by script (no unmatched figure); LibreOffice renders 9 A4 pages.
+- Multi-seed results: NOT RUN; the paper says all forecasting figures are single-seed (claim C34).
