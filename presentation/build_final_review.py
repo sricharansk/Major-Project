@@ -499,7 +499,7 @@ box(s, 0.5, 5.85, 6.5, 1.45, [[("Validation of approach", True, NAVY, 16)],
       "bootstrap for ablations; a preregistered simulation baseline test; failed runs kept and reported.", False, INK, 14)]],
     TNR, 14, margin=0.02, after=3)
 box(s, 7.4, 1.9, 6.1, 5.4, [[("Observations", True, NAVY, 18)],
-    [("The proposed model beats persistence by 7–16 % and both tree models, but stays within 0.01–0.05 mph of the GRU and "
+    [("The proposed model beats persistence by 7–16 % and both tree models, but stays within 0.01–0.06 mph of the GRU and "
       "temporal Transformer with one seed, so no superiority is claimed.", False, INK, 15)],
     [("The availability-aware gate helps (MAE +0.067 mph when removed); operational weather features hurt (−0.046 mph), "
       "a negative result.", False, INK, 15)],
