@@ -347,3 +347,18 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   (66, from the workstation build) and the model card's single-seed statements are updated to this state; the evidence
   registry keeps the workstation export of 2026-10-21 04:41 UTC (a container export would overwrite the MLflow run list
   with an empty one, so `report export` is not re-run here).
+
+### Milestone 10: calibrated SUMO testbed protocol prepared (development container, 2026-10-21 06:30-07:00 UTC)
+- The container has neither the OSM extract nor the generated network (both ignored in git; NYC Open Data, OSM and
+  Open-Meteo are unreachable from it), so SUMO runs stay on the workstation.
+- Protocol v5 `split_calibration` (`configs/simulation.yaml`, `src/smartcity/simulation/calibrate.py`,
+  `simulation calibrate-splits`): from the Webster plan for the routine peak at zero side demand, the corridor green of
+  every corridor signal is scaled by a factor from {1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5} (cycle kept by shortening other
+  greens to min_green 7 s, cycle at most 120 s, corridor green at most 90 s, states unchanged); each factor runs under
+  the fixed-time baseline on seeds 101-103; admissible factors (unchanged rule: 0 teleports, at most 1 % unfinished)
+  are compared by seed-mean space-mean speed on the 8 SUMO edges of link 4456494 (edgeData, 300-3,900 s) and the one
+  closest to the observed 10.95 mph is selected if within 1.5 mph. `select-demand` then applies the preregistered
+  side-demand rule under that plan (new `calibrated_splits` timing mode), and `evaluate` runs the 45-run comparison.
+  7 unit tests on the pure functions (green rescaling, space-mean speed, factor choice).
+- Declared and to be stated wherever a result is reported: this is a scenario testbed calibrated to one observed speed,
+  not a digital twin and not NYC DOT timing. Comparison: NOT RUN (workstation runbook `docs/laptop_run.md` section 6).

@@ -433,6 +433,7 @@ def scenarios(meta: dict) -> list[dict]:
         s["demand"] = flow_demand(meta, s)
         if timing.get("tls_additional"):  # the plan re-timed for the routine demand also runs the stress scenarios
             s["tls_additional"] = timing["tls_additional"]
+            s["signal_timing_kind"] = timing.get("method", "webster_retimed").split(" ")[0]
     return out
 
 
@@ -488,10 +489,18 @@ def select_side_demand() -> dict:
     net = settings.ROOT / meta["network"]["static"]
     for k in ("side_demand_scale", "side_demand_selection"):
         meta["demand"].pop(k, None)
-    meta.pop("signal_timing", None)
-    meta.pop("tls_inventory_active", None)
-    routine = next(s for s in scenarios(meta) if s["name"] == "routine_peak")
     timing_mode = _scfg().get("signal_timing", "netconvert_guess")
+    fixed_plan = None
+    if timing_mode == "calibrated_splits":
+        # the calibrated program (simulation/calibrate.py) is fixed before the selection and used at every level
+        fixed_plan = meta.get("signal_timing") or {}
+        if fixed_plan.get("method") != "calibrated_splits" or not fixed_plan.get("tls_additional"):
+            raise SystemExit("NOT_RUN: signal_timing is calibrated_splits but prepared.json carries no calibrated "
+                             "program (run `simulation calibrate-splits` first, and it must select a factor)")
+    else:
+        meta.pop("signal_timing", None)
+        meta.pop("tls_inventory_active", None)
+    routine = next(s for s in scenarios(meta) if s["name"] == "routine_peak")
     label = cfg.get("protocol_id") or timing_mode
     jobs, timings = [], {}
     for scale in cfg["side_scales"]:
@@ -502,6 +511,10 @@ def select_side_demand() -> dict:
         if timing_mode == "webster_retimed":  # each level is tested with the plan re-timed for that level's demand
             timings[scale] = retime_signals(meta, routes, scen["name"], label)
             scen["tls_additional"] = timings[scale]["tls_additional"]
+        elif fixed_plan:
+            timings[scale] = fixed_plan
+            scen["tls_additional"] = fixed_plan["tls_additional"]
+            scen["signal_timing_kind"] = "calibrated_splits"
         jobs += [(net, routes, scen, "fixed_time", s) for s in cfg["seeds"]]
     rows = run_many(jobs)
     sel = {"rule": cfg, "signal_timing": timing_mode, "retimed_programs": {str(k): v for k, v in timings.items()},
