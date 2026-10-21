@@ -29,7 +29,7 @@ the GRU after 17 (best 11, 6.0 minutes, 41{,}667 parameters) and the no-weather 
 Table~\ref{tab:forecast} gives the test error on the operational track. Every learned model beats persistence and the
 historical average at every horizon, and the three sequence models beat the two gradient-boosted baselines on MAE
 at every horizon. The proposed context-gated GATv2--Transformer has the lowest MAE at 30 and 60 minutes (5.33 and
-6.16\,mph against 5.34/6.18 for the temporal Transformer and 5.37/6.17 for the GRU), the GRU the lowest at 15
+6.15\,mph against 5.34/6.18 for the temporal Transformer and 5.37/6.17 for the GRU), the GRU the lowest at 15
 minutes (4.72\,mph against 4.77 for the proposed model), and XGBoost the lowest 60-minute RMSE (8.98 against 9.05).
 Relative to persistence the proposed model reduces MAE by 7\,\%, 12\,\% and 16\,\% at the three horizons and raises
 $R^2$ from 0.55/0.46/0.30 to 0.69/0.63/0.56. The margins between the three deep models are 0.01 to 0.05\,mph, which
@@ -38,7 +38,7 @@ well-trained GRU or temporal Transformer on this sparse 16-link graph; it claims
 while carrying the availability gate and the graph layer that the rest of the workflow uses. On the retrospective
 track (reanalysis weather plus collisions and permitted events, contextual analysis only) the proposed model reaches
 4.67, 5.36 and 6.13\,mph (Table~\ref{tab:forecast} is the operational table; the retrospective rows are in
-\texttt{forecast\_metrics.csv}), a small gain at 15 and 60 minutes over the operational 4.77/5.33/6.16, with XGBoost
+\texttt{forecast\_metrics.csv}), a small gain at 15 and 60 minutes over the operational 4.77/5.33/6.15, with XGBoost
 and LightGBM at 4.89--4.90, 5.61--5.65 and 6.30--6.39.
 
 \textit{Ablations.} Table~\ref{tab:ablation} reports the mean MAE over the three horizons and a paired day-block
