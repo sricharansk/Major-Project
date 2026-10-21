@@ -1,0 +1,18 @@
+{
+  "run_id": "ms-proposed-s42-20261021T030616-9b0964",
+  "model": "proposed",
+  "best_epoch": 15,
+  "best_val_mae": 5.355568250020345,
+  "epochs_run": 21,
+  "train_time_s": 557.8291087150574,
+  "infer_latency_ms_per_origin": 2.42947251179343,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "533bde4d66acffd974e80278c09989aa26a6e9dc6cc3e39fad1ac83b6ea3c1fc",
+  "n_params": 158403,
+  "artifact_dir": "/home/user/Major-Project/artifacts/models/ms-proposed-s42-20261021T030616-9b0964",
+  "train_device": "cpu",
+  "cudnn_enabled": true,
+  "stopped_reason": "early_stopping",
+  "max_minutes_per_model": null,
+  "seed": 42
+}
