@@ -1,0 +1,18 @@
+{
+  "run_id": "ms-temporal_transformer-s42-20261021T031940-3c572b",
+  "model": "temporal_transformer",
+  "best_epoch": 8,
+  "best_val_mae": 5.397111097971599,
+  "epochs_run": 14,
+  "train_time_s": 198.20843482017517,
+  "infer_latency_ms_per_origin": 0.5332467745395041,
+  "skipped_batches_no_target": 0,
+  "model_sha256": "eb81fa1f3bc1d90daccccea39d9088dea4fc3acf2cf257c48a30cfae06092206",
+  "n_params": 158403,
+  "artifact_dir": "/home/user/Major-Project/artifacts/models/ms-temporal_transformer-s42-20261021T031940-3c572b",
+  "train_device": "cpu",
+  "cudnn_enabled": true,
+  "stopped_reason": "early_stopping",
+  "max_minutes_per_model": null,
+  "seed": 42
+}
