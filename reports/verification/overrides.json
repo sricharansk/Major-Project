@@ -2,10 +2,14 @@
   "_comment": "Human-maintained status overrides for reports/verification/evidence_registry.csv. An override can only lower a status (VERIFIED -> PARTIAL/BLOCKED/FAILED) and must carry a reason. Remove the entry once the blocker is cleared.",
   "DATA-02": {
     "status": "PARTIAL",
-    "limitations": "Downloads run on the author's workstation (cloud container cannot reach NYC Open Data). speed-links --since 2026-01-01 timed out server-side 6x; link set is 'active since 2026-09-20' (125 links citywide, 26 in Manhattan)."
+    "limitations": "The forecasting data (speeds, weather, collisions, events, 311) were downloaded on the author's workstation; speed-links --since 2026-01-01 timed out server-side 6x, so the link set is 'active since 2026-09-20' (125 links citywide, 26 in Manhattan). On 2026-10-21 the development container reached NYC Open Data and re-downloaded the speed-link set (same 125 links; graph hash d8c69a468b82cbda reproduced), the Manhattan ATR counts 2009-2026 (per-year counts equal the server-side counts) and the West St OSM extract (OSM editing API; Overpass blocked)."
   },
   "PAPER-01": {
     "status": "PARTIAL",
-    "limitations": "Results, discussion, limitations and conclusion written from the run artifacts on 2026-10-21 (paper_claims.csv); the simulation subsection and table stay NOT RUN until simulation_metrics.csv is pushed from the workstation; one DOI string (johnson2019faiss) unconfirmed."
+    "limitations": "Results, discussion, limitations and conclusion (including the superseded SUMO comparison and the 2026-10-21 testbed audit) are written from the run artifacts and listed in paper_claims.csv; all 24 bibliography entries are CHECKED (johnson2019faiss DOI confirmed on Crossref 2026-10-21). Open: the author block (names, order, affiliation) must be supplied by the authors."
+  },
+  "SIM-02": {
+    "status": "PARTIAL",
+    "limitations": "The 45 matched-seed runs in simulation_metrics.csv (2026-10-20) are SUPERSEDED: the 2026-10-21 testbed audit (reports/experiments/simulation_testbed_audit.json) found bare from/to flows re-routed by SUMO at insertion (1,120 of 2,189 mainline routes off West Street) and a 0.2 m NB entry stub. Under the corrected protocol (fixed routes, observed ATR mainline demand) no side-demand level passes the preregistered baseline test (simulation/scenarios/demand_selection.json), so the corrected controller comparison is NOT_RUN; the netconvert-guessed signal timing is the binding constraint."
   }
 }

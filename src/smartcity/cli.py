@@ -389,6 +389,17 @@ def simulation_prepare():
                           indent=1, default=str)[:4000])
 
 
+@sim_app.command("select-demand")
+def simulation_select_demand():
+    from smartcity.simulation import pipeline
+
+    sel = pipeline.select_side_demand()
+    typer.echo(json.dumps({k: sel[k] for k in ("per_scale", "selected_side_demand_scale")}, indent=1))
+    if sel["selected_side_demand_scale"] is None:
+        typer.echo("NOT_RUN: no admissible side-demand scale; the controller comparison stays NOT_RUN", err=True)
+        raise typer.Exit(1)
+
+
 @sim_app.command("evaluate")
 def simulation_evaluate(seeds: str = ""):
     from smartcity.simulation import pipeline

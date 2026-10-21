@@ -14,10 +14,29 @@ simulation:
     max_side_road_delay_increase_pct: 10.0
     max_teleports: 0
     max_completed_trips_decrease_pct: 0.0   # a candidate may not complete fewer trips than the baseline (survivorship guard)
+  workers: 4                     # parallel SUMO processes (each run is an independent process; results are ordered)
 scenario:
   osm_name: west_st_corridor
+  osm_bbox: "40.700,-74.020,40.737,-74.000"   # south,west,north,east; reproduces the 2026-10-20 corridor edge set
   corridor_name_regex: "^(West Street|West Side Highway|Route 9A)$"
   atr_street_regex: "WEST ST|WEST STREET|WEST SIDE HIGHWAY|ROUTE 9A"
+  atr_weekdays_only: true        # routine PM peak = Mon-Fri 16:00-19:00 hourly totals
+  atr_by_direction: true         # use the NB and SB medians separately when both directions were counted
   fallback_main_vph: 1200        # DECLARED assumption, used only if no ATR counts match the corridor
   side_vph_assumption: 150       # DECLARED assumption per side-street approach (no matched counts)
   event_demand_scale: 1.25       # DECLARED stress-scenario surge (not observed)
+  # fixed_free_flow: every flow gets one explicit route, the free-flow fastest path (sumolib, passenger class), so the
+  # declared demand stays on the corridor. dynamic_insertion: plain from/to flows, which SUMO routes at insertion on
+  # current travel times (its default for trips/flows); that diverted corridor traffic into the Lower Manhattan grid
+  # and is kept only to reproduce the superseded 2026-10-20 runs.
+  route_choice: fixed_free_flow
+  min_entry_edge_m: 20           # netconvert junction joining can leave stub edges (0.2 m) at a chain start
+# Side-street demand has no matched counts, so its level is chosen by a rule fixed here BEFORE the controller
+# comparison: on the routine_peak scenario, under the fixed-time baseline only, on development seeds that the
+# comparison does not use, take the largest scale in the grid at which every seed has at most max_teleports teleports
+# and leaves at most max_unfinished_frac of loaded vehicles unfinished. Stress scenarios then reuse the selected scale.
+demand_selection:
+  side_scales: [1.0, 0.75, 0.5, 0.25, 0.0]
+  seeds: [101, 102, 103]
+  max_teleports: 0
+  max_unfinished_frac: 0.01

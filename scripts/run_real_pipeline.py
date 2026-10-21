@@ -46,6 +46,7 @@ STAGES = [
     "rag build",
     "rag evaluate",
     "simulation prepare",
+    "simulation select-demand",
     "simulation evaluate",
     "agents evaluate",
     "report export",

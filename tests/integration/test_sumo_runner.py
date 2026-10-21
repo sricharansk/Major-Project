@@ -48,3 +48,29 @@ def test_run_scenario_and_protected_controller(toy, monkeypatch):
     bad = sr.run_scenario(net, rou, scen, "candidate", 1, candidate={"action_type": "bounded_green_extension",
                           "traffic_light_id": tls, "phase_index": yellow, "extension_seconds": 5})
     assert bad["control_log"] == [False]  # protective wrapper refuses a clearance phase
+
+
+def test_fixed_route_flows_keep_their_route(toy, tmp_path, monkeypatch):
+    """A flow with an explicit route must be written without from/to (SUMO would route those at insertion on current
+    travel times) and must drive exactly that route."""
+    import xml.etree.ElementTree as ET
+
+    import sumolib
+
+    net, _ = toy
+    n = sumolib.net.readNet(str(net))
+    a = next(e for e in n.getEdges() if e.getOutgoing())
+    b = next(iter(a.getOutgoing()))
+    nxt = [o for o in b.getOutgoing() if o.getToNode() != a.getFromNode()]  # a three-edge route, no U-turn
+    path, _ = n.getFastestPath(a, nxt[0] if nxt else b, vClass="passenger")
+    route = [e.getID() for e in path]
+    rou = sr.write_flows(tmp_path / "fixed.rou.xml", [{"id": "main_0", "from": route[0], "to": route[-1],
+                                                       "veh_per_hour": 120, "route": route}], 0, 300)
+    fl = ET.parse(rou).getroot().find("flow")
+    assert fl.get("from") is None and fl.get("to") is None and fl.find("route").get("edges") == " ".join(route)
+    out = tmp_path / "vehroutes.xml"
+    r = subprocess.run([sr.binary(), "-n", str(net), "-r", str(rou), "--end", "600", "--no-step-log", "true",
+                        "--vehroute-output", str(out)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    driven = {v.find("route").get("edges") for v in ET.parse(out).getroot().iter("vehicle")}
+    assert driven == {" ".join(route)}

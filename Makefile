@@ -51,7 +51,7 @@ rag:
 	$(PY) -m smartcity.cli rag build && $(PY) -m smartcity.cli rag evaluate
 
 simulation:
-	$(PY) -m smartcity.cli simulation prepare && $(PY) -m smartcity.cli simulation evaluate
+	$(PY) -m smartcity.cli simulation prepare && $(PY) -m smartcity.cli simulation select-demand && $(PY) -m smartcity.cli simulation evaluate
 
 agents:
 	$(PY) -m smartcity.cli agents evaluate
