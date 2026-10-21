@@ -346,7 +346,7 @@ for i, p in enumerate(tf.paragraphs):
         for rr in p.runs:
             style(rr, ARIAL, 22, NAVY, bold=True)
 stats = [("1,968,303", "raw speed records processed"), ("16", "Manhattan links modelled"),
-         ("7", "forecasting models compared"), ("66", "automated tests passing")]
+         ("7", "forecasting models compared"), ("73", "automated tests (all suites)")]
 for k, (v, lab) in enumerate(stats):
     box(S[8], 0.5 + k * 3.3, 5.45, 3.0, 1.75, [[(v, True, NAVY, 34)], [(lab, False, INK, 15)]], ARIAL, 15,
         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, bg=TINT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, after=2,
@@ -425,7 +425,7 @@ cols = [
         "Shared contracts frozen first: forecast, uncertainty, evidence, candidate action, decision",
         "A stage runner executes the real-data pipeline in fixed order with a stage log",
         "Only the recommendation node calls the LLM; every gate is deterministic code",
-        "66 automated tests: unit, leakage, safety, integration, end-to-end"]),
+        "73 automated tests: unit, leakage, safety, integration, end-to-end"]),
 ]
 for k, (head, items) in enumerate(cols):
     box(s, 0.5 + k * 4.0, 1.95, 3.75, 5.35, [[(head, True, NAVY, 18)]] + [[(it, False, INK, 15)] for it in items], TNR, 15,

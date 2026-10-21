@@ -177,7 +177,7 @@ phase order and states unchanged), a declared assumption fixed before any compar
 applied the same selection rule. Re-timing raises every mainline signal's estimate to at least 1{,}800\,veh/h
 northbound and 2{,}040 southbound and removes most of the saturation: with the full declared side demand 5{,}220 to
 5{,}229 trips complete per run instead of about 2{,}300, and with no side demand teleports stay at zero and the
-northbound mainline completes all 1{,}389 trips at 195 to 197\,s of time loss. No level qualifies, however: even
+northbound mainline completes 1{,}389 trips (its hourly flow) at 195 to 197\,s of time loss. No level qualifies, however: even
 without side demand 129 to 131 vehicles per run (4.3\,\%) remain unfinished, and the southbound mainline loses 1{,}014
 to 1{,}038\,s per trip; green shares do not explain this and the audit does not identify its cause. Under the
 preregistered rule the corrected controller comparison is NOT RUN, and the advisory simulation gate returns
@@ -195,7 +195,7 @@ count, no side-street demand and Webster programs, removing the restrictions let
 loss 346--380\,s instead of 1{,}014--1{,}038\,s; \texttt{simulation\_turnlane\_check.json}). We adopt that as a
 declared simplification, which can overstate capacity where real lanes are turn-only. With both changes and the 2025
 counts, no level passes the baseline test either (Table~\ref{tab:simaudit}): with no side-street demand 523 to 568 of
-5{,}368 vehicles per run remain unfinished; the northbound mainline completes all 2{,}520--2{,}524 trips at 247--248\,s
+5{,}368 vehicles per run remain unfinished; the northbound mainline completes 2{,}520--2{,}524 trips at 247--248\,s
 of time loss, the southbound only 1{,}877--1{,}922 at 1{,}199--1{,}226\,s, and the re-timed plan gives one southbound
 signal an estimated 2{,}278\,veh/h for the observed 2{,}444. Measured against reality, the testbed is too slow: on the
 eight SUMO edges mapped to the forecast link West St S Spring St--BBT portal, the simulated space-mean speed is 5.8\,mph

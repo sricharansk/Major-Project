@@ -39,5 +39,5 @@ Open items (need the authors or the workstation):
    (`docs/laptop_run.md` section 5), runs NOT RUN; the single-seed margins stay unresolved until then.
 4. Superseded runs (ablation bootstrap unit error, first agents pass) stay on the workstation (`progress.md` Milestone 3).
 
-Software tests: 66 passed in the development container on 2026-10-21 (unit, leakage, safety, PostGIS and SUMO
+Software tests: 73 collected; 66 passed in the other account's development container on 2026-10-21 (unit, leakage, safety, PostGIS and SUMO
 integration, e2e).

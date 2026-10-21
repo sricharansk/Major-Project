@@ -279,7 +279,7 @@ BODY = [
           "(best 8, 1.8 minutes), the GRU after 17 (best 11, 6.0 minutes, 41,667 parameters) and the no-weather "
           "ablation ran the full 30 epochs (best 24). A multi-seed study (seeds 42, 1 and 2 for the proposed "
           "model, the GRU and the temporal Transformer) is prepared but had not been run when this version was "
-          "written; every forecasting figure reported here is from seed 42 alone."),
+          "written ({T:seeds}); every forecasting figure reported here is from seed 42 alone."),
     ("h2", "Multi-Horizon Forecasting"),
     ("p", "{T:forecast} gives the test error on the operational track. Every learned model beats persistence and "
           "the historical average at every horizon, and the three sequence models beat the two gradient-boosted "
@@ -310,6 +310,7 @@ BODY = [
           "unit error in the day index) and produced far narrower intervals; it was found during the run, "
           "corrected in code, re-run, and the superseded file is kept with the run’s local evidence."),
     ("table", "ablation"),
+    ("table", "seeds"),
     ("h2", "Uncertainty Calibration and the Reliability Gate"),
     ("p", "Split-conformal half-widths fitted on 102,301, 102,299 and 102,302 calibration residuals at 15, 30 and "
           "60 minutes are 12.1, 13.5 and 14.8 mph. On the test partition the 90% intervals reach empirical "
@@ -435,7 +436,7 @@ BODY = [
           "and applied the same selection rule. Re-timing raises every mainline signal’s estimate to at least "
           "1,800 veh/h northbound and 2,040 southbound and removes most of the saturation: with the full declared "
           "side demand 5,220 to 5,229 trips complete per run instead of about 2,300, and with no side demand "
-          "teleports stay at zero and the northbound mainline completes all 1,389 trips at 195 to 197 s of time "
+          "teleports stay at zero and the northbound mainline completes 1,389 trips (its hourly flow) at 195 to 197 s of time "
           "loss. No level qualifies, however: even without side demand 129 to 131 vehicles per run (4.3%) remain "
           "unfinished, and the southbound mainline loses 1,014 to 1,038 s per trip; green shares do not explain "
           "this and the audit does not identify its cause. Under the preregistered rule the corrected controller "
@@ -457,7 +458,7 @@ BODY = [
           "capacity where real lanes are turn-only."),
     ("p", "With both changes and the 2025 counts, no level passes the baseline test either ({T:simaudit}): with no "
           "side-street demand 523 to 568 of 5,368 vehicles per run remain unfinished; the northbound mainline "
-          "completes all 2,520–2,524 trips at 247–248 s of time loss, the southbound only 1,877–1,922 at "
+          "completes 2,520–2,524 trips at 247–248 s of time loss, the southbound only 1,877–1,922 at "
           "1,199–1,226 s, and the re-timed plan gives one southbound signal an estimated 2,278 veh/h for the "
           "observed 2,444. Measured against reality, the testbed is too slow: on the eight SUMO edges mapped to the "
           "forecast link West St S Spring St–BBT portal, the simulated space-mean speed is 5.8 mph (5.79 to 5.85 "

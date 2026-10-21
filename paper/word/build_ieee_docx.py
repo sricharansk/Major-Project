@@ -326,6 +326,16 @@ def build_table(tid: str, refs: Refs) -> str:
                        ["start", "end", "end", "start"], size=15)
         x += note("NOT_APPLICABLE: the operational track has no events or incidents group to remove.", refs)
         return x
+    if tid == "seeds":
+        tex = (TABLES / "multi_seed.tex").read_text(encoding="utf-8")
+        x = caption("Multi-Seed Study of the Deep Forecasters (Test MAE, mph)", refs)
+        if "NOT RUN" in tex.split("\\toprule", 1)[1]:
+            x += table_xml([180], [["Status"]], [["NOT RUN"]], refs, ["center"], size=16)
+            x += note("Seeds 42, 1 and 2 for the proposed model, the GRU and the temporal Transformer; mean ± sd over "
+                      "seeds and a paired day-block bootstrap of the seed-averaged difference to the proposed model "
+                      "will be reported here once the study has run.", refs)
+            return x
+        raise SystemExit("multi_seed.tex now holds results: extend build_table('seeds') to render them")
     if tid == "unc":
         _, rows = tex_rows("uncertainty")
         body = [[r[0], num(r[1]), r[2], r[3]] for r in rows]
