@@ -1,0 +1,290 @@
+{
+  "rule": {
+    "protocol_id": "v4_counts2025_webster_noturnlanes",
+    "side_scales": [
+      1.0,
+      0.75,
+      0.5,
+      0.25,
+      0.0
+    ],
+    "seeds": [
+      101,
+      102,
+      103
+    ],
+    "max_teleports": 0,
+    "max_unfinished_frac": 0.01
+  },
+  "signal_timing": "webster_retimed",
+  "retimed_programs": {
+    "1.0": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side100.webster.add.xml",
+      "sha16": "870da89bdc957e3b",
+      "for_demand": "sweep_side100",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side100.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side100.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    },
+    "0.75": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side075.webster.add.xml",
+      "sha16": "968bc003d67632fc",
+      "for_demand": "sweep_side075",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side075.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side075.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    },
+    "0.5": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side050.webster.add.xml",
+      "sha16": "c03c38a705616c69",
+      "for_demand": "sweep_side050",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side050.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side050.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    },
+    "0.25": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side025.webster.add.xml",
+      "sha16": "89b66bf4dc078dd2",
+      "for_demand": "sweep_side025",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side025.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side025.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    },
+    "0.0": {
+      "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+      "tls_additional": "simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side000.webster.add.xml",
+      "sha16": "7dfeae832ce04dd8",
+      "for_demand": "sweep_side000",
+      "options": [
+        "-r",
+        "/home/user/Major-Project/simulation/demand/sweep_side000.vehicles.rou.xml",
+        "-o",
+        "/home/user/Major-Project/simulation/networks/west_st_corridor.v4_counts2025_webster_noturnlanes.sweep_side000.webster.add.xml",
+        "-b",
+        "300",
+        "-y",
+        "3",
+        "-a",
+        "2",
+        "-g",
+        "7",
+        "--min-cycle",
+        "20",
+        "--max-cycle",
+        "120",
+        "-H",
+        "2.0",
+        "-p",
+        "webster"
+      ]
+    }
+  },
+  "per_scale": [
+    {
+      "side_demand_scale": 1.0,
+      "admissible": false,
+      "run_ids": [
+        "sim-sweep_side100-fixed_time-s101-20261021T022021-518c7e",
+        "sim-sweep_side100-fixed_time-s102-20261021T022021-daaad5",
+        "sim-sweep_side100-fixed_time-s103-20261021T022021-1cbf4a"
+      ],
+      "teleports": [
+        70,
+        49,
+        78
+      ],
+      "unfinished_trips": [
+        2254,
+        2172,
+        2210
+      ],
+      "loaded": [
+        9443,
+        9443,
+        9443
+      ]
+    },
+    {
+      "side_demand_scale": 0.75,
+      "admissible": false,
+      "run_ids": [
+        "sim-sweep_side075-fixed_time-s101-20261021T022021-208165",
+        "sim-sweep_side075-fixed_time-s102-20261021T022105-7eb940",
+        "sim-sweep_side075-fixed_time-s103-20261021T022113-df2e6e"
+      ],
+      "teleports": [
+        50,
+        54,
+        50
+      ],
+      "unfinished_trips": [
+        1380,
+        1436,
+        1471
+      ],
+      "loaded": [
+        8418,
+        8418,
+        8418
+      ]
+    },
+    {
+      "side_demand_scale": 0.5,
+      "admissible": false,
+      "run_ids": [
+        "sim-sweep_side050-fixed_time-s101-20261021T022113-566ad0",
+        "sim-sweep_side050-fixed_time-s102-20261021T022116-b8be68",
+        "sim-sweep_side050-fixed_time-s103-20261021T022148-a2c103"
+      ],
+      "teleports": [
+        42,
+        41,
+        49
+      ],
+      "unfinished_trips": [
+        1000,
+        997,
+        995
+      ],
+      "loaded": [
+        7418,
+        7418,
+        7418
+      ]
+    },
+    {
+      "side_demand_scale": 0.25,
+      "admissible": false,
+      "run_ids": [
+        "sim-sweep_side025-fixed_time-s101-20261021T022150-1c71bd",
+        "sim-sweep_side025-fixed_time-s102-20261021T022153-6c59f2",
+        "sim-sweep_side025-fixed_time-s103-20261021T022156-f4de7b"
+      ],
+      "teleports": [
+        29,
+        25,
+        33
+      ],
+      "unfinished_trips": [
+        726,
+        746,
+        743
+      ],
+      "loaded": [
+        6393,
+        6393,
+        6393
+      ]
+    },
+    {
+      "side_demand_scale": 0.0,
+      "admissible": false,
+      "run_ids": [
+        "sim-sweep_side000-fixed_time-s101-20261021T022223-a94420",
+        "sim-sweep_side000-fixed_time-s102-20261021T022225-217b48",
+        "sim-sweep_side000-fixed_time-s103-20261021T022227-7ec75c"
+      ],
+      "teleports": [
+        0,
+        0,
+        0
+      ],
+      "unfinished_trips": [
+        568,
+        531,
+        523
+      ],
+      "loaded": [
+        5368,
+        5368,
+        5368
+      ]
+    }
+  ],
+  "selected_side_demand_scale": null,
+  "network_static_sha256": "b434b4f28666656c0d1afc714569c2d4f37394648ce93b0b2d74c174c077bdc0",
+  "network_static_content_sha256": "52dcd2fca701239b12060c4b1434601a5e5afc65e2e037cb6044aba9b61564e8",
+  "protocol_id": "v4_counts2025_webster_noturnlanes",
+  "osm_turn_lanes": false,
+  "demand_source": "NYC Open Data classification counts, weekday 16-19 h hourly totals (all vehicle classes), 2025"
+}

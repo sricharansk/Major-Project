@@ -1,0 +1,253 @@
+{
+  "generated_at": "2026-10-21T02:24:54Z",
+  "protocol_id": "v4_counts2025_webster_noturnlanes",
+  "mode": "SIMULATION (testbed audit, not a controller comparison)",
+  "sumo_version": "Eclipse SUMO sumo 1.28.0",
+  "network_static_content_sha256": "52dcd2fca701239b12060c4b1434601a5e5afc65e2e037cb6044aba9b61564e8",
+  "osm_turn_lanes": false,
+  "demand_source": "NYC Open Data classification counts, weekday 16-19 h hourly totals (all vehicle classes), 2025",
+  "observed_main_vph": {
+    "nb": 2510.0,
+    "sb": 2444.0
+  },
+  "signal_capacity": {
+    "saturation_flow_vphpl_assumed": 1800,
+    "min_est_capacity_vph": {
+      "netconvert_guess:northbound": 1000,
+      "netconvert_guess:southbound": 1860,
+      "v4_counts2025_webster_noturnlanes_side0:northbound": 2576,
+      "v4_counts2025_webster_noturnlanes_side0:southbound": 2278
+    },
+    "signals_at_or_below_observed_demand": [
+      {
+        "program": "netconvert_guess",
+        "direction": "northbound",
+        "tls_id": "GS_42451370",
+        "through_lanes": 2,
+        "cycle_s": 90,
+        "corridor_green_s": 25,
+        "g_over_c": 0.278,
+        "est_capacity_vph": 1000
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "northbound",
+        "tls_id": "cluster_246858435_42429570",
+        "through_lanes": 4,
+        "cycle_s": 90,
+        "corridor_green_s": 31,
+        "g_over_c": 0.344,
+        "est_capacity_vph": 2480
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "northbound",
+        "tls_id": "cluster_246858448_42431626",
+        "through_lanes": 4,
+        "cycle_s": 90,
+        "corridor_green_s": 31,
+        "g_over_c": 0.344,
+        "est_capacity_vph": 2480
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "southbound",
+        "tls_id": "cluster_246858435_42429570",
+        "through_lanes": 3,
+        "cycle_s": 90,
+        "corridor_green_s": 31,
+        "g_over_c": 0.344,
+        "est_capacity_vph": 1860
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "southbound",
+        "tls_id": "cluster_246858448_42431626",
+        "through_lanes": 3,
+        "cycle_s": 90,
+        "corridor_green_s": 31,
+        "g_over_c": 0.344,
+        "est_capacity_vph": 1860
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "southbound",
+        "tls_id": "cluster_246858433_42422028",
+        "through_lanes": 3,
+        "cycle_s": 90,
+        "corridor_green_s": 36,
+        "g_over_c": 0.4,
+        "est_capacity_vph": 2160
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "southbound",
+        "tls_id": "GS_588593611",
+        "through_lanes": 3,
+        "cycle_s": 90,
+        "corridor_green_s": 40,
+        "g_over_c": 0.444,
+        "est_capacity_vph": 2400
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "southbound",
+        "tls_id": "cluster_12162502083_12162542907",
+        "through_lanes": 3,
+        "cycle_s": 90,
+        "corridor_green_s": 40,
+        "g_over_c": 0.444,
+        "est_capacity_vph": 2400
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "southbound",
+        "tls_id": "cluster_12410398107_4207143418",
+        "through_lanes": 3,
+        "cycle_s": 90,
+        "corridor_green_s": 40,
+        "g_over_c": 0.444,
+        "est_capacity_vph": 2400
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "southbound",
+        "tls_id": "cluster_12410398108_42440918",
+        "through_lanes": 3,
+        "cycle_s": 90,
+        "corridor_green_s": 40,
+        "g_over_c": 0.444,
+        "est_capacity_vph": 2400
+      },
+      {
+        "program": "netconvert_guess",
+        "direction": "southbound",
+        "tls_id": "cluster_373880031_42453395",
+        "through_lanes": 3,
+        "cycle_s": 90,
+        "corridor_green_s": 40,
+        "g_over_c": 0.444,
+        "est_capacity_vph": 2400
+      },
+      {
+        "program": "v4_counts2025_webster_noturnlanes_side0",
+        "direction": "southbound",
+        "tls_id": "cluster_246858435_42429570",
+        "through_lanes": 3,
+        "cycle_s": 64.0,
+        "corridor_green_s": 27.0,
+        "g_over_c": 0.422,
+        "est_capacity_vph": 2278
+      }
+    ]
+  },
+  "mainline_by_direction_side_scale_0": [
+    {
+      "signal_timing": "v4_counts2025_webster_noturnlanes",
+      "run_id": "sim-sweep_side000-fixed_time-s101-20261021T022223-a94420",
+      "flow": "main_nb",
+      "completed": 2524,
+      "mean_time_loss_s": 247.0
+    },
+    {
+      "signal_timing": "v4_counts2025_webster_noturnlanes",
+      "run_id": "sim-sweep_side000-fixed_time-s101-20261021T022223-a94420",
+      "flow": "main_sb",
+      "completed": 1877,
+      "mean_time_loss_s": 1225.8
+    },
+    {
+      "signal_timing": "v4_counts2025_webster_noturnlanes",
+      "run_id": "sim-sweep_side000-fixed_time-s102-20261021T022225-217b48",
+      "flow": "main_nb",
+      "completed": 2524,
+      "mean_time_loss_s": 248.3
+    },
+    {
+      "signal_timing": "v4_counts2025_webster_noturnlanes",
+      "run_id": "sim-sweep_side000-fixed_time-s102-20261021T022225-217b48",
+      "flow": "main_sb",
+      "completed": 1914,
+      "mean_time_loss_s": 1198.7
+    },
+    {
+      "signal_timing": "v4_counts2025_webster_noturnlanes",
+      "run_id": "sim-sweep_side000-fixed_time-s103-20261021T022227-7ec75c",
+      "flow": "main_nb",
+      "completed": 2520,
+      "mean_time_loss_s": 247.4
+    },
+    {
+      "signal_timing": "v4_counts2025_webster_noturnlanes",
+      "run_id": "sim-sweep_side000-fixed_time-s103-20261021T022227-7ec75c",
+      "flow": "main_sb",
+      "completed": 1922,
+      "mean_time_loss_s": 1212.4
+    }
+  ],
+  "speed_validation": {
+    "dot_link_id": "4456494",
+    "sumo_edges": [
+      "614853315",
+      "1537478420",
+      "420809439",
+      "412875705#0",
+      "438367286#0",
+      "978439270#0",
+      "978431658#0",
+      "195743227"
+    ],
+    "observed": {
+      "file": "link4456494_2026-04-01_2026-10-20_weekday_hourly.json.gz",
+      "by_hour": {
+        "0": 10.75,
+        "1": 12.64,
+        "2": 13.73,
+        "3": 16.59,
+        "4": 16.2,
+        "5": 19.31,
+        "6": 23.45,
+        "7": 21.36,
+        "8": 19.49,
+        "9": 18.11,
+        "10": 17.41,
+        "11": 16.74,
+        "12": 14.75,
+        "13": 14.22,
+        "14": 14.22,
+        "15": 13.28,
+        "16": 10.84,
+        "17": 10.09,
+        "18": 11.9,
+        "19": 15.77,
+        "20": 16.65,
+        "21": 11.94,
+        "22": 10.45,
+        "23": 9.63
+      },
+      "pm_peak_16_19_mph": 10.95,
+      "pm_peak_records": 3692
+    },
+    "simulated_side_scale_0": [
+      {
+        "seed": 101,
+        "space_mean_speed_mph": 5.79,
+        "edges": 8,
+        "length_m": 1034.4
+      },
+      {
+        "seed": 102,
+        "space_mean_speed_mph": 5.85,
+        "edges": 8,
+        "length_m": 1034.4
+      },
+      {
+        "seed": 103,
+        "space_mean_speed_mph": 5.81,
+        "edges": 8,
+        "length_m": 1034.4
+      }
+    ],
+    "note": "observed: NYC DOT speeds, weekday 16-19 h local, Apr-Oct 2026; simulated: routine peak with no side-street demand, development seeds, space-mean speed 300-3900 s"
+  }
+}

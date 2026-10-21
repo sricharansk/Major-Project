@@ -6,10 +6,10 @@
   },
   "PAPER-01": {
     "status": "PARTIAL",
-    "limitations": "Results, discussion, limitations and conclusion (including the superseded SUMO comparison and the testbed audit) are written from the run artifacts and listed in paper_claims.csv; 24/24 references CHECKED. Author block filled with the student (S K Sricharan, VIT Chennai); co-authors and author order (e.g. the guide) are to be confirmed by the authors before submission."
+    "limitations": "Results, discussion, limitations and conclusion (including the superseded SUMO comparison and the testbed audit) are written from the run artifacts and listed in paper_claims.csv; 26/26 references CHECKED. Author block filled with the student (S K Sricharan, VIT Chennai); co-authors and author order (e.g. the guide) are to be confirmed by the authors before submission."
   },
   "SIM-02": {
     "status": "PARTIAL",
-    "limitations": "The 45 matched-seed runs in simulation_metrics.csv (2026-10-20) are SUPERSEDED: the 2026-10-21 testbed audit (reports/experiments/simulation_testbed_audit.json) found bare from/to flows re-routed by SUMO at insertion (1,120 of 2,189 mainline routes off West Street) and a 0.2 m NB entry stub. Under the corrected protocol (fixed routes, observed ATR mainline demand) no side-demand level passes the preregistered baseline test with either the netconvert programs or Webster re-timed programs (simulation/scenarios/demand_selection_*.json), so the corrected controller comparison is NOT_RUN."
+    "limitations": "The 45 matched-seed runs in simulation_metrics.csv (2026-10-20) are SUPERSEDED (SUMO insertion re-routing sent 1,120 of 2,189 mainline routes off West Street; 0.2 m NB entry stub). Corrected protocols (2014 count with netconvert or Webster programs; 2025 two-direction counts without OSM turn-lane restrictions, Webster programs) all fail the preregistered baseline test (simulation/scenarios/demand_selection_*.json); with 2025 counts the mapped link runs at 5.8 mph in simulation vs 10.95 mph observed. Corrected controller comparison: NOT_RUN; next: calibrate signal splits/progression to the observed speed or obtain NYC DOT timing plans."
   }
 }

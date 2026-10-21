@@ -42,11 +42,14 @@ def sumo_version() -> str:
     return out.splitlines()[0].strip() if out else "unknown"
 
 
-def netconvert(osm: Path, out: Path, tls_type: str = "static") -> Path:
+def netconvert(osm: Path, out: Path, tls_type: str = "static", turn_lanes: bool = True) -> Path:
+    # --osm.turn-lanes turns OSM turn:lanes tags into hard lane restrictions. On West St it makes a shared lane on the
+    # 45 m link south of Chambers St right-turn-only, so through traffic must change lanes within 45 m and the merge
+    # blocks the Chambers St junction (testbed audit, 2026-10-21); without it that lane also carries through traffic
     cmd = [binary("netconvert"), "--osm-files", str(osm), "--output-file", str(out),
            "--geometry.remove", "--ramps.guess", "--junctions.join", "--tls.guess-signals", "--tls.discard-simple",
            "--tls.join", "--tls.default-type", tls_type, "--keep-edges.by-vclass", "passenger",
-           "--remove-edges.isolated", "--osm.turn-lanes", "--no-turnarounds.tls", "--tls.yellow.time", "3",
+           "--remove-edges.isolated", *(["--osm.turn-lanes"] if turn_lanes else []), "--no-turnarounds.tls", "--tls.yellow.time", "3",
            "--tls.allred.time", "2", "--seed", "42", "--no-warnings",
            "--output.street-names"]  # keep OSM names: corridor detection matches on edge names (dropped by default)
     r = subprocess.run(cmd, capture_output=True, text=True)

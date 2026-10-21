@@ -33,3 +33,5 @@ Crossref became reachable on 2026-10-21 and was used for the remaining open entr
 | nycdotspeeds | dataset i4gi-tjb9 | dataset | CHECKED (server-side audit) | identity and date range verified by `fetch.py audit` on 2026-10-20 |
 | openmeteo | open-meteo.com | API | CHECKED (fetch log) | archive and historical-forecast endpoints returned HTTP 200 on 2026-10-20 |
 | sumodocs_routing | SUMO v1_28_0 docs, Demand/Automatic_Routing.md | software documentation | CHECKED | fetched from the v1_28_0 tag on 2026-10-21; quoted behaviour: flows with from/to are routed automatically at insertion |
+| nycclasscounts | dataset 96ay-ea4r | dataset | CHECKED (catalog + query) | identity from the NYC Open Data catalog API on 2026-10-21; West St records 29-30 Apr 2025 downloaded by `fetch.py counts` |
+| nycvzvretiming | dataset d8dp-wfee | dataset | CHECKED (catalog + query) | description: priority corridors whose signal progression was changed to match the 25 MPH limit; West Street Battery Pl - W 57 St (2014) and 57 St - Morris St (2019) |

@@ -1,7 +1,7 @@
 # Final status
 
-Last updated: 2026-10-21 07:35 IST / 02:05 UTC (after the real-data run on the workstation, the SUMO testbed
-audit in the development container, `progress.md` Milestone 4, and the final-review deck in `presentation/`). Statuses follow `progress.md`; evidence paths are in
+Last updated: 2026-10-21 08:25 IST / 02:55 UTC (after the real-data run on the workstation, the SUMO testbed
+audits in the development container, `progress.md` Milestones 4-6, and the final-review deck in `presentation/`). Statuses follow `progress.md`; evidence paths are in
 this repository unless marked "workstation".
 
 | Component | Status | Evidence | Notes |
@@ -18,19 +18,20 @@ this repository unless marked "workstation".
 | LLM (Ollama qwen2.5:7b) | VERIFIED | `reports/experiments/llm_calls.csv`, `artifacts/agent_traces/` | 12/12 schema-valid structured responses; 15.9-125.5 s per call on the workstation |
 | LangGraph workflow + safety constraints | VERIFIED | `reports/experiments/advisory_metrics.csv`, `tests/safety` | 19 runs: DEFER_DATA / DEFER_UNCERTAINTY / DEFER_EVIDENCE / REJECT_CONSTRAINT / PENDING_HUMAN_REVIEW reached; SIMULATION_PASSED path not reached by a real advisory (LLM chose monitor_only); on a testbed without admissible demand a signal-change candidate now ends in ERROR_TOOL (NOT_EVALUATED) |
 | SUMO/TraCI runs and protected controller | VERIFIED (runs) | `reports/experiments/simulation_metrics.csv` (45 runs), `simulation_demand_selection_*.csv` (30 runs), `simulation_testbed_audit.json` | corridor 82 edges, 22 signals; rebuilt in the container and reproduced exactly; TraCI wrapper now uses the active (re-timed) program |
-| Paired controller comparison | PARTIAL: first comparison SUPERSEDED, corrected comparison NOT RUN | `simulation/scenarios/demand_selection_netconvert_guess.json`, `demand_selection_webster_retimed.json`, paper Tables VII-VIII | 2026-10-20 runs let SUMO re-route half the mainline off West St and used a 0.2 m entry stub; corrected testbed (fixed routes, ATR 1,389 veh/h) fails its preregistered baseline test with netconvert programs (17.7 % unfinished) and Webster re-timed programs (4.3 %; rule 1 %); rule not relaxed |
+| Paired controller comparison | PARTIAL: first comparison SUPERSEDED, corrected comparison NOT RUN | `simulation/scenarios/demand_selection_*.json` (3 corrected protocols), `simulation_testbed_audit_v4_*.json`, `simulation_turnlane_check.json`, paper Tables VII-VIII | every corrected protocol fails the preregistered baseline test; with 2025 two-direction counts the mapped link runs at 5.8 mph simulated vs 10.95 mph observed; rule not relaxed |
 | API + Postgres job queue + worker | VERIFIED (software) | `tests/integration/test_api.py`, `test_db.py`, `reports/verification/api_smoke.json`, `db_smoke.json` | |
 | Dashboard | VERIFIED (software) | `reports/verification/dashboard_smoke.json` | |
 | MLflow tracking + export | VERIFIED | `reports/verification/mlflow_runs.json` (workstation export) | |
 | Docker packaging | VERIFIED (workstation) | `reports/verification/docker_smoke.json` | compose build OK, 3 images 4.67 GB; the development container cannot build images |
-| Paper | VERIFIED (draft complete) | `paper/main.pdf` (10 pages, rebuilt 2026-10-21), `paper/tables/*.tex`, `reports/verification/paper_claims.csv` (C01-C28) | every results/discussion/limitations/conclusion statement written from artifacts; 24/24 references CHECKED; author block has the student; co-authors and order still to confirm |
+| Paper | VERIFIED (draft complete) | `paper/main.pdf` (10 pages, rebuilt 2026-10-21), `paper/tables/*.tex`, `reports/verification/paper_claims.csv` (C01-C28) | every results/discussion/limitations/conclusion statement written from artifacts; 26/26 references CHECKED; author block has the student; co-authors and order still to confirm |
 | Final review presentation | VERIFIED | `presentation/Final_Review_S_K_Sricharan_25MML1010.pptx` (19 slides, VIT template) and PDF | built from committed result files by `presentation/build_final_review.py`; rebuild reproduces it |
 
 Open items (need the authors or the workstation):
 1. Paper: confirm co-authors and author order (the student is filled in).
-2. Simulation: an admissible testbed needs reviewed NYC DOT signal timing plans for West St and recent two-direction
-   counts (or an explicit, documented decision by the authors to change the preregistered rule); only then can
-   `simulation evaluate` and an advisory reaching the simulation gate be run.
+2. Simulation: recent two-direction counts are now in use (2025). An admissible testbed needs signal timing that
+   matches reality: either calibrate splits and 25 mph progression to the observed 10.95 mph PM-peak speed (a
+   calibration decision for the authors) or obtain NYC DOT timing plans; only then can `simulation evaluate` and an
+   advisory reaching the simulation gate be run.
 3. Re-run `agents evaluate` on the workstation so the agent traces reflect the corrected simulation gate.
 4. Superseded runs (ablation bootstrap unit error, first agents pass) stay on the workstation (`progress.md` Milestone 3).
 

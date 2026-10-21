@@ -1,0 +1,147 @@
+{
+  "generated_at": "2026-10-21T02:27:24Z",
+  "mode": "SIMULATION (testbed check, not a controller comparison)",
+  "sumo_version": "Eclipse SUMO sumo 1.28.0",
+  "osm_sha256": "2294123962c8a7becf4674f6c9292ddee4582ef75e6bb038bd160376aff61e39",
+  "demand": {
+    "main_veh_per_hour_per_direction": 1389.0,
+    "side_veh_per_hour_per_approach": 150,
+    "route_choice": "fixed_free_flow",
+    "side_demand_scale": 0.0
+  },
+  "seeds": [
+    101,
+    102,
+    103
+  ],
+  "cases": [
+    {
+      "osm_turn_lanes": true,
+      "network_content_sha256": "9d0205f013bacefd3efe65c05d82b71a287aa25bc0bcd6cf6db8c279b8f3a8a8",
+      "dead_end_corridor_lanes": [
+        "1053554762#0_4",
+        "1053554762#0_5",
+        "420809421_4",
+        "420809425#0_4",
+        "420809438#0_3",
+        "420809441_4",
+        "837515831#0_5"
+      ],
+      "retimed_programs_sha16": "4ce433aa9d6632f1",
+      "runs": [
+        {
+          "seed": 101,
+          "loaded": 3010,
+          "running_at_end": 131,
+          "teleports": 0,
+          "by_flow": {
+            "main_nb": {
+              "completed": 1389,
+              "mean_time_loss_s": 195.7
+            },
+            "main_sb": {
+              "completed": 1258,
+              "mean_time_loss_s": 1014.1
+            }
+          }
+        },
+        {
+          "seed": 102,
+          "loaded": 3010,
+          "running_at_end": 129,
+          "teleports": 0,
+          "by_flow": {
+            "main_nb": {
+              "completed": 1389,
+              "mean_time_loss_s": 195.1
+            },
+            "main_sb": {
+              "completed": 1260,
+              "mean_time_loss_s": 1037.5
+            }
+          }
+        },
+        {
+          "seed": 103,
+          "loaded": 3010,
+          "running_at_end": 131,
+          "teleports": 0,
+          "by_flow": {
+            "main_nb": {
+              "completed": 1389,
+              "mean_time_loss_s": 196.5
+            },
+            "main_sb": {
+              "completed": 1258,
+              "mean_time_loss_s": 1031.1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "osm_turn_lanes": false,
+      "network_content_sha256": "52dcd2fca701239b12060c4b1434601a5e5afc65e2e037cb6044aba9b61564e8",
+      "dead_end_corridor_lanes": [
+        "1053554762#0_4",
+        "1053554762#0_5",
+        "420809421_4",
+        "420809425#0_4",
+        "420809438#0_3",
+        "420809441_4",
+        "837515831#0_5"
+      ],
+      "retimed_programs_sha16": "7b5c213c2db12e77",
+      "runs": [
+        {
+          "seed": 101,
+          "loaded": 3010,
+          "running_at_end": 0,
+          "teleports": 0,
+          "by_flow": {
+            "main_nb": {
+              "completed": 1389,
+              "mean_time_loss_s": 207.2
+            },
+            "main_sb": {
+              "completed": 1389,
+              "mean_time_loss_s": 345.5
+            }
+          }
+        },
+        {
+          "seed": 102,
+          "loaded": 3010,
+          "running_at_end": 0,
+          "teleports": 0,
+          "by_flow": {
+            "main_nb": {
+              "completed": 1389,
+              "mean_time_loss_s": 207.7
+            },
+            "main_sb": {
+              "completed": 1389,
+              "mean_time_loss_s": 346.7
+            }
+          }
+        },
+        {
+          "seed": 103,
+          "loaded": 3010,
+          "running_at_end": 0,
+          "teleports": 0,
+          "by_flow": {
+            "main_nb": {
+              "completed": 1389,
+              "mean_time_loss_s": 208.2
+            },
+            "main_sb": {
+              "completed": 1389,
+              "mean_time_loss_s": 380.1
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
