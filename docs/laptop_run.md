@@ -79,3 +79,30 @@ tar -czf transfer\real_run_bundle.tar.gz data\processed data\manifests artifacts
 Report back: per-stage status and wall time (`reports/verification/stage_log.jsonl`), GPU name, preprocess row/link
 counts and date range, graph node/edge counts, test MAE lines, calibration coverage, agent decision lines, and the
 Ollama digest/version printed by `doctor`.
+
+## 5. Follow-up 2026-10-21: counts, multi-seed study, agents re-run
+
+Run after PR #16 is merged (it carries `scripts/multi_seed_study.py`). Nothing here retrains the main run; the three
+deep models are retrained with seeds 42, 1 and 2 into their own folders so the single-seed 0.01-0.06 mph gaps can be
+given a spread.
+
+```powershell
+git fetch origin
+git checkout main
+git pull origin main
+.\.venv\Scripts\Activate.ps1
+pip install -e .
+python src\smartcity\ingestion\fetch.py counts --dataset classification --street-like "WEST ST"
+python src\smartcity\ingestion\fetch.py counts --dataset volume_hist --street-like "WEST ST"
+python scripts\multi_seed_study.py train-all --seeds 42 1 2        # 9 runs, GPU, same budget as the main run
+python scripts\multi_seed_study.py analyze                         # multi_seed_metrics.csv + multi_seed_summary.csv
+python -m smartcity.cli agents evaluate                             # needs Ollama qwen2.5:7b running
+python -m smartcity.cli report export
+python -m smartcity.cli paper sync
+python -m pytest -q tests\unit tests\safety
+```
+
+`train-all` skips any (seed, model) pair whose predictions already exist, so it can be restarted after an interruption.
+Hand back as in section 4 (`git add reports artifacts/models/multi_seed_runs.json artifacts/models/ms-* artifacts/agent_traces paper/tables`;
+weights and prediction arrays stay ignored) and post the branch name in the project thread. Report the multi-seed
+summary lines verbatim; do not round them into a ranking.

@@ -264,3 +264,15 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   shows four baseline passes), 'nearly ten months' of data, test window about 44 days over 45 calendar dates. The
   second pass covered 23 of 64 planned checks before the session limit; limitations, conclusion, method, data,
   experiments, final_status, progress, README and paper_claims were not independently re-checked in that pass.
+
+### Milestone 7: multi-seed study prepared (development container, 2026-10-21 03:30-03:50 UTC)
+- The other account's session (branch `claude/nifty-dijkstra-u5kjbw`, 3 unmerged commits) is merged: `scripts/multi_seed_study.py`,
+  `runner.train_deep(seed=...)`, `reports/verification/container_reproduction.json` (independent re-download reproduced
+  1,968,303 raw rows, graph hash d8c69a468b82cbda, feature schema hash 1d63c3fe45a729be and the same splits).
+- Its three CPU seed-42 runs (proposed, gru, temporal_transformer; torch 2.14.1, container) are kept in
+  `artifacts/models/multi_seed_runs.json` under `runs_without_predictions`: their weights and prediction arrays are not
+  committed, so they cannot be analysed here and seed 42 is re-run on the workstation GPU. The CPU proposed run's
+  4.689/5.327/6.116 mph reported by that session is not reproducible from the repository and is not used.
+- `train-all` (resumable, seed-major) and portable artifact paths added; 3 unit tests. Workstation instructions:
+  `docs/laptop_run.md` section 5 (counts fetch, 9 seed runs, `analyze`, `agents evaluate`, export, paper sync).
+- Multi-seed results, the agents re-run on the corrected simulation gate and the counts fetch: NOT RUN (workstation).

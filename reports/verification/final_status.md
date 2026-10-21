@@ -33,6 +33,8 @@ Open items (need the authors or the workstation):
    calibration decision for the authors) or obtain NYC DOT timing plans; only then can `simulation evaluate` and an
    advisory reaching the simulation gate be run.
 3. Re-run `agents evaluate` on the workstation so the agent traces reflect the corrected simulation gate.
+5. Multi-seed study (seeds 42, 1, 2 for proposed, GRU and temporal Transformer): script and runbook ready
+   (`docs/laptop_run.md` section 5), runs NOT RUN; the single-seed margins stay unresolved until then.
 4. Superseded runs (ablation bootstrap unit error, first agents pass) stay on the workstation (`progress.md` Milestone 3).
 
 Software tests: 66 passed in the development container on 2026-10-21 (unit, leakage, safety, PostGIS and SUMO

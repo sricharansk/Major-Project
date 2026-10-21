@@ -1,6 +1,7 @@
 """Multi-seed study of the deep forecasters (single-seed results cannot separate models 0.01-0.05 mph apart).
 
     python scripts/multi_seed_study.py train --variant proposed --seed 1     # one run; repeat per variant and seed
+    python scripts/multi_seed_study.py train-all --seeds 42 1 2              # every (seed, variant) pair not yet done
     python scripts/multi_seed_study.py analyze                               # metrics, seed spread, paired bootstrap
 
 Runs go through runner.train_deep (same data, budget, early stopping and device rules as the main run) into their own
@@ -8,6 +9,8 @@ artifact folders and are listed in artifacts/models/multi_seed_runs.json; the pe
 explanations and agents read is not touched. `analyze` evaluates every listed run on one shared valid-target mask and
 writes reports/experiments/multi_seed_metrics.csv (per run and horizon) and multi_seed_summary.csv (per model:
 mean and spread over seeds; paired day-block bootstrap of the seed-averaged MAE difference against the proposed model).
+Runs whose prediction arrays are not on disk (for example the CPU seed-42 runs recorded in the development container,
+whose .npz files are not committed) are listed under `runs_without_predictions` in the manifest and are not analysed.
 """
 
 from __future__ import annotations
@@ -30,29 +33,73 @@ MANIFEST = settings.ROOT / "artifacts" / "models" / "multi_seed_runs.json"
 EXP = settings.ROOT / "reports" / "experiments"
 
 
+VARIANTS = ["proposed", "gru", "temporal_transformer"]
+
+
 def _manifest() -> dict:
-    return read_json(MANIFEST) if MANIFEST.exists() else {"runs": []}
+    man = read_json(MANIFEST) if MANIFEST.exists() else {"runs": []}
+    man.setdefault("runs", [])
+    man.setdefault("runs_without_predictions", [])
+    return man
 
 
-def train(variant: str, seed: int, track: str) -> None:
+def _run_dir(r: dict) -> Path:
+    """Artifact folder of a manifest entry; an absolute path from another machine falls back to artifacts/models/<run_id>."""
+    p = Path(r["artifact_dir"])
+    if not p.is_absolute():
+        p = settings.ROOT / p
+    if not p.exists():
+        p = settings.ROOT / "artifacts" / "models" / r["run_id"]
+    return p
+
+
+def _has_predictions(r: dict) -> bool:
+    return (_run_dir(r) / "predictions_test.npz").exists()
+
+
+def pending_pairs(variants: list[str], seeds: list[int], track: str, man: dict | None = None) -> list[tuple[int, str]]:
+    """(seed, variant) pairs with no analysable run yet, seed-major so an interrupted study still has whole seeds."""
+    man = man or _manifest()
+    done = {(r["seed"], r["variant"]) for r in man["runs"] if r["track"] == track and _has_predictions(r)}
+    return [(s, v) for s in seeds for v in variants if (s, v) not in done]
+
+
+def train(variant: str, seed: int, track: str) -> dict:
     data = load_data(track)
     res = runner.train_deep(variant, data, run_id=new_run_id(f"ms-{variant}-s{seed}"), seed=seed)
     man = _manifest()  # one process at a time appends (runs are started sequentially by the caller)
-    man["runs"].append({"variant": variant, "seed": seed, "track": track, **{k: res["info"][k] for k in (
-        "run_id", "artifact_dir", "best_epoch", "epochs_run", "best_val_mae", "train_time_s", "train_device",
-        "stopped_reason", "model_sha256")}})
+    info = res["info"]
+    entry = {"variant": variant, "seed": seed, "track": track, **{k: info[k] for k in (
+        "run_id", "best_epoch", "epochs_run", "best_val_mae", "train_time_s", "train_device",
+        "stopped_reason", "model_sha256")},
+        "artifact_dir": Path(info["artifact_dir"]).resolve().relative_to(settings.ROOT.resolve()).as_posix()}
+    man["runs"].append(entry)
     write_json(MANIFEST, man)
-    print(json.dumps(man["runs"][-1]))
+    print(json.dumps(entry))
+    return entry
+
+
+def train_all(variants: list[str], seeds: list[int], track: str) -> None:
+    todo = pending_pairs(variants, seeds, track)
+    print(f"{len(todo)} run(s) to train: {todo}")
+    for seed, variant in todo:
+        train(variant, seed, track)
 
 
 def analyze(track: str, n_boot: int, reference: str) -> None:
     data = load_data(track)
     o = data.origins["test"]
     Y = data.Y[o]
-    runs = [r for r in _manifest()["runs"] if r["track"] == track]
+    listed = [r for r in _manifest()["runs"] if r["track"] == track]
+    runs = [r for r in listed if _has_predictions(r)]
+    for r in listed:
+        if r not in runs:
+            print(f"SKIPPED (no predictions_test.npz on this machine): {r['run_id']}")
+    if not runs:
+        raise SystemExit("no analysable runs: train first (python scripts/multi_seed_study.py train-all)")
     preds = {}
     for r in runs:
-        z = np.load(Path(r["artifact_dir"]) / "predictions_test.npz")
+        z = np.load(_run_dir(r) / "predictions_test.npz")
         if not np.array_equal(z["origins"], o):
             raise RuntimeError(f"{r['run_id']}: test origins differ from the current data")
         preds[r["run_id"]] = z["pred_mph"]
@@ -115,9 +162,13 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     t = sub.add_parser("train")
-    t.add_argument("--variant", required=True, choices=["gru", "temporal_transformer", "proposed"])
+    t.add_argument("--variant", required=True, choices=VARIANTS)
     t.add_argument("--seed", type=int, required=True)
     t.add_argument("--track", default="operational")
+    ta = sub.add_parser("train-all")
+    ta.add_argument("--variants", nargs="+", default=VARIANTS, choices=VARIANTS)
+    ta.add_argument("--seeds", nargs="+", type=int, default=[42, 1, 2])
+    ta.add_argument("--track", default="operational")
     a = sub.add_parser("analyze")
     a.add_argument("--track", default="operational")
     a.add_argument("--n-boot", type=int, default=1000)
@@ -126,6 +177,8 @@ def main() -> None:
     os.environ.setdefault("MLFLOW_DISABLE_AGENT_HINT", "1")
     if args.cmd == "train":
         train(args.variant, args.seed, args.track)
+    elif args.cmd == "train-all":
+        train_all(args.variants, args.seeds, args.track)
     else:
         analyze(args.track, args.n_boot, args.reference)
 
