@@ -144,7 +144,13 @@ def main() -> None:
                                                                  < demand["main_veh_per_hour_per_direction"]]},
            "mainline_by_direction_side_scale_0": direction_breakdown(0.0) + (
                direction_breakdown(0.0, "webster_retimed") if sel_w.exists() else [])}
-    write_json(exp / "simulation_testbed_audit.json", rep)
+    out = exp / "simulation_testbed_audit.json"
+    if out.exists():  # the un-keyed file is cited by claims C24/C27/C28 for the turn-lane network; never overwrite it
+        prev = read_json(out)  # with an audit of a different network
+        if prev.get("network_static_content_sha256") not in (None, rep["network_static_content_sha256"]):
+            out = exp / f"simulation_testbed_audit_{rep['network_static_content_sha256'][:8]}.json"
+            print(f"existing audit is of another network; writing {out.name} and keeping the cited record")
+    write_json(out, rep)
     print(rep["route_choice_audit"])
     print(rep["signal_capacity"])
 

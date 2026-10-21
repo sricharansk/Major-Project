@@ -152,3 +152,10 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
 22. **Bibliography.** `paper/REFERENCES_STATUS.md` records the publisher-record check of every entry (2026-10-20);
     the FHWA 2008 Signal Timing Manual and the 2009 MUTCD are superseded editions, cited because they are the
     public-domain texts the corpus holds.
+25. **Testbed inputs that trace to derived files only.** The 2025 two-direction counts (2,510/2,444 veh/h), the
+    observed PM-peak speed of link 4456494 (10.95 mph, 3,692 records) and the per-direction SUMO figures (time loss
+    and completed trips by direction, the turn-lane check) are recorded in `simulation/scenarios/prepared.json`,
+    `reports/experiments/simulation_testbed_audit*.json` and `simulation_turnlane_check.json`; their raw inputs
+    (the count and speed-profile downloads, `tripinfo.xml`) are gitignored and the count datasets are not yet in
+    `data/manifests/source_manifest.json`. The counts and speed-profile fetches are to be repeated on the
+    workstation (`docs/laptop_run.md` section 5) so the fetch manifest records them.

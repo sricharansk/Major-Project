@@ -191,7 +191,7 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - DECISION: re-time the fixed-time programs with Webster's method (SUMO `tlsCycleAdaptation.py`, tool defaults,
   phase states unchanged) for each tested demand level, a declared assumption; same selection rule.
 - RESULT, Webster programs (15 runs): no level admissible; with no side demand 129-131 of 3,010 unfinished (4.3 %),
-  0 teleports, NB serves all 1,389 trips (195-197 s time loss) but SB loses 1,014-1,038 s per trip (cause not
+  0 teleports, NB completes 1,389 trips, its hourly flow (195-197 s time loss) but SB loses 1,014-1,038 s per trip (cause not
   identified; every SB signal estimate >= 2,040 veh/h). The rule was not relaxed. Corrected controller comparison:
   NOT_RUN. The advisory simulation gate now raises NOT_EVALUATED (-> ERROR_TOOL with cause) on such a testbed.
 - Tests: 66 passed in the container (unit, leakage, safety, integration incl. PostGIS 16 and SUMO, e2e). Paper rebuilt
@@ -276,3 +276,11 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - `train-all` (resumable, seed-major) and portable artifact paths added; 3 unit tests. Workstation instructions:
   `docs/laptop_run.md` section 5 (counts fetch, 9 seed runs, `analyze`, `agents evaluate`, export, paper sync).
 - Multi-seed results, the agents re-run on the corrected simulation gate and the counts fetch: NOT RUN (workstation).
+- Independent audit of PRs #12-#15 (code, claims C23-C33, deck literals): no fabricated or wrong number; every
+  simulation figure recomputes from the committed `result.json` files. Fixed from its findings: a run with missing
+  summary metrics could have passed the admissibility test as 0 <= 0 (`run_admissible` now requires complete evidence;
+  the gates also refuse to run if the `demand_selection` block is removed; 2 tests); a withdrawn ~520 veh/h figure in a
+  `configs/simulation.yaml` comment; "completes all N trips" wording; the deck's test count (66 -> 73 collected,
+  deck rebuilt); the deck README now says the builder holds literals checked against the result files; the audit
+  script no longer overwrites the cited turn-lane-network audit with an audit of another network; limitation 25
+  records which testbed inputs trace to derived files only.

@@ -450,16 +450,25 @@ def run_many(jobs: list[tuple]) -> list[dict]:
         return list(ex.map(_run_job, jobs))
 
 
+def run_admissible(r: dict, cfg: dict) -> bool:
+    """One run passes the preregistered test only with complete evidence: status OK and teleports, unfinished_trips
+    and loaded all recorded with loaded > 0. A run whose summary.xml was missing or unparsed (metrics absent) fails the
+    test; it must never pass as 0 <= 0."""
+    m = r.get("metrics") or {}
+    if r.get("status") != "OK" or any(m.get(k) is None for k in ("teleports", "unfinished_trips", "loaded")):
+        return False
+    if m["loaded"] <= 0:
+        return False
+    return m["teleports"] <= cfg["max_teleports"] and m["unfinished_trips"] <= cfg["max_unfinished_frac"] * m["loaded"]
+
+
 def apply_selection_rule(rows: list[dict], cfg: dict) -> dict:
     """A scale is admissible only if every one of its runs completed with at most max_teleports teleports and at most
     max_unfinished_frac of loaded vehicles unfinished; the largest admissible scale is selected (None if none)."""
     per_scale = []
     for scale in cfg["side_scales"]:
         rs = [r for r in rows if r["demand"]["side_demand_scale"] == scale]
-        ok = bool(rs) and all(
-            r["status"] == "OK" and r["metrics"].get("teleports", 0) <= cfg["max_teleports"]
-            and (r["metrics"].get("unfinished_trips") or 0) <= cfg["max_unfinished_frac"] * (r["metrics"].get("loaded") or 0)
-            for r in rs)
+        ok = bool(rs) and all(run_admissible(r, cfg) for r in rs)
         per_scale.append({"side_demand_scale": scale, "admissible": ok, "run_ids": [r["run_id"] for r in rs],
                           "teleports": [r["metrics"].get("teleports") for r in rs],
                           "unfinished_trips": [r["metrics"].get("unfinished_trips") for r in rs],
@@ -517,7 +526,12 @@ def select_side_demand() -> dict:
 
 def paired_candidate_eval(meta: dict, scenario: dict, candidate: dict, seeds: list[int]) -> dict:
     """Matched-seed comparison candidate vs fixed-time baseline on one scenario."""
-    if settings.load("simulation").get("demand_selection") and "side_demand_scale" not in meta["demand"]:
+    if not settings.load("simulation").get("demand_selection"):
+        # the preregistered admissibility rule is part of the protocol; removing its config block must not switch
+        # the gate off silently
+        raise RuntimeError("NOT_EVALUATED: configs/simulation.yaml has no demand_selection block (the preregistered "
+                           "admissibility rule), so no candidate can be judged")
+    if "side_demand_scale" not in meta["demand"]:
         # a testbed that saturates under its own baseline would reject every candidate for the testbed's reasons;
         # the workflow turns this into ERROR_TOOL with the cause instead of a REJECT_SIMULATION verdict
         raise RuntimeError("NOT_EVALUATED: the SUMO testbed has no admissible demand level "
@@ -552,7 +566,10 @@ def paired_candidate_eval(meta: dict, scenario: dict, candidate: dict, seeds: li
 def evaluate_controllers(seeds: list[int] | None = None) -> list[dict]:
     """Fixed-time vs actuated vs deterministic forecast-informed rule on all scenarios, matched seeds."""
     meta = read_json(SIM / "scenarios" / "prepared.json")
-    if settings.load("simulation").get("demand_selection") and "side_demand_scale" not in meta["demand"]:
+    if not settings.load("simulation").get("demand_selection"):
+        raise SystemExit("NOT_RUN: configs/simulation.yaml has no demand_selection block (the preregistered "
+                         "admissibility rule); the comparison is not run without it")
+    if "side_demand_scale" not in meta["demand"]:
         raise SystemExit("NOT_RUN: side demand not selected; run `simulation select-demand` first "
                          "(no admissible scale, or the selection was never run)")
     seeds = seeds or settings.load("simulation")["simulation"]["seeds"]
