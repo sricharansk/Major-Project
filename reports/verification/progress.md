@@ -106,14 +106,14 @@ Stage log: `reports/verification/stage_log.jsonl` (every stage rc=0 after the fi
   (`forecast_metrics.csv`). Retrospective proposed 4.666/5.355/6.126. Runs: proposed-20261020T201110-0e333f
   (14 epochs, best 8, val 5.388), gru-20261020T200131-e3eef3, temporal_transformer-20261020T200802-d8bdfb,
   proposed-20261020T210211-4a0685 (retrospective).
-- Ablations (`ablation_metrics.csv`, 44 complete test days, 1000 bootstrap resamples): no gate +0.067 [0.048, 0.086];
+- Ablations (`ablation_metrics.csv`, 44 test days with a valid paired target, 1000 bootstrap resamples (code default)): no gate +0.067 [0.048, 0.086];
   no weather -0.046 [-0.069, -0.021] (NEGATIVE RESULT: weather features hurt); no infrastructure +0.014 [0.002,
   0.026]; no events / no incidents NOT_APPLICABLE on the operational track.
 - DEFECT FOUND AND FIXED during the run: `evaluate ablations` cast epoch seconds straight to datetime64[D], so the
   "day-block" bootstrap resampled 12,601 five-minute origins as if they were days and its intervals were far too
   narrow. Fixed (`datetime64[s]` first), re-run; the superseded CSV is kept on the workstation as evidence.
-- Calibration (`uncertainty_metrics.csv`, `artifacts/calibration/`): q = 12.13/13.47/14.77 mph on 102,301
-  calibration residuals; test coverage 0.909/0.907/0.903; congested (<0.5 ratio) 0.798/0.794/0.757; rush hour
+- Calibration (`uncertainty_metrics.csv`, `artifacts/calibration/`): q = 12.13/13.47/14.77 mph on 102,301/102,299/102,302
+  calibration residuals (15/30/60 min); test coverage 0.909/0.907/0.903; congested (<0.5 ratio) 0.798/0.794/0.757; rush hour
   0.938/0.934/0.926; wet 0.926/0.927/0.917. Gate at its configured operating point (width <= 38.10 mph, missing
   <= 0.34, age <= 20 min): deferral 25.5/25.7/26.1 %, retained MAE 3.717/4.381/5.250 (all: 4.773/5.331/6.155),
   retained coverage 0.948/0.939/0.930 (`deferral_tradeoff.csv`).
@@ -168,3 +168,16 @@ Stage log: `reports/verification/stage_log.jsonl` (every stage rc=0 after the fi
   base image is now a build arg), but the build container cannot reach deb.debian.org or download.pytorch.org
   under the environment's network policy, and ghcr.io/mlflow is denied (403). To be built on the workstation.
 - Bibliography: 23 entries checked against publisher records (`paper/REFERENCES_STATUS.md`); johnson2019faiss DOI string still to confirm on IEEE Xplore (search result did not display it).
+
+## 2026-10-21 (post-merge verification)
+
+- Independent re-check of the paper and status files against the artifacts (two passes: simulation numbers, then
+  every quantitative claim in abstract, results, discussion). Corrections merged in PR #11 (simulation: wall time
+  9,645 s, per-run ranges, mapped links 4616325 dead feed + 4456494 modelled) and in the follow-up PR: 60-min proposed
+  MAE 6.15 (not 6.16), GRU 15-min 4.71, retrospective 30-min 5.35, deep-model margins 0.01-0.06 mph, 50,415 training
+  origins (half-open range), per-horizon calibration counts, LLM token/latency ranges over all 12 calls (892-3,604 /
+  157-278 / 15-126 s), gate retained-MAE reduction 15-22 % (not 'a third'), stress cases run under the full system
+  only, 'single-day pipeline execution' instead of 'one end-to-end run' (early stages were re-run; the stage log
+  shows four baseline passes), 'nearly ten months' of data, test window about 44 days over 45 calendar dates. The
+  second pass covered 23 of 64 planned checks before the session limit; limitations, conclusion, method, data,
+  experiments, final_status, progress, README and paper_claims were not independently re-checked in that pass.

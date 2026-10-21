@@ -1,24 +1,29 @@
-% Written from the artifacts of the 2026-10-20/21 workstation run. Every number below is read from a file in
-% reports/experiments/, reports/data_audit/, artifacts/ or reports/verification/ (see paper_claims.csv); nothing is
-% computed or rounded by hand beyond the printed precision.
+% Written from the artifacts of the 2026-10-20/21 workstation run. Numbers below are read from files in
+% reports/experiments/, reports/data_audit/, artifacts/ or reports/verification/ (see paper_claims.csv); a few are
+% simple derivations from them (link counts by subtraction, origin counts from split_manifest.json ranges, the 8%
+% sampling fraction) and are described as such.
 \subsection{What was actually run}
 \label{sec:res:run}
-All numbers in this section come from one real-data run of the released pipeline on the authors' workstation (Windows
-11, RTX 4050 Laptop GPU with 6\,GB, SUMO 1.28.0, Ollama with \texttt{qwen2.5:7b}), stage by stage, with the stage log,
-run ids and hashes recorded in \texttt{reports/verification/}. Of the 26 Manhattan DOT links, seven West Side
-Highway links report a speed of zero in every 2026 record (the feed's no-measurement encoding) and never enter the
-5-minute grid; of the 19 gridded links, 16 pass the training-coverage rule and form the modelling set, and three of
+All numbers in this section come from a single-day real-data pass of the released pipeline on the authors'
+workstation (Windows 11, NVIDIA GeForce RTX 4050 Laptop GPU, SUMO 1.28.0, Ollama with \texttt{qwen2.5:7b}); the
+early stages (graph, features, baselines) were re-run during the session and the artifacts cited here are those of
+the final chain, with the stage log in \texttt{reports/verification/stage\_log.jsonl} and run ids and hashes in
+\texttt{mlflow\_runs.json} and \texttt{evidence\_registry.csv}. Of the 26 Manhattan DOT links, seven on the West
+Side Highway corridor (12th Avenue, 11th Avenue and Westside Highway segments) have no valid speed observation
+(positive and at most 100\,mph) in any 2026 record and never enter the 5-minute grid
+(\texttt{reports/data\_audit/link\_split\_coverage.csv}); of the 19 gridded links, 16 pass the training-coverage rule and form the modelling set, and three of
 those (FDR N to the Triborough Bridge, Triborough Bridge westbound, BQE N to the Manhattan Bridge) have no valid
 observation inside the test partition and are reported as NOT\_EVALUATED in
 \texttt{reports/experiments/link\_test\_support\_operational.csv}. Of 1{,}968{,}303 raw speed records, 978{,}018
 carry a zero speed and 59 exceed the plausibility bound; 990{,}226 are valid and the gridded observed fraction is
 0.611. The chronological partitions over the 84{,}084 grid steps are 60/15/10/15\,\%: calibration covers 2026-08-08
-04:20 to 09-06 08:55\,UTC and the test partition 2026-09-06 09:00 to 2026-10-20 04:00\,UTC (45 days; 144{,}217,
+04:20 to 09-06 08:55\,UTC and the test partition 2026-09-06 09:00 to 2026-10-20 04:00\,UTC (about 44 days spanning 45 calendar dates; 144{,}217,
 144{,}213 and 144{,}205 valid targets at 15, 30 and 60 minutes, identical for every model).
 
 To finish inside a fixed compute deadline, every deep model was trained with a recorded budget of 4{,}096 training
-windows per epoch, sampled afresh each epoch without replacement from the 50{,}416 training origins (about 8\,\% of
-them), with early stopping on validation MAE (patience 5, at most 30 epochs) and one seed. The budget is identical for
+windows per epoch, sampled afresh each epoch without replacement from the 50{,}415 training origins (about 8\,\% of
+them), with early stopping on the mean validation MAE of a fixed validation subset (patience 5, at most 30 epochs)
+and one seed (42). The budget is identical for
 the GRU, the temporal Transformer, the proposed model and its ablations, and is stated here because it bounds how far
 each model was trained, not because it is a tuned hyper-parameter. Under it the proposed model stopped after 14 epochs
 (best epoch 8, 2.3 minutes on the GPU, 158{,}403 parameters), the temporal Transformer after 14 (best 8, 1.8 minutes),
@@ -29,20 +34,21 @@ the GRU after 17 (best 11, 6.0 minutes, 41{,}667 parameters) and the no-weather 
 Table~\ref{tab:forecast} gives the test error on the operational track. Every learned model beats persistence and the
 historical average at every horizon, and the three sequence models beat the two gradient-boosted baselines on MAE
 at every horizon. The proposed context-gated GATv2--Transformer has the lowest MAE at 30 and 60 minutes (5.33 and
-6.16\,mph against 5.34/6.18 for the temporal Transformer and 5.37/6.17 for the GRU), the GRU the lowest at 15
-minutes (4.72\,mph against 4.77 for the proposed model), and XGBoost the lowest 60-minute RMSE (8.98 against 9.05).
+6.15\,mph against 5.34/6.18 for the temporal Transformer and 5.37/6.17 for the GRU), the GRU the lowest at 15
+minutes (4.71\,mph against 4.77 for the proposed model), and XGBoost the lowest 60-minute RMSE (8.98 against 9.05).
 Relative to persistence the proposed model reduces MAE by 7\,\%, 12\,\% and 16\,\% at the three horizons and raises
-$R^2$ from 0.55/0.46/0.30 to 0.69/0.63/0.56. The margins between the three deep models are 0.01 to 0.05\,mph, which
+$R^2$ from 0.55/0.46/0.30 to 0.69/0.63/0.56. The margins between the three deep models are 0.01 to 0.06\,mph, which
 a single seed cannot separate, so this paper does not claim that the proposed architecture forecasts better than a
-well-trained GRU or temporal Transformer on this sparse 16-link graph; it claims that it is at least as accurate
-while carrying the availability gate and the graph layer that the rest of the workflow uses. On the retrospective
+well-trained GRU or temporal Transformer on this sparse 16-link graph; it claims that it is comparably accurate (within
+0.06\,mph MAE of both at every horizon) while carrying the availability gate and the graph layer that the rest of the workflow uses. On the retrospective
 track (reanalysis weather plus collisions and permitted events, contextual analysis only) the proposed model reaches
-4.67, 5.36 and 6.13\,mph (Table~\ref{tab:forecast} is the operational table; the retrospective rows are in
-\texttt{forecast\_metrics.csv}), a small gain at 15 and 60 minutes over the operational 4.77/5.33/6.16, with XGBoost
-and LightGBM at 4.89--4.90, 5.61--5.65 and 6.30--6.39.
+4.67, 5.35 and 6.13\,mph (Table~\ref{tab:forecast} is the operational table; the retrospective rows are in
+\texttt{forecast\_metrics.csv}), a small gain at 15 and 60 minutes over the operational 4.77/5.33/6.15, with XGBoost
+and LightGBM at 4.89, 5.61--5.65 and 6.30--6.39.
 
 \textit{Ablations.} Table~\ref{tab:ablation} reports the mean MAE over the three horizons and a paired day-block
-bootstrap (1{,}000 resamples of the 44 complete test days, 95\,\% percentile interval) of the difference to the
+bootstrap (1{,}000 resamples, the code default, of the 44 test days that contain a valid paired target; 95\,\%
+percentile interval) of the difference to the
 proposed model (5.419\,mph). Removing the availability gate (plain concatenation) raises MAE by 0.067\,mph
 ($[0.048, 0.086]$); removing the 311 infrastructure group raises it by 0.014\,mph ($[0.002, 0.026]$); removing the
 operational weather forecasts \emph{lowers} it by 0.046\,mph ($[-0.069, -0.021]$). The last is a negative result:
@@ -53,10 +59,11 @@ as such rather than as ablations. An earlier execution of this stage had resampl
 re-run, and the superseded file is kept with the run's local evidence.
 
 \subsection{Uncertainty calibration and the reliability gate}
-Split-conformal half-widths fitted on 102{,}301 calibration residuals per horizon are 12.1, 13.5 and 14.8\,mph.
+Split-conformal half-widths fitted on 102{,}301, 102{,}299 and 102{,}302 calibration residuals at 15, 30 and 60
+minutes are 12.1, 13.5 and 14.8\,mph.
 On the test partition the 90\,\% intervals reach empirical coverage of 0.909, 0.907 and 0.903 (Table~\ref{tab:unc}),
-so the marginal guarantee holds, but the intervals are wide (mean widths 24.3, 26.9 and 29.5\,mph on links whose
-training means lie between 16 and 32\,mph). Conditional coverage is uneven: 0.93 on free-flowing targets (speed ratio
+so the marginal guarantee holds, but the intervals are wide (mean widths 24.3, 26.9 and 29.5\,mph, twice the conformal
+quantiles). Conditional coverage is uneven: 0.93 on free-flowing targets (speed ratio
 $\ge 0.8$, $n\approx 98{,}500$), 0.93 on moderate ones, and 0.80, 0.79 and 0.76 at the three horizons under
 congestion (ratio $< 0.5$, $n\approx 23{,}300$); 0.93--0.94 in rush hours against 0.90 outside them; 0.92--0.93 under
 wet weather codes ($n\approx 7{,}900$) against 0.90--0.91 when dry. The reliability gate, whose thresholds are fixed
@@ -64,15 +71,15 @@ on calibration and validation data (interval width at most 38.1\,mph, the 80th p
 most 34\,\% missing recent inputs; data at most 20 minutes old; at least 200 calibration samples), defers 25.5, 25.7
 and 26.1\,\% of test forecasts at the three horizons; the retained forecasts have MAE 3.72, 4.38 and 5.25\,mph against
 4.77, 5.33 and 6.15 for all forecasts, and coverage 0.95, 0.94 and 0.93 (\texttt{artifacts/calibration/deferral\_tradeoff.csv}
-tabulates the full trade-off from 0 to 100\,\% tolerated missing inputs).
+tabulates the trade-off at six tolerated-missing-input thresholds, 0, 10, 20, 34, 50 and 100\,\%).
 
 \subsection{Explanations of the trained model}
 Exact grouped KernelSHAP (all $2^P$ coalitions, $P=5$ or 6 players, 528 or 1{,}040 model calls and 1.7 to 4.2\,s per
 explanation on the CPU, additivity gap below $10^{-3}$\,mph) was computed on the trained proposed model for 12 test
 points: the six largest predicted 30-minute speed drops, one per link, and six random points, all drawn from the
 132{,}355 of 201{,}616 test (origin, link) pairs whose link had a raw observation at every one of the last six input
-steps and an observed target (the eligibility rule introduced after a first pass had selected a link whose feed had
-been dark for four weeks). Averaged over the 12 points, the mean absolute attribution is 8.22\,mph for the target
+steps and an observed target (the eligibility rule was introduced after a first pass had selected a point on a link with no raw
+observations in the test period). Averaged over the 12 points, the mean absolute attribution is 8.22\,mph for the target
 link's own last 30 minutes, 2.04 for its earlier 90 minutes, 1.09 for calendar, 0.52 for graph-neighbour traffic,
 0.19 for weather and 0.09 for 311 requests. In the largest alert, the George Washington Bridge lower-level plaza
 link at 30 minutes, the model predicts 2.25\,mph against a 26.9\,mph background and an observed 1.24\,mph, with
@@ -100,10 +107,11 @@ the project and have not been reviewed externally.
 
 \subsection{Advisory workflow}
 Table~\ref{tab:adv} lists all 19 policy-by-case runs (REPLAY mode on test-partition forecast origins). The deterministic
-gates fired as designed under every policy: the stale-data stress case (inputs aged six steps) ended in DEFER\_DATA,
+gates fired as designed (the three stress cases were run under the full system only, the rainy period under every
+policy): the stale-data stress case (inputs aged six steps) ended in DEFER\_DATA,
 the wide-interval stress case (forced 99\,mph width) and the observed rainy period, whose intervals of 44--46\,mph exceed
 the 38.1\,mph cap, in DEFER\_UNCERTAINTY, and the out-of-scope query in DEFER\_EVIDENCE, each without an LLM call. The
-model was called 12 times (one attempt each, 1{,}790 to 3{,}604 prompt tokens, 181 to 258 completion tokens, 16 to
+model was called 12 times (one attempt each, 892 to 3{,}604 prompt tokens, 157 to 278 completion tokens, 15 to
 126\,s per call with the first, cold call slowest) and returned schema-valid JSON every time
 (\texttt{reports/experiments/llm\_calls.csv}). Without retrieval it cited an evidence id that does not exist in all
 three cases (for example \texttt{EVIDENCE\_123456}), and the citation check rejected all three; with retrieval, no

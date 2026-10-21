@@ -49,7 +49,7 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
    period (TBB W to FDR S after 2026-05-29; BQE N to the Manhattan Bridge after 2026-09-02) and appear as
    NOT_EVALUATED in `reports/experiments/link_test_support_<track>.csv`.
 7e. **Compute budget of the reported run.** Every deep model (GRU, temporal Transformer, proposed model, ablations)
-   was trained with `max_train_windows_per_epoch: 4096` (about 8% of the 50,416 training origins, a fresh sample
+   was trained with `max_train_windows_per_epoch: 4096` (about 8% of the 50,415 training origins, a fresh sample
    each epoch), early stopping with patience 5 and at most 30 epochs, to finish inside a fixed deadline on a 6 GB
    laptop GPU. The budget is identical for all deep models and recorded in each run's `config.yaml`; models trained
    on all windows could rank differently.

@@ -70,10 +70,10 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 Every number is read from `reports/experiments/` and `artifacts/`; `python scripts/results_summary.py` prints them.
 Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 3), `reports/limitations.md`.
 
-* 26 Manhattan DOT links, 7 dead feeds, 16 modelled, 3 without test data; test 2026-09-06..10-20 (45 days,
+* 26 Manhattan DOT links, 7 dead feeds, 16 modelled, 3 without test data; test 2026-09-06..10-20 (about 44 days over 45 calendar dates,
   ~144k targets per horizon); all deep models trained under a recorded 4,096-windows-per-epoch budget, one seed.
-* Test MAE (mph, 15/30/60 min): persistence 5.14/6.06/7.29, XGBoost 4.82/5.58/6.31, GRU 4.72/5.37/6.17,
-  temporal Transformer 4.73/5.34/6.18, **proposed 4.77/5.33/6.16** (best at 30/60 min by 0.01-0.03 mph; not a
+* Test MAE (mph, 15/30/60 min): persistence 5.14/6.06/7.29, XGBoost 4.82/5.58/6.31, GRU 4.71/5.37/6.17,
+  temporal Transformer 4.73/5.34/6.18, **proposed 4.77/5.33/6.15** (best at 30/60 min by 0.01-0.02 mph; not a
   seed-resolvable margin over the GRU/Transformer).
 * Ablations (day-block bootstrap): no gate +0.067 [0.048, 0.086]; no 311 +0.014 [0.002, 0.026];
   **no weather -0.046 [-0.069, -0.021] (negative result)**.
