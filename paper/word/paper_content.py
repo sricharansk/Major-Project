@@ -42,20 +42,20 @@ AUTHORS = [
 # 150-250 words, one paragraph, no citations, symbols or equations (IEEE guideline supplied with the template).
 ABSTRACT = (
     "Urban traffic management needs forecasts that are accurate at several horizons, honest about their "
-    "uncertainty and explainable enough to justify an intervention. This paper presents a research prototype for "
-    "Manhattan that couples a context-gated graph attention and Transformer forecaster for 15-, 30- and 60-minute "
+    "uncertainty and explainable. We present a Manhattan prototype that couples a context-gated graph attention and Transformer forecaster for 15-, 30- and 60-minute "
     "link-speed prediction with a retrieval-augmented, constraint-checked agentic workflow that drafts "
     "simulation-only signal-timing advisories. The forecaster runs on a directed road-link graph "
-    "built from New York City real-time speed data, fuses weather, 311 and calendar context through an "
+    "of New York City real-time speeds, fuses weather, 311 and calendar context through an "
     "availability-aware gate, is calibrated with split conformal prediction and is explained with grouped Shapley "
     "values computed on the trained model. On nearly ten months of public data (1 January to 20 October 2026, 16 "
     "usable links) and a 44-day chronological test partition, the proposed model reaches a mean absolute error of "
     "4.77, 5.33 and 6.15 mph at the three horizons, 7 to 16 percent below persistence and below both "
-    "gradient-boosted baselines, but within 0.06 mph of a GRU and a temporal-only Transformer in a single-seed run. "
+    "gradient-boosted baselines; over three seeds it is 0.03 to 0.08 mph below a temporal-only Transformer at every "
+    "horizon and below a GRU at 30 and 60 minutes, while the GRU is better at 15 minutes. "
     "The availability gate helps, while operational weather features worsen accuracy. Conformal intervals reach "
     "0.90 to 0.91 coverage overall but only 0.76 to 0.80 under congestion; a deterministic reliability gate defers "
     "26 percent of forecasts and raises coverage on the rest to 0.93 to 0.95. Retrieval removed fabricated "
-    "citations (three of three without it, none of nine with it). The SUMO controller comparison was not run "
+    "citations. The SUMO controller comparison was not run "
     "because the simulation testbed failed its own baseline test, so no simulated gain is claimed."
 )
 
@@ -277,9 +277,8 @@ BODY = [
           "model was trained, not because it is a tuned hyper-parameter. Under it the proposed model stopped after "
           "14 epochs (best epoch 8, 2.3 minutes on the GPU, 158,403 parameters), the temporal Transformer after 14 "
           "(best 8, 1.8 minutes), the GRU after 17 (best 11, 6.0 minutes, 41,667 parameters) and the no-weather "
-          "ablation ran the full 30 epochs (best 24). A multi-seed study (seeds 42, 1 and 2 for the proposed "
-          "model, the GRU and the temporal Transformer) is prepared but had not been run when this version was "
-          "written ({T:seeds}); every forecasting figure reported here is from seed 42 alone."),
+          "ablation ran the full 30 epochs (best 24). Figures in this subsection are from the seed-42 runs; the "
+          "three-seed comparison of the deep models is in {T:seeds}."),
     ("h2", "Multi-Horizon Forecasting"),
     ("p", "{T:forecast} gives the test error on the operational track. Every learned model beats persistence and "
           "the historical average at every horizon, and the three sequence models beat the two gradient-boosted "
@@ -289,11 +288,30 @@ BODY = [
           "the lowest 60-minute RMSE (8.98 against 9.05). Relative to persistence the proposed model reduces MAE "
           "by 7%, 12% and 16% at the three horizons and raises *R*^{2} from 0.55/0.46/0.30 to 0.69/0.63/0.56."),
     ("table", "forecast"),
-    ("p", "The margins between the three deep models are 0.01 to 0.06 mph, which a single seed cannot separate, so "
-          "this paper does not claim that the proposed architecture forecasts better than a well-trained GRU or "
-          "temporal Transformer on this sparse 16-link graph; it claims that it is comparably accurate (within "
-          "0.06 mph MAE of both at every horizon) while carrying the availability gate and the graph layer that "
-          "the rest of the workflow uses. On the retrospective track (reanalysis weather plus collisions and "
+    ("p", "The margins between the three deep models are 0.01 to 0.06 mph, which a single seed cannot separate."),
+    ("p", "*Seeds:* The three deep models were therefore retrained with seeds 42, 1 and 2 on the same GPU, data, "
+          "budget and code ({T:seeds}; nine runs, each evaluated on one shared valid-target mask). Two checks came "
+          "first. Re-running seed 42 reproduced the GRU and the temporal Transformer exactly (same stopping epoch "
+          "and validation MAE to four decimals) but not the proposed model (25 epochs and validation MAE 5.358 "
+          "against 14 and 5.388): the only difference between the proposed model and the temporal Transformer is "
+          "the GATv2 layer, whose scatter operations on the GPU are not bit-reproducible, so on this hardware a "
+          "fixed seed does not fix the proposed model. The same seed trained on a CPU in the development container "
+          "stopped at a different epoch again (21 epochs, validation MAE 5.356; its predictions are not stored, so "
+          "it is not part of the comparison). Over three seeds the proposed model has a seed-mean MAE of 4.69, 5.34 "
+          "and 6.15 mph (standard deviation 0.06, 0.03 and 0.02 across seeds), the GRU 4.67, 5.37 and 6.18 and the "
+          "temporal Transformer 4.72, 5.38 and 6.23."),
+    ("table", "seeds"),
+    ("p", "A paired day-block bootstrap (44 test days) of the seed-averaged MAE difference puts the proposed model "
+          "below the temporal Transformer at every horizon (by 0.035, 0.037 and 0.080 mph, intervals excluding "
+          "zero) and below the GRU at 30 and 60 minutes (0.032 and 0.031 mph, intervals [0.010, 0.052] and "
+          "[0.007, 0.056]), while the GRU is lower at 15 minutes (by 0.021 mph, [0.004, 0.040]). These intervals "
+          "describe day-to-day variation of the test errors for the seed-averaged models; with three seeds they do "
+          "not estimate between-seed variance, the per-seed ranges overlap, and one temporal-Transformer seed "
+          "stopped at epoch 2, which raises that model’s 60-minute mean. The supported reading is therefore narrow: "
+          "the proposed model is at least as accurate as both deep baselines and has a small, consistent advantage "
+          "of 0.03–0.08 mph at 30 and 60 minutes, while the GRU is the better 15-minute forecaster; it is not a "
+          "demonstration that graph attention is decisive on this sparse 16-link network."),
+    ("p", "On the retrospective track (reanalysis weather plus collisions and "
           "permitted events, contextual analysis only) the proposed model reaches 4.67, 5.35 and 6.13 mph "
           "({T:forecast} is the operational table; the retrospective rows are in `forecast_metrics.csv`), a small "
           "gain at 15 and 60 minutes over the operational 4.77/5.33/6.15, with XGBoost and LightGBM at 4.89, "
@@ -310,7 +328,6 @@ BODY = [
           "unit error in the day index) and produced far narrower intervals; it was found during the run, "
           "corrected in code, re-run, and the superseded file is kept with the run’s local evidence."),
     ("table", "ablation"),
-    ("table", "seeds"),
     ("h2", "Uncertainty Calibration and the Reliability Gate"),
     ("p", "Split-conformal half-widths fitted on 102,301, 102,299 and 102,302 calibration residuals at 15, 30 and "
           "60 minutes are 12.1, 13.5 and 14.8 mph. On the test partition the 90% intervals reach empirical "
@@ -368,13 +385,15 @@ BODY = [
           "rainy period under every policy): the stale-data stress case (inputs aged six steps) ended in "
           "DEFER_DATA, the wide-interval stress case (forced 99 mph width) and the observed rainy period, whose "
           "intervals of 44–46 mph exceed the 38.1 mph cap, in DEFER_UNCERTAINTY, and the out-of-scope query in "
-          "DEFER_EVIDENCE, each without an LLM call. The model was called 12 times (one attempt each, 892 to "
-          "3,604 prompt tokens, 157 to 278 completion tokens, 15 to 126 s per call with the first, cold call "
-          "slowest) and returned schema-valid JSON every time (`reports/experiments/llm_calls.csv`)."),
+          "DEFER_EVIDENCE, each without an LLM call. The model was called 12 times per pass, and the stage was run "
+          "twice (2026-10-20 and, after the simulation-gate correction, 2026-10-21): 24 calls, one attempt each, "
+          "892 to 3,619 prompt tokens, 157 to 321 completion tokens and 15 to 126 s per call (the first, cold call "
+          "slowest; 18 to 52 s in the second pass), all returning schema-valid JSON and all recommending "
+          "monitoring only (`reports/experiments/llm_calls.csv`). Both passes reached the same 19 decisions."),
     ("table", "adv"),
-    ("p", "Without retrieval the model cited an evidence id that does not exist in all three cases (for example "
-          "`EVIDENCE_123456`), and the citation check rejected all three; with retrieval, no invalid citation "
-          "occurred in nine calls. On the routine rush-hour case (FDR S Catherine Slip–Brooklyn Bridge, a link "
+    ("p", "Without retrieval the model cited an evidence id that does not exist in all three cases of each pass "
+          "(for example `EVIDENCE_123456`), and the citation check rejected every one; with retrieval, no invalid "
+          "citation occurred in nine calls per pass. On the routine rush-hour case (FDR S Catherine Slip–Brooklyn Bridge, a link "
           "without a reviewed DOT-to-SUMO mapping) the constraint layer rejected the candidate under every policy "
           "that keeps it, while the RAG-without-constraints policy passed the same candidate to human review. On "
           "the two cases on the mapped West Street link the model recommended monitoring only, which passes all "
@@ -481,9 +500,11 @@ BODY = [
           "layer or the simulation gate. Read together, the results support some of the proposals in Section "
           "{S:intro} and not others."),
     ("p", "*Forecasting:* The accuracy gain of the proposed model over persistence (7–16% MAE) is real and "
-          "consistent across horizons, its margin over the tree baselines is consistent in sign (0.05–0.25 mph) "
-          "though at 15 min no larger than the GRU margin, and its margin over the GRU and the temporal-only "
-          "Transformer is within what a single seed can resolve. Two measured facts explain why the spatial layer "
+          "consistent across horizons, and its margin over the tree baselines is consistent in sign (0.05–0.25 mph) "
+          "though at 15 min no larger than the GRU margin. Over three seeds its margin over the temporal-only "
+          "Transformer (0.04–0.08 mph) and over the GRU at 30 and 60 minutes (0.03 mph) is consistent across test "
+          "days, while the GRU is better at 15 minutes; these are small effects from three seeds, not a decisive "
+          "architectural advantage. Two measured facts explain why the spatial layer "
           "adds little here: the graph is sparse (16 nodes with usable data, most of them limited-access highway "
           "segments whose monitored neighbours are kilometres away) and the explanations attribute 0.52 mph of "
           "mean absolute effect to neighbour traffic against 8.22 mph to the link’s own last half hour. The "
@@ -547,10 +568,12 @@ BODY = [
           "rather than an archived agency forecast. Collisions lag publication by months and are retrospective "
           "only."),
     ("p", "*Modelling and evaluation:* All deep models were trained under a recorded budget of 4,096 windows per "
-          "epoch with early stopping, one seed and one chronological split; the only variance estimate is a "
-          "day-block bootstrap on paired differences, and the proposed model’s margin over the GRU and temporal "
-          "Transformer is inside what seeds could change. The multi-seed study that would measure this is not yet "
-          "run. Split conformal intervals carry a marginal guarantee under exchangeability, which traffic series "
+          "epoch with early stopping and one chronological split. The three deep models were compared over only "
+          "three seeds ({T:seeds}); the day-block bootstrap describes test-day variation of the seed-averaged "
+          "errors and does not estimate between-seed variance, and the per-seed ranges overlap. On the GPU the "
+          "proposed model is not bit-reproducible at a fixed seed (GATv2 scatter operations), whereas the GRU and "
+          "temporal Transformer are; a reported proposed-model run can therefore be re-trained but not re-created "
+          "exactly. Split conformal intervals carry a marginal guarantee under exchangeability, which traffic series "
           "violate; the measured coverage under congestion is 0.76–0.80. Explanations describe the trained model, "
           "with a background drawn from the training partition; neighbour sensitivity perturbs the graph in ways "
           "the model never saw during training, and only incoming edges can change a link’s own prediction."),
@@ -590,8 +613,9 @@ BODY = [
           "model constrained by deterministic checks, and matched-seed simulation into one auditable advisory "
           "workflow on public New York City data, and we ran it end to end on nearly ten months of real DOT "
           "speeds. The measured outcome is mixed and reported as such: the proposed forecaster beats persistence "
-          "by 7–16% MAE and the tree baselines at every horizon, but not the GRU or temporal Transformer by a "
-          "margin a single seed can establish; the availability gate helps and the operational weather features "
+          "by 7–16% MAE and the tree baselines at every horizon, and over three seeds it is 0.03–0.08 mph below the "
+          "temporal Transformer at every horizon and the GRU at 30 and 60 minutes, with the GRU better at 15 "
+          "minutes, a small advantage rather than a decisive one; the availability gate helps and the operational weather features "
           "hurt; conformal intervals hold their marginal coverage but under-cover congestion; retrieval removes "
           "fabricated citations and the constraint layer, not the model, decides admissibility; no advisory "
           "reached the simulation gate because the model chose monitoring on the mapped corridor; and no "
@@ -599,7 +623,7 @@ BODY = [
           "comparison let SUMO divert half of the corridor traffic and that, once corrected, the modelled corridor "
           "cannot serve the observed West Street volume within its baseline test, with generated or Webster "
           "re-timed signal programs."),
-    ("p", "Future work, in the order the evidence suggests, is multi-seed training without the compute budget, "
+    ("p", "Future work, in the order the evidence suggests, is training with more seeds and without the compute budget, "
           "congestion-conditional calibration, a denser sensor network on which the spatial layer can matter, "
           "calibrating the simulation testbed’s signal splits and progression to the observed 10.95 mph PM-peak "
           "speed (or obtaining NYC DOT timing plans), pedestrian modelling, and an externally reviewed retrieval "

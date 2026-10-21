@@ -221,7 +221,8 @@ def cell(text: str, width_pt: float, refs: Refs, head: bool = False, align: str 
     style = "tablecolhead" if head else "tablecopy"
     jc = ("<w:keepNext/>" if keep else "") + f'<w:jc w:val="{align}"/>'
     span_xml = f'<w:gridSpan w:val="{span}"/>' if span > 1 else ""
-    body = runs(text, refs, {"b": head}, size=size)
+    br = f'<w:r><w:rPr><w:sz w:val="{size}"/><w:szCs w:val="{size}"/></w:rPr><w:br/></w:r>'
+    body = br.join(runs(line, refs, {"b": head}, size=size) for line in text.split("\n"))
     return (f'<w:tc><w:tcPr><w:tcW w:w="{width_pt:.2f}pt" w:type="dxa"/>{span_xml}<w:vAlign w:val="center"/>'
             f'</w:tcPr><w:p><w:pPr><w:pStyle w:val="{style}"/>{jc}</w:pPr>{body}</w:p></w:tc>')
 
@@ -327,15 +328,30 @@ def build_table(tid: str, refs: Refs) -> str:
         x += note("NOT_APPLICABLE: the operational track has no events or incidents group to remove.", refs)
         return x
     if tid == "seeds":
-        tex = (TABLES / "multi_seed.tex").read_text(encoding="utf-8")
-        x = caption("Multi-Seed Study of the Deep Forecasters (Test MAE, mph)", refs)
-        if "NOT RUN" in tex.split("\\toprule", 1)[1]:
+        cap, rows = tex_rows("multi_seed")
+        x = caption("Deep Forecasters Over Three Seeds (Test MAE, mph)", refs)
+        if rows and rows[0] and rows[0][0].startswith("NOT RUN"):
             x += table_xml([180], [["Status"]], [["NOT RUN"]], refs, ["center"], size=16)
-            x += note("Seeds 42, 1 and 2 for the proposed model, the GRU and the temporal Transformer; mean ± sd over "
-                      "seeds and a paired day-block bootstrap of the seed-averaged difference to the proposed model "
-                      "will be reported here once the study has run.", refs)
             return x
-        raise SystemExit("multi_seed.tex now holds results: extend build_table('seeds') to render them")
+        body = []
+        for r in rows:
+            name = detex(r[0])
+            if "minus proposed" in name:
+                label = "minus proposed (Δ)"
+                cells = [detex(c).replace("$\\Delta$ ", "").replace(" [", "\n[").replace("-", "−") for c in r[1:]]
+            else:
+                label = MODEL.get(name.split(" (")[0], name.split(" (")[0]) + " (3 seeds)"
+                cells = [detex(c).replace("$\\pm$", "±").replace(" [", "\n[") for c in r[1:]]
+            body.append([label] + cells)
+        x += table_xml([63.3, 60, 60, 60], [["Model", "15 min", "30 min", "60 min"]], body, refs,
+                       ["start", "center", "center", "center"], size=13)
+        period = re.search(r"period (.*?) UTC", cap).group(1).replace("+00:00", "")
+        n = re.search(r"n = (\d+)", cap).group(1)
+        x += note("Mean ± s.d. [min, max] over seeds 1, 2 and 42 (same GPU, data, budget and code). Δ rows: paired "
+                  "day-block bootstrap of the seed-averaged MAE difference to the proposed model, 95% interval; "
+                  f"positive means the proposed model is lower. Test period {detex(period)} UTC; *n* = {num(n)} "
+                  "valid 60-min targets.", refs)
+        return x
     if tid == "unc":
         _, rows = tex_rows("uncertainty")
         body = [[r[0], num(r[1]), r[2], r[3]] for r in rows]
