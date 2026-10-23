@@ -157,10 +157,28 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     advisory gate returns NOT_EVALUATED; the observed 10.95 mph is the calibration target for signal splits and
     progression, or NYC DOT timing plans are needed. A calibrated protocol (v5, `split_calibration`) is prepared: if it selects a
     program, the comparison is a scenario testbed calibrated to one observed speed, not a digital twin, and will be
-    labelled so; until the workstation runs it the comparison stays NOT RUN.
+    labelled so; until the workstation runs it the comparison stays NOT RUN. **Run on 2026-10-23 (Milestone 11):** no
+    green factor in the preregistered grid 1.0-2.5 reaches the target. Speed rises monotonically with the corridor green
+    share (5.82, 6.16, 6.52, 6.85, 7.13, 7.49, 8.10 mph); factors 2.0 and 2.5 are admissible, the closest (2.5) is
+    2.85 mph short of 10.95 mph against a 1.5 mph tolerance, so `selected_green_factor` is null and the comparison,
+    the agent re-run on a calibrated testbed, `report export` and `paper sync` were NOT RUN on the workstation
+    (`simulation/scenarios/split_calibration_v5_counts2025_calibrated_splits.json`,
+    `reports/experiments/simulation_split_calibration_v5_counts2025_calibrated_splits.csv`). Speed was still rising at
+    factor 2.5 and one signal (GS_42451370) sat at the 90 s green / 120 s cycle caps from factor 1.4 on; a wider grid
+    or a progression (offset) calibration would be a new preregistered protocol, not a relaxation of v5.
 22. **Bibliography.** `paper/REFERENCES_STATUS.md` records the publisher-record check of every entry (2026-10-20);
     the FHWA 2008 Signal Timing Manual and the 2009 MUTCD are superseded editions, cited because they are the
     public-domain texts the corpus holds.
+26. **Network provenance deviation in the v5 run.** `docs/laptop_run.md` section 6 requires the rebuilt network to match
+    the hashes in `prepared.json`. On 2026-10-23 the workstation's OSM file was the 2026-10-20 Overpass extract with a
+    different bounding box, so the configured bbox (40.700,-74.020,40.737,-74.000) was re-fetched from the OSM API and
+    the corridor rebuilt from it. The rebuilt corridor is structurally identical to the audited record (82 edges, the
+    same NB/SB edge lists, entries, exits, 22 signals, corridor phases, 25 side entries, 2 high-confidence DOT
+    mappings) but the network content hash differs (static 87174681... vs 52dcd2fc...), most likely OSM edits after
+    2026-10-21; the earlier network file is gitignored, so the difference could not be diffed. Factor 1.0 of v5
+    reproduces the v4 audit on the old network (5.82 vs 5.79-5.85 mph; 523-568 unfinished, identical), which is the
+    evidence that the two networks behave alike. All v5 runs and the committed `prepared.json` now describe the
+    re-fetched network; the v4 audit files keep the old hash.
 25. **Testbed inputs that trace to derived files only.** The 2025 two-direction counts (2,510/2,444 veh/h), the
     observed PM-peak speed of link 4456494 (10.95 mph, 3,692 records) and the per-direction SUMO figures (time loss
     and completed trips by direction, the turn-lane check) are recorded in `simulation/scenarios/prepared.json`,

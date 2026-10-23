@@ -34,3 +34,39 @@ def test_multi_seed_table_from_summary(tmp_path, monkeypatch):
     assert "gru (3 seeds) & 4.710 $\\pm$ 0.012 [4.700, 4.720]" in body
     assert "\\quad minus proposed & $\\Delta$ -0.058 [-0.070, -0.040]" in body
     assert "proposed (3 seeds) & 4.770 $\\pm$ 0.010 [4.760, 4.780] & 5.330 $\\pm$ 0.010 [5.320, 5.340] & 6.150 $\\pm$ 0.020 [6.130, 6.170] \\\\" in body
+
+
+CAL_RECORD = {
+    "rule": {"dot_link_id": "4456494", "target_speed_mph": 10.95, "tolerance_mph": 1.5, "seeds": [101, 102], "max_cycle_s": 120},
+    "selected_green_factor": None,
+    "reason": "closest admissible factor 2.0 gives 8.0 mph, -2.95 mph from the target, beyond the 1.5 mph tolerance",
+    "per_factor": [
+        {"green_factor": 1.0, "speed_mean_mph": 5.8, "unfinished_trips": [568, 531], "admissible": False,
+         "program": {"per_tls": {"a": {"cycle_after_s": 102.0}, "b": {"cycle_after_s": 21.0}}}},
+        {"green_factor": 2.0, "speed_mean_mph": 8.0, "unfinished_trips": [0, 0], "admissible": True,
+         "program": {"per_tls": {"a": {"cycle_after_s": 119.0}, "b": {"cycle_after_s": 37.0}}}},
+    ],
+}
+
+
+def test_split_calibration_table_not_run_without_record(tmp_path, monkeypatch):
+    monkeypatch.setattr(paper, "R", tmp_path)
+    monkeypatch.setattr(paper, "T", tmp_path / "tables")
+    paper.split_calibration_table()
+    body = (tmp_path / "tables" / "split_calibration.tex").read_text()
+    assert "NOT RUN" in body and "tab:splitcal" in body
+
+
+def test_split_calibration_table_from_record(tmp_path, monkeypatch):
+    import json
+    monkeypatch.setattr(paper, "R", tmp_path)
+    monkeypatch.setattr(paper, "T", tmp_path / "tables")
+    sc = tmp_path / "simulation" / "scenarios"
+    sc.mkdir(parents=True)
+    (sc / "split_calibration_v5_counts2025_calibrated_splits.json").write_text(json.dumps(CAL_RECORD))
+    paper.split_calibration_table()
+    body = (tmp_path / "tables" / "split_calibration.tex").read_text()
+    assert "NOT RUN" not in body and "tab:splitcal" in body
+    assert "1.0 & 5.80 & -5.15 & 568/531 & 102 & no \\\\" in body
+    assert "2.0 & 8.00 & -2.95 & 0/0 & 119 & yes \\\\" in body
+    assert "no factor selected" in body and "10.95" in body

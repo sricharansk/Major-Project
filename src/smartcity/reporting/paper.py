@@ -207,6 +207,38 @@ def simulation_audit_table():
     _write("simulation_audit.tex", "\n".join(lines))
 
 
+def split_calibration_table():
+    """Protocol v5 signal-split calibration: one row per preregistered green factor (fixed-time baseline, development
+    seeds, no side demand), the simulated space-mean speed on the mapped DOT link, admissibility and the selection."""
+    cap = "SUMO signal-split calibration, protocol v5 (SIMULATION)"
+    rec_p = R / "simulation" / "scenarios" / "split_calibration_v5_counts2025_calibrated_splits.json"
+    if not rec_p.exists():
+        return _write("split_calibration.tex", not_run(cap, "tab:splitcal"))
+    rec = json.loads(rec_p.read_text())
+    rule = rec["rule"]
+    sel = rec.get("selected_green_factor")
+    picked = (f"selected factor {sel}" if sel is not None
+              else f"no factor selected: {_esc(rec.get('reason', 'no admissible factor within tolerance'))}")
+    head = ("\\begin{table}[t]\\centering\\caption{" + cap + ". Corridor green share of the Webster plan scaled by a "
+            "factor from a grid fixed before the run (cycle at most "
+            f"{_f(rule.get('max_cycle_s'), 0)}\\,s, phase states unchanged), fixed-time baseline, seeds "
+            f"{', '.join(str(x) for x in rule.get('seeds', []))}, no side-street demand, 2025 counts. Speed is the "
+            f"seed-mean space-mean speed on the SUMO edges mapped to DOT link {rule['dot_link_id']}; target "
+            f"{_f(rule['target_speed_mph'])}\\,mph $\\pm$ {_f(rule['tolerance_mph'], 1)} (observed weekday PM peak). A factor is "
+            "admissible with no teleport and at most 1\\,\\% unfinished trips in every seed. Outcome: "
+            + picked + ".}\\label{tab:splitcal}\\small")
+    lines = [head, "\\begin{tabular}{rrrrrc}\\toprule Green factor & Speed (mph) & Gap (mph) & Unfinished per seed & "
+                   "Max cycle (s) & Admissible \\\\ \\midrule"]
+    for v in rec["per_factor"]:
+        per = v["program"]["per_tls"]
+        unf = "/".join(str(int(u)) for u in v["unfinished_trips"])
+        gap = v["speed_mean_mph"] - rule["target_speed_mph"]
+        lines.append(f"{_f(v['green_factor'], 1)} & {_f(v['speed_mean_mph'])} & {gap:+.2f} & {unf} & "
+                     f"{_f(max(x['cycle_after_s'] for x in per.values()), 0)} & {'yes' if v['admissible'] else 'no'} \\\\")
+    lines.append("\\bottomrule\\end{tabular}\\end{table}\n")
+    _write("split_calibration.tex", "\n".join(lines))
+
+
 def retrieval_table():
     p = R / "artifacts" / "retrieval" / "retrieval_eval.json"
     cap = "Retrieval evaluation on the labelled query set"
@@ -252,6 +284,7 @@ def sources_table():
 
 def sync() -> str:
     for fn in (forecast_table, multi_seed_table, ablation_table, uncertainty_table, simulation_table, simulation_audit_table,
+               split_calibration_table,
                retrieval_table, advisory_table, sources_table):
         fn()
     return "tables: " + ", ".join(sorted(p.name for p in T.glob("*.tex")))
