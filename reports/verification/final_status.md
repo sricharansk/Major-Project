@@ -39,6 +39,14 @@ Open items (need the authors or the workstation):
    plan is scaled by one factor chosen so that the fixed-time baseline reproduces the observed 10.95 mph on link 4456494,
    subject to the unchanged admissibility rule (`docs/laptop_run.md` section 6). NOT RUN until the workstation runs it;
    if it runs, the comparison is reported as a calibrated scenario testbed, not a digital twin.
+   **Run on the workstation 2026-10-23 (Milestone 11): NOT RUN.** No factor in the preregistered grid 1.0-2.5 reaches the
+   target: speed rises monotonically from 5.82 to 8.10 mph, factors 2.0 and 2.5 are admissible, the closest (2.5) is
+   2.85 mph short of 10.95 mph against a 1.5 mph tolerance, so no program was selected and `select-demand`,
+   `simulation evaluate`, the agent re-run, `report export` and `paper sync` did not run. The rule was not relaxed. The
+   next step is a decision for the authors: a new preregistered protocol (v6) with a wider factor grid and/or offset
+   (progression) calibration, NYC DOT timing plans, or closing the comparison as NOT RUN. Network provenance deviation
+   of that run: limitation 26.
+
 3. DONE 2026-10-21: `agents evaluate` re-run on the workstation against the corrected simulation gate (same 19 decisions;
    the LLM again chose monitor_only, so the gate was not reached).
 5. DONE 2026-10-21: multi-seed study (seeds 42, 1, 2 for proposed, GRU and temporal Transformer; nine GPU runs on the

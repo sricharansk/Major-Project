@@ -407,3 +407,13 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Still workstation-only: `docs/laptop_run.md` section 6 (calibrate-splits, select-demand, evaluate, agents evaluate,
   report export, paper sync, the two dashboard screenshots).
 
+### Milestone 11b: integration of the v5 run (development container, 2026-10-23 20:30-21:00 UTC)
+- Workstation branch `claude/laptop-sumo-calibration` (8ced37a) merged with main (ceadbd4) and the re-verification branch.
+- Paper: new generated Table `tab:splitcal` (`paper.split_calibration_table`, part of `paper sync`) and a results paragraph on
+  the v5 outcome and the network provenance deviation; claims C38-C40; limitation 24 addendum and new limitation 26;
+  final_status open item 2 updated. `paper sync` and the PDF rebuild ran here (the workstation stopped before `paper sync`).
+- `prepared.json` paths normalised to POSIX and the writers now emit `as_posix()` paths, so records written on Windows resolve
+  on Linux; no figure changed.
+- The controller comparison stays NOT RUN; the choice between a wider preregistered grid (v6), offset calibration, NYC DOT
+  timing plans or closing the comparison is put to the authors.
+
