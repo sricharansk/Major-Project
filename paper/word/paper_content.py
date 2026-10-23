@@ -621,7 +621,9 @@ BODY = [
           "are uncoordinated although West Street is timed for 25 mph progression; lane restrictions from "
           "OpenStreetMap are dropped, which can overstate capacity. Under every protocol the testbed fails its "
           "baseline test, and with the 2025 counts it runs at 5.8 mph where the mapped link is observed at "
-          "10.95 mph, so the controller comparison is not run. No simulated gain is claimed."),
+          "10.95 mph. The preregistered split calibration (protocol v5) raised the simulated speed to at most "
+          "8.1 mph within its green-factor grid, 2.85 mph short of the target, so no program was selected and the "
+          "controller comparison is not run; the rule was not relaxed. No simulated gain is claimed."),
     ("p", "*Engineering:* Data download, training, LLM inference and the first simulation runs were executed on "
           "the authors’ workstation (torch 2.11.0+cu128, a recorded deviation from the lock file). On 2026-10-20 "
           "the development container could not reach the data portals or the model server; on 2026-10-21 it could "
@@ -648,9 +650,9 @@ BODY = [
           "re-timed signal programs."),
     ("p", "Future work, in the order the evidence suggests, is training with more seeds and without the compute budget, "
           "congestion-conditional calibration, a denser sensor network on which the spatial layer can matter, "
-          "calibrating the simulation testbed’s signal splits and progression to the observed 10.95 mph PM-peak "
-          "speed (or obtaining NYC DOT timing plans), pedestrian modelling, and an externally reviewed retrieval "
-          "benchmark."),
+          "a second preregistered testbed calibration that adds 25 mph progression offsets to the split grid, "
+          "since widening splits alone reached 8.1 of the observed 10.95 mph (or obtaining NYC DOT timing plans), "
+          "pedestrian modelling, and an externally reviewed retrieval benchmark."),
 ]
 
 # IEEE-style reference text for every key in paper/references.bib that the paper cites.

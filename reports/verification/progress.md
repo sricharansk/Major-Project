@@ -358,6 +358,7 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Rebuilt on 4a49916 (2026-10-23) with the protocol v5 signal-split calibration: the paragraph from
   `results_body.tex` and Table X read from `paper/tables/split_calibration.tex` (SIMULATION; no factor selected,
   controller comparison still NOT RUN). LibreOffice renders 10 A4 pages; no other figure changed.
+  Limitations and future work then mirror 8a26e55 (v5 reached 8.1 of 10.95 mph; next step adds progression offsets).
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
