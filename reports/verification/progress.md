@@ -262,6 +262,32 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   rows) and `--dataset volume_hist` (144 rows) into `data/raw/{classification,volume_hist}/` with fetch logs.
 - Not done here: `paper/main.pdf` rebuild (no LaTeX on the workstation).
 
+### Milestone 11: calibrated testbed run on the workstation (protocol v5, 2026-10-23 20:00-20:20 UTC)
+- Branch `claude/laptop-sumo-calibration` from origin/main ceadbd4; `docs/laptop_run.md` section 6, stopped at the
+  first NOT_RUN as the section requires.
+- `simulation prepare`: exit 0 (28 s). PROVENANCE DEVIATION: the network hashes do not match the committed
+  `prepared.json`. The workstation's OSM file was the 2026-10-20 Overpass extract with a different bbox; it was kept
+  (renamed `data/raw/osm/west_st_corridor.overpass_2026-10-20_bbox40.703.osm`) and the configured bbox
+  40.700,-74.020,40.737,-74.000 was re-fetched from the OSM API (`fetch.py osm --source osmapi`, 2,790,185 bytes,
+  sha256 44e0e4fe...). Rebuilt corridor is structurally identical to the committed record (82 edges, identical NB/SB
+  edge lists, entries/exits, 22 signals, corridor phases, 25 side entries, 2 high-confidence DOT mappings, demand
+  record) but the network content hash differs (static 87174681... vs 52dcd2fc...), most likely OSM edits after
+  2026-10-21; the committed network file is not in git, so the difference could not be diffed. All v5 runs use this
+  one rebuilt network. The uncalibrated factor 1.0 reproduces protocol v4 on the old network (5.82 mph vs 5.79-5.85;
+  523-568 unfinished vs 523-568).
+- `simulation calibrate-splits`: exit 1, NOT_RUN (514 s; 21 runs, fixed-time, seeds 101-103, no side demand, 2025
+  counts NB 2,510 / SB 2,444 veh/h). Simulated speed on the 8 SUMO edges of link 4456494 by green factor:
+  1.0 5.82, 1.2 6.16, 1.4 6.52, 1.6 6.85, 1.8 7.13 (all inadmissible: 98-568 unfinished), 2.0 7.49 (admissible:
+  1/0/28 unfinished, 0 teleports), 2.5 8.10 (admissible: 0 unfinished, 0 teleports). Target 10.95 mph, tolerance
+  1.5 mph: closest admissible 8.10 mph is 2.85 mph short, so `selected_green_factor` is null
+  (`simulation/scenarios/split_calibration_v5_counts2025_calibrated_splits.json`,
+  `reports/experiments/simulation_split_calibration_v5_counts2025_calibrated_splits.csv`). The rule was not relaxed.
+- NOT RUN as a consequence: `select-demand`, `simulation evaluate` (controller comparison), the agent re-run on a
+  calibrated testbed, `report export` and `paper sync`. The largest preregistered factor (2.5) is the most admissible
+  and the speed was still rising, so the tested range ends below the target; widening it would be a new protocol.
+- Dashboard screenshots (REPLAY, 1600x1000, Streamlit on the workstation, captured with Edge via Playwright):
+  `presentation/assets/dashboard/forecast_laptop.png`, `traffic_map_laptop.png`.
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
