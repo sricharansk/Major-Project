@@ -47,5 +47,7 @@ Open items (need the authors or the workstation):
    bootstrap intervals exclude zero), the GRU is better at 15 min. Three seeds only; reported as small, not decisive.
 4. Superseded runs (ablation bootstrap unit error, first agents pass) stay on the workstation (`progress.md` Milestone 3).
 
-Software tests: 75 passed (unit, leakage, safety, PostGIS and SUMO integration, e2e) in GitHub Actions run 58 on commit
-807f67d (PR #18, 2026-10-21 05:00 UTC, PostGIS service container, SUMO 1.28, CPU torch); lint clean.
+Software tests: 82 collected (unit, leakage, safety, PostGIS and SUMO integration, e2e). GitHub Actions run 65 on main
+354106e (PR #21 merged, 2026-10-21 10:09 UTC, PostGIS service container, SUMO 1.28, CPU torch) passed; re-verified in the
+development container on 2026-10-23: 80 passed, the two PostGIS tests need the Postgres service and ran only in CI;
+lint clean after removing two unused variables (no behaviour change).

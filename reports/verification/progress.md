@@ -362,3 +362,22 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   7 unit tests on the pure functions (green rescaling, space-mean speed, factor choice).
 - Declared and to be stated wherever a result is reported: this is a scenario testbed calibrated to one observed speed,
   not a digital twin and not NYC DOT timing. Comparison: NOT RUN (workstation runbook `docs/laptop_run.md` section 6).
+
+## 2026-10-23 (re-verification after PR #21, development container)
+
+- Repository state: main at 354106e (PR #21 merged 2026-10-21 10:09 UTC). No workstation branch or commit has appeared
+  since; the calibrated SUMO protocol (Milestone 10) is still NOT RUN and the controller comparison stays NOT RUN.
+- Checks run here: full test suite (80 passed; `tests/integration/test_db.py` needs the PostGIS service and is covered by
+  GitHub Actions run 65 on main, which passed), `ruff` lint, byte-compilation of src/scripts/paper/presentation, `doctor`,
+  the API smoke (all endpoints answer as expected; readiness 503 because no database is running here) and the Streamlit
+  dashboard smoke (health and index 200 within 1 s, headless, reading the committed artifacts in REPLAY mode).
+- Fixes: two unused variables removed (`sumo_runner.run_scenario`, `conformal`); the SUMO integration test now writes its
+  toy-grid outputs to pytest's temporary directory instead of `simulation/outputs/` (previously left untracked run folders
+  behind). No result file changed. `verify all` was not run because its report export would overwrite
+  `mlflow_runs.json` with the container's empty MLflow store; `doctor` output for this container was discarded so that
+  `environment.json` keeps describing the workstation that produced the results.
+- Panel results page: a read-only dashboard built from the committed result files (REPLAY, SUMO NOT RUN) is published as a
+  claude.ai Artifact for the review panel; it holds no numbers that are not in `reports/experiments/` or `artifacts/`.
+- Still workstation-only: `docs/laptop_run.md` section 6 (calibrate-splits, select-demand, evaluate, agents evaluate,
+  report export, paper sync, the two dashboard screenshots).
+

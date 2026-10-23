@@ -218,7 +218,7 @@ def run_scenario(net_file: Path, route_file: Path, scenario: dict, controller: s
             if t >= cfg["warmup_s"] and step % 10 == 0 and corridor_lanes:
                 queue_samples.append(sum(conn.lane.getLastStepHaltingNumber(ln) for ln in corridor_lanes))
             step += 1
-        loaded = conn.simulation.getLoadedNumber()  # in last step only; use summary instead
+        # loaded-vehicle count is taken from the summary output, not from the last TraCI step
         pending = len(conn.simulation.getPendingVehicles())
         running = conn.vehicle.getIDCount()
         conn.close()

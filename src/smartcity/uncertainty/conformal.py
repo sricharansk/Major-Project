@@ -84,7 +84,7 @@ def run(data, results: list[dict], selected_model: str = "proposed") -> dict:
     exp = settings.ROOT / "reports" / "experiments"
     res = next(r for r in results if r["info"]["model"] == selected_model)
     hm = data.horizon_minutes
-    oc, ot, ov = data.origins["calib"], data.origins["test"], data.origins["val"]
+    oc, ot = data.origins["calib"], data.origins["test"]
     cal = calibrate(data.Y[oc], res["preds"]["calib"], hm, alpha)
     cal.update(model=selected_model, model_run_id=res["info"]["run_id"],
                calibration_period=data.meta["split_times_utc"]["calib"])
