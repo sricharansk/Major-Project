@@ -1,0 +1,1473 @@
+{
+  "generated_at": "2026-10-23T20:17:43Z",
+  "protocol_id": "v5_counts2025_calibrated_splits",
+  "mode": "SIMULATION (testbed split calibration, not a controller comparison)",
+  "sumo_version": "Eclipse SUMO sumo 1.28.0",
+  "rule": {
+    "protocol_id": "v5_counts2025_calibrated_splits",
+    "dot_link_id": "4456494",
+    "target_speed_mph": 10.95,
+    "target_source": "reports/experiments/simulation_testbed_audit_v4_counts2025_webster_noturnlanes.json (speed_validation.observed)",
+    "tolerance_mph": 1.5,
+    "green_factors": [
+      1.0,
+      1.2,
+      1.4,
+      1.6,
+      1.8,
+      2.0,
+      2.5
+    ],
+    "side_demand_scale": 0.0,
+    "seeds": [
+      101,
+      102,
+      103
+    ],
+    "max_cycle_s": 120,
+    "max_teleports": 0,
+    "max_unfinished_frac": 0.01
+  },
+  "base_program": {
+    "method": "webster_retimed (SUMO tools/tlsCycleAdaptation.py)",
+    "tls_additional": "simulation\\networks\\west_st_corridor.v5_counts2025_calibrated_splits.calib_side000.webster.add.xml",
+    "sha16": "de3ce6ee43d25ced",
+    "for_demand": "calib_side000",
+    "options": [
+      "-r",
+      "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\simulation\\demand\\calib_side000.vehicles.rou.xml",
+      "-o",
+      "C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\simulation\\networks\\west_st_corridor.v5_counts2025_calibrated_splits.calib_side000.webster.add.xml",
+      "-b",
+      "300",
+      "-y",
+      "3",
+      "-a",
+      "2",
+      "-g",
+      "7",
+      "--min-cycle",
+      "20",
+      "--max-cycle",
+      "120",
+      "-H",
+      "2.0",
+      "-p",
+      "webster"
+    ]
+  },
+  "dot_link_id": "4456494",
+  "sumo_edges": [
+    "614853315",
+    "1537478420",
+    "420809439",
+    "412875705#0",
+    "438367286#0",
+    "978439270#0",
+    "978431658#0",
+    "195743227"
+  ],
+  "network_static_content_sha256": "87174681d760973f2ff3f157966737d4e2055456efd4029c3da7f86a25db2fdb",
+  "demand_source": "NYC Open Data classification counts, weekday 16-19 h hourly totals (all vehicle classes), 2025",
+  "demand": {
+    "route_choice": "fixed_free_flow",
+    "demand_scale": 1.0,
+    "main_nb_vph": 2510.0,
+    "main_sb_vph": 2444.0,
+    "side_demand_scale": 0.0,
+    "side_vph_per_approach": 0.0
+  },
+  "per_factor": [
+    {
+      "green_factor": 1.0,
+      "program": {
+        "method": "calibrated_splits",
+        "green_factor": 1.0,
+        "tls_additional": "simulation\\networks\\west_st_corridor.v5_counts2025_calibrated_splits.f1.00.add.xml",
+        "sha16": "b3c593fdd4b375fa",
+        "min_green_s": 7.0,
+        "max_green_s": 90.0,
+        "max_cycle_s": 120.0,
+        "per_tls": {
+          "42445174": {
+            "cycle_before_s": 21.0,
+            "cycle_after_s": 21.0,
+            "corridor_green_before_s": 16.0,
+            "corridor_green_after_s": 16.0,
+            "capped": false
+          },
+          "42453417": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "GS_4149748671": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "GS_42436903": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "GS_42449098": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "GS_42451370": {
+            "cycle_before_s": 102.0,
+            "cycle_after_s": 102.0,
+            "corridor_green_before_s": 73.0,
+            "corridor_green_after_s": 73.0,
+            "capped": false
+          },
+          "GS_42452613": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "GS_588593611": {
+            "cycle_before_s": 45.0,
+            "cycle_after_s": 45.0,
+            "corridor_green_before_s": 28.0,
+            "corridor_green_after_s": 28.0,
+            "capped": false
+          },
+          "GS_cluster_246889572_9611529611": {
+            "cycle_before_s": 33.0,
+            "cycle_after_s": 33.0,
+            "corridor_green_before_s": 18.0,
+            "corridor_green_after_s": 18.0,
+            "capped": false
+          },
+          "GS_cluster_246890579_9607729579": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 37.0,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 21.0,
+            "capped": false
+          },
+          "GS_cluster_4142073861_42440854": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "cluster_12162502083_12162542907": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "cluster_12410398107_4207143418": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "cluster_12410398108_42440918": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "cluster_12413032498_246858431": {
+            "cycle_before_s": 40.0,
+            "cycle_after_s": 40.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          },
+          "cluster_246858433_42422028": {
+            "cycle_before_s": 54.0,
+            "cycle_after_s": 54.0,
+            "corridor_green_before_s": 26.0,
+            "corridor_green_after_s": 26.0,
+            "capped": false
+          },
+          "cluster_246858435_42429570": {
+            "cycle_before_s": 64.0,
+            "cycle_after_s": 64.0,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 27.0,
+            "capped": false
+          },
+          "cluster_246858448_42431626": {
+            "cycle_before_s": 69.0,
+            "cycle_after_s": 69.0,
+            "corridor_green_before_s": 32.0,
+            "corridor_green_after_s": 32.0,
+            "capped": false
+          },
+          "cluster_246858449_42449613": {
+            "cycle_before_s": 55.0,
+            "cycle_after_s": 55.0,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 27.0,
+            "capped": false
+          },
+          "cluster_246890279_4207143421": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 37.0,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 21.0,
+            "capped": false
+          },
+          "cluster_373880031_42453395": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 39.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 22.0,
+            "capped": false
+          }
+        }
+      },
+      "admissible": false,
+      "run_ids": [
+        "sim-calib_f100-fixed_time-s101-20261023T200913-234251",
+        "sim-calib_f100-fixed_time-s102-20261023T200913-8c0cdd",
+        "sim-calib_f100-fixed_time-s103-20261023T200913-623080"
+      ],
+      "status": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "teleports": [
+        0,
+        0,
+        0
+      ],
+      "unfinished_trips": [
+        568,
+        531,
+        523
+      ],
+      "loaded": [
+        5368,
+        5368,
+        5368
+      ],
+      "completed_trips": [
+        4401,
+        4438,
+        4442
+      ],
+      "speeds_mph": [
+        5.79,
+        5.85,
+        5.81
+      ],
+      "speed_mean_mph": 5.82
+    },
+    {
+      "green_factor": 1.2,
+      "program": {
+        "method": "calibrated_splits",
+        "green_factor": 1.2,
+        "tls_additional": "simulation\\networks\\west_st_corridor.v5_counts2025_calibrated_splits.f1.20.add.xml",
+        "sha16": "33e3331deb9199e6",
+        "min_green_s": 7.0,
+        "max_green_s": 90.0,
+        "max_cycle_s": 120.0,
+        "per_tls": {
+          "42445174": {
+            "cycle_before_s": 21.0,
+            "cycle_after_s": 24.2,
+            "corridor_green_before_s": 16.0,
+            "corridor_green_after_s": 19.2,
+            "capped": false
+          },
+          "42453417": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "GS_4149748671": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "GS_42436903": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "GS_42449098": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "GS_42451370": {
+            "cycle_before_s": 102.0,
+            "cycle_after_s": 116.6,
+            "corridor_green_before_s": 73.0,
+            "corridor_green_after_s": 87.6,
+            "capped": false
+          },
+          "GS_42452613": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "GS_588593611": {
+            "cycle_before_s": 45.0,
+            "cycle_after_s": 50.6,
+            "corridor_green_before_s": 28.0,
+            "corridor_green_after_s": 33.6,
+            "capped": false
+          },
+          "GS_cluster_246889572_9611529611": {
+            "cycle_before_s": 33.0,
+            "cycle_after_s": 36.6,
+            "corridor_green_before_s": 18.0,
+            "corridor_green_after_s": 21.6,
+            "capped": false
+          },
+          "GS_cluster_246890579_9607729579": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 40.2,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 25.2,
+            "capped": false
+          },
+          "GS_cluster_4142073861_42440854": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "cluster_12162502083_12162542907": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "cluster_12410398107_4207143418": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "cluster_12410398108_42440918": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "cluster_12413032498_246858431": {
+            "cycle_before_s": 40.0,
+            "cycle_after_s": 44.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          },
+          "cluster_246858433_42422028": {
+            "cycle_before_s": 54.0,
+            "cycle_after_s": 58.2,
+            "corridor_green_before_s": 26.0,
+            "corridor_green_after_s": 31.2,
+            "capped": false
+          },
+          "cluster_246858435_42429570": {
+            "cycle_before_s": 64.0,
+            "cycle_after_s": 69.4,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 32.4,
+            "capped": false
+          },
+          "cluster_246858448_42431626": {
+            "cycle_before_s": 69.0,
+            "cycle_after_s": 75.4,
+            "corridor_green_before_s": 32.0,
+            "corridor_green_after_s": 38.4,
+            "capped": false
+          },
+          "cluster_246858449_42449613": {
+            "cycle_before_s": 55.0,
+            "cycle_after_s": 60.4,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 32.4,
+            "capped": false
+          },
+          "cluster_246890279_4207143421": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 40.2,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 25.2,
+            "capped": false
+          },
+          "cluster_373880031_42453395": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 43.4,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 26.4,
+            "capped": false
+          }
+        }
+      },
+      "admissible": false,
+      "run_ids": [
+        "sim-calib_f120-fixed_time-s101-20261023T200913-8b4cf2",
+        "sim-calib_f120-fixed_time-s102-20261023T201103-5df176",
+        "sim-calib_f120-fixed_time-s103-20261023T201105-6cdc27"
+      ],
+      "status": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "teleports": [
+        0,
+        0,
+        0
+      ],
+      "unfinished_trips": [
+        383,
+        382,
+        406
+      ],
+      "loaded": [
+        5368,
+        5368,
+        5368
+      ],
+      "completed_trips": [
+        4584,
+        4587,
+        4558
+      ],
+      "speeds_mph": [
+        6.16,
+        6.23,
+        6.09
+      ],
+      "speed_mean_mph": 6.16
+    },
+    {
+      "green_factor": 1.4,
+      "program": {
+        "method": "calibrated_splits",
+        "green_factor": 1.4,
+        "tls_additional": "simulation\\networks\\west_st_corridor.v5_counts2025_calibrated_splits.f1.40.add.xml",
+        "sha16": "c5d3251e3c99ba5f",
+        "min_green_s": 7.0,
+        "max_green_s": 90.0,
+        "max_cycle_s": 120.0,
+        "per_tls": {
+          "42445174": {
+            "cycle_before_s": 21.0,
+            "cycle_after_s": 27.4,
+            "corridor_green_before_s": 16.0,
+            "corridor_green_after_s": 22.4,
+            "capped": false
+          },
+          "42453417": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "GS_4149748671": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "GS_42436903": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "GS_42449098": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "GS_42451370": {
+            "cycle_before_s": 102.0,
+            "cycle_after_s": 119.0,
+            "corridor_green_before_s": 73.0,
+            "corridor_green_after_s": 90.0,
+            "capped": true
+          },
+          "GS_42452613": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "GS_588593611": {
+            "cycle_before_s": 45.0,
+            "cycle_after_s": 56.2,
+            "corridor_green_before_s": 28.0,
+            "corridor_green_after_s": 39.2,
+            "capped": false
+          },
+          "GS_cluster_246889572_9611529611": {
+            "cycle_before_s": 33.0,
+            "cycle_after_s": 40.2,
+            "corridor_green_before_s": 18.0,
+            "corridor_green_after_s": 25.2,
+            "capped": false
+          },
+          "GS_cluster_246890579_9607729579": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 44.4,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 29.4,
+            "capped": false
+          },
+          "GS_cluster_4142073861_42440854": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "cluster_12162502083_12162542907": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "cluster_12410398107_4207143418": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "cluster_12410398108_42440918": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "cluster_12413032498_246858431": {
+            "cycle_before_s": 40.0,
+            "cycle_after_s": 48.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          },
+          "cluster_246858433_42422028": {
+            "cycle_before_s": 54.0,
+            "cycle_after_s": 63.4,
+            "corridor_green_before_s": 26.0,
+            "corridor_green_after_s": 36.4,
+            "capped": false
+          },
+          "cluster_246858435_42429570": {
+            "cycle_before_s": 64.0,
+            "cycle_after_s": 74.8,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 37.8,
+            "capped": false
+          },
+          "cluster_246858448_42431626": {
+            "cycle_before_s": 69.0,
+            "cycle_after_s": 81.8,
+            "corridor_green_before_s": 32.0,
+            "corridor_green_after_s": 44.8,
+            "capped": false
+          },
+          "cluster_246858449_42449613": {
+            "cycle_before_s": 55.0,
+            "cycle_after_s": 65.8,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 37.8,
+            "capped": false
+          },
+          "cluster_246890279_4207143421": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 44.4,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 29.4,
+            "capped": false
+          },
+          "cluster_373880031_42453395": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 47.8,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 30.8,
+            "capped": false
+          }
+        }
+      },
+      "admissible": false,
+      "run_ids": [
+        "sim-calib_f140-fixed_time-s101-20261023T201106-921a95",
+        "sim-calib_f140-fixed_time-s102-20261023T201106-1fb87f",
+        "sim-calib_f140-fixed_time-s103-20261023T201244-7741ab"
+      ],
+      "status": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "teleports": [
+        0,
+        0,
+        0
+      ],
+      "unfinished_trips": [
+        276,
+        274,
+        302
+      ],
+      "loaded": [
+        5368,
+        5368,
+        5368
+      ],
+      "completed_trips": [
+        4688,
+        4694,
+        4662
+      ],
+      "speeds_mph": [
+        6.5,
+        6.61,
+        6.46
+      ],
+      "speed_mean_mph": 6.52
+    },
+    {
+      "green_factor": 1.6,
+      "program": {
+        "method": "calibrated_splits",
+        "green_factor": 1.6,
+        "tls_additional": "simulation\\networks\\west_st_corridor.v5_counts2025_calibrated_splits.f1.60.add.xml",
+        "sha16": "b506640a26a1fa6e",
+        "min_green_s": 7.0,
+        "max_green_s": 90.0,
+        "max_cycle_s": 120.0,
+        "per_tls": {
+          "42445174": {
+            "cycle_before_s": 21.0,
+            "cycle_after_s": 30.6,
+            "corridor_green_before_s": 16.0,
+            "corridor_green_after_s": 25.6,
+            "capped": false
+          },
+          "42453417": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "GS_4149748671": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "GS_42436903": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "GS_42449098": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "GS_42451370": {
+            "cycle_before_s": 102.0,
+            "cycle_after_s": 119.0,
+            "corridor_green_before_s": 73.0,
+            "corridor_green_after_s": 90.0,
+            "capped": true
+          },
+          "GS_42452613": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "GS_588593611": {
+            "cycle_before_s": 45.0,
+            "cycle_after_s": 61.8,
+            "corridor_green_before_s": 28.0,
+            "corridor_green_after_s": 44.8,
+            "capped": false
+          },
+          "GS_cluster_246889572_9611529611": {
+            "cycle_before_s": 33.0,
+            "cycle_after_s": 43.8,
+            "corridor_green_before_s": 18.0,
+            "corridor_green_after_s": 28.8,
+            "capped": false
+          },
+          "GS_cluster_246890579_9607729579": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 48.6,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 33.6,
+            "capped": false
+          },
+          "GS_cluster_4142073861_42440854": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "cluster_12162502083_12162542907": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "cluster_12410398107_4207143418": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "cluster_12410398108_42440918": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "cluster_12413032498_246858431": {
+            "cycle_before_s": 40.0,
+            "cycle_after_s": 53.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          },
+          "cluster_246858433_42422028": {
+            "cycle_before_s": 54.0,
+            "cycle_after_s": 68.6,
+            "corridor_green_before_s": 26.0,
+            "corridor_green_after_s": 41.6,
+            "capped": false
+          },
+          "cluster_246858435_42429570": {
+            "cycle_before_s": 64.0,
+            "cycle_after_s": 80.2,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 43.2,
+            "capped": false
+          },
+          "cluster_246858448_42431626": {
+            "cycle_before_s": 69.0,
+            "cycle_after_s": 88.2,
+            "corridor_green_before_s": 32.0,
+            "corridor_green_after_s": 51.2,
+            "capped": false
+          },
+          "cluster_246858449_42449613": {
+            "cycle_before_s": 55.0,
+            "cycle_after_s": 71.2,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 43.2,
+            "capped": false
+          },
+          "cluster_246890279_4207143421": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 48.6,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 33.6,
+            "capped": false
+          },
+          "cluster_373880031_42453395": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 52.2,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 35.2,
+            "capped": false
+          }
+        }
+      },
+      "admissible": false,
+      "run_ids": [
+        "sim-calib_f160-fixed_time-s101-20261023T201244-98cf91",
+        "sim-calib_f160-fixed_time-s102-20261023T201245-ca8a8a",
+        "sim-calib_f160-fixed_time-s103-20261023T201247-8f4e60"
+      ],
+      "status": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "teleports": [
+        0,
+        0,
+        0
+      ],
+      "unfinished_trips": [
+        194,
+        206,
+        165
+      ],
+      "loaded": [
+        5368,
+        5368,
+        5368
+      ],
+      "completed_trips": [
+        4766,
+        4756,
+        4795
+      ],
+      "speeds_mph": [
+        6.91,
+        6.78,
+        6.87
+      ],
+      "speed_mean_mph": 6.85
+    },
+    {
+      "green_factor": 1.8,
+      "program": {
+        "method": "calibrated_splits",
+        "green_factor": 1.8,
+        "tls_additional": "simulation\\networks\\west_st_corridor.v5_counts2025_calibrated_splits.f1.80.add.xml",
+        "sha16": "04a355a50a324878",
+        "min_green_s": 7.0,
+        "max_green_s": 90.0,
+        "max_cycle_s": 120.0,
+        "per_tls": {
+          "42445174": {
+            "cycle_before_s": 21.0,
+            "cycle_after_s": 33.8,
+            "corridor_green_before_s": 16.0,
+            "corridor_green_after_s": 28.8,
+            "capped": false
+          },
+          "42453417": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "GS_4149748671": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "GS_42436903": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "GS_42449098": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "GS_42451370": {
+            "cycle_before_s": 102.0,
+            "cycle_after_s": 119.0,
+            "corridor_green_before_s": 73.0,
+            "corridor_green_after_s": 90.0,
+            "capped": true
+          },
+          "GS_42452613": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "GS_588593611": {
+            "cycle_before_s": 45.0,
+            "cycle_after_s": 67.4,
+            "corridor_green_before_s": 28.0,
+            "corridor_green_after_s": 50.4,
+            "capped": false
+          },
+          "GS_cluster_246889572_9611529611": {
+            "cycle_before_s": 33.0,
+            "cycle_after_s": 47.4,
+            "corridor_green_before_s": 18.0,
+            "corridor_green_after_s": 32.4,
+            "capped": false
+          },
+          "GS_cluster_246890579_9607729579": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 52.8,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 37.8,
+            "capped": false
+          },
+          "GS_cluster_4142073861_42440854": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "cluster_12162502083_12162542907": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "cluster_12410398107_4207143418": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "cluster_12410398108_42440918": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "cluster_12413032498_246858431": {
+            "cycle_before_s": 40.0,
+            "cycle_after_s": 57.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          },
+          "cluster_246858433_42422028": {
+            "cycle_before_s": 54.0,
+            "cycle_after_s": 73.8,
+            "corridor_green_before_s": 26.0,
+            "corridor_green_after_s": 46.8,
+            "capped": false
+          },
+          "cluster_246858435_42429570": {
+            "cycle_before_s": 64.0,
+            "cycle_after_s": 85.6,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 48.6,
+            "capped": false
+          },
+          "cluster_246858448_42431626": {
+            "cycle_before_s": 69.0,
+            "cycle_after_s": 94.6,
+            "corridor_green_before_s": 32.0,
+            "corridor_green_after_s": 57.6,
+            "capped": false
+          },
+          "cluster_246858449_42449613": {
+            "cycle_before_s": 55.0,
+            "cycle_after_s": 76.6,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 48.6,
+            "capped": false
+          },
+          "cluster_246890279_4207143421": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 52.8,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 37.8,
+            "capped": false
+          },
+          "cluster_373880031_42453395": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 56.6,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 39.6,
+            "capped": false
+          }
+        }
+      },
+      "admissible": false,
+      "run_ids": [
+        "sim-calib_f180-fixed_time-s101-20261023T201416-a64ca9",
+        "sim-calib_f180-fixed_time-s102-20261023T201417-2fea14",
+        "sim-calib_f180-fixed_time-s103-20261023T201417-cafbda"
+      ],
+      "status": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "teleports": [
+        0,
+        0,
+        0
+      ],
+      "unfinished_trips": [
+        98,
+        110,
+        124
+      ],
+      "loaded": [
+        5368,
+        5368,
+        5368
+      ],
+      "completed_trips": [
+        4862,
+        4854,
+        4836
+      ],
+      "speeds_mph": [
+        7.13,
+        7.15,
+        7.1
+      ],
+      "speed_mean_mph": 7.13
+    },
+    {
+      "green_factor": 2.0,
+      "program": {
+        "method": "calibrated_splits",
+        "green_factor": 2.0,
+        "tls_additional": "simulation\\networks\\west_st_corridor.v5_counts2025_calibrated_splits.f2.00.add.xml",
+        "sha16": "e1bbeaeafec1b228",
+        "min_green_s": 7.0,
+        "max_green_s": 90.0,
+        "max_cycle_s": 120.0,
+        "per_tls": {
+          "42445174": {
+            "cycle_before_s": 21.0,
+            "cycle_after_s": 37.0,
+            "corridor_green_before_s": 16.0,
+            "corridor_green_after_s": 32.0,
+            "capped": false
+          },
+          "42453417": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "GS_4149748671": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "GS_42436903": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "GS_42449098": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "GS_42451370": {
+            "cycle_before_s": 102.0,
+            "cycle_after_s": 119.0,
+            "corridor_green_before_s": 73.0,
+            "corridor_green_after_s": 90.0,
+            "capped": true
+          },
+          "GS_42452613": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "GS_588593611": {
+            "cycle_before_s": 45.0,
+            "cycle_after_s": 73.0,
+            "corridor_green_before_s": 28.0,
+            "corridor_green_after_s": 56.0,
+            "capped": false
+          },
+          "GS_cluster_246889572_9611529611": {
+            "cycle_before_s": 33.0,
+            "cycle_after_s": 51.0,
+            "corridor_green_before_s": 18.0,
+            "corridor_green_after_s": 36.0,
+            "capped": false
+          },
+          "GS_cluster_246890579_9607729579": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 57.0,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 42.0,
+            "capped": false
+          },
+          "GS_cluster_4142073861_42440854": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "cluster_12162502083_12162542907": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "cluster_12410398107_4207143418": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "cluster_12410398108_42440918": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "cluster_12413032498_246858431": {
+            "cycle_before_s": 40.0,
+            "cycle_after_s": 62.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          },
+          "cluster_246858433_42422028": {
+            "cycle_before_s": 54.0,
+            "cycle_after_s": 79.0,
+            "corridor_green_before_s": 26.0,
+            "corridor_green_after_s": 52.0,
+            "capped": false
+          },
+          "cluster_246858435_42429570": {
+            "cycle_before_s": 64.0,
+            "cycle_after_s": 91.0,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 54.0,
+            "capped": false
+          },
+          "cluster_246858448_42431626": {
+            "cycle_before_s": 69.0,
+            "cycle_after_s": 101.0,
+            "corridor_green_before_s": 32.0,
+            "corridor_green_after_s": 64.0,
+            "capped": false
+          },
+          "cluster_246858449_42449613": {
+            "cycle_before_s": 55.0,
+            "cycle_after_s": 82.0,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 54.0,
+            "capped": false
+          },
+          "cluster_246890279_4207143421": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 57.0,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 42.0,
+            "capped": false
+          },
+          "cluster_373880031_42453395": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 61.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 44.0,
+            "capped": false
+          }
+        }
+      },
+      "admissible": true,
+      "run_ids": [
+        "sim-calib_f200-fixed_time-s101-20261023T201419-5a33f5",
+        "sim-calib_f200-fixed_time-s102-20261023T201543-cfe49a",
+        "sim-calib_f200-fixed_time-s103-20261023T201543-48be07"
+      ],
+      "status": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "teleports": [
+        0,
+        0,
+        0
+      ],
+      "unfinished_trips": [
+        1,
+        0,
+        28
+      ],
+      "loaded": [
+        5368,
+        5368,
+        5368
+      ],
+      "completed_trips": [
+        4957,
+        4959,
+        4935
+      ],
+      "speeds_mph": [
+        7.49,
+        7.58,
+        7.4
+      ],
+      "speed_mean_mph": 7.49
+    },
+    {
+      "green_factor": 2.5,
+      "program": {
+        "method": "calibrated_splits",
+        "green_factor": 2.5,
+        "tls_additional": "simulation\\networks\\west_st_corridor.v5_counts2025_calibrated_splits.f2.50.add.xml",
+        "sha16": "38f90aed177210ce",
+        "min_green_s": 7.0,
+        "max_green_s": 90.0,
+        "max_cycle_s": 120.0,
+        "per_tls": {
+          "42445174": {
+            "cycle_before_s": 21.0,
+            "cycle_after_s": 45.0,
+            "corridor_green_before_s": 16.0,
+            "corridor_green_after_s": 40.0,
+            "capped": false
+          },
+          "42453417": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "GS_4149748671": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "GS_42436903": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "GS_42449098": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "GS_42451370": {
+            "cycle_before_s": 102.0,
+            "cycle_after_s": 119.0,
+            "corridor_green_before_s": 73.0,
+            "corridor_green_after_s": 90.0,
+            "capped": true
+          },
+          "GS_42452613": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "GS_588593611": {
+            "cycle_before_s": 45.0,
+            "cycle_after_s": 87.0,
+            "corridor_green_before_s": 28.0,
+            "corridor_green_after_s": 70.0,
+            "capped": false
+          },
+          "GS_cluster_246889572_9611529611": {
+            "cycle_before_s": 33.0,
+            "cycle_after_s": 60.0,
+            "corridor_green_before_s": 18.0,
+            "corridor_green_after_s": 45.0,
+            "capped": false
+          },
+          "GS_cluster_246890579_9607729579": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 67.5,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 52.5,
+            "capped": false
+          },
+          "GS_cluster_4142073861_42440854": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "cluster_12162502083_12162542907": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "cluster_12410398107_4207143418": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "cluster_12410398108_42440918": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "cluster_12413032498_246858431": {
+            "cycle_before_s": 40.0,
+            "cycle_after_s": 73.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          },
+          "cluster_246858433_42422028": {
+            "cycle_before_s": 54.0,
+            "cycle_after_s": 92.0,
+            "corridor_green_before_s": 26.0,
+            "corridor_green_after_s": 65.0,
+            "capped": false
+          },
+          "cluster_246858435_42429570": {
+            "cycle_before_s": 64.0,
+            "cycle_after_s": 104.5,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 67.5,
+            "capped": false
+          },
+          "cluster_246858448_42431626": {
+            "cycle_before_s": 69.0,
+            "cycle_after_s": 117.0,
+            "corridor_green_before_s": 32.0,
+            "corridor_green_after_s": 80.0,
+            "capped": false
+          },
+          "cluster_246858449_42449613": {
+            "cycle_before_s": 55.0,
+            "cycle_after_s": 95.5,
+            "corridor_green_before_s": 27.0,
+            "corridor_green_after_s": 67.5,
+            "capped": false
+          },
+          "cluster_246890279_4207143421": {
+            "cycle_before_s": 37.0,
+            "cycle_after_s": 67.5,
+            "corridor_green_before_s": 21.0,
+            "corridor_green_after_s": 52.5,
+            "capped": false
+          },
+          "cluster_373880031_42453395": {
+            "cycle_before_s": 39.0,
+            "cycle_after_s": 72.0,
+            "corridor_green_before_s": 22.0,
+            "corridor_green_after_s": 55.0,
+            "capped": false
+          }
+        }
+      },
+      "admissible": true,
+      "run_ids": [
+        "sim-calib_f250-fixed_time-s101-20261023T201544-35f6a8",
+        "sim-calib_f250-fixed_time-s102-20261023T201545-e0c1ce",
+        "sim-calib_f250-fixed_time-s103-20261023T201658-dd77ef"
+      ],
+      "status": [
+        "OK",
+        "OK",
+        "OK"
+      ],
+      "teleports": [
+        0,
+        0,
+        0
+      ],
+      "unfinished_trips": [
+        0,
+        0,
+        0
+      ],
+      "loaded": [
+        5368,
+        5368,
+        5368
+      ],
+      "completed_trips": [
+        4959,
+        4959,
+        4958
+      ],
+      "speeds_mph": [
+        8.08,
+        8.03,
+        8.19
+      ],
+      "speed_mean_mph": 8.1
+    }
+  ],
+  "selected_green_factor": null,
+  "selected_speed_mph": 8.1,
+  "speed_gap_mph": -2.85,
+  "reason": "closest admissible factor 2.5 gives 8.1 mph, -2.85 mph from the target, beyond the 1.5 mph tolerance",
+  "note": "a calibrated scenario testbed (corridor green share tuned to the observed speed), not NYC DOT timing"
+}
