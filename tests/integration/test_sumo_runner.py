@@ -74,3 +74,65 @@ def test_fixed_route_flows_keep_their_route(toy, tmp_path, monkeypatch):
     assert r.returncode == 0, r.stderr
     driven = {v.find("route").get("edges") for v in ET.parse(out).getroot().iter("vehicle")}
     assert driven == {" ".join(route)}
+
+
+def test_progression_offsets_delay_the_program_in_sumo(toy, tmp_path):
+    """Protocol v6 relies on SUMO's offset semantics: a positive offset delays the program, so at time t the active
+    phase is the one at program time (t - offset) mod cycle, to within one simulation step. Checked on the toy grid
+    through TraCI."""
+    import traci
+
+    from smartcity.simulation import calibrate
+
+    net, rou = toy
+    inv = sr.tls_inventory(net)
+    tls = next(t for t, v in inv.items() if len(v["phases"]) >= 3)
+    durs = [ph["duration"] for ph in inv[tls]["phases"]]
+    cycle = sum(durs)
+    offset = 17.0
+    add = tmp_path / "offset.add.xml"
+    phases = "".join(f'<phase duration="{ph["duration"]}" state="{ph["state"]}"/>' for ph in inv[tls]["phases"])
+    add.write_text(f'<additional><tlLogic id="{tls}" type="static" programID="v6" offset="0">{phases}</tlLogic></additional>')
+    rep = calibrate.apply_offsets(add, add, {tls: offset})
+    assert rep["offsets_s"] == {tls: offset}
+
+    def phase_at(program_time):
+        t, i = program_time % cycle, 0
+        while t >= durs[i] - 1e-9:
+            t -= durs[i]
+            i += 1
+        return i
+
+    traci.start([sr.binary(), "-n", str(net), "-r", str(rou), "-a", str(add), "--no-step-log", "true", "--no-warnings", "true",
+                 "--step-length", "1"], label="offset-test")
+    conn = traci.getConnection("offset-test")
+    try:
+        assert conn.trafficlight.getProgram(tls) == "v6"
+        seen = []
+        for _ in range(int(cycle) + 30):
+            t = conn.simulation.getTime()
+            seen.append((t, conn.trafficlight.getPhase(tls), phase_at(t - offset)))
+            conn.simulationStep()
+    finally:
+        conn.close()
+    # SUMO switches a phase one step after its duration has elapsed on some boundaries, so a one-second lag is allowed;
+    # the sign of the offset is what matters (an advanced program would be off by cycle - 2 x offset here)
+    mismatches = [s for s in seen if s[1] not in (s[2], phase_at(s[0] - offset - 1))]
+    assert not mismatches, mismatches[:5]
+    assert sum(1 for s in seen if s[1] != s[2]) <= 2 * (len(durs) + 1)
+
+
+def test_chain_order_and_signal_positions_on_the_toy_grid(toy):
+    import sumolib
+
+    from smartcity.simulation import calibrate
+
+    net, _ = toy
+    n = sumolib.net.readNet(str(net))
+    row = [e.getID() for e in n.getEdges() if e.getID() in {"A0B0", "B0C0"}]
+    chain = calibrate.order_chain(n, row[::-1], "A0B0")
+    assert chain == ["A0B0", "B0C0"]
+    pos = calibrate.corridor_signal_positions(net, chain, {"B0", "C0"})
+    assert [p["tls"] for p in pos] == ["B0", "C0"]
+    assert pos[0]["distance_m"] == pytest.approx(n.getEdge("A0B0").getLength(), abs=0.1)
+    assert pos[1]["distance_m"] == pytest.approx(pos[0]["distance_m"] + n.getEdge("B0C0").getLength(), abs=0.1)

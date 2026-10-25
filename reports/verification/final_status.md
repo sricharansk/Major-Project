@@ -1,7 +1,7 @@
 # Final status
 
-Last updated: 2026-10-21 08:25 IST / 02:55 UTC (after the real-data run on the workstation, the SUMO testbed
-audits in the development container, `progress.md` Milestones 4-6, and the final-review deck in `presentation/`). Statuses follow `progress.md`; evidence paths are in
+Last updated: 2026-10-25 21:30 UTC (protocol v6 preregistered, NOT RUN; see `progress.md` Milestone 12). Earlier
+baseline: 2026-10-21 02:55 UTC after the real-data run on the workstation, the SUMO testbed audits and the final-review deck. Statuses follow `progress.md`; evidence paths are in
 this repository unless marked "workstation".
 
 | Component | Status | Evidence | Notes |
@@ -46,6 +46,14 @@ Open items (need the authors or the workstation):
    next step is a decision for the authors: a new preregistered protocol (v6) with a wider factor grid and/or offset
    (progression) calibration, NYC DOT timing plans, or closing the comparison as NOT RUN. Network provenance deviation
    of that run: limitation 26.
+   **Decision 2026-10-25: protocol v6 preregistered (development container), NOT RUN.** The authors chose a second
+   preregistered calibration over closing the comparison or waiting for NYC DOT timing plans. `split_calibration` in
+   `configs/simulation.yaml` now fixes a grid of common cycle (Webster per-signal cycles, 90 s, 120 s) x corridor green
+   factor (1.0, 1.5, 2.0, 2.5, 3.0) x progression offsets (none, 25 mph along the southbound chain, only with a common
+   cycle): 25 cells x 3 development seeds = 75 fixed-time runs; the admissibility rule and the 10.95 +- 1.5 mph target
+   are unchanged, ties go to the least intervention (`src/smartcity/simulation/calibrate.py`, `docs/laptop_run.md`
+   section 7, 14 unit tests and 2 SUMO tests). Paper Table `tab:splitcal6` is a NOT RUN placeholder until the
+   workstation runs it; any selected program is a calibrated scenario testbed, not NYC DOT timing.
 
 3. DONE 2026-10-21: `agents evaluate` re-run on the workstation against the corrected simulation gate (same 19 decisions;
    the LLM again chose monitor_only, so the gate was not reached).
@@ -55,7 +63,8 @@ Open items (need the authors or the workstation):
    bootstrap intervals exclude zero), the GRU is better at 15 min. Three seeds only; reported as small, not decisive.
 4. Superseded runs (ablation bootstrap unit error, first agents pass) stay on the workstation (`progress.md` Milestone 3).
 
-Software tests: 82 collected (unit, leakage, safety, PostGIS and SUMO integration, e2e). GitHub Actions run 65 on main
-354106e (PR #21 merged, 2026-10-21 10:09 UTC, PostGIS service container, SUMO 1.28, CPU torch) passed; re-verified in the
-development container on 2026-10-23: 80 passed, the two PostGIS tests need the Postgres service and ran only in CI;
-lint clean after removing two unused variables (no behaviour change).
+Software tests: 95 collected on this branch (unit, leakage, safety, PostGIS and SUMO integration, e2e): 82 at main
+354106e (GitHub Actions run 65, PR #21, 2026-10-21 10:09 UTC, PostGIS service container, SUMO 1.28, CPU torch, passed),
+84 at main ab95bca (PR #22 added two paper-table tests), 95 with the eleven protocol v6 tests (2026-10-25). Re-verified in
+the development container on 2026-10-23 (80 passed; the two PostGIS tests need the Postgres service and ran only in CI)
+and on 2026-10-25 (lint clean; unit, leakage, safety, e2e and SUMO suites passed before and after the v6 change).

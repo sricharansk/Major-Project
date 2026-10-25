@@ -249,7 +249,9 @@ def table_xml(widths: list[float], header: list[list[tuple]], rows: list[list[st
     for n, r in enumerate(rows):
         keep = len(rows) <= 12 and n < len(rows) - 1  # keep short tables in one piece
         x += '<w:tr><w:trPr><w:cantSplit/><w:jc w:val="center"/></w:trPr>'
-        if len(r) == 1:  # a group label spanning the table
+        if len(r) == 1 and len(widths) == 1:
+            x += cell(r[0], total, refs, align=aligns[0], size=size, keep=keep)
+        elif len(r) == 1:  # a group label spanning the table
             x += cell(r[0], total, refs, align="start", size=size, span=len(widths), keep=True)
         else:
             for k, text in enumerate(r):
@@ -445,6 +447,12 @@ def build_table(tid: str, refs: Refs) -> str:
                   "unfinished trips in every seed. No factor is selected: the closest admissible one (2.5) is "
                   "2.85 mph short of the target.", refs)
         return x
+    if tid == "splitcal6":
+        _, rows = tex_rows("split_calibration_v6")
+        x = caption("Signal-Timing Calibration, Protocol v6 (SIMULATION)", refs)
+        if rows and rows[0] and rows[0][0].startswith("NOT RUN"):
+            return x + table_xml([180], [["Status"]], [["NOT RUN"]], refs, ["center"], size=16)
+        raise NotImplementedError("split_calibration_v6.tex has results: add its Word renderer")
     raise KeyError(tid)
 
 

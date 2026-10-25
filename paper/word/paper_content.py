@@ -510,6 +510,17 @@ BODY = [
           "identical to the audited one (82 edges, the same edge lists, entries, exits and 22 signals) but its "
           "content hash differs, and all v5 runs use the re-fetched network."),
     ("table", "splitcal"),
+    ("p", "*Protocol v6 (prepared, NOT RUN).* The authors chose a second preregistered calibration over closing "
+          "the comparison or waiting for NYC DOT timing plans. Protocol v6, fixed in the configuration on 25 October "
+          "2026 before any run, keeps the v5 construction and adds what an arterial timed for progression has and "
+          "the Webster plan lacks: a common cycle at every corridor signal (90 or 120 s, or the per-signal Webster "
+          "cycles, which range from 21 to 102 s and so admit no progression), green factors 1.0 to 3.0, and "
+          "corridor-green offsets for a 25 mph platoon along the southbound chain, the mapped link’s direction; "
+          "25 cells, three development seeds, fixed-time baseline, the same admissibility rule and the same "
+          "10.95 ± 1.5 mph target, ties going to the least intervention ({T:splitcal6}). At the time of writing "
+          "it has not been run; any selected program will be reported as a calibrated scenario testbed, not as "
+          "NYC DOT timing."),
+    ("table", "splitcal6"),
     ("h2", "Runtime"),
     ("p", "Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs "
           "5.7 ms for the proposed model, 2.2 for the temporal Transformer, 0.7 for the GRU and about 0.1 for "
@@ -650,8 +661,9 @@ BODY = [
           "re-timed signal programs."),
     ("p", "Future work, in the order the evidence suggests, is training with more seeds and without the compute budget, "
           "congestion-conditional calibration, a denser sensor network on which the spatial layer can matter, "
-          "a second preregistered testbed calibration that adds 25 mph progression offsets to the split grid, "
-          "since widening splits alone reached 8.1 of the observed 10.95 mph (or obtaining NYC DOT timing plans), "
+          "running the second preregistered testbed calibration (protocol v6: common cycle, wider green grid and "
+          "25 mph progression offsets, prepared but not run), since widening splits alone reached 8.1 of the "
+          "observed 10.95 mph (or obtaining NYC DOT timing plans), "
           "pedestrian modelling, and an externally reviewed retrieval benchmark."),
 ]
 
