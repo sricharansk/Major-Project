@@ -167,6 +167,14 @@ def order_chain(net, edges: list[str], start: str) -> list[str]:
         seen.add(cur.getID())
 
 
+def progression_chain(net, corridor: dict, mapped_edges: list[str]) -> tuple[str, list[str]]:
+    """The corridor direction that contains the mapped DOT link's edges, and that direction's edge chain in travel
+    order (``prepared.json`` keys: ``southbound``/``northbound`` and ``sb_chain_starts``/``nb_chain_starts``)."""
+    direction = "southbound" if set(mapped_edges) & set(corridor["southbound"]) else "northbound"
+    starts = corridor["sb_chain_starts" if direction == "southbound" else "nb_chain_starts"]
+    return direction, order_chain(net, corridor[direction], starts[0])
+
+
 def corridor_signal_positions(net_file: Path, chain: list[str], corridor_ids) -> list[dict]:
     """Cumulative distance along an ordered edge chain to each corridor signal, in travel order: a signal is placed at
     the end of the first chain edge it controls (a joined signal is counted once, where the platoon reaches it)."""
@@ -351,9 +359,7 @@ def calibrate_splits() -> dict:
     import sumolib
 
     snet = sumolib.net.readNet(str(net))
-    c = meta["corridor"]
-    direction = "southbound" if set(edges) & set(c["southbound"]) else "northbound"
-    chain = order_chain(snet, c[direction], c[f"{direction[:2]}_chain_starts"][0])
+    direction, chain = progression_chain(snet, meta["corridor"], edges)
     cells = grid_cells(cal)
     plans, jobs, outs = {}, [], []
     for cell in cells:
