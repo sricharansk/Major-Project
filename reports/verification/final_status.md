@@ -1,7 +1,7 @@
 # Final status
 
-Last updated: 2026-10-21 08:25 IST / 02:55 UTC (after the real-data run on the workstation, the SUMO testbed
-audits in the development container, `progress.md` Milestones 4-6, and the final-review deck in `presentation/`). Statuses follow `progress.md`; evidence paths are in
+Last updated: 2026-10-25 21:30 UTC (protocol v6 preregistered, NOT RUN; see `progress.md` Milestone 12). Earlier
+baseline: 2026-10-21 02:55 UTC after the real-data run on the workstation, the SUMO testbed audits and the final-review deck. Statuses follow `progress.md`; evidence paths are in
 this repository unless marked "workstation".
 
 | Component | Status | Evidence | Notes |
@@ -46,6 +46,14 @@ Open items (need the authors or the workstation):
    next step is a decision for the authors: a new preregistered protocol (v6) with a wider factor grid and/or offset
    (progression) calibration, NYC DOT timing plans, or closing the comparison as NOT RUN. Network provenance deviation
    of that run: limitation 26.
+   **Decision 2026-10-25: protocol v6 preregistered (development container), NOT RUN.** The authors chose a second
+   preregistered calibration over closing the comparison or waiting for NYC DOT timing plans. `split_calibration` in
+   `configs/simulation.yaml` now fixes a grid of common cycle (Webster per-signal cycles, 90 s, 120 s) x corridor green
+   factor (1.0, 1.5, 2.0, 2.5, 3.0) x progression offsets (none, 25 mph along the southbound chain, only with a common
+   cycle): 25 cells x 3 development seeds = 75 fixed-time runs; the admissibility rule and the 10.95 +- 1.5 mph target
+   are unchanged, ties go to the least intervention (`src/smartcity/simulation/calibrate.py`, `docs/laptop_run.md`
+   section 7, 14 unit tests and 2 SUMO tests). Paper Table `tab:splitcal6` is a NOT RUN placeholder until the
+   workstation runs it; any selected program is a calibrated scenario testbed, not NYC DOT timing.
 
 3. DONE 2026-10-21: `agents evaluate` re-run on the workstation against the corrected simulation gate (same 19 decisions;
    the LLM again chose monitor_only, so the gate was not reached).

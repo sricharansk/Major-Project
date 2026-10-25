@@ -136,3 +136,38 @@ save "Multi-horizon forecast" as `presentation/assets/dashboard/forecast_laptop.
 Hand back: `git add reports simulation/scenarios simulation/mappings artifacts/agent_traces paper/tables presentation/assets/dashboard`
 (network and demand files stay ignored; their hashes are in `prepared.json` and the calibration record), commit with
 the usual trailers, `git push -u origin claude/laptop-sumo-calibration`, and post the branch name in the thread.
+
+## 7. Follow-up 2026-10-25: calibration protocol v6 (common cycle, wider green grid, 25 mph offsets)
+
+Protocol v5 (section 6, run 2026-10-23) reached 8.10 mph at its largest green factor, 2.85 mph short of the observed
+10.95 mph, so nothing was selected and the controller comparison stayed NOT RUN. The authors chose a second
+preregistered protocol over closing the comparison or waiting for NYC DOT timing plans. Protocol v6 is fixed in
+`configs/simulation.yaml` (`split_calibration`, 2026-10-25, before any run): the same construction as v5 plus a
+common cycle at every corridor signal (90 or 120 s, or the per-signal Webster cycles as before), green factors 1.0 to
+3.0, and corridor-green offsets for a 25 mph platoon along the southbound chain (the mapped link's direction). The
+admissibility rule and the 10.95 +- 1.5 mph target are unchanged; ties go to the least intervention. 25 cells x 3 seeds
+= 75 fixed-time runs (about 30 min with 4 workers). Any selected program is a calibrated scenario testbed, not NYC DOT
+timing, and the paper says so. Everything below is SIMULATION; nothing touches real signals.
+
+```powershell
+cd "C:\Users\S.K. Sricharan\Downloads\MAJOR PROJECT - FINAL YEAR\PROJECT\repo"
+git fetch origin && git checkout -B claude/laptop-sumo-v6 origin/main
+# if the protocol v6 pull request is not merged yet, branch from the build branch instead:
+#   git checkout -B claude/laptop-sumo-v6 origin/claude/implement-traffic-system-5rzj9i
+.\.venv\Scripts\Activate.ps1
+python -m smartcity.cli simulation prepare            # rebuilds the network from data/raw/osm (hashes must match prepared.json)
+python -m smartcity.cli simulation calibrate-splits   # protocol v6: 25 cells x 3 seeds, fixed-time only
+python -m smartcity.cli simulation select-demand      # side-demand rule under the calibrated plan (5 levels x 3 seeds)
+python -m smartcity.cli simulation evaluate           # 3 scenarios x 3 controllers x 5 seeds = 45 runs, only if a level was selected
+python -m smartcity.cli agents evaluate               # the simulation gate can now be reached (Ollama qwen2.5:7b)
+python -m smartcity.cli report export
+python -m smartcity.cli paper sync
+```
+
+If `calibrate-splits` or `select-demand` exits with NOT_RUN, stop there and commit what was produced: the failure is
+a result. `prepare` must report the same network hashes as `prepared.json` (`static_content_sha256` 87174681...);
+if it does not, stop and report instead of running the grid on a different network.
+
+Hand back: `git add reports simulation/scenarios simulation/mappings artifacts/agent_traces paper/tables`
+(network and demand files stay ignored; their hashes are in `prepared.json` and the calibration record), commit with
+the usual trailers, `git push -u origin claude/laptop-sumo-v6`, and post the branch name in the thread.

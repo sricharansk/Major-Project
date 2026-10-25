@@ -62,22 +62,43 @@ scenario:
 demand_selection:
   # earlier records: netconvert_guess (2014 ATR count, OSM turn lanes, generated programs), webster_retimed (same, re-timed)
   # earlier protocol: v4_counts2025_webster_noturnlanes (Webster re-timed per level; no admissible level)
-  protocol_id: v5_counts2025_calibrated_splits
+  # v5_counts2025_calibrated_splits (2026-10-23): no calibrated program selected, so select-demand did not run
+  protocol_id: v6_counts2025_cycle_splits_offsets
   side_scales: [1.0, 0.75, 0.5, 0.25, 0.0]
   seeds: [101, 102, 103]
   max_teleports: 0
   max_unfinished_frac: 0.01
-# Signal-split calibration, fixed here on 2026-10-21 BEFORE any run (src/smartcity/simulation/calibrate.py). It does
-# not change the admissibility rule above: a factor counts only if every development seed passes it, and among those
-# the factor whose seed-mean space-mean speed on the mapped link is closest to the observed value is taken, provided
-# the gap is within tolerance_mph; otherwise nothing is selected and the comparison stays NOT RUN.
+# Signal-timing calibration (src/smartcity/simulation/calibrate.py). Protocol v5 was fixed here on 2026-10-21 and run on
+# the workstation on 2026-10-23: corridor green of the Webster plan scaled by a factor from [1.0, 1.2, 1.4, 1.6, 1.8, 2.0,
+# 2.5] at the per-signal Webster cycles (max cycle 120 s, max green 90 s, min green 7 s), seeds 101-103, no side demand,
+# target 10.95 +- 1.5 mph on DOT link 4456494. Outcome: 5.82 -> 8.10 mph, factors 2.0 and 2.5 admissible, closest 2.85 mph
+# short, nothing selected (simulation/scenarios/split_calibration_v5_counts2025_calibrated_splits.json). One signal sat at
+# the caps from factor 1.4 on; the Webster cycles range from 21 to 102 s, so the corridor had no progression at all.
+# Protocol v6, fixed here on 2026-10-25 BEFORE any run and chosen by the authors over closing the comparison or waiting
+# for NYC DOT timing plans. It does not change the admissibility rule above: a cell counts only if every development
+# seed passes it, and among those the cell whose seed-mean space-mean speed on the mapped link is closest to the
+# observed value is taken, provided the gap is within tolerance_mph (ties: smaller green factor, then Webster cycles
+# before a common cycle and the shorter common cycle, then no progression); otherwise nothing is selected and the
+# comparison stays NOT RUN. Any selected program is a calibrated scenario testbed, not NYC DOT timing.
 split_calibration:
-  protocol_id: v5_counts2025_calibrated_splits
+  protocol_id: v6_counts2025_cycle_splits_offsets
+  superseded_protocol: v5_counts2025_calibrated_splits   # its record and CSV are kept as the v5 result
   dot_link_id: "4456494"
   target_speed_mph: 10.95     # NYC DOT speeds, link 4456494, weekday 16-19 h local, 1 Apr-20 Oct 2026, 3,692 records
   target_source: reports/experiments/simulation_testbed_audit_v4_counts2025_webster_noturnlanes.json (speed_validation.observed)
   tolerance_mph: 1.5
-  green_factors: [1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5]
-  side_demand_scale: 0.0      # calibration at zero side demand, as the v4 speed validation
+  side_demand_scale: 0.0      # calibration at zero side demand, as the v4 speed validation and v5
   seeds: [101, 102, 103]      # development seeds; the comparison uses simulation.seeds
-  max_cycle_s: 120
+  max_cycle_s: 120            # bound for the Webster-cycle cells (v5 construction); a common cycle is never exceeded
+  grid:                       # 5 + 2 x 5 x 2 = 25 cells x 3 seeds = 75 fixed-time runs
+    # null = per-signal Webster cycles (the v5 base); a number puts every corridor signal on that cycle by scaling its
+    # green phases together (clearance, phase order and states unchanged; greens floored at simulation.min_green_s)
+    common_cycles_s: [null, 90, 120]
+    # corridor green x factor within the cycle (other greens shortened down to min_green_s; capped at max_green_s);
+    # 1.0-2.5 repeat v5 at the Webster cycles, 3.0 extends the range that v5 ended below the target
+    green_factors: [1.0, 1.5, 2.0, 2.5, 3.0]
+    # 0 = no offsets; 25 = each corridor signal's offset set so that its corridor green starts when a platoon that left
+    # the first corridor signal's green start at 25 mph arrives (West Street is timed for 25 mph progression in
+    # reality, NYC DOT Vision Zero 2014/2019); only combined with a common cycle
+    progression_speeds_mph: [0, 25]
+  progression_direction: mapped_link   # the chain of the mapped DOT link's direction (southbound for 4456494); the other direction is not progressed

@@ -239,6 +239,42 @@ def split_calibration_table():
     _write("split_calibration.tex", "\n".join(lines))
 
 
+def split_calibration_v6_table():
+    """Protocol v6 signal-timing calibration (common cycle x corridor-green factor x 25 mph offsets): one row per grid
+    cell, fixed-time baseline, development seeds, no side demand; NOT RUN placeholder until the workstation runs it."""
+    cap = "SUMO signal-timing calibration, protocol v6 (SIMULATION)"
+    rec_p = R / "simulation" / "scenarios" / "split_calibration_v6_counts2025_cycle_splits_offsets.json"
+    if not rec_p.exists():
+        return _write("split_calibration_v6.tex", not_run(cap, "tab:splitcal6"))
+    rec = json.loads(rec_p.read_text())
+    rule = rec["rule"]
+    sel = rec.get("selected_cell")
+    picked = (f"selected cell: factor {_f(sel['green_factor'], 1)}, "
+              + (f"{_f(sel['common_cycle_s'], 0)}\\,s common cycle" if sel.get("common_cycle_s") else "Webster cycles")
+              + (f", {_f(sel['progression_speed_mph'], 0)}\\,mph offsets" if sel.get("progression_speed_mph") else "")
+              if sel else f"no cell selected: {_esc(rec.get('reason', 'no admissible cell within tolerance'))}")
+    head = ("\\begin{table}[t]\\centering\\caption{" + cap + ". Grid fixed before the run: every corridor signal on the "
+            "per-signal Webster cycles or on a common cycle, corridor green scaled by a factor within the cycle (phase states "
+            "unchanged, greens at least 7\\,s, corridor green at most 90\\,s) and, with a common cycle, offsets for a 25\\,mph "
+            f"platoon along the {_esc(rec.get('progression_direction', ''))} chain. Fixed-time baseline, seeds "
+            f"{', '.join(str(x) for x in rule.get('seeds', []))}, no side-street demand, 2025 counts. Speed is the seed-mean "
+            f"space-mean speed on the SUMO edges mapped to DOT link {rule['dot_link_id']}; target {_f(rule['target_speed_mph'])}\\,mph "
+            f"$\\pm$ {_f(rule['tolerance_mph'], 1)}. A cell is admissible with no teleport and at most 1\\,\\% unfinished trips in "
+            "every seed. Outcome: " + picked + ".}\\label{tab:splitcal6}\\small")
+    lines = [head, "\\begin{tabular}{rrrrrrc}\\toprule Cycle (s) & Green factor & Offsets & Speed (mph) & Gap (mph) & "
+                   "Unfinished per seed & Admissible \\\\ \\midrule"]
+    for v in rec["per_factor"]:
+        unf = "/".join(str(int(u)) for u in v["unfinished_trips"])
+        sp = v.get("speed_mean_mph")
+        gap = f"{sp - rule['target_speed_mph']:+.2f}" if sp is not None else "--"
+        cyc = _f(v["common_cycle_s"], 0) if v.get("common_cycle_s") else "Webster"
+        prog = f"{_f(v['progression_speed_mph'], 0)}\\,mph" if v.get("progression_speed_mph") else "none"
+        lines.append(f"{cyc} & {_f(v['green_factor'], 1)} & {prog} & {_f(sp)} & {gap} & {unf} & "
+                     f"{'yes' if v['admissible'] else 'no'} \\\\")
+    lines.append("\\bottomrule\\end{tabular}\\end{table}\n")
+    _write("split_calibration_v6.tex", "\n".join(lines))
+
+
 def retrieval_table():
     p = R / "artifacts" / "retrieval" / "retrieval_eval.json"
     cap = "Retrieval evaluation on the labelled query set"
@@ -284,7 +320,7 @@ def sources_table():
 
 def sync() -> str:
     for fn in (forecast_table, multi_seed_table, ablation_table, uncertainty_table, simulation_table, simulation_audit_table,
-               split_calibration_table,
+               split_calibration_table, split_calibration_v6_table,
                retrieval_table, advisory_table, sources_table):
         fn()
     return "tables: " + ", ".join(sorted(p.name for p in T.glob("*.tex")))

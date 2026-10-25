@@ -70,3 +70,40 @@ def test_split_calibration_table_from_record(tmp_path, monkeypatch):
     assert "1.0 & 5.80 & -5.15 & 568/531 & 102 & no \\\\" in body
     assert "2.0 & 8.00 & -2.95 & 0/0 & 119 & yes \\\\" in body
     assert "no factor selected" in body and "10.95" in body
+
+
+CAL6_RECORD = {
+    "rule": {"dot_link_id": "4456494", "target_speed_mph": 10.95, "tolerance_mph": 1.5, "seeds": [101, 102]},
+    "progression_direction": "southbound",
+    "selected_cell": {"green_factor": 2.5, "common_cycle_s": 120.0, "progression_speed_mph": 25.0},
+    "reason": "closest admissible cell within tolerance (factor 2.5, 120 s common cycle, 25.0 mph offsets)",
+    "per_factor": [
+        {"common_cycle_s": None, "green_factor": 1.0, "progression_speed_mph": 0.0, "speed_mean_mph": 5.8,
+         "unfinished_trips": [568, 531], "admissible": False},
+        {"common_cycle_s": 120.0, "green_factor": 2.5, "progression_speed_mph": 25.0, "speed_mean_mph": 10.2,
+         "unfinished_trips": [0, 0], "admissible": True},
+    ],
+}
+
+
+def test_split_calibration_v6_table_not_run_without_record(tmp_path, monkeypatch):
+    monkeypatch.setattr(paper, "R", tmp_path)
+    monkeypatch.setattr(paper, "T", tmp_path / "tables")
+    paper.split_calibration_v6_table()
+    body = (tmp_path / "tables" / "split_calibration_v6.tex").read_text()
+    assert "NOT RUN" in body and "tab:splitcal6" in body
+
+
+def test_split_calibration_v6_table_from_record(tmp_path, monkeypatch):
+    import json
+    monkeypatch.setattr(paper, "R", tmp_path)
+    monkeypatch.setattr(paper, "T", tmp_path / "tables")
+    sc = tmp_path / "simulation" / "scenarios"
+    sc.mkdir(parents=True)
+    (sc / "split_calibration_v6_counts2025_cycle_splits_offsets.json").write_text(json.dumps(CAL6_RECORD))
+    paper.split_calibration_v6_table()
+    body = (tmp_path / "tables" / "split_calibration_v6.tex").read_text()
+    assert "NOT RUN" not in body and "tab:splitcal6" in body
+    assert "Webster & 1.0 & none & 5.80 & -5.15 & 568/531 & no \\\\" in body
+    assert "120 & 2.5 & 25\\,mph & 10.20 & -0.75 & 0/0 & yes \\\\" in body
+    assert "selected cell: factor 2.5, 120\\,s common cycle, 25\\,mph offsets" in body and "southbound" in body

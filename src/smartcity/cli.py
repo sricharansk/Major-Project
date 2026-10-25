@@ -391,12 +391,13 @@ def simulation_prepare():
 
 @sim_app.command("calibrate-splits")
 def simulation_calibrate_splits():
-    """Calibrate the corridor green share to the observed link speed (configs/simulation.yaml split_calibration)."""
+    """Calibrate the corridor signal timing (cycle, green share, offsets) to the observed link speed (configs/simulation.yaml split_calibration)."""
     from smartcity.simulation import calibrate
 
     rep = calibrate.calibrate_splits()
-    typer.echo(json.dumps({k: rep[k] for k in ("selected_green_factor", "selected_speed_mph", "speed_gap_mph", "reason")}, indent=1))
-    typer.echo(json.dumps([{k: f[k] for k in ("green_factor", "admissible", "speed_mean_mph", "teleports", "unfinished_trips")}
+    typer.echo(json.dumps({k: rep.get(k) for k in ("protocol_id", "selected_cell", "selected_speed_mph", "speed_gap_mph", "reason")}, indent=1))
+    typer.echo(json.dumps([{k: f.get(k) for k in ("common_cycle_s", "green_factor", "progression_speed_mph", "admissible",
+                                                  "speed_mean_mph", "teleports", "unfinished_trips")}
                            for f in rep["per_factor"]], indent=1))
     if rep["selected_green_factor"] is None:
         typer.echo("NOT_RUN: no admissible calibrated program within tolerance; the controller comparison stays NOT_RUN", err=True)

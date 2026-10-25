@@ -421,3 +421,23 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - The controller comparison stays NOT RUN; the choice between a wider preregistered grid (v6), offset calibration, NYC DOT
   timing plans or closing the comparison is put to the authors.
 
+### Milestone 12: calibration protocol v6 preregistered (development container, 2026-10-25 21:05-21:40 UTC)
+- SK chose "Protocol v6" on the decision card (2026-10-25 21:05 UTC) over closing the comparison or NYC DOT timing plans.
+- `configs/simulation.yaml` `split_calibration` rewritten to protocol `v6_counts2025_cycle_splits_offsets` BEFORE any run:
+  grid common cycle {Webster per-signal, 90 s, 120 s} x green factor {1.0, 1.5, 2.0, 2.5, 3.0} x offsets {none, 25 mph}
+  (offsets only with a common cycle) = 25 cells x seeds 101-103 = 75 fixed-time runs; target, tolerance, side demand
+  (0.0), caps (7/90/120 s) and the admissibility rule unchanged; ties to the least intervention. `demand_selection`
+  protocol id follows (v5 never reached it). The v5 record and CSV are kept as the v5 result.
+- `src/smartcity/simulation/calibrate.py`: `set_common_cycle` (greens scaled together, clearance fixed, floor at
+  min green, cycle exact), `order_chain` + `corridor_signal_positions` (travel order and cumulative distance to each
+  corridor signal), `progression_offsets` (offset = (distance / speed - corridor green start) mod cycle, positive SUMO
+  offset = delay), `apply_offsets`, `grid_cells`, `build_cell_program`; `choose_factor` generalised to cells with the
+  preregistered tie-break; record gains `selected_cell`, `progression_direction`, `progression_chain`, per-cell offsets.
+- Tests: 7 new unit tests (`tests/unit/test_split_calibration.py`), 2 SUMO tests on the toy grid
+  (`tests/integration/test_sumo_runner.py`: offset semantics through TraCI to within one step; chain order and
+  positions), 2 paper-table tests. Suite: 95 collected (the two PostGIS tests run only in CI).
+- Paper: generated Table `tab:splitcal6` (NOT RUN placeholder, `paper.split_calibration_v6_table`), a results paragraph
+  "Protocol v6 (prepared, NOT RUN)", future-work sentence; PDF rebuilt. `docs/laptop_run.md` section 7 is the runbook;
+  the laptop line was sent to SK. Nothing has been run; the comparison stays NOT RUN.
+- Also this session: main (PR #24, deck 25 slides) merged into the branch; lint clean; 76 unit/leakage/safety/e2e tests
+  passed before the v6 change.

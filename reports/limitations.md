@@ -166,6 +166,11 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     `reports/experiments/simulation_split_calibration_v5_counts2025_calibrated_splits.csv`). Speed was still rising at
     factor 2.5 and one signal (GS_42451370) sat at the 90 s green / 120 s cycle caps from factor 1.4 on; a wider grid
     or a progression (offset) calibration would be a new preregistered protocol, not a relaxation of v5.
+    **2026-10-25:** the authors chose that new protocol (v6, `split_calibration` in `configs/simulation.yaml`): common
+    cycle x green factor 1.0-3.0 x 25 mph offsets along the southbound chain, same rule, same target, 75 runs; prepared
+    and NOT RUN at the time of writing. A one-direction progression is a declared simplification (the northbound
+    direction is not progressed), and a program chosen to match one observed speed on one link is a calibrated scenario
+    testbed, not NYC DOT timing.
 22. **Bibliography.** `paper/REFERENCES_STATUS.md` records the publisher-record check of every entry (2026-10-20);
     the FHWA 2008 Signal Timing Manual and the 2009 MUTCD are superseded editions, cited because they are the
     public-domain texts the corpus holds.
