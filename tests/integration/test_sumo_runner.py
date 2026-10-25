@@ -27,7 +27,7 @@ def toy(tmp_path_factory):
     return net, rou
 
 
-def test_run_scenario_and_protected_controller(toy, monkeypatch):
+def test_run_scenario_and_protected_controller(toy, monkeypatch, tmp_path):
     net, rou = toy
     from smartcity import settings
 
@@ -39,13 +39,13 @@ def test_run_scenario_and_protected_controller(toy, monkeypatch):
     green = next(p["index"] for p in inv[tls]["phases"] if p["green"])
     yellow = next(p["index"] for p in inv[tls]["phases"] if not p["green"])
     scen = {"name": "toy", "corridor_edges": [], "side_prefix": "side_", "incident": None}
-    base = sr.run_scenario(net, rou, scen, "fixed_time", 1)
+    base = sr.run_scenario(net, rou, scen, "fixed_time", 1, out_dir=tmp_path / "base")
     assert base["status"] == "OK" and base["mode"] == "SIMULATION"
     assert base["metrics"]["completed_trips"] > 0
-    ok = sr.run_scenario(net, rou, scen, "candidate", 1, candidate={"action_type": "bounded_green_extension",
+    ok = sr.run_scenario(net, rou, scen, "candidate", 1, out_dir=tmp_path / "ok", candidate={"action_type": "bounded_green_extension",
                          "traffic_light_id": tls, "phase_index": green, "extension_seconds": 5})
     assert ok["control_log"] == [True]
-    bad = sr.run_scenario(net, rou, scen, "candidate", 1, candidate={"action_type": "bounded_green_extension",
+    bad = sr.run_scenario(net, rou, scen, "candidate", 1, out_dir=tmp_path / "bad", candidate={"action_type": "bounded_green_extension",
                           "traffic_light_id": tls, "phase_index": yellow, "extension_seconds": 5})
     assert bad["control_log"] == [False]  # protective wrapper refuses a clearance phase
 

@@ -80,7 +80,7 @@ def rescale_corridor_green(src: Path, dst: Path, corridor_phase: dict, factor: f
                         "capped": bool(new_c + 1e-9 < dc * factor)}
     dst.parent.mkdir(parents=True, exist_ok=True)
     tree.write(dst, encoding="utf-8", xml_declaration=True)
-    rel = str(dst.relative_to(settings.ROOT)) if dst.is_relative_to(settings.ROOT) else str(dst)
+    rel = dst.relative_to(settings.ROOT).as_posix() if dst.is_relative_to(settings.ROOT) else str(dst)
     return {"method": "calibrated_splits", "green_factor": factor, "tls_additional": rel, "sha16": sr.file_hash(dst),
             "min_green_s": min_green, "max_green_s": max_green, "max_cycle_s": max_cycle, "per_tls": per_tls}
 
@@ -169,7 +169,7 @@ def calibrate_splits() -> dict:
                               'excludeEmpty="true"/></additional>')
             sc = {**scen, "name": f"calib_f{round(100 * f):03d}", "tls_additional": plans[f]["tls_additional"],
                   "signal_timing_kind": "calibrated_splits", "green_factor": f,
-                  "extra_additionals": [str(ed_add.relative_to(settings.ROOT))]}
+                  "extra_additionals": [ed_add.relative_to(settings.ROOT).as_posix()]}
             jobs.append((net, routes, sc, "fixed_time", s))
             outs.append((f, s, ed_out))
     rows = p.run_many(jobs)

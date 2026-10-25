@@ -355,6 +355,10 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   both agent passes (24 LLM calls) and the updated abstract (245 words), discussion, limitations and conclusion, in the
   same wording as the LaTeX sections. Also fixed in LaTeX: `results.tex` input `tables/multi_seed` twice and
   `results_body.tex` still said the study had not been run; `main.pdf` rebuilt (11 pages).
+- Rebuilt on 4a49916 (2026-10-23) with the protocol v5 signal-split calibration: the paragraph from
+  `results_body.tex` and Table X read from `paper/tables/split_calibration.tex` (SIMULATION; no factor selected,
+  controller comparison still NOT RUN). LibreOffice renders 10 A4 pages; no other figure changed.
+  Limitations and future work then mirror 8a26e55 (v5 reached 8.1 of 10.95 mph; next step adds progression offsets).
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
@@ -388,3 +392,32 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   7 unit tests on the pure functions (green rescaling, space-mean speed, factor choice).
 - Declared and to be stated wherever a result is reported: this is a scenario testbed calibrated to one observed speed,
   not a digital twin and not NYC DOT timing. Comparison: NOT RUN (workstation runbook `docs/laptop_run.md` section 6).
+
+## 2026-10-23 (re-verification after PR #21, development container)
+
+- Repository state: main at 354106e (PR #21 merged 2026-10-21 10:09 UTC). No workstation branch or commit has appeared
+  since; the calibrated SUMO protocol (Milestone 10) is still NOT RUN and the controller comparison stays NOT RUN.
+- Checks run here: full test suite (80 passed; `tests/integration/test_db.py` needs the PostGIS service and is covered by
+  GitHub Actions run 65 on main, which passed), `ruff` lint, byte-compilation of src/scripts/paper/presentation, `doctor`,
+  the API smoke (all endpoints answer as expected; readiness 503 because no database is running here) and the Streamlit
+  dashboard smoke (health and index 200 within 1 s, headless, reading the committed artifacts in REPLAY mode).
+- Fixes: two unused variables removed (`sumo_runner.run_scenario`, `conformal`); the SUMO integration test now writes its
+  toy-grid outputs to pytest's temporary directory instead of `simulation/outputs/` (previously left untracked run folders
+  behind). No result file changed. `verify all` was not run because its report export would overwrite
+  `mlflow_runs.json` with the container's empty MLflow store; `doctor` output for this container was discarded so that
+  `environment.json` keeps describing the workstation that produced the results.
+- Panel results page: a read-only dashboard built from the committed result files (REPLAY, SUMO NOT RUN) is published as a
+  claude.ai Artifact for the review panel; it holds no numbers that are not in `reports/experiments/` or `artifacts/`.
+- Still workstation-only: `docs/laptop_run.md` section 6 (calibrate-splits, select-demand, evaluate, agents evaluate,
+  report export, paper sync, the two dashboard screenshots).
+
+### Milestone 11b: integration of the v5 run (development container, 2026-10-23 20:30-21:00 UTC)
+- Workstation branch `claude/laptop-sumo-calibration` (8ced37a) merged with main (ceadbd4) and the re-verification branch.
+- Paper: new generated Table `tab:splitcal` (`paper.split_calibration_table`, part of `paper sync`) and a results paragraph on
+  the v5 outcome and the network provenance deviation; claims C38-C40; limitation 24 addendum and new limitation 26;
+  final_status open item 2 updated. `paper sync` and the PDF rebuild ran here (the workstation stopped before `paper sync`).
+- `prepared.json` paths normalised to POSIX and the writers now emit `as_posix()` paths, so records written on Windows resolve
+  on Linux; no figure changed.
+- The controller comparison stays NOT RUN; the choice between a wider preregistered grid (v6), offset calibration, NYC DOT
+  timing plans or closing the comparison is put to the authors.
+

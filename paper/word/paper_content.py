@@ -487,6 +487,29 @@ BODY = [
           "and 2019, whereas the testbed’s programs are uncoordinated. The controller comparison therefore remains "
           "NOT RUN; the observed speed is now an explicit calibration target for signal splits and progression, "
           "or for NYC DOT timing plans if they can be obtained."),
+    ("p", "*Signal-split calibration (protocol v5).* We therefore fixed, before running anything, a calibration "
+          "protocol for the one testbed input that is a declared assumption rather than an observation: the signal "
+          "programs. Starting from the Webster plan for the 2025 counts without side-street demand, the corridor "
+          "green of every corridor signal is scaled by a factor from a fixed grid (1.0 to 2.5), other greens are "
+          "shortened down to 7 s, cycles are kept at or below 120 s and corridor greens at or below 90 s, and phase "
+          "states are unchanged; each factor is run under the fixed-time baseline on the three development seeds, "
+          "and among the factors that pass the unchanged admissibility rule on every seed the one whose seed-mean "
+          "space-mean speed on the mapped link is closest to the observed 10.95 mph is selected if it lies within "
+          "1.5 mph. The workstation ran this protocol on 23 October 2026 ({T:splitcal}; "
+          "`split_calibration_v5_counts2025_calibrated_splits.json`). Widening the corridor green raises the "
+          "simulated speed monotonically, from 5.82 mph at factor 1.0 (which reproduces the earlier 5.79–5.85 mph "
+          "audit) to 8.10 mph at 2.5, and clears the unfinished trips: factors 2.0 and 2.5 are admissible (1/0/28 "
+          "and 0/0/0 unfinished of 5,368, no teleports), the smaller ones are not. The closest admissible factor "
+          "is still 2.85 mph below the target, beyond the tolerance, so no program is selected and the controller "
+          "comparison, the agent re-run on a calibrated testbed and the dependent exports were not run. Speed was "
+          "still rising at the largest factor in the grid, and one signal had reached the green and cycle caps "
+          "from factor 1.4 on, so the preregistered range ends below the target; extending it would be a new "
+          "protocol, decided before running, not a relaxation of this one. One provenance deviation is recorded: "
+          "the workstation’s OpenStreetMap extract had been fetched with a different bounding box, so the "
+          "configured area was re-fetched from the OSM API on 23 October; the rebuilt corridor is structurally "
+          "identical to the audited one (82 edges, the same edge lists, entries, exits and 22 signals) but its "
+          "content hash differs, and all v5 runs use the re-fetched network."),
+    ("table", "splitcal"),
     ("h2", "Runtime"),
     ("p", "Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs "
           "5.7 ms for the proposed model, 2.2 for the temporal Transformer, 0.7 for the GRU and about 0.1 for "
@@ -598,7 +621,9 @@ BODY = [
           "are uncoordinated although West Street is timed for 25 mph progression; lane restrictions from "
           "OpenStreetMap are dropped, which can overstate capacity. Under every protocol the testbed fails its "
           "baseline test, and with the 2025 counts it runs at 5.8 mph where the mapped link is observed at "
-          "10.95 mph, so the controller comparison is not run. No simulated gain is claimed."),
+          "10.95 mph. The preregistered split calibration (protocol v5) raised the simulated speed to at most "
+          "8.1 mph within its green-factor grid, 2.85 mph short of the target, so no program was selected and the "
+          "controller comparison is not run; the rule was not relaxed. No simulated gain is claimed."),
     ("p", "*Engineering:* Data download, training, LLM inference and the first simulation runs were executed on "
           "the authors’ workstation (torch 2.11.0+cu128, a recorded deviation from the lock file). On 2026-10-20 "
           "the development container could not reach the data portals or the model server; on 2026-10-21 it could "
@@ -625,9 +650,9 @@ BODY = [
           "re-timed signal programs."),
     ("p", "Future work, in the order the evidence suggests, is training with more seeds and without the compute budget, "
           "congestion-conditional calibration, a denser sensor network on which the spatial layer can matter, "
-          "calibrating the simulation testbed’s signal splits and progression to the observed 10.95 mph PM-peak "
-          "speed (or obtaining NYC DOT timing plans), pedestrian modelling, and an externally reviewed retrieval "
-          "benchmark."),
+          "a second preregistered testbed calibration that adds 25 mph progression offsets to the split grid, "
+          "since widening splits alone reached 8.1 of the observed 10.95 mph (or obtaining NYC DOT timing plans), "
+          "pedestrian modelling, and an externally reviewed retrieval benchmark."),
 ]
 
 # IEEE-style reference text for every key in paper/references.bib that the paper cites.

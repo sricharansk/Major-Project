@@ -1,0 +1,10 @@
+\begin{table}[t]\centering\caption{SUMO signal-split calibration, protocol v5 (SIMULATION). Corridor green share of the Webster plan scaled by a factor from a grid fixed before the run (cycle at most 120\,s, phase states unchanged), fixed-time baseline, seeds 101, 102, 103, no side-street demand, 2025 counts. Speed is the seed-mean space-mean speed on the SUMO edges mapped to DOT link 4456494; target 10.95\,mph $\pm$ 1.5 (observed weekday PM peak). A factor is admissible with no teleport and at most 1\,\% unfinished trips in every seed. Outcome: no factor selected: closest admissible factor 2.5 gives 8.1 mph, -2.85 mph from the target, beyond the 1.5 mph tolerance.}\label{tab:splitcal}\small
+\begin{tabular}{rrrrrc}\toprule Green factor & Speed (mph) & Gap (mph) & Unfinished per seed & Max cycle (s) & Admissible \\ \midrule
+1.0 & 5.82 & -5.13 & 568/531/523 & 102 & no \\
+1.2 & 6.16 & -4.79 & 383/382/406 & 117 & no \\
+1.4 & 6.52 & -4.43 & 276/274/302 & 119 & no \\
+1.6 & 6.85 & -4.10 & 194/206/165 & 119 & no \\
+1.8 & 7.13 & -3.82 & 98/110/124 & 119 & no \\
+2.0 & 7.49 & -3.46 & 1/0/28 & 119 & yes \\
+2.5 & 8.10 & -2.85 & 0/0/0 & 119 & yes \\
+\bottomrule\end{tabular}\end{table}

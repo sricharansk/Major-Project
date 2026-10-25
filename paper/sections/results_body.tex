@@ -224,6 +224,27 @@ Place to West 57th Street re-timed for 25\,mph signal progression in 2014 and 20
 uncoordinated. The controller comparison therefore remains NOT RUN; the observed speed is now an explicit calibration
 target for signal splits and progression, or for NYC DOT timing plans if they can be obtained.
 
+\textit{Signal-split calibration (protocol v5).} We therefore fixed, before running anything, a calibration protocol
+for the one testbed input that is a declared assumption rather than an observation: the signal programs. Starting
+from the Webster plan for the 2025 counts without side-street demand, the corridor green of every corridor signal is
+scaled by a factor from a fixed grid (1.0 to 2.5), other greens are shortened down to 7\,s, cycles are kept at or
+below 120\,s and corridor greens at or below 90\,s, and phase states are unchanged; each factor is run under the
+fixed-time baseline on the three development seeds, and among the factors that pass the unchanged admissibility rule
+on every seed the one whose seed-mean space-mean speed on the mapped link is closest to the observed 10.95\,mph is
+selected if it lies within 1.5\,mph. The workstation ran this protocol on 23 October 2026 (Table~\ref{tab:splitcal};
+\texttt{split\_calibration\_v5\_counts2025\_calibrated\_splits.json}). Widening the corridor green raises the
+simulated speed monotonically, from 5.82\,mph at factor 1.0 (which reproduces the earlier 5.79--5.85\,mph audit) to
+8.10\,mph at 2.5, and clears the unfinished trips: factors 2.0 and 2.5 are admissible (1/0/28 and 0/0/0 unfinished of
+5{,}368, no teleports), the smaller ones are not. The closest admissible factor is still 2.85\,mph below the target,
+beyond the tolerance, so no program is selected and the controller comparison, the agent re-run on a calibrated
+testbed and the dependent exports were not run. Speed was still rising at the largest factor in the grid, and one
+signal had reached the green and cycle caps from factor 1.4 on, so the preregistered range ends below the target;
+extending it would be a new protocol, decided before running, not a relaxation of this one. One provenance deviation
+is recorded: the workstation's OpenStreetMap extract had been fetched with a different bounding box, so the configured
+area was re-fetched from the OSM API on 23 October; the rebuilt corridor is structurally identical to the audited one
+(82 edges, the same edge lists, entries, exits and 22 signals) but its content hash differs, and all v5 runs use the
+re-fetched network.
+
 \subsection{Runtime}
 Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs 5.7\,ms for the
 proposed model, 2.2 for the temporal Transformer, 0.7 for the GRU and about 0.1 for XGBoost; a FAISS query takes

@@ -429,6 +429,22 @@ def build_table(tid: str, refs: Refs) -> str:
                   "only with no teleport and at most 1% unfinished in every seed; no level is admissible under any "
                   "of the three protocols.", refs)
         return x
+    if tid == "splitcal":
+        _, rows = tex_rows("split_calibration")
+        body = [[r[0], num(r[1]), r[2].replace("-", "−"), r[3].replace("/", " / "), r[4], r[5]] for r in rows]
+        x = caption("Signal-Split Calibration, Protocol v5 (SIMULATION)", refs)
+        x += table_xml([34, 36, 36, 60, 38, 39.3],
+                       [["Green factor", "Speed (mph)", "Gap (mph)", "Unfinished per seed", "Max cycle (s)",
+                         "Admissible"]],
+                       body, refs, ["center", "end", "end", "center", "end", "center"], size=13)
+        x += note("Corridor green share of the Webster plan scaled by a factor from a grid fixed before the run "
+                  "(cycle at most 120 s, phase states unchanged), fixed-time baseline, seeds 101, 102 and 103, no "
+                  "side-street demand, 2025 counts, 5,368 vehicles loaded per run. Speed is the seed-mean "
+                  "space-mean speed on the SUMO edges mapped to DOT link 4456494; gap is to the observed weekday "
+                  "PM-peak 10.95 mph, tolerance ±1.5 mph. A factor is admissible with no teleport and at most 1% "
+                  "unfinished trips in every seed. No factor is selected: the closest admissible one (2.5) is "
+                  "2.85 mph short of the target.", refs)
+        return x
     raise KeyError(tid)
 
 
