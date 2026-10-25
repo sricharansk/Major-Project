@@ -353,7 +353,9 @@ def calibrate_splits() -> dict:
     snet = sumolib.net.readNet(str(net))
     c = meta["corridor"]
     direction = "southbound" if set(edges) & set(c["southbound"]) else "northbound"
-    chain = order_chain(snet, c[direction], c[f"{direction[:2]}_chain_starts"][0])
+    # prepared.json keys the chain starts as nb_/sb_ (direction[:2] would give "no"/"so")
+    prefix = "sb" if direction == "southbound" else "nb"
+    chain = order_chain(snet, c[direction], c[f"{prefix}_chain_starts"][0])
     cells = grid_cells(cal)
     plans, jobs, outs = {}, [], []
     for cell in cells:

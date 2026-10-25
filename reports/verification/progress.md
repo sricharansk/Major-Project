@@ -288,6 +288,22 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Dashboard screenshots (REPLAY, 1600x1000, Streamlit on the workstation, captured with Edge via Playwright):
   `presentation/assets/dashboard/forecast_laptop.png`, `traffic_map_laptop.png`.
 
+### Workstation run of protocol v6 (2026-10-25/26): BLOCKED by two code errors before any cell ran
+- Branch `claude/laptop-sumo-v6` from origin/main 39e44a5; `docs/laptop_run.md` section 7.
+- `simulation prepare`: exit 0 (31 s). Network content hashes MATCH `prepared.json` (static 87174681..., actuated
+  ace93240..., OSM 44e0e4fe...); only the whole-file sha256 of the two `.net.xml` changed (netconvert timestamp).
+- `simulation calibrate-splits`, attempt 1: exit 1 after 4 s, `KeyError: 'so_chain_starts'`
+  (`simulation/calibrate.py`: `c[f"{direction[:2]}_chain_starts"]` gives so/no; `prepared.json` uses sb/nb). Fixed in
+  this branch (one line, prefix sb/nb); `configs/simulation.yaml` untouched; unit/leakage/safety tests 84 passed.
+- Attempt 2: exit 1 after 5 s, `KeyError` in `progression_offsets` for corridor signal
+  `joinedS_246858654_42451375_cluster_1772136801_246923513_4145439094_4207802391`: SUMO `tlsCycleAdaptation.py`
+  writes re-timed programs for 21 of the 22 corridor signals (this joined signal keeps its netconvert program), and
+  the 25 mph progression step looks up every corridor signal on the southbound chain. Resolving it (offset from the
+  network's own program, or no offset for that signal) changes the calibrated programs, so it is a protocol decision
+  and was NOT made on the workstation.
+- Result: 0 of 75 cells run; no selection; select-demand, evaluate, agents evaluate, report export and paper sync NOT
+  RUN. The preregistered rule and the v6 configuration were not changed.
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
