@@ -136,3 +136,36 @@ def test_chain_order_and_signal_positions_on_the_toy_grid(toy):
     assert [p["tls"] for p in pos] == ["B0", "C0"]
     assert pos[0]["distance_m"] == pytest.approx(n.getEdge("A0B0").getLength(), abs=0.1)
     assert pos[1]["distance_m"] == pytest.approx(pos[0]["distance_m"] + n.getEdge("B0C0").getLength(), abs=0.1)
+
+
+def test_build_cell_program_on_the_toy_grid_with_a_signal_missing_from_the_plan(toy, tmp_path, monkeypatch):
+    """The whole per-cell construction (common cycle, green factor, 25 mph offsets) on the toy grid, with one corridor
+    signal deliberately absent from the Webster-style plan, as the Webster tool leaves out the southbound exit signal of
+    the real corridor (the second v6 laptop attempt crashed there)."""
+    import xml.etree.ElementTree as ET
+
+    from smartcity import settings
+    from smartcity.simulation import calibrate
+
+    net, _ = toy
+    inv = sr.tls_inventory(net)
+    chain = ["A0B0", "B0C0"]
+    positions = calibrate.corridor_signal_positions(net, chain, set(inv))
+    assert len(positions) >= 2
+    in_plan, left_out = positions[0]["tls"], positions[1]["tls"]
+    corridor_phase = {t: next(ph["index"] for ph in inv[t]["phases"] if ph["green"]) for t in (in_plan, left_out)}
+    base = tmp_path / "base.add.xml"
+    phases = "".join(f'<phase duration="{ph["duration"]}" state="{ph["state"]}"/>' for ph in inv[in_plan]["phases"])
+    base.write_text(f'<additional><tlLogic id="{in_plan}" type="static" programID="w" offset="0">{phases}</tlLogic></additional>')
+    meta = {"corridor_phase": corridor_phase, "tls_corridor": [in_plan, left_out]}
+    sim = settings.load("simulation")["simulation"]
+    monkeypatch.setattr(settings, "ROOT", tmp_path)
+    out = tmp_path / "cell.add.xml"
+    plan = calibrate.build_cell_program(base, out, {"common_cycle_s": 120.0, "green_factor": 2.0, "progression_speed_mph": 25.0},
+                                        meta, net, sim, {"max_cycle_s": 120}, chain)
+    tls = {t.get("id"): t for t in ET.parse(out).getroot().iter("tlLogic")}
+    assert set(tls) == {in_plan} and plan["signals_not_retimed"]["ids"] == [left_out]
+    durs = [float(ph.get("duration")) for ph in tls[in_plan].findall("phase")]
+    assert sum(durs) == pytest.approx(120.0, abs=0.11)
+    assert plan["progression"]["offsets_s"] == {in_plan: 0.0} and plan["progression"]["signals_without_offset"] == [left_out]
+    assert tls[in_plan].get("offset") == "0.0"

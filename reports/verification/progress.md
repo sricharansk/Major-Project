@@ -459,3 +459,19 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   the laptop line was sent to SK. Nothing has been run; the comparison stays NOT RUN.
 - Also this session: main (PR #24, deck 25 slides) merged into the branch; lint clean; 76 unit/leakage/safety/e2e tests
   passed before the v6 change.
+
+### Milestone 12b: the first v6 attempt and its two code errors (development container, 2026-10-25 23:35-23:55 UTC)
+- The workstation session did not resume on SK's laptop line (22:35 UTC) and was restarted explicitly at 23:36 UTC. It
+  branched `claude/laptop-sumo-v6` from main 39e44a5; `simulation prepare` reproduced the network (content hashes equal to
+  `prepared.json`; only the whole-file hashes changed with netconvert's timestamp, as before).
+- `calibrate-splits` attempt 1 crashed after 4 s: KeyError `so_chain_starts` (the chain-start key was derived from
+  `direction[:2]`). Fixed as `progression_chain()` with explicit `sb_`/`nb_chain_starts` keys and a unit test (cdb951e);
+  the workstation had applied the same one-line fix locally (60f7fe2, merged here).
+- Attempt 2 crashed after 5 s: KeyError in `progression_offsets` for the joined corridor signal at the southbound exit,
+  which `tlsCycleAdaptation.py` leaves out of the Webster plan (it emits programs only for signals the declared demand
+  crosses), so the plan had 21 of the 22 corridor signals. Decision, taken before any cell ran and recorded in the config
+  comment: such a signal keeps its netconvert program and receives no cycle change, green factor or offset, exactly as in
+  v5 (so the Webster-cycle cells still reproduce v5); the plan records it under `signals_not_retimed` and
+  `signals_without_offset`. Regression tests: offsets skip signals without a program; `build_cell_program` on the toy grid
+  with one corridor signal missing from the plan. The grid, the rule, the target and the seeds are unchanged.
+- 0 of 75 cells ran; nothing selected; the comparison stays NOT RUN. The workstation re-runs section 7 from `prepare`.
