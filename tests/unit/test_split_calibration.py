@@ -176,3 +176,50 @@ def test_choose_factor_tie_break_prefers_the_least_intervention():
     far = calibrate.choose_factor([{**same, "speed_mean_mph": 8.1, "green_factor": 3.0, "common_cycle_s": 120.0,
                                     "progression_speed_mph": 25.0}], 10.95, 1.5)
     assert far["selected_cell"] is None and "120 s common cycle, 25.0 mph offsets" in far["reason"]
+
+
+class _FakeEdge:
+    def __init__(self, eid, outgoing=()):
+        self._id, self._out = eid, list(outgoing)
+
+    def getID(self):
+        return self._id
+
+    def getPriority(self):
+        return 1
+
+    def getOutgoing(self):
+        return {e: [] for e in self._out}
+
+
+class _FakeNet:
+    def __init__(self, edges):
+        self._e = {e.getID(): e for e in edges}
+
+    def getEdge(self, eid):
+        return self._e[eid]
+
+
+def test_progression_chain_uses_the_prepared_json_keys():
+    """Regression: the first v6 laptop run crashed with KeyError 'so_chain_starts' (direction[:2]); the chain start keys
+    are sb_chain_starts / nb_chain_starts."""
+    s2, s1 = _FakeEdge("s2"), None
+    s1 = _FakeEdge("s1", [s2])
+    n1 = _FakeEdge("n1")
+    net = _FakeNet([s1, s2, n1])
+    corridor = {"southbound": ["s2", "s1"], "sb_chain_starts": ["s1"], "northbound": ["n1"], "nb_chain_starts": ["n1"]}
+    assert calibrate.progression_chain(net, corridor, ["s2"]) == ("southbound", ["s1", "s2"])
+    assert calibrate.progression_chain(net, corridor, ["n1"]) == ("northbound", ["n1"])
+
+
+def test_progression_offsets_skip_signals_without_a_program():
+    """Regression: the second v6 laptop attempt crashed with KeyError on the one corridor signal that the Webster tool
+    leaves out; such a signal gets no offset and the next timed signal is the progression origin."""
+    positions = [{"tls": "exit", "distance_m": 0.0}, {"tls": "a", "distance_m": 50.0}, {"tls": "b", "distance_m": 50.0 + 11.176 * 20}]
+    programs = {"a": ([30, 3, 2, 25, 3, 2], 0), "b": ([30, 3, 2, 25, 3, 2], 0)}
+    offs = calibrate.progression_offsets(positions, programs, 25.0, 90.0)
+    assert "exit" not in offs and offs["a"] == 0.0 and offs["b"] == pytest.approx(20.0, abs=0.1)
+
+
+def test_signals_in_plan_lists_the_retimed_ids(tmp_path):
+    assert calibrate.signals_in_plan(_add(tmp_path)) == {"corr", "other"}

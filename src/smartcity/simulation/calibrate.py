@@ -25,6 +25,10 @@ at the posted progression speed along the mapped link's direction. The grid is f
    following the corridor edge chain in the direction of the mapped DOT link (the opposite direction is not
    progressed). Progression needs a common cycle, so it is combined only with the numeric cycles.
 
+A corridor signal that the Webster tool leaves out (it emits programs only for signals the declared demand crosses;
+one of the 22 corridor signals, at the southbound exit, is such a case) keeps its netconvert program and gets no cycle
+change, green factor or offset, exactly as in v5; the plan records it under ``signals_not_retimed``.
+
 Every cell is run under the fixed-time baseline on the development seeds. A cell is admissible only when every seed
 passes the preregistered rule (``demand_selection.max_teleports`` and ``max_unfinished_frac``). Among admissible cells
 the one whose seed-mean space-mean speed on the mapped DOT link is closest to the observed PM-peak speed is selected,
@@ -167,6 +171,14 @@ def order_chain(net, edges: list[str], start: str) -> list[str]:
         seen.add(cur.getID())
 
 
+def progression_chain(net, corridor: dict, mapped_edges: list[str]) -> tuple[str, list[str]]:
+    """The corridor direction that contains the mapped DOT link's edges, and that direction's edge chain in travel
+    order (``prepared.json`` keys: ``southbound``/``northbound`` and ``sb_chain_starts``/``nb_chain_starts``)."""
+    direction = "southbound" if set(mapped_edges) & set(corridor["southbound"]) else "northbound"
+    starts = corridor["sb_chain_starts" if direction == "southbound" else "nb_chain_starts"]
+    return direction, order_chain(net, corridor[direction], starts[0])
+
+
 def corridor_signal_positions(net_file: Path, chain: list[str], corridor_ids) -> list[dict]:
     """Cumulative distance along an ordered edge chain to each corridor signal, in travel order: a signal is placed at
     the end of the first chain edge it controls (a joined signal is counted once, where the platoon reaches it)."""
@@ -191,11 +203,12 @@ def progression_offsets(positions: list[dict], programs: dict, speed_mph: float,
     ``programs`` maps a signal id to ``(phase_durations, corridor_phase_index)``; ``green_start`` is the program time
     at which the corridor phase begins. A positive SUMO offset delays the program by that many seconds."""
     v = speed_mph / MPH_PER_MPS
-    if v <= 0 or not positions:
+    timed = [pos for pos in positions if pos["tls"] in programs]   # signals without a program in the plan get no offset
+    if v <= 0 or not timed:
         return {}
-    d0 = positions[0]["distance_m"]
+    d0 = timed[0]["distance_m"]
     out = {}
-    for pos in positions:
+    for pos in timed:
         durs, ci = programs[pos["tls"]]
         green_start = sum(durs[:int(ci)])
         out[pos["tls"]] = round(((pos["distance_m"] - d0) / v - green_start) % cycle, 1)
@@ -211,6 +224,16 @@ def apply_offsets(src: Path, dst: Path, offsets: dict) -> dict:
     dst.parent.mkdir(parents=True, exist_ok=True)
     tree.write(dst, encoding="utf-8", xml_declaration=True)
     return {"offsets_s": offsets, "tls_additional": _rel(dst), "sha16": sr.file_hash(dst)}
+
+
+def signals_in_plan(add_file: Path) -> set[str]:
+    """The tlLogic ids a tlLogic additional file re-times."""
+    return {tl.get("id") for tl in ET.parse(add_file).getroot().iter("tlLogic")}
+
+
+NOT_RETIMED_REASON = ("tlsCycleAdaptation.py (Webster) emits programs only for signals that the declared demand crosses; "
+                      "this signal keeps its netconvert program and receives no cycle change, green factor or offset "
+                      "(as in protocol v5)")
 
 
 def program_durations(add_file: Path, corridor_phase: dict) -> dict:
@@ -304,8 +327,12 @@ def _cell_tag(c: dict) -> str:
 def build_cell_program(base_add: Path, out: Path, cell: dict, meta: dict, net: Path, sim: dict, cal: dict,
                        chain: list[str]) -> dict:
     """The tlLogic additional file of one grid cell: common cycle (optional), corridor-green factor, offsets (optional)."""
-    corridor_phase, corridor_ids = meta["corridor_phase"], meta["tls_corridor"]
-    plan = {"method": "calibrated_splits", **cell}
+    corridor_phase = meta["corridor_phase"]
+    in_plan = signals_in_plan(base_add)
+    corridor_ids = [t for t in meta["tls_corridor"] if t in in_plan]
+    missing = sorted(t for t in meta["tls_corridor"] if t not in in_plan)
+    plan = {"method": "calibrated_splits", **cell,
+            "signals_not_retimed": {"ids": missing, "reason": NOT_RETIMED_REASON} if missing else None}
     src = base_add
     if cell["common_cycle_s"] is not None:
         cc = set_common_cycle(src, out, corridor_ids, cell["common_cycle_s"], float(sim["min_green_s"]))
@@ -317,12 +344,13 @@ def build_cell_program(base_add: Path, out: Path, cell: dict, meta: dict, net: P
     plan["per_tls"] = rs["per_tls"]
     plan.update({k: rs[k] for k in ("min_green_s", "max_green_s", "max_cycle_s")})
     if cell["progression_speed_mph"]:
-        positions = corridor_signal_positions(net, chain, corridor_ids)
+        positions = corridor_signal_positions(net, chain, meta["tls_corridor"])
         offs = progression_offsets(positions, program_durations(out, corridor_phase), cell["progression_speed_mph"],
                                    cell["common_cycle_s"])
         apply_offsets(out, out, offs)
         plan["progression"] = {"speed_mph": cell["progression_speed_mph"], "direction": cal.get("progression_direction", "mapped_link"),
-                               "chain_start": chain[0], "signals_in_order": positions, "offsets_s": offs}
+                               "chain_start": chain[0], "signals_in_order": positions, "offsets_s": offs,
+                               "signals_without_offset": [q["tls"] for q in positions if q["tls"] not in offs]}
     plan.update({"tls_additional": _rel(out), "sha16": sr.file_hash(out)})
     return plan
 
@@ -351,9 +379,7 @@ def calibrate_splits() -> dict:
     import sumolib
 
     snet = sumolib.net.readNet(str(net))
-    c = meta["corridor"]
-    direction = "southbound" if set(edges) & set(c["southbound"]) else "northbound"
-    chain = order_chain(snet, c[direction], c[f"{direction[:2]}_chain_starts"][0])
+    direction, chain = progression_chain(snet, meta["corridor"], edges)
     cells = grid_cells(cal)
     plans, jobs, outs = {}, [], []
     for cell in cells:

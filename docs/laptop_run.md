@@ -164,6 +164,11 @@ python -m smartcity.cli report export
 python -m smartcity.cli paper sync
 ```
 
+Re-run note (2026-10-25 23:50 UTC): the first attempt stopped on two code errors before any cell ran (a chain-start
+key typo and the one corridor signal the Webster tool leaves out, which now keeps its netconvert program with no
+offset, as in v5); both are fixed and tested, the grid and the rule are unchanged. Run the section again from
+`prepare` on a fresh `claude/laptop-sumo-v6` branch.
+
 If `calibrate-splits` or `select-demand` exits with NOT_RUN, stop there and commit what was produced: the failure is
 a result. `prepare` must report the same network hashes as `prepared.json` (`static_content_sha256` 87174681...);
 if it does not, stop and report instead of running the grid on a different network.

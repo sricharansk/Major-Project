@@ -91,8 +91,11 @@ split_calibration:
   seeds: [101, 102, 103]      # development seeds; the comparison uses simulation.seeds
   max_cycle_s: 120            # bound for the Webster-cycle cells (v5 construction); a common cycle is never exceeded
   grid:                       # 5 + 2 x 5 x 2 = 25 cells x 3 seeds = 75 fixed-time runs
-    # null = per-signal Webster cycles (the v5 base); a number puts every corridor signal on that cycle by scaling its
-    # green phases together (clearance, phase order and states unchanged; greens floored at simulation.min_green_s)
+    # null = per-signal Webster cycles (the v5 base); a number puts every corridor signal of the Webster plan on that
+    # cycle by scaling its green phases together (clearance, phase order and states unchanged; greens floored at
+    # simulation.min_green_s). A corridor signal the Webster tool leaves out (it emits programs only for signals the
+    # declared demand crosses: the joined signal at the southbound exit) keeps its netconvert program with no cycle
+    # change, green factor or offset, as in v5; the plan records it (clarified 2026-10-25 23:50 UTC, before any cell ran)
     common_cycles_s: [null, 90, 120]
     # corridor green x factor within the cycle (other greens shortened down to min_green_s; capped at max_green_s);
     # 1.0-2.5 repeat v5 at the Webster cycles, 3.0 extends the range that v5 ended below the target
