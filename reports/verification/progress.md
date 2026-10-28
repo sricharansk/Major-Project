@@ -324,6 +324,25 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   decisions as before; 12/12 schema-valid; the LLM chose monitor_only on the mapped corridor under every policy, so
   no real advisory reached the (now admissible) simulation gate. `report export` and `paper sync` exit 0.
 
+### Workstation LIVE attempt (2026-10-28 19:49-22:05 UTC, Wednesday 15:49-18:05 New York): NOT_RUN, feed stale
+- Branch `claude/laptop-live` from main 257aad9 (then main 6f9c86a); `docs/laptop_run.md` section 8; `tests/unit/test_live.py`
+  8 passed.
+- First `live pull` (19:49 UTC): exit 0, 0 speed rows: the newest Manhattan record of i4gi-tjb9 was 11:31 New York time
+  (about 4 h 20 min old; other boroughs up to 14:12), outside the 4 h pull window. `live forecast`: NOT_RUN, no valid
+  live speed records.
+- A watcher pulled every ~10 min (12 tries, 19:53-21:51 UTC) and would have started `live run --polls 12 --interval-s
+  300` at the first batch with at least one link forecast. Speed rows per pull: 438, 0, 0, 338, 306, 0, 240, 208, 50,
+  402, 370, 336; newest record 14:11, then 13:36, then 15:36 New York time. The 14:11 batch was published, withdrawn
+  (0 rows at 20:03, 20:14 and 20:46) and republished, and the feed was never less than about 1 h 40 min behind. Every
+  `live forecast` batch (9 written, `artifacts/live/forecasts/`) forecast 0 links and withheld all 16
+  (INSUFFICIENT_HISTORY: at most 5 of the 24 lookback bins observed, 12 required). The rule was not relaxed.
+- Operator note: a first watcher started `live run` after a batch that withheld every link; it was stopped after 16 s
+  (no forecasts issued) and the trigger was corrected to "at least one link forecast" before the 12 tries above.
+- Result: LIVE observational run NOT_RUN on 2026-10-28 (public feed stale); `live_metrics.csv` not produced; paper
+  Table `tab:live` stays NOT RUN. Evidence: `artifacts/live/` (batches, forecast log, last pull) and
+  `data/raw/live/*/fetch_log.jsonl` (15 speed, 15 weather, 14 311 pulls with request, status and sha256). To retry on
+  another weekday afternoon when the feed is current (about 13:00-16:00 New York).
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
