@@ -113,7 +113,17 @@
     "demand_scale": 1.0,
     "incident": null,
     "forecast_congested": false,
-    "description": "routine PM-peak demand (declared from ATR medians where available)"
+    "description": "routine PM-peak demand (declared from ATR medians where available)",
+    "demand": {
+      "route_choice": "fixed_free_flow",
+      "demand_scale": 1.0,
+      "main_nb_vph": 2510.0,
+      "main_sb_vph": 2444.0,
+      "side_demand_scale": 0.0,
+      "side_vph_per_approach": 0.0
+    },
+    "tls_additional": "simulation/networks/west_st_corridor.v6_counts2025_cycle_splits_offsets.c90.f1.50.p25.add.xml",
+    "signal_timing_kind": "calibrated_splits"
   },
   {
     "corridor_edges": [
@@ -229,7 +239,17 @@
     "demand_scale": 1.25,
     "incident": null,
     "forecast_congested": true,
-    "description": "STRESS SCENARIO: planned-event demand surge x1.25 (configured, not observed)"
+    "description": "STRESS SCENARIO: planned-event demand surge x1.25 (configured, not observed)",
+    "demand": {
+      "route_choice": "fixed_free_flow",
+      "demand_scale": 1.25,
+      "main_nb_vph": 3137.5,
+      "main_sb_vph": 3055.0,
+      "side_demand_scale": 0.0,
+      "side_vph_per_approach": 0.0
+    },
+    "tls_additional": "simulation/networks/west_st_corridor.v6_counts2025_cycle_splits_offsets.c90.f1.50.p25.add.xml",
+    "signal_timing_kind": "calibrated_splits"
   },
   {
     "corridor_edges": [
@@ -351,6 +371,16 @@
       "restore_mps": 13.9
     },
     "forecast_congested": true,
-    "description": "STRESS SCENARIO: configured collision-like capacity reduction (speed cap 2.5 m/s for 20 min) plus surge"
+    "description": "STRESS SCENARIO: configured collision-like capacity reduction (speed cap 2.5 m/s for 20 min) plus surge",
+    "demand": {
+      "route_choice": "fixed_free_flow",
+      "demand_scale": 1.25,
+      "main_nb_vph": 3137.5,
+      "main_sb_vph": 3055.0,
+      "side_demand_scale": 0.0,
+      "side_vph_per_approach": 0.0
+    },
+    "tls_additional": "simulation/networks/west_st_corridor.v6_counts2025_cycle_splits_offsets.c90.f1.50.p25.add.xml",
+    "signal_timing_kind": "calibrated_splits"
   }
 ]
