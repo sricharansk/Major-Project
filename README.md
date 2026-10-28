@@ -117,15 +117,17 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
 * Retrieval: 28 queries, Recall@8 0.818, MRR 0.702 (project-drafted labels). LLM agents (two passes): 24/24 schema-valid calls;
   per pass 3/3 fabricated citations without retrieval (all rejected), 0/9 with; constraints reject the unmapped link; the
   LLM chose monitor-only on the mapped corridor, so no advisory reached the simulation gate.
-* SUMO: the first 45-run controller comparison (2026-10-20) is **superseded**. A testbed audit
-  (`scripts/sim_testbed_audit.py`, 2026-10-21) found that its bare from/to flows let SUMO re-route at insertion
-  (1,120 of 2,189 mainline vehicles sent off West Street) and that the NB flow was inserted on a 0.2 m stub edge.
-  With fixed routes and a preregistered side-demand selection rule, **no demand level passes the testbed's own
-  baseline test** under any corrected protocol: 2014 ATR count with netconvert or Webster programs, or 2025
-  two-direction counts (2,510 NB / 2,444 SB veh/h) without OSM turn-lane restrictions. With the 2025 counts the
-  mapped link runs at **5.8 mph in simulation vs 10.95 mph observed** in the weekday PM peak. The corrected controller
-  comparison is **NOT RUN** and the advisory simulation gate returns NOT_EVALUATED
-  (`reports/limitations.md` 16, 24; paper Table "SUMO testbed audit").
+* SUMO: the first 45-run controller comparison (2026-10-20) is **superseded** (a testbed audit found SUMO re-routing
+  half of the mainline off West Street). Two preregistered calibrations followed: v5 (splits only) reached 8.1 of the
+  observed 10.95 mph; **v6 (90 s common cycle, corridor green factor 1.5, 25 mph southbound offsets) reached 10.08 mph**
+  on 2026-10-26, within the 1.5 mph tolerance, 0 unfinished/teleports. On that **calibrated scenario testbed** (not NYC
+  DOT timing; side-street demand 0; no pedestrians) the corrected 45-run comparison ran on 2026-10-28: fixed time and the
+  forecast-informed rule are identical in the routine peak; under the configured event surge the rule lowers mean time
+  loss 450.2 -> 426.0 s (-5.4 %) and completes 5,910 vs 5,720 trips; under the incident 465.9 -> 443.9 s (-4.7 %),
+  5,919 vs 5,725; same direction in every seed, 0 teleports. The actuated controller runs on netconvert's own programs
+  and is an uncalibrated reference only. **Simulated result, not a real-world gain.** The agent re-run on this testbed
+  reproduced the 19 decisions (LLM still monitor-only, so no real advisory reached the gate). Live mode (section
+  above) is implemented and NOT RUN (`reports/limitations.md` 16, 24, 27, 28; paper Tables "SUMO testbed", "protocol v6").
 
 ## Honesty rules this repository follows
 

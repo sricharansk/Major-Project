@@ -526,3 +526,21 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Same day, workstation: the v6 calibration record and the demand selection (both finished before the 26 October
   shutdown) were committed and pushed (c86ce5f on `claude/laptop-sumo-v6`); the 45-run controller comparison, interrupted
   at 39/45, is being re-run in full, then agents evaluate, report export and paper sync.
+
+### Milestone 14: integration of the v6 run and the corrected controller comparison (development container, 2026-10-28 19:00-20:00 UTC)
+- Merged `claude/laptop-sumo-v6` (c86ce5f, e63a177, 4ebf001) into the build branch after PR #28 (LIVE mode) had merged.
+  Records: `split_calibration_v6_counts2025_cycle_splits_offsets.json` (75 runs, selected 90 s / 1.5 / 25 mph, 10.08 mph),
+  `demand_selection_v6_*.json` (side scale 0.0), `simulation_metrics.csv` (45 runs, 0 teleports, seeds 1-5),
+  `scenarios.json` (calibrated plan `c90.f1.50.p25`), 19 new agent traces, `llm_calls.csv` (+12, 36 total),
+  `evidence_registry.csv`, `mlflow_runs.json`, `runtime_metrics.csv` (workstation exports).
+- Per-seed check of the matched pair (fixed time vs forecast rule, same plan, network, demand, seeds): time-loss gain
+  12.9-29.9 s under the surge and 14.3-33.7 s under the incident, 148-250 more trips completed, in every seed; routine
+  peak identical. Actuated rows carry `signal_timing netconvert_guess` and a different network hash (98e143b6f4e1296a vs
+  36fb9c1fb895b7e7): an uncalibrated reference, not ranked. Written as such in the paper (results, discussion,
+  limitations, conclusion, abstract), README, limitation 24, `overrides.json` (SIM-02 stays PARTIAL with the new reason)
+  and claims C41-C48. `paper.simulation_table` now captions a calibrated run and names the uncalibrated controller.
+- Paper: Table `tab:splitcal6` carries the 25 cells; Table `tab:sim` the 45 runs; PDF rebuilt. Environment deviation
+  (Windows Application Control vs torch_scatter/torch_sparse) recorded as limitation 28 with the OSError fallback fix.
+- Still NOT RUN: the LIVE observational window (`docs/laptop_run.md` section 8, workstation). Still open: human review
+  of the RAG labels; a testbed with side-street demand, DOT timing plans or pedestrians (future work).
+

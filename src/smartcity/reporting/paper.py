@@ -138,8 +138,18 @@ def simulation_table():
             continue
         k = (r["scenario"], r["controller"])
         agg.setdefault(k, []).append(r)
-    head = ("\\begin{table*}[t]\\centering\\caption{" + cap + ". Scenario-based testbed with OSM geometry and declared "
-            "demand, not a calibrated digital twin. Time loss is the mean per \\emph{completed} trip; completed, "
+    timing = {r["controller"]: r.get("signal_timing", "") for r in rows}
+    if any(t.startswith("calibrated_splits") for t in timing.values()):
+        uncal = sorted(c for c, t in timing.items() if not t.startswith("calibrated_splits"))
+        testbed = ("Calibrated scenario testbed (protocol v6 plan: 90\\,s common cycle, corridor green factor 1.5, 25\\,mph "
+                   "southbound offsets, tuned to one observed speed on one link; not NYC DOT timing), OSM geometry, 2025 "
+                   "two-direction counts, no side-street demand. The fixed-time and forecast-rule rows share this plan, "
+                   "network and seeds and are the matched pair"
+                   + (f"; the {', '.join(_esc(c) for c in uncal)} controller runs on netconvert's own actuated programs, not on "
+                      "the calibrated plan, and is an uncalibrated reference, not ranked" if uncal else "") + ". ")
+    else:
+        testbed = "Scenario-based testbed with OSM geometry and declared demand, not a calibrated digital twin. "
+    head = ("\\begin{table*}[t]\\centering\\caption{" + cap + ". " + testbed + "Time loss is the mean per \\emph{completed} trip; completed, "
             "unfinished and teleported vehicles are per run, averaged over seeds, so a lower time loss with fewer completed trips is "
             "survivorship, not improvement.}\\label{tab:sim}")
     lines = [head,

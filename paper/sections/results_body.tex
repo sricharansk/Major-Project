@@ -130,11 +130,11 @@ gates fired as designed (the three stress cases were run under the full system o
 policy): the stale-data stress case (inputs aged six steps) ended in DEFER\_DATA,
 the wide-interval stress case (forced 99\,mph width) and the observed rainy period, whose intervals of 44--46\,mph exceed
 the 38.1\,mph cap, in DEFER\_UNCERTAINTY, and the out-of-scope query in DEFER\_EVIDENCE, each without an LLM call. The
-model was called 12 times per pass, and the stage was run twice (2026-10-20 and, after the simulation-gate
-correction, 2026-10-21): 24 calls, one attempt each, 892 to 3{,}619 prompt tokens, 157 to 321 completion tokens and
-15 to 126\,s per call (the first, cold call slowest; 18 to 52\,s in the second pass), all returning schema-valid JSON
-and all recommending monitoring only (\texttt{reports/experiments/llm\_calls.csv}). Both passes reached the same 19
-decisions. Without retrieval the model cited an evidence id that does not exist in all three cases of each pass (for
+model was called 12 times per pass, and the stage was run three times (2026-10-20; 2026-10-21 after the
+simulation-gate correction; 2026-10-28 on the calibrated testbed, Section~\ref{sec:res:sim}): 36 calls, one attempt
+each, 892 to 3{,}619 prompt tokens, 157 to 321 completion tokens and 15 to 126\,s per call (the first, cold call
+slowest; 18 to 54\,s in the later passes), all returning schema-valid JSON and all recommending monitoring only
+(\texttt{reports/experiments/llm\_calls.csv}). All three passes reached the same 19 decisions. Without retrieval the model cited an evidence id that does not exist in all three cases of each pass (for
 example \texttt{EVIDENCE\_123456}), and the citation check rejected every one; with retrieval, no invalid citation
 occurred in nine calls per pass. On the routine rush-hour case (FDR S Catherine Slip--Brooklyn Bridge, a link
 without a reviewed DOT-to-SUMO mapping) the constraint layer rejected the candidate under every policy that keeps it,
@@ -245,15 +245,46 @@ area was re-fetched from the OSM API on 23 October; the rebuilt corridor is stru
 (82 edges, the same edge lists, entries, exits and 22 signals) but its content hash differs, and all v5 runs use the
 re-fetched network.
 
-\textit{Protocol v6 (prepared, NOT RUN).} The authors chose a second preregistered calibration over closing the
-comparison or waiting for NYC DOT timing plans. Protocol v6, fixed in the configuration on 25 October 2026 before
-any run, keeps the v5 construction and adds what an arterial timed for progression has and the Webster plan lacks:
-a common cycle at every corridor signal (90 or 120\,s, or the per-signal Webster cycles, which range from 21 to
-102\,s and so admit no progression), green factors 1.0 to 3.0, and corridor-green offsets for a 25\,mph platoon
-along the southbound chain, the mapped link's direction; 25 cells, three development seeds, fixed-time baseline,
-the same admissibility rule and the same 10.95\,$\pm$\,1.5\,mph target, ties going to the least intervention
-(Table~\ref{tab:splitcal6}). At the time of writing it has not been run; any selected program will be reported as a
-calibrated scenario testbed, not as NYC DOT timing.
+\textit{Protocol v6 (run 2026-10-26): a plan within tolerance.} The authors chose a second preregistered calibration
+over closing the comparison or waiting for NYC DOT timing plans. Protocol v6, fixed in the configuration on 25 October
+2026 before any run, keeps the v5 construction and adds what an arterial timed for progression has and the Webster plan
+lacks: a common cycle at every corridor signal (90 or 120\,s, or the per-signal Webster cycles, which range from 21 to
+102\,s and so admit no progression), green factors 1.0 to 3.0, and corridor-green offsets for a 25\,mph platoon along
+the southbound chain, the mapped link's direction; 25 cells, three development seeds, fixed-time baseline, the same
+admissibility rule and the same 10.95\,$\pm$\,1.5\,mph target, ties going to the least intervention
+(Table~\ref{tab:splitcal6}). The workstation ran the 75 runs on 26 October 2026
+(\texttt{split\_calibration\_v6\_counts2025\_cycle\_splits\_offsets.json}). Splits alone never reach the target: the
+Webster-cycle cells reproduce v5 and top out at 8.22\,mph, and a 90\,s common cycle without offsets gives 8.88\,mph at
+every factor from 1.5 upward (the green bounds bind, so the factors coincide). Offsets close the gap: the 90\,s cells
+with a 25\,mph progression reach 10.08\,mph, 0.87\,mph below the observed speed and within tolerance, with no
+unfinished trip and no teleport in any seed; the 120\,s cells with offsets overshoot (13.1 to 21.7\,mph). The
+tie-break selects the least intervention, factor 1.5, and the selected program is recorded as a calibrated scenario
+testbed: a cycle, green share and offsets tuned to one observed speed on one link, not NYC DOT timing. Under that plan
+the preregistered side-street rule admits only the zero level, as before (\texttt{demand\_selection.json}).
+
+\textit{Controller comparison on the calibrated testbed (2026-10-28).} With a plan selected, the comparison that the
+rule had blocked could run: three scenarios (routine PM peak at the 2025 counts; a configured event surge of
+$\times$1.25; the surge plus a configured 20-minute capacity reduction) under three controllers on five matched seeds,
+45 runs, every one completed with zero teleports (Table~\ref{tab:sim}). The matched pair is fixed time against the
+deterministic forecast-informed rule, which run on the same calibrated plan, network, demand and seeds; the rule only
+acts when congestion is forecast, so in the routine peak the two are identical (271.6\,s mean time loss, all 4{,}975
+trips completed in every seed). Under the surge the rule lowers the mean time loss per completed trip from 450.2 to
+426.0\,s ($-5.4$\,\%) while completing more trips (5{,}910 against 5{,}720 of 6{,}712 loaded) and leaving fewer
+unfinished (350 against 540), with a lower mean corridor queue (180 against 197 vehicles); under the incident the
+figures are 465.9 to 443.9\,s ($-4.7$\,\%), 5{,}919 against 5{,}725 completed, 341 against 536 unfinished, 183 against
+203 queued. The direction is the same in every seed (time-loss gain 12.9 to 29.9\,s under the surge and 14.3 to
+33.7\,s under the incident, 148 to 250 more trips completed), so this time the lower delay is not survivorship. The
+actuated controller runs on netconvert's actuated programs, not on the calibrated plan, so its rows are an
+uncalibrated reference and are not ranked against the pair. The result is a simulated improvement in a calibrated
+scenario testbed with no side-street demand, no pedestrians and 340 to 540 trips still unfinished under stress; it is
+not a real-world gain.
+
+\textit{Agent re-run on the calibrated testbed.} The advisory stage was run a third time on 28 October 2026 so that the
+simulation gate, now admissible, could be reached (\texttt{llm\_calls.csv}, 12 calls, 18 to 54\,s, all schema-valid).
+It reproduced the 19 decisions of the two earlier passes: the model again recommended monitoring only on the mapped
+corridor under every policy, so no real advisory reached the gate and the SIMULATION\_PASSED path is still exercised
+only by the software tests; without retrieval it again cited a non-existent evidence id in all three cases, each
+rejected.
 
 \subsection{Live observational run}
 Every forecast number above is REPLAY: the frozen model scored on the held-out partition of the archived feed. A
