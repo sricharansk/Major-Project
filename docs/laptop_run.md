@@ -176,3 +176,35 @@ if it does not, stop and report instead of running the grid on a different netwo
 Hand back: `git add reports simulation/scenarios simulation/mappings artifacts/agent_traces paper/tables`
 (network and demand files stay ignored; their hashes are in `prepared.json` and the calibration record), commit with
 the usual trailers, `git push -u origin claude/laptop-sumo-v6`, and post the branch name in the thread.
+
+## 8. Follow-up 2026-10-28: LIVE observational run (new public records, forecasts saved before their targets)
+
+Everything so far is REPLAY (the held-out partition of Jan-Oct 2026) or SIMULATION. The specification's live mode
+(section 26: poll, persist, detect repeats and revisions, trigger inference only with enough history, keep the source
+age visible, save each forecast before its target, score it when the target arrives) is implemented in
+`src/smartcity/live/pipeline.py` and runs only where the public feed is reachable, i.e. on the workstation. It uses
+the frozen proposed model and the TRAIN-fitted transforms (the same block functions as the offline feature build; a
+schema mismatch stops the run). Everything is labelled LIVE and kept apart from the REPLAY artifacts; nothing touches a
+signal.
+
+```powershell
+cd "C:\Users\S.K. Sricharan\Downloads\MAJOR PROJECT - FINAL YEAR\PROJECT\repo"
+git fetch origin && git checkout -B claude/laptop-live origin/main
+# if the LIVE pull request is not merged yet: git checkout -B claude/laptop-live origin/claude/implement-traffic-system-5rzj9i
+.\.venv\Scripts\Activate.ps1
+python -m smartcity.cli live pull          # one pull: newest speed rows of the 16 links, Open-Meteo forecast, 311 (48 h)
+python -m smartcity.cli live forecast      # one LIVE batch for the latest complete 5-minute bin (should say 16 links or why not)
+python -m smartcity.cli live run --polls 12 --interval-s 300   # one hour of 5-minute batches, then ~75 min of settling pulls, then score
+python -m smartcity.cli report export
+python -m smartcity.cli paper sync
+```
+
+Run it on a weekday afternoon (the DOT feed is densest then) and leave the machine awake and online for the whole
+2 h 15 min; `live run` prints a line per poll. If `live forecast` reports every link withheld (INSUFFICIENT_HISTORY)
+the feed is sparse or lagging: run `live pull` again after ten minutes before starting the hour. The settle phase
+exists so the 60-minute targets of the last batch can be observed; stopping early leaves them PENDING, which is a
+result, not an error.
+
+Hand back: `git add artifacts/live reports/experiments/live_metrics.csv reports/verification paper/tables data/raw/live/*/fetch_log.jsonl`
+(the raw pull bodies stay ignored; their hashes are in the fetch logs), commit with the usual trailers,
+`git push -u origin claude/laptop-live`, and post the branch name in the thread.

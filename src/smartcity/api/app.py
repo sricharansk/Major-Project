@@ -108,6 +108,27 @@ def create_forecast(body: ForecastIn):
     return envelope(fr, run_id=fr["run_id"], data_as_of=str(fr["data_as_of_utc"]), warnings=fr["warnings"])
 
 
+@app.get("/forecasts/live/latest")
+def live_latest():
+    """Newest LIVE forecast batch (read from artifacts; the API never pulls the feed itself)."""
+    rec = service.live_latest()
+    if rec is None:
+        return envelope(None, artifact_status="NOT_RUN", warnings=["LIVE mode has not been run"])
+    return envelope(rec, run_id=rec["forecast_batch_id"], data_as_of=rec["origin_utc"], warnings=rec.get("warnings"))
+
+
+@app.get("/forecasts/live/metrics")
+def live_metrics():
+    """Scored LIVE forecasts (per horizon) and the run summary; pending targets are counted, never scored."""
+    summ = service.live_summary()
+    if summ is None:
+        return envelope(None, artifact_status="NOT_RUN", warnings=["LIVE mode has not been run"])
+    return envelope({"summary": {k: v for k, v in summ.items() if k != "metrics_by_horizon"},
+                     "metrics_by_horizon": summ.get("metrics_by_horizon", [])},
+                    artifact_status="AVAILABLE" if summ.get("status") == "OK" else summ.get("status", "NOT_RUN"),
+                    warnings=[summ.get("note", "")] if summ.get("note") else [])
+
+
 @app.get("/forecasts/{forecast_id}")
 def get_forecast(forecast_id: str):
     from sqlalchemy import text

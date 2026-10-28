@@ -34,3 +34,11 @@ context:
   sr311_radius_m: 500
   sr311_window_hours: 24
   sr311_publication_lag_hours: 24     # assumed public-availability lag (disclosed assumption)
+live:
+  # LIVE observational mode (src/smartcity/live/pipeline.py): the newest public records are pulled, the frozen model
+  # forecasts from them with the TRAIN-fitted transforms, each forecast is saved before its target time and scored
+  # only when the target is later observed.  Nothing here changes the REPLAY evaluation.
+  history_hours: 4.0          # speed records pulled per poll (lookback 2 h + rolling/forward-fill margin + feed latency)
+  window_steps: 42            # feature rows built per poll (lookback 24 + 18 margin for the 1 h rolling mean and ffill)
+  min_observed_steps: 12      # a link is forecast only when at least this many of the 24 lookback bins were observed
+  weather_point: {lat: 40.7549, lon: -73.9840}   # same point as the training weather download

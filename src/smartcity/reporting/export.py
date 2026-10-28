@@ -62,6 +62,8 @@ REQS = [
      "python -m smartcity.cli simulation evaluate", "reports/experiments/simulation_metrics.csv"),
     ("SIM-02", "simulation", "Paired controller comparison (matched seeds)", "src/smartcity/simulation/pipeline.py",
      "python -m smartcity.cli simulation evaluate", "reports/experiments/simulation_metrics.csv"),
+    ("LIVE-01", "live", "Live observational run: forecasts saved before the target, scored after", "src/smartcity/live/pipeline.py",
+     "python -m smartcity.cli live run", "artifacts/live/live_summary.json"),
     ("API-01", "api", "Functional service endpoints", "src/smartcity/api/app.py",
      "pytest tests/integration/test_api.py", "reports/verification/api_smoke.json"),
     ("UI-01", "dashboard", "Artifact-backed dashboard", "src/smartcity/dashboard/app.py",

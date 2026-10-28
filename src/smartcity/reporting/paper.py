@@ -275,6 +275,32 @@ def split_calibration_v6_table():
     _write("split_calibration_v6.tex", "\n".join(lines))
 
 
+def live_table():
+    """LIVE observational run: per-horizon error, coverage and persistence of forecasts made from records pulled after
+    training and scored once their targets were observed; NOT RUN placeholder until the workstation runs it."""
+    cap = "Live observational run (LIVE)"
+    summ_p = R / "artifacts" / "live" / "live_summary.json"
+    rows = _rows("reports/experiments/live_metrics.csv")
+    if not summ_p.exists() or not rows:
+        return _write("live.tex", not_run(cap, "tab:live"))
+    summ = json.loads(summ_p.read_text())
+    if not summ.get("n_scored"):
+        return _write("live.tex", not_run(cap + " (forecasts saved, no target observed yet)", "tab:live"))
+    head = ("\\begin{table}[t]\\centering\\caption{" + cap + ". The frozen model was run on records pulled from the public "
+            f"speed feed between {_esc(summ['first_origin_utc'][:16])} and {_esc(summ['last_origin_utc'][:16])} UTC "
+            f"({summ['n_batches']} five-minute batches, {summ['n_links']} links); every forecast was written before its "
+            "target time and scored only after the target bin was observed. Persistence is the last observed speed at the "
+            f"origin. Pending targets ({summ.get('n_pending', 0)}) and late forecasts ({summ.get('n_late', 0)}) are not scored. "
+            "A short window on one weekday, not a second test set.}\\label{tab:live}\\small")
+    lines = [head, "\\begin{tabular}{rrrrrr}\\toprule Horizon (min) & Scored & MAE (mph) & Persistence MAE & "
+                   "Coverage & Width (mph) \\\\ \\midrule"]
+    for r in rows:
+        lines.append(f"{r['horizon_minutes']} & {r['n_scored']} & {_f(r['mae_mph'])} & {_f(r['persistence_mae_mph'])} & "
+                     f"{_f(r['coverage'], 3)} & {_f(r['mean_interval_width_mph'], 1)} \\\\")
+    lines.append("\\bottomrule\\end{tabular}\\end{table}\n")
+    _write("live.tex", "\n".join(lines))
+
+
 def retrieval_table():
     p = R / "artifacts" / "retrieval" / "retrieval_eval.json"
     cap = "Retrieval evaluation on the labelled query set"
@@ -320,7 +346,7 @@ def sources_table():
 
 def sync() -> str:
     for fn in (forecast_table, multi_seed_table, ablation_table, uncertainty_table, simulation_table, simulation_audit_table,
-               split_calibration_table, split_calibration_v6_table,
+               split_calibration_table, split_calibration_v6_table, live_table,
                retrieval_table, advisory_table, sources_table):
         fn()
     return "tables: " + ", ".join(sorted(p.name for p in T.glob("*.tex")))
