@@ -448,12 +448,28 @@ def build_table(tid: str, refs: Refs) -> str:
                   "2.85 mph short of the target.", refs)
         return x
     if tid == "splitcal6":
-        _, rows = tex_rows("split_calibration_v6")
-        x = caption("Signal-Timing Calibration, Protocol v6 (SIMULATION)", refs)
-        if rows and rows[0] and rows[0][0].startswith("NOT RUN"):
-            return x + table_xml([180], [["Status"]], [["NOT RUN"]], refs, ["center"], size=16)
-        raise NotImplementedError("split_calibration_v6.tex has results: add its Word renderer")
+        return generic_table("split_calibration_v6", "Signal-Timing Calibration, Protocol v6 (SIMULATION)", refs)
+    if tid == "live":
+        return generic_table("live", "Live Observational Run (LIVE)", refs)
     raise KeyError(tid)
+
+
+def generic_table(name: str, title: str, refs: Refs) -> str:
+    """A NOT RUN placeholder, or the generated table as it stands, with its caption as the note."""
+    cap, rows = tex_rows(name)
+    x = caption(title, refs)
+    if rows and rows[0] and rows[0][0].startswith("NOT RUN"):
+        return x + table_xml([180], [["Status"]], [["NOT RUN"]], refs, ["center"], size=16)
+    tex = (TABLES / f"{name}.tex").read_text(encoding="utf-8")
+    head = tex.split("\\toprule", 1)[1].split("\\midrule", 1)[0].replace("\\\\", "")
+    header = [detex(c.strip()) for c in head.split("&")]
+    body = [[detex(c).replace("$\\pm$", "±") for c in r] for r in rows]
+    n = len(header)
+    x += table_xml([round(COL_PT / n, 2)] * n, [header], body, refs, ["start"] + ["center"] * (n - 1), size=13)
+    detail = detex(cap).split(". ", 1)
+    if len(detail) == 2 and detail[1].strip():
+        x += note(detail[1].strip().rstrip(".") + ".", refs)
+    return x
 
 
 # ---------------------------------------------------------------------------------------------------------

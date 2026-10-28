@@ -377,6 +377,9 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   Limitations and future work then mirror 8a26e55 (v5 reached 8.1 of 10.95 mph; next step adds progression offsets).
 - Rebuilt on 3f2231a (2026-10-25): protocol v6 paragraph (prepared, NOT RUN), its NOT RUN table and the updated
   future-work sentence, mirroring the LaTeX.
+- Rebuilt on 43fe4c5 (2026-10-28): "Live observational run" subsection and its NOT RUN table (tab:live). The Word
+  builder now renders `split_calibration_v6.tex` and `live.tex` from the generated tables (header, rows, caption
+  detail as the note) once they carry results, instead of stopping.
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper

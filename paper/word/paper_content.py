@@ -521,6 +521,18 @@ BODY = [
           "it has not been run; any selected program will be reported as a calibrated scenario testbed, not as "
           "NYC DOT timing."),
     ("table", "splitcal6"),
+    ("h2", "Live observational run"),
+    ("p", "Every forecast number above is REPLAY: the frozen model scored on the held-out partition of the archived "
+          "feed. A live mode (`smartcity.cli live`) was added on 28 October 2026: it pulls the newest records of "
+          "the modelled links from the public feed together with the current Open-Meteo forecast and the last two "
+          "days of road-related 311 requests, stores them verbatim with their retrieval time, rebuilds the 24-step "
+          "window with the training-fitted transforms, runs the frozen model once per five-minute bin, writes the "
+          "forecast before its earliest target time, and scores it only after the target bin is observed; links "
+          "with fewer than 12 observed bins in the window are withheld and repeated or revised feed records are "
+          "counted. {T:live} reports the outcome of the collection window. At the time of writing it has NOT been "
+          "run; whatever it yields is a short window on one day, a check that the pipeline works on data that did "
+          "not exist at training time, not a second test set."),
+    ("table", "live"),
     ("h2", "Runtime"),
     ("p", "Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs "
           "5.7 ms for the proposed model, 2.2 for the temporal Transformer, 0.7 for the GRU and about 0.1 for "
