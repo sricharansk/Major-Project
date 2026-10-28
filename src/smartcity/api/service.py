@@ -134,7 +134,18 @@ def experiments() -> dict:
     exp = ROOT / "reports" / "experiments"
     return {name: read_csv(exp / f"{name}.csv") for name in
             ["forecast_metrics", "ablation_metrics", "uncertainty_metrics", "retrieval_metrics", "advisory_metrics",
-             "simulation_metrics", "runtime_metrics"]}
+             "simulation_metrics", "runtime_metrics", "live_metrics"]}
+
+
+def live_latest() -> dict | None:
+    """Newest LIVE forecast batch written by ``smartcity.cli live forecast`` (None when LIVE was never run)."""
+    files = sorted((ROOT / "artifacts" / "live" / "forecasts").glob("live-*.json"))
+    return read_json(files[-1]) if files else None
+
+
+def live_summary() -> dict | None:
+    p = ROOT / "artifacts" / "live" / "live_summary.json"
+    return read_json(p) if p.exists() else None
 
 
 def evidence_status() -> list[dict]:

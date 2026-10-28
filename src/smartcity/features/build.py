@@ -98,6 +98,61 @@ def calendar_features(times_utc: np.ndarray) -> tuple[np.ndarray, list[str]]:
     return f, ["hour_sin", "hour_cos", "dow_sin", "dow_cos", "weekend", "us_federal_holiday"]
 
 
+TRAFFIC_NAMES = ["speed_z", "speed_observed_or_ffilled", "obs_age_days_frac", "rollmean_1h_z", "delta_5m_z"]
+INFRASTRUCTURE_NAMES = ["sr311_24h_lagged_log"]
+
+
+def traffic_block(speed: np.ndarray, mu: np.ndarray, sd: np.ndarray, max_ffill_steps: int):
+    """Traffic feature group [T, N, 5] from the right-labelled speed grid, standardised with TRAIN statistics.
+
+    Shared by the offline feature build and LIVE inference so both paths apply the same transforms; ``sd`` is the
+    stored train standard deviation (already including its small floor).  Returns (features, available, names).
+    """
+    N = speed.shape[1]
+    filled, age = causal_ffill(speed, max_ffill_steps)
+    roll = causal_rolling_mean(speed, 12)
+    delta = filled - np.vstack([np.full((1, N), np.nan), filled[:-1]])
+    traffic_ok = np.isfinite(filled)
+    z = lambda x: (x - mu) / sd  # noqa: E731
+    traffic = np.stack([
+        np.nan_to_num(z(filled)), traffic_ok.astype(np.float32),
+        np.minimum(np.where(np.isfinite(age), age, 288), 288) / 288.0,
+        np.nan_to_num(z(roll)), np.nan_to_num(delta / sd),
+    ], axis=-1)
+    return traffic, traffic_ok, list(TRAFFIC_NAMES)
+
+
+def weather_block(wv: np.ndarray, wmu: np.ndarray, wsd: np.ndarray, N: int, kind: str, names: list[str]):
+    """Weather group [T, N, V]: hourly values standardised with TRAIN statistics and broadcast to every link."""
+    wz = np.nan_to_num((wv - wmu) / wsd)
+    return np.repeat(wz[:, None, :], N, axis=1), [f"{kind}_{n}" for n in names]
+
+
+def infrastructure_block(sr: np.ndarray, sr_scale: float):
+    """311 group [T, N, 1]: log1p of the lagged 24 h count, scaled by the TRAIN maximum."""
+    return np.log1p(sr)[..., None] / np.log1p(sr_scale), list(INFRASTRUCTURE_NAMES)
+
+
+def assemble(groups: dict, order: list[str]):
+    """Concatenate feature groups in ``order``; unavailable (node, time) cells are zeroed and masked.
+
+    Returns X [T, N, F] float32, M [T, N, G] bool, feature names and group slices.
+    """
+    blocks, names, slices, masks = [], [], {}, []
+    k = 0
+    for g in order:
+        arr, nm, av = groups[g]
+        arr = np.where(av[..., None], arr, 0.0).astype(np.float32)
+        blocks.append(arr)
+        names += nm
+        slices[g] = [k, k + len(nm)]
+        k += len(nm)
+        masks.append(av)
+    X = np.concatenate(blocks, axis=-1).astype(np.float32)
+    M = np.stack(masks, axis=-1)
+    return X, M, names, slices
+
+
 def _write_coverage_audit(track, grid, col, link_ids, bounds, train_cov, dropped, graph):
     """reports/data_audit/link_coverage_<track>.csv: observed fraction of the 5-minute grid per link and split, and
     whether the train-coverage rule kept the link.  Written before the rule is applied so dropped links are listed."""
@@ -145,19 +200,9 @@ def build(track: str = "operational", link_ids: list[str] | None = None) -> dict
     N = speed.shape[1]
 
     # ---- traffic group --------------------------------------------------------------------------
-    filled, age = causal_ffill(speed, gcfg["max_ffill_steps"])
-    roll = causal_rolling_mean(speed, 12)
-    delta = filled - np.vstack([np.full((1, N), np.nan), filled[:-1]])
     mu = np.nanmean(speed[:a], axis=0)  # per-link TRAIN mean
     sd = np.nanstd(speed[:a], axis=0) + 1e-3
-    traffic_ok = np.isfinite(filled)
-    z = lambda x: (x - mu) / sd  # noqa: E731
-    traffic = np.stack([
-        np.nan_to_num(z(filled)), traffic_ok.astype(np.float32),
-        np.minimum(np.where(np.isfinite(age), age, 288), 288) / 288.0,
-        np.nan_to_num(z(roll)), np.nan_to_num(delta / sd),
-    ], axis=-1)
-    tnames = ["speed_z", "speed_observed_or_ffilled", "obs_age_days_frac", "rollmean_1h_z", "delta_5m_z"]
+    traffic, traffic_ok, tnames = traffic_block(speed, mu, sd, gcfg["max_ffill_steps"])
 
     # ---- calendar ---------------------------------------------------------------------------------
     calf, cnames = calendar_features(times)
@@ -168,9 +213,7 @@ def build(track: str = "operational", link_ids: list[str] | None = None) -> dict
     wv, wavail, wnames = context.weather_on_grid(times, wkind)
     wmu = np.nanmean(wv[:a], axis=0)
     wsd = np.nanstd(wv[:a], axis=0) + 1e-6
-    wz = np.nan_to_num((wv - wmu) / wsd)
-    weather = np.repeat(wz[:, None, :], N, axis=1)
-    wnames = [f"{wkind}_{n}" for n in wnames]
+    weather, wnames = weather_block(wv, wmu, wsd, N, wkind, wnames)
 
     mids = context.link_midpoints([{"link_id": lid} for lid in keep], geoms)
     groups = {"traffic": (traffic, tnames, traffic_ok), "calendar": (calendar, cnames, np.ones((T, N), bool)),
@@ -179,8 +222,7 @@ def build(track: str = "operational", link_ids: list[str] | None = None) -> dict
 
     sr, sr_av, sr_info = context.sr311_on_grid(times, mids)
     sr_scale = float(np.nanmax(sr[:a])) if np.nanmax(sr[:a]) > 0 else 1.0
-    groups["infrastructure"] = (np.log1p(sr)[..., None] / np.log1p(sr_scale), ["sr311_24h_lagged_log"],
-                                np.repeat(sr_av[:, None], N, axis=1))
+    groups["infrastructure"] = (*infrastructure_block(sr, sr_scale), np.repeat(sr_av[:, None], N, axis=1))
     ctx_info["sr311"] = sr_info
     if track == "retrospective":
         col_c, col_av, col_info = context.collisions_on_grid(times, mids)
@@ -193,18 +235,7 @@ def build(track: str = "operational", link_ids: list[str] | None = None) -> dict
         ctx_info.update(collisions=col_info, events=ev_info)
 
     order = GROUPS_BY_TRACK[track]
-    blocks, names, slices, masks = [], [], {}, []
-    k = 0
-    for g in order:
-        arr, nm, av = groups[g]
-        arr = np.where(av[..., None], arr, 0.0).astype(np.float32)
-        blocks.append(arr)
-        names += nm
-        slices[g] = [k, k + len(nm)]
-        k += len(nm)
-        masks.append(av)
-    X = np.concatenate(blocks, axis=-1).astype(np.float32)
-    M = np.stack(masks, axis=-1)
+    X, M, names, slices = assemble(groups, order)
 
     out = proc / f"features_{track}.npz"
     np.savez_compressed(out, X=X, M=M, speed=speed.astype(np.float32), times_utc=times)
@@ -221,7 +252,8 @@ def build(track: str = "operational", link_ids: list[str] | None = None) -> dict
                                  str(dt.datetime.fromtimestamp(int(times[hi - 1]), dt.timezone.utc))]
                             for k2, (lo, hi) in splits["bounds"].items()},
         "scaler": {"speed_mean_train": mu.tolist(), "speed_std_train": sd.tolist(), "fit_rows": [0, a],
-                   "weather_mean_train": wmu.tolist(), "weather_std_train": wsd.tolist()},
+                   "weather_mean_train": wmu.tolist(), "weather_std_train": wsd.tolist(),
+                   "sr311_scale_train": sr_scale},
         "context": ctx_info,
         "group_available_fraction": {g: float(M[..., i].mean()) for i, g in enumerate(order)},
         "file": str(out), "sha256": sha256_file(out),

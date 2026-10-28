@@ -29,8 +29,10 @@ WEATHER_VARS = ["temperature_2m", "precipitation", "rain", "snowfall", "weather_
                 "visibility", "cloud_cover"]
 
 
-def load_weather(kind: str) -> pl.DataFrame | None:
-    files = sorted(raw_dir("weather").glob(f"{kind}_*.json.gz"))
+def load_weather(kind: str, files: list | None = None) -> pl.DataFrame | None:
+    """Hourly Open-Meteo frame from the archived raw responses of ``kind`` (or from explicit ``files``, which LIVE
+    mode uses for the forecast it just retrieved; the response layout is the same)."""
+    files = sorted(raw_dir("weather").glob(f"{kind}_*.json.gz")) if files is None else list(files)
     if not files:
         return None
     frames = []
@@ -49,17 +51,19 @@ def load_weather(kind: str) -> pl.DataFrame | None:
     ).sort("hour_utc")
 
 
-def weather_on_grid(times_utc: np.ndarray, kind: str) -> tuple[np.ndarray, np.ndarray, list[str]]:
+def weather_on_grid(times_utc: np.ndarray, kind: str, df: pl.DataFrame | None = None,
+                    ) -> tuple[np.ndarray, np.ndarray, list[str]]:
     """Return values [T, V] and availability [T].
 
     Open-Meteo hourly precipitation is the sum over the *preceding* hour, labelled at the hour end, so at
     origin t the latest completed hour is floor(t, 1h).  For the archived forecast, the value for the hour
-    containing t is used (issue time is not exposed by the API -> disclosed limitation).
+    containing t is used (issue time is not exposed by the API -> disclosed limitation).  ``df`` overrides the
+    archived files (LIVE mode passes the forecast it just retrieved, aligned the same way).
     """
-    df = load_weather(kind)
+    df = load_weather(kind) if df is None else df
     names = ["precip_mm", "rain_mm", "snow_cm", "temp_c", "wind_kmh", "wet_code", "visibility_km", "cloud_pct"]
     T = len(times_utc)
-    if df is None:
+    if df is None or df.is_empty():
         return np.full((T, len(names)), np.nan, np.float32), np.zeros(T, bool), names
     hours = np.array([int(t.timestamp()) for t in df["hour_utc"].to_list()], dtype=np.int64)
     if kind == "archive":
@@ -128,9 +132,14 @@ def collisions_on_grid(times_utc, link_mid) -> tuple[np.ndarray, np.ndarray, dic
     return counts, avail, {"rows": df.height, "geocoded": geo.height}
 
 
-def sr311_on_grid(times_utc, link_mid) -> tuple[np.ndarray, np.ndarray, dict]:
+def sr311_on_grid(times_utc, link_mid, raw: pl.DataFrame | None = None) -> tuple[np.ndarray, np.ndarray, dict]:
+    """Lagged 24 h count of road-related 311 requests within the configured radius of each link midpoint.
+
+    ``raw`` overrides the archived download (LIVE mode passes the records it just retrieved); the lag, window and
+    radius come from the data config either way.
+    """
     cfg = settings.load("data")["context"]
-    raw = read_socrata("sr311")
+    raw = read_socrata("sr311") if raw is None else raw
     T, N = len(times_utc), len(link_mid)
     if raw.is_empty():
         return np.zeros((T, N), np.float32), np.zeros(T, bool), {"rows": 0}

@@ -107,3 +107,32 @@ def test_split_calibration_v6_table_from_record(tmp_path, monkeypatch):
     assert "Webster & 1.0 & none & 5.80 & -5.15 & 568/531 & no \\\\" in body
     assert "120 & 2.5 & 25\\,mph & 10.20 & -0.75 & 0/0 & yes \\\\" in body
     assert "selected cell: factor 2.5, 120\\,s common cycle, 25\\,mph offsets" in body and "southbound" in body
+
+
+def test_live_table_not_run_without_summary(tmp_path, monkeypatch):
+    monkeypatch.setattr(paper, "R", tmp_path)
+    monkeypatch.setattr(paper, "T", tmp_path / "tables")
+    paper.live_table()
+    body = (tmp_path / "tables" / "live.tex").read_text()
+    assert "NOT RUN" in body and "tab:live" in body
+
+
+def test_live_table_from_summary(tmp_path, monkeypatch):
+    import json
+    monkeypatch.setattr(paper, "R", tmp_path)
+    monkeypatch.setattr(paper, "T", tmp_path / "tables")
+    (tmp_path / "artifacts" / "live").mkdir(parents=True)
+    (tmp_path / "reports" / "experiments").mkdir(parents=True)
+    (tmp_path / "artifacts" / "live" / "live_summary.json").write_text(json.dumps(
+        {"status": "OK", "n_scored": 30, "n_batches": 12, "n_links": 16, "n_pending": 10, "n_late": 0,
+         "first_origin_utc": "2026-10-29T13:00:00+00:00", "last_origin_utc": "2026-10-29T13:55:00+00:00"}))
+    (tmp_path / "reports" / "experiments" / "live_metrics.csv").write_text(
+        "mode,horizon_minutes,n_forecast,n_scored,n_pending,n_target_unobserved,n_late,mae_mph,rmse_mph,coverage,"
+        "mean_interval_width_mph,persistence_mae_mph,n_scored_eligible,mae_eligible_mph\n"
+        "LIVE,15,16,12,4,0,0,4.1,5.0,0.917,24.3,4.8,10,4.0\n"
+        "LIVE,30,16,10,6,0,0,5.2,6.1,0.9,26.9,5.9,9,5.1\n"
+        "LIVE,60,16,8,8,0,0,6.3,7.2,0.875,29.5,7.4,7,6.2\n")
+    paper.live_table()
+    body = (tmp_path / "tables" / "live.tex").read_text()
+    assert "NOT RUN" not in body and "tab:live" in body and "12 five-minute batches" in body
+    assert "15 & 12 & 4.10 & 4.80 & 0.917 & 24.3 \\\\" in body

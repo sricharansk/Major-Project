@@ -377,6 +377,9 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   Limitations and future work then mirror 8a26e55 (v5 reached 8.1 of 10.95 mph; next step adds progression offsets).
 - Rebuilt on 3f2231a (2026-10-25): protocol v6 paragraph (prepared, NOT RUN), its NOT RUN table and the updated
   future-work sentence, mirroring the LaTeX.
+- Rebuilt on 43fe4c5 (2026-10-28): "Live observational run" subsection and its NOT RUN table (tab:live). The Word
+  builder now renders `split_calibration_v6.tex` and `live.tex` from the generated tables (header, rows, caption
+  detail as the note) once they carry results, instead of stopping.
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
@@ -475,3 +478,31 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   `signals_without_offset`. Regression tests: offsets skip signals without a program; `build_cell_program` on the toy grid
   with one corridor signal missing from the plan. The grid, the rule, the target and the seeds are unchanged.
 - 0 of 75 cells ran; nothing selected; the comparison stays NOT RUN. The workstation re-runs section 7 from `prepare`.
+
+### Milestone 13: LIVE observational mode implemented (development container, 2026-10-28 18:20-19:40 UTC)
+- Gap found against the specification (section 26, live updates): every forecast result so far is REPLAY on the held-out
+  partition; `data collect` only stored raw feed pages and no live inference path existed. Built `src/smartcity/live/pipeline.py`:
+  `pull` (newest speed rows of the modelled links, current Open-Meteo forecast, 48 h of road-related 311; each response
+  stored verbatim with a fetch-log line under `data/raw/live/`), `forecast` (latest complete 5-minute bin; 42-step window
+  rebuilt with the TRAIN-fitted scaler through the same block functions the offline build now uses; frozen model run once;
+  per-link conformal intervals; links with fewer than 12 observed lookback bins withheld; the reliability gate's data-age
+  and missing-input checks recorded per link; written to `artifacts/live/forecasts/` before the first target time, one
+  file per origin, never rewritten), `score` (targets matched to observations pulled later; LATE forecasts excluded,
+  unobserved targets PENDING; persistence error from the last observed speed; `reports/experiments/live_metrics.csv`,
+  `artifacts/live/scored.csv`, `live_summary.json`) and `run` (poll loop plus a settle phase so the last 60-minute
+  targets can be scored). Repeated and revised feed records across overlapping pulls are counted; the first occurrence
+  is kept, as offline.
+- Refactor without numeric change: `features/build.py` traffic, weather, infrastructure and assembly code moved into
+  `traffic_block`, `weather_block`, `infrastructure_block`, `assemble` (build() calls them in the same order); meta gains
+  `sr311_scale_train` on the next build (older builds: recomputed once from the archived 311 download and cached).
+  `context.load_weather/weather_on_grid/sr311_on_grid` accept live frames. 11 feature and leakage tests pass unchanged.
+- Surfaces: `GET /forecasts/live/latest` and `/forecasts/live/metrics`; dashboard page "Live monitoring" (LIVE badge,
+  source ages, per-link table, scored metrics, per-link chart); `LIVE-01` row in the evidence registry; paper Table
+  `tab:live` (NOT RUN placeholder) and a results subsection; limitation 27; `docs/laptop_run.md` section 8 is the runbook.
+- Tests: 8 in `tests/unit/test_live.py` (origin rounding, grid placement, repeat/revision counting, feature parity with
+  the offline blocks and schema check, scoring statuses incl. LATE, NOT_RUN summary, an end-to-end batch with a stub
+  model and a later scoring pass), 2 API tests, 2 paper-table tests. Suite: 111 collected.
+- NOT RUN: no network to the feed in the development container. The workstation runs section 8 after the v6 chain.
+- Same day, workstation: the v6 calibration record and the demand selection (both finished before the 26 October
+  shutdown) were committed and pushed (c86ce5f on `claude/laptop-sumo-v6`); the 45-run controller comparison, interrupted
+  at 39/45, is being re-run in full, then agents evaluate, report export and paper sync.

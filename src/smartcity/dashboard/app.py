@@ -20,7 +20,7 @@ from smartcity.api import service
 ROOT = settings.ROOT
 st.set_page_config(page_title="Smart-city traffic advisory (research prototype)", layout="wide")
 
-PAGES = ["Overview & status", "Data audit & provenance", "Traffic map", "Multi-horizon forecast",
+PAGES = ["Overview & status", "Data audit & provenance", "Traffic map", "Multi-horizon forecast", "Live monitoring",
          "Uncertainty & reliability", "Explainability", "Evidence retrieval", "Agent trace & advisory",
          "SUMO comparisons", "Experiment results", "Limitations & model card"]
 page = st.sidebar.radio("Page", PAGES)
@@ -138,6 +138,71 @@ elif page == "Multi-horizon forecast":
     st.plotly_chart(fig, use_container_width=True)
     st.dataframe(pd.DataFrame(fr["horizons"]), hide_index=True, use_container_width=True)
     for w in fr["warnings"]:
+        st.info(w)
+
+elif page == "Live monitoring":
+    st.title("Live monitoring")
+    mode_badge("LIVE")
+    st.caption("Forecasts made from records pulled from the public feed after training, saved before their target time "
+               "and scored only once the target was observed (`python -m smartcity.cli live run`). Not a second test set.")
+    rec = service.live_latest()
+    summ = service.live_summary()
+    if rec is None:
+        st.warning("NOT_RUN: no LIVE forecast stored under artifacts/live/forecasts/")
+        st.stop()
+    origin = dt.datetime.fromisoformat(rec["origin_utc"])
+    gen = dt.datetime.fromisoformat(rec["generated_at_utc"])
+    now = dt.datetime.now(dt.timezone.utc)
+    c = st.columns(5)
+    c[0].metric("Latest origin (UTC)", origin.strftime("%Y-%m-%d %H:%M"))
+    c[1].metric("Generated (UTC)", gen.strftime("%H:%M:%S"), f"{(gen - origin).total_seconds():.0f} s after origin")
+    c[2].metric("Age of latest batch", f"{(now - origin).total_seconds() / 60:.0f} min")
+    c[3].metric("Links forecast / withheld", f"{rec['n_forecast']} / {rec['n_withheld']}")
+    c[4].metric("Eligible for advisory", rec["n_eligible_for_advisory"])
+    src = rec["sources"]
+    st.caption(f"Sources: {src['speeds'].get('rows')} speed rows from {len(src['speeds'].get('files', []))} pull(s), "
+               f"latest observation {src['speeds'].get('latest_observation_utc')}; weather forecast "
+               f"{'available' if src['weather'].get('available_at_origin') else 'unavailable'}; 311 "
+               f"{'available' if src['sr311'].get('available_at_origin') else 'unavailable'}; model {rec['model_version']}")
+    rows = []
+    for ln in rec["links"]:
+        r = {"link_id": ln["link_id"], "status": ln["status"], "data_as_of_utc": ln.get("data_as_of_utc"),
+             "age_min": ln.get("data_age_minutes"), "observed_bins": ln.get("observed_steps_in_window"),
+             "last_observed_mph": ln.get("last_observed_speed_mph"), "eligible": ln.get("eligible_for_advisory")}
+        for h in ln.get("horizons", []):
+            r[f"{h['horizon_minutes']} min"] = round(h["displayed_speed_mph"], 1)
+            r[f"{h['horizon_minutes']} min interval"] = f"{max(0.0, h['lower_mph']):.1f}-{h['upper_mph']:.1f}"
+        r["reasons"] = "; ".join(ln.get("reasons", []))
+        rows.append(r)
+    st.subheader("Latest LIVE forecasts (mph)")
+    st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+    if summ:
+        st.subheader("Scored so far")
+        st.caption(f"Status {summ['status']}: {summ.get('n_batches')} batches from {summ.get('first_origin_utc')} to "
+                   f"{summ.get('last_origin_utc')}; {summ.get('n_scored')} scored, {summ.get('n_pending')} pending, "
+                   f"{summ.get('n_late')} late (excluded), {summ.get('n_withheld')} withheld; scored at {summ.get('scored_at_utc')}")
+        mdf = pd.DataFrame(summ.get("metrics_by_horizon", []))
+        if len(mdf):
+            st.dataframe(mdf, hide_index=True, use_container_width=True)
+    sc = ROOT / "artifacts" / "live" / "scored.csv"
+    if sc.exists():
+        df = pd.read_csv(sc)
+        link = st.selectbox("Road link", sorted(df["link_id"].astype(str).unique()))
+        d = df[(df["link_id"].astype(str) == link) & df["horizon_minutes"].notna()].copy()
+        d["target_utc"] = pd.to_datetime(d["target_utc"], utc=True)
+        fig = go.Figure()
+        obs = d[d["status"] == "SCORED"].sort_values("target_utc")
+        if len(obs):
+            fig.add_trace(go.Scatter(x=obs["target_utc"], y=obs["observed_speed_mph"], name="observed (pulled later)",
+                                     mode="markers", marker=dict(symbol="x")))
+        for h, grp in d.groupby("horizon_minutes"):
+            grp = grp.sort_values("target_utc")
+            fig.add_trace(go.Scatter(x=grp["target_utc"], y=grp["predicted_speed_mph"], name=f"predicted +{int(h)} min",
+                                     mode="lines+markers"))
+        fig.update_layout(yaxis_title="speed (mph)", xaxis_title="target time (UTC)", height=400,
+                          title=f"LIVE forecasts and later observations, link {link}")
+        st.plotly_chart(fig, use_container_width=True)
+    for w in rec.get("warnings", []):
         st.info(w)
 
 elif page == "Uncertainty & reliability":

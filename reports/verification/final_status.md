@@ -1,6 +1,6 @@
 # Final status
 
-Last updated: 2026-10-25 21:30 UTC (protocol v6 preregistered, NOT RUN; see `progress.md` Milestone 12). Earlier
+Last updated: 2026-10-28 19:30 UTC (LIVE mode implemented, NOT RUN; v6 calibration passed on the workstation 2026-10-26 and its controller comparison is being re-run; see `progress.md` Milestone 13). Earlier
 baseline: 2026-10-21 02:55 UTC after the real-data run on the workstation, the SUMO testbed audits and the final-review deck. Statuses follow `progress.md`; evidence paths are in
 this repository unless marked "workstation".
 
@@ -22,6 +22,7 @@ this repository unless marked "workstation".
 | Paired controller comparison | PARTIAL: first comparison SUPERSEDED, corrected comparison NOT RUN | `simulation/scenarios/demand_selection_*.json` (3 corrected protocols), `simulation_testbed_audit_v4_*.json`, `simulation_turnlane_check.json`, paper Tables VII-VIII | every corrected protocol fails the preregistered baseline test; with 2025 two-direction counts the mapped link runs at 5.8 mph simulated vs 10.95 mph observed; protocol v5 split calibration (workstation, 2026-10-23) reaches at most 8.10 mph at the largest preregistered green factor (2.5), 2.85 mph short of the 1.5 mph tolerance, so no factor is selected and the comparison stays NOT RUN (`split_calibration_v5_*.json`, Milestone 11); rule not relaxed |
 | API + Postgres job queue + worker | VERIFIED (software) | `tests/integration/test_api.py`, `test_db.py`, `reports/verification/api_smoke.json`, `db_smoke.json` | |
 | Dashboard | VERIFIED (software) | `reports/verification/dashboard_smoke.json` | |
+| Live observational run (LIVE mode) | PREPARED, NOT RUN | `src/smartcity/live/pipeline.py`, `tests/unit/test_live.py` (8 tests incl. an end-to-end batch with a stub model), `docs/laptop_run.md` section 8 | pull -> forecast (saved before the target) -> score later; dashboard page "Live monitoring", `GET /forecasts/live/*`, paper Table `tab:live` (NOT RUN placeholder); needs the public feed, so it runs on the workstation; limitation 27 |
 | MLflow tracking + export | VERIFIED | `reports/verification/mlflow_runs.json` (workstation export) | |
 | Docker packaging | VERIFIED (workstation) | `reports/verification/docker_smoke.json` | compose build OK, 3 images 4.67 GB; the development container cannot build images |
 | Paper | VERIFIED (draft complete) | `paper/main.pdf` (10 pages, rebuilt 2026-10-21), `paper/tables/*.tex`, `reports/verification/paper_claims.csv` (C01-C28) | every results/discussion/limitations/conclusion statement written from artifacts; 26/26 references CHECKED; author block has the student; co-authors and order still to confirm |

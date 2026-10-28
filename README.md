@@ -74,6 +74,18 @@ python scripts/sim_turnlane_check.py              # with vs without OSM turn-lan
 `configs/simulation.yaml` to `netconvert_guess` or `webster_retimed` and `route_choice` to `dynamic_insertion` to
 reproduce the earlier protocols.
 
+### Live mode (LIVE; needs network access to the public feed)
+
+```bash
+python -m smartcity.cli live pull        # newest records of the modelled links (+ weather forecast, 311), stored verbatim
+python -m smartcity.cli live forecast    # one LIVE batch for the latest complete 5-min bin, written before its targets
+python -m smartcity.cli live run --polls 12 --interval-s 300   # 1 h of batches, settle, score (reports/experiments/live_metrics.csv)
+```
+
+Forecasts made from records that did not exist at training time, scored only once the target bin is observed
+(`artifacts/live/`); the dashboard's "Live monitoring" page and `GET /forecasts/live/latest` show them. Status: see
+`reports/verification/final_status.md`.
+
 ### Services
 
 ```bash

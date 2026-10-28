@@ -191,3 +191,11 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     (the count and speed-profile downloads, `tripinfo.xml`) are gitignored and the count datasets are not yet in
     `data/manifests/source_manifest.json`. The counts and speed-profile fetches are to be repeated on the
     workstation (`docs/laptop_run.md` section 5) so the fetch manifest records them.
+27. **Live mode is a short observational check, not a second test set.** `smartcity.cli live` (2026-10-28) forecasts
+    from records pulled after training and scores them once the target bin is observed; a run covers about an hour of
+    five-minute batches on one day. Differences to training: the weather group uses the current Open-Meteo forecast
+    where training used the archived historical forecast; the 311 group comes from a 48-hour pull with the same
+    24-hour publication lag; the feature window starts 18 steps before the lookback, so the age feature is capped for
+    a link with no observation in that margin (training saw the full history); the DOT feed's publication latency
+    decides how many links pass the 20-minute data-age gate. Everything is labelled LIVE and reported with its
+    retrieval times; NOT RUN until the workstation runs it (`docs/laptop_run.md` section 8).

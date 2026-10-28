@@ -17,10 +17,11 @@ app = typer.Typer(no_args_is_help=True, add_completion=False)
 data_app, graph_app, features_app, train_app = typer.Typer(), typer.Typer(), typer.Typer(), typer.Typer()
 unc_app, eval_app, explain_app, rag_app = typer.Typer(), typer.Typer(), typer.Typer(), typer.Typer()
 sim_app, agents_app, report_app, paper_app, verify_app = typer.Typer(), typer.Typer(), typer.Typer(), typer.Typer(), typer.Typer()
+live_app = typer.Typer(help="LIVE observational mode: pull the newest public records, forecast, score later.")
 for name, sub in [("data", data_app), ("graph", graph_app), ("features", features_app), ("train", train_app),
                   ("uncertainty", unc_app), ("evaluate", eval_app), ("explain", explain_app), ("rag", rag_app),
                   ("simulation", sim_app), ("agents", agents_app), ("report", report_app), ("paper", paper_app),
-                  ("verify", verify_app)]:
+                  ("verify", verify_app), ("live", live_app)]:
     app.add_typer(sub, name=name)
 
 ART = settings.ROOT / "artifacts" / "models"
@@ -513,6 +514,61 @@ def job_exec(kind: str, params: str):
         print("RESULT_JSON=" + json.dumps({"explanation_id": e["explanation_id"]}))
     else:
         raise typer.Exit(2)
+
+
+@live_app.command("pull")
+def live_pull(weather: bool = True, sr311: bool = True):
+    """LIVE: retrieve the newest speed records of the modelled links (plus weather forecast and 311), stored verbatim."""
+    from smartcity.api import service
+    from smartcity.live import pipeline
+
+    data, _, _, _ = service.loaded()
+    out = pipeline.pull(list(data.meta["link_ids"]), weather=weather, sr311=sr311)
+    typer.echo(json.dumps({k: v for k, v in out.items() if k != "files"}, indent=2, default=str))
+    typer.echo(json.dumps(out["files"], indent=2))
+
+
+@live_app.command("forecast")
+def live_forecast():
+    """LIVE: forecast the latest complete 5-minute bin from the pulled records and save it before any target time."""
+    from smartcity.live import pipeline
+
+    rec = pipeline.forecast()
+    typer.echo(f"LIVE origin {rec['origin_utc']}: {rec['n_forecast']} links forecast, {rec['n_withheld']} withheld, "
+               f"{rec['n_eligible_for_advisory']} eligible for advisory; generated {rec['generated_at_utc']}"
+               + (f" ({rec['note']})" if rec.get("note") else ""))
+    for ln in rec["links"]:
+        hz = " ".join(f"{h['horizon_minutes']}m={h['predicted_speed_mph']:.1f}" for h in ln["horizons"])
+        typer.echo(f"  {ln['link_id']}: {ln['status']} age={ln['data_age_minutes']} obs={ln['observed_steps_in_window']} {hz}"
+                   + (f" [{'; '.join(ln['reasons'])}]" if ln.get("reasons") else ""))
+
+
+@live_app.command("score")
+def live_score():
+    """LIVE: score stored forecasts whose targets have been observed since; pending ones stay pending."""
+    from smartcity.live import pipeline
+
+    s = pipeline.score()
+    typer.echo(json.dumps({k: v for k, v in s.items() if k not in ("metrics_by_horizon", "speed_pull_stats")}, indent=2,
+                          default=str))
+    for m in s.get("metrics_by_horizon", []):
+        typer.echo(f"  h={m['horizon_minutes']}: scored {m['n_scored']} pending {m['n_pending']} late {m['n_late']} "
+                   f"MAE={m['mae_mph']} persistence={m['persistence_mae_mph']} coverage={m['coverage']}")
+    if s.get("status") == "NOT_RUN":
+        raise typer.Exit(2)
+
+
+@live_app.command("run")
+def live_run(polls: int = 12, interval_s: int = 300, settle: bool = True):
+    """LIVE: pull -> forecast -> score every ``interval_s`` for ``polls`` rounds, then wait for the last targets and score.
+
+    Twelve polls at 5 min is a one-hour collection window; with --settle the command keeps pulling for another
+    75 min so the 60-minute targets of the last batch can be scored."""
+    from smartcity.live import pipeline
+
+    s = pipeline.run(polls, interval_s, settle)
+    typer.echo(f"LIVE run: status {s['status']}, {s.get('n_batches')} batches, {s.get('n_scored')} scored, "
+               f"{s.get('n_pending')} pending, {s.get('n_late')} late")
 
 
 @report_app.command("export")
