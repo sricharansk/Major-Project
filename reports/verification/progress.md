@@ -324,6 +324,25 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   decisions as before; 12/12 schema-valid; the LLM chose monitor_only on the mapped corridor under every policy, so
   no real advisory reached the (now admissible) simulation gate. `report export` and `paper sync` exit 0.
 
+### Workstation LIVE attempt (2026-10-28 19:49-22:05 UTC, Wednesday 15:49-18:05 New York): NOT_RUN, feed stale
+- Branch `claude/laptop-live` from main 257aad9 (then main 6f9c86a); `docs/laptop_run.md` section 8; `tests/unit/test_live.py`
+  8 passed.
+- First `live pull` (19:49 UTC): exit 0, 0 speed rows: the newest Manhattan record of i4gi-tjb9 was 11:31 New York time
+  (about 4 h 20 min old; other boroughs up to 14:12), outside the 4 h pull window. `live forecast`: NOT_RUN, no valid
+  live speed records.
+- A watcher pulled every ~10 min (12 tries, 19:53-21:51 UTC) and would have started `live run --polls 12 --interval-s
+  300` at the first batch with at least one link forecast. Speed rows per pull: 438, 0, 0, 338, 306, 0, 240, 208, 50,
+  402, 370, 336; newest record 14:11, then 13:36, then 15:36 New York time. The 14:11 batch was published, withdrawn
+  (0 rows at 20:03, 20:14 and 20:46) and republished, and the feed was never less than about 1 h 40 min behind. Every
+  `live forecast` batch (9 written, `artifacts/live/forecasts/`) forecast 0 links and withheld all 16
+  (INSUFFICIENT_HISTORY: at most 5 of the 24 lookback bins observed, 12 required). The rule was not relaxed.
+- Operator note: a first watcher started `live run` after a batch that withheld every link; it was stopped after 16 s
+  (no forecasts issued) and the trigger was corrected to "at least one link forecast" before the 12 tries above.
+- Result: LIVE observational run NOT_RUN on 2026-10-28 (public feed stale); `live_metrics.csv` not produced; paper
+  Table `tab:live` stays NOT RUN. Evidence: `artifacts/live/` (batches, forecast log, last pull) and
+  `data/raw/live/*/fetch_log.jsonl` (15 speed, 15 weather, 14 311 pulls with request, status and sha256). To retry on
+  another weekday afternoon when the feed is current (about 13:00-16:00 New York).
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
@@ -405,6 +424,7 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   tables, and the abstract (248 words), discussion, limitations and conclusion in the LaTeX wording. Also fixed in
   LaTeX: the superseded 2026-10-20 comparison still cited Table~\ref{tab:sim}, which now holds the corrected runs;
   `main.pdf` rebuilt (13 pages). Word paper: 11 A4 pages in LibreOffice.
+- Rebuilt on 7052433 (2026-10-28): the live-run paragraph records the stale-feed attempt (NOT RUN), as in LaTeX.
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
@@ -549,3 +569,9 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Still NOT RUN: the LIVE observational window (`docs/laptop_run.md` section 8, workstation). Still open: human review
   of the RAG labels; a testbed with side-street demand, DOT timing plans or pedestrians (future work).
 
+### Milestone 15: live-run attempt recorded (cloud container, 2026-10-28 22:30 UTC)
+- Workstation branch `claude/laptop-live` (ad91bf6) merged: nine live batches, forecast log, last pull and 44 pull-log
+  entries. `final_status.md` (Live mode: ATTEMPTED, NOT RUN, feed stale), `reports/limitations.md` 27, the paper's
+  live subsection (Table `tab:live` stays NOT RUN), README and claim C49 record the attempt and why no forecast was
+  issued; `paper/main.pdf` rebuilt (14 pages). Nothing was relaxed; the retry waits for a weekday afternoon with a
+  current feed.

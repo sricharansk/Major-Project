@@ -206,7 +206,13 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     24-hour publication lag; the feature window starts 18 steps before the lookback, so the age feature is capped for
     a link with no observation in that margin (training saw the full history); the DOT feed's publication latency
     decides how many links pass the 20-minute data-age gate. Everything is labelled LIVE and reported with its
-    retrieval times; NOT RUN until the workstation runs it (`docs/laptop_run.md` section 8).
+    retrieval times. Attempted on the workstation on Wednesday 2026-10-28 (15:49-18:05 New York): the pipeline ran, but
+    the public speed feed was never less than about 1 h 40 min behind (its newest record moved 11:31, 14:11, 13:36,
+    15:36 New York time over 12 pulls, and the 14:11 batch was published, withdrawn and republished), so all nine
+    forecast batches withheld all 16 links (at most 5 of the 24 lookback bins observed, 12 required) and the one-hour
+    run was not started; NOT RUN, rule not relaxed, evidence in `artifacts/live/` and `data/raw/live/*/fetch_log.jsonl`.
+    The feed's publication latency is therefore itself a finding: on such a day the operational system would have
+    withheld every forecast. Retry on a weekday afternoon when the feed is current (`docs/laptop_run.md` section 8).
 28. **Workstation environment deviation from 2026-10-28.** Windows Application Control began blocking the unsigned
     compiled extensions `torch_scatter` and `torch_sparse` (WinError 4551, raised as OSError at import). They are not
     used by the project's models (GATv2 runs on PyG's built-in ops); only the PyG-Temporal package `__init__` imports
