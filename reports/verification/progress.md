@@ -304,6 +304,26 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Result: 0 of 75 cells run; no selection; select-demand, evaluate, agents evaluate, report export and paper sync NOT
   RUN. The preregistered rule and the v6 configuration were not changed.
 
+### Workstation run of protocol v6 completed (2026-10-25/26 and 2026-10-28/29)
+- Branch `claude/laptop-sumo-v6` on the fixed code (8b90c68, then main 640a0a2 merged; simulation code unchanged).
+- `simulation prepare`: exit 0; content hashes match (87174681 / ace93240 / 44e0e4fe).
+- `simulation calibrate-splits`: exit 0 (1,730 s, 75 runs). Selected cell: common cycle 90 s, green factor 1.5, 25 mph
+  offsets, 10.08 mph simulated on link 4456494 vs 10.95 observed (gap -0.87, tolerance 1.5); 0 unfinished, 0
+  teleports. Factors 1.5-3.0 give identical speeds at a common cycle (green bounds bind); least intervention chosen.
+- `simulation select-demand`: exit 0 (436 s). Only side-street scale 0.0 is admissible.
+- `simulation evaluate`: the first pass was interrupted when the workstation went offline (39/45 runs finished, no
+  metrics written); re-run in full on 2026-10-28: exit 0 (1,425 s), 45/45 OK, 0 teleports in every run, seeds 1-5.
+  Fixed-time vs forecast rule (same calibrated plan, network and seeds): routine peak identical (rule inactive); event
+  surge time loss 450.2 vs 426.0 s, completed 5,720 vs 5,910, unfinished 540 vs 350; incident 465.9 vs 443.9 s,
+  5,725 vs 5,919, 536 vs 341. The actuated controller runs on netconvert's actuated programs, not the calibrated plan
+  (signal_timing netconvert_guess), so it is an uncalibrated reference, not a matched comparison. Side-street demand
+  0; pedestrians NOT_EVALUATED.
+- `agents evaluate`: attempt 1 failed (WinError 4551: Windows Application Control blocked the unsigned
+  torch_sparse / torch_scatter CUDA extensions). Both were uninstalled from the workstation venv so that PyG-Temporal
+  uses the documented direct-module fallback; 87 unit/leakage/safety tests pass. Attempt 2: exit 0 (517 s), same 19
+  decisions as before; 12/12 schema-valid; the LLM chose monitor_only on the mapped corridor under every policy, so
+  no real advisory reached the (now admissible) simulation gate. `report export` and `paper sync` exit 0.
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
@@ -380,6 +400,11 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Rebuilt on 43fe4c5 (2026-10-28): "Live observational run" subsection and its NOT RUN table (tab:live). The Word
   builder now renders `split_calibration_v6.tex` and `live.tex` from the generated tables (header, rows, caption
   detail as the note) once they carry results, instead of stopping.
+- Rebuilt on 382d9ca (2026-10-28) with the protocol v6 result and the corrected 45-run comparison: v6, comparison
+  and third agent-pass paragraphs, Table X (v6 grid, 25 cells) and Table XI (calibrated comparison) from the generated
+  tables, and the abstract (248 words), discussion, limitations and conclusion in the LaTeX wording. Also fixed in
+  LaTeX: the superseded 2026-10-20 comparison still cited Table~\ref{tab:sim}, which now holds the corrected runs;
+  `main.pdf` rebuilt (13 pages). Word paper: 11 A4 pages in LibreOffice.
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
@@ -506,3 +531,21 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Same day, workstation: the v6 calibration record and the demand selection (both finished before the 26 October
   shutdown) were committed and pushed (c86ce5f on `claude/laptop-sumo-v6`); the 45-run controller comparison, interrupted
   at 39/45, is being re-run in full, then agents evaluate, report export and paper sync.
+
+### Milestone 14: integration of the v6 run and the corrected controller comparison (development container, 2026-10-28 19:00-20:00 UTC)
+- Merged `claude/laptop-sumo-v6` (c86ce5f, e63a177, 4ebf001) into the build branch after PR #28 (LIVE mode) had merged.
+  Records: `split_calibration_v6_counts2025_cycle_splits_offsets.json` (75 runs, selected 90 s / 1.5 / 25 mph, 10.08 mph),
+  `demand_selection_v6_*.json` (side scale 0.0), `simulation_metrics.csv` (45 runs, 0 teleports, seeds 1-5),
+  `scenarios.json` (calibrated plan `c90.f1.50.p25`), 19 new agent traces, `llm_calls.csv` (+12, 36 total),
+  `evidence_registry.csv`, `mlflow_runs.json`, `runtime_metrics.csv` (workstation exports).
+- Per-seed check of the matched pair (fixed time vs forecast rule, same plan, network, demand, seeds): time-loss gain
+  12.9-29.9 s under the surge and 14.3-33.7 s under the incident, 148-250 more trips completed, in every seed; routine
+  peak identical. Actuated rows carry `signal_timing netconvert_guess` and a different network hash (98e143b6f4e1296a vs
+  36fb9c1fb895b7e7): an uncalibrated reference, not ranked. Written as such in the paper (results, discussion,
+  limitations, conclusion, abstract), README, limitation 24, `overrides.json` (SIM-02 stays PARTIAL with the new reason)
+  and claims C41-C48. `paper.simulation_table` now captions a calibrated run and names the uncalibrated controller.
+- Paper: Table `tab:splitcal6` carries the 25 cells; Table `tab:sim` the 45 runs; PDF rebuilt. Environment deviation
+  (Windows Application Control vs torch_scatter/torch_sparse) recorded as limitation 28 with the OSError fallback fix.
+- Still NOT RUN: the LIVE observational window (`docs/laptop_run.md` section 8, workstation). Still open: human review
+  of the RAG labels; a testbed with side-street demand, DOT timing plans or pedestrians (future work).
+

@@ -171,6 +171,14 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     and NOT RUN at the time of writing. A one-direction progression is a declared simplification (the northbound
     direction is not progressed), and a program chosen to match one observed speed on one link is a calibrated scenario
     testbed, not NYC DOT timing.
+    **2026-10-26/28 (outcome):** v6 selected the 90 s cycle / factor 1.5 / 25 mph-offset cell at 10.08 mph (gap -0.87,
+    0 unfinished, 0 teleports; splits alone peaked at 8.88 mph, 120 s cells overshot to 13-22 mph). The corrected 45-run
+    comparison then ran on that plan: fixed time and the forecast rule identical in the routine peak; under the surge
+    and the incident the rule lowers mean time loss by 5.4 % and 4.7 % while completing 190-194 more trips, in every
+    seed. The actuated controller runs on netconvert's actuated programs (not the calibrated plan) and is an
+    uncalibrated reference, never ranked; side-street demand is 0; 340-540 trips remain unfinished under stress; the
+    agent re-run still produced monitor-only advisories, so the gate was not exercised by a real candidate. A simulated
+    result on a calibrated scenario testbed, not a real-world gain.
 22. **Bibliography.** `paper/REFERENCES_STATUS.md` records the publisher-record check of every entry (2026-10-20);
     the FHWA 2008 Signal Timing Manual and the 2009 MUTCD are superseded editions, cited because they are the
     public-domain texts the corpus holds.
@@ -199,3 +207,12 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     a link with no observation in that margin (training saw the full history); the DOT feed's publication latency
     decides how many links pass the 20-minute data-age gate. Everything is labelled LIVE and reported with its
     retrieval times; NOT RUN until the workstation runs it (`docs/laptop_run.md` section 8).
+28. **Workstation environment deviation from 2026-10-28.** Windows Application Control began blocking the unsigned
+    compiled extensions `torch_scatter` and `torch_sparse` (WinError 4551, raised as OSError at import). They are not
+    used by the project's models (GATv2 runs on PyG's built-in ops); only the PyG-Temporal package `__init__` imports
+    them. The two packages were uninstalled from the workstation venv (reversible; the wheels are pinned in
+    `requirements.windows-cu128.lock`), so PyG-Temporal takes the documented direct-module route there, and the
+    fallback in `src/smartcity/graph/temporal.py` now also catches OSError (regression test in `tests/unit/test_graph.py`).
+    The v6 calibration, demand selection and controller comparison do not import PyG-Temporal and are unaffected; the
+    agent re-run after the change does. No Windows security setting was changed.
+

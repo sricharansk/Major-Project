@@ -53,7 +53,14 @@ its own baseline. A controller comparison on such a testbed would rank signal pl
 artefacts, so the preregistered selection rule stops it, and the advisory gate refuses to judge candidates on it. A comparison with
 observed speed confirmed the diagnosis: with recent counts the modelled corridor runs at about half the observed PM-peak
 speed. The lesson for simulation-gated advisory is that the gate's testbed needs its own acceptance test, run on the
-baseline alone and checked against observed traffic, before any candidate is scored against it.
+baseline alone and checked against observed traffic, before any candidate is scored against it. What finally passed
+that test was not more green but coordination: a common cycle with 25\,mph offsets along the mapped direction took
+the modelled link from 8.9 to 10.1\,mph where every split-only cell had stalled, which is also what West Street is
+timed for in reality. On that plan the matched comparison does show the forecast-informed rule ahead of fixed time
+under stress, by about 5\,\% of time loss with more trips completed in every seed, and we read it narrowly: a
+deterministic rule that extends corridor green when congestion is forecast helps a corridor that is oversaturated by
+a configured surge, in a testbed tuned to one observed speed, with no side-street traffic to lose. It says nothing
+about the language model, which never proposed the action, and nothing about a real street.
 
 \textit{What is not claimed.} Nothing here is a deployment result, a causal explanation, or a congestion reduction
 on a real street. The language model never holds safety authority (constraints and the simulation gate are code),

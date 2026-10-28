@@ -5,8 +5,9 @@ target y[t] ([N, H]; NaN where the target was not observed).  The deep-model dat
 from this signal object, so PGT is on the training path rather than merely imported.
 
 If ``torch_geometric_temporal``'s package ``__init__`` cannot be imported (it eagerly imports layers that need
-compiled ``torch_sparse``), the signal module itself — which has no compiled dependencies — is loaded
-directly from the installed package.  This is recorded in the environment report.
+compiled ``torch_sparse``; a missing wheel raises ImportError, a blocked or broken compiled extension raises OSError,
+as Windows Application Control did on the workstation from 2026-10-28), the signal module itself — which has no
+compiled dependencies — is loaded directly from the installed package.  This is recorded in the environment report.
 """
 
 from __future__ import annotations
@@ -27,7 +28,7 @@ def _signal_class():
 
         IMPORT_ROUTE = "package"
         return StaticGraphTemporalSignal
-    except ModuleNotFoundError:
+    except (ImportError, OSError):
         spec = importlib.util.find_spec("torch_geometric_temporal")
         if spec is None or not spec.submodule_search_locations:
             raise

@@ -1,12 +1,12 @@
-\begin{table*}[t]\centering\caption{SUPERSEDED 2026-10-20 controller comparison (SIMULATION), kept as recorded: bare from/to flows that SUMO routes at insertion on current travel times, the northbound flow inserted on a 0.2\,m stub edge, declared demand. The testbed audit (Table~\ref{tab:simaudit}) shows that this design sent about half of the mainline off West Street, so the table is not a corridor controller comparison. Mean over matched seeds. Scenario-based testbed with OSM geometry and declared demand, not a calibrated digital twin. Time loss is the mean per \emph{completed} trip; completed, unfinished and teleported vehicles are per run, averaged over seeds, so a lower time loss with fewer completed trips is survivorship, not improvement.}\label{tab:sim}
+\begin{table*}[t]\centering\caption{SUMO testbed (SIMULATION): mean over completed matched seeds. Calibrated scenario testbed (protocol v6 plan: 90\,s common cycle, corridor green factor 1.5, 25\,mph southbound offsets, tuned to one observed speed on one link; not NYC DOT timing), OSM geometry, 2025 two-direction counts, no side-street demand. The fixed-time and forecast-rule rows share this plan, network and seeds and are the matched pair; the actuated controller runs on netconvert's own actuated programs, not on the calibrated plan, and is an uncalibrated reference, not ranked. Time loss is the mean per \emph{completed} trip; completed, unfinished and teleported vehicles are per run, averaged over seeds, so a lower time loss with fewer completed trips is survivorship, not improvement.}\label{tab:sim}
 \begin{tabular}{llrrrrrrrr}\toprule Scenario & Controller & Seeds & Loaded & Completed & Unfinished & Teleports & Time loss (s) & Corridor TL (s) & Side TL (s) \\ \midrule
-event\_surge & actuated & 5 & 8350 & 2877 & 4957 & 1667 & 1118.4 & 1877.9 & 965.1 \\
-event\_surge & fixed\_time & 5 & 8350 & 2087 & 5856 & 1799 & 780.5 & 836.6 & 774.6 \\
-event\_surge & forecast\_rule & 5 & 8350 & 2014 & 5955 & 1834 & 739.0 & 715.3 & 741.9 \\
-incident\_reduced\_capacity & actuated & 5 & 8350 & 2240 & 5604 & 1971 & 1070.1 & 1816.3 & 946.1 \\
-incident\_reduced\_capacity & fixed\_time & 5 & 8350 & 1384 & 6566 & 2268 & 898.4 & 1405.6 & 863.5 \\
-incident\_reduced\_capacity & forecast\_rule & 5 & 8350 & 1236 & 6725 & 2174 & 806.0 & 1117.3 & 786.2 \\
-routine\_peak & actuated & 5 & 6675 & 2563 & 3682 & 1399 & 987.5 & 1470.8 & 847.3 \\
-routine\_peak & fixed\_time & 5 & 6675 & 2358 & 3924 & 1330 & 971.6 & 1647.9 & 829.6 \\
-routine\_peak & forecast\_rule & 5 & 6675 & 2358 & 3924 & 1330 & 971.6 & 1647.9 & 829.6 \\
+event\_surge & actuated & 5 & 6712 & 5219 & 1050 & 0 & 538.2 & 538.2 & -- \\
+event\_surge & fixed\_time & 5 & 6712 & 5720 & 540 & 0 & 450.2 & 450.2 & -- \\
+event\_surge & forecast\_rule & 5 & 6712 & 5910 & 350 & 0 & 426.0 & 426.0 & -- \\
+incident\_reduced\_capacity & actuated & 5 & 6712 & 5209 & 1060 & 0 & 554.4 & 554.4 & -- \\
+incident\_reduced\_capacity & fixed\_time & 5 & 6712 & 5725 & 536 & 0 & 465.9 & 465.9 & -- \\
+incident\_reduced\_capacity & forecast\_rule & 5 & 6712 & 5919 & 341 & 0 & 443.9 & 443.9 & -- \\
+routine\_peak & actuated & 5 & 5368 & 4975 & 0 & 0 & 384.8 & 384.8 & -- \\
+routine\_peak & fixed\_time & 5 & 5368 & 4975 & 0 & 0 & 271.6 & 271.6 & -- \\
+routine\_peak & forecast\_rule & 5 & 5368 & 4975 & 0 & 0 & 271.6 & 271.6 & -- \\
 \bottomrule\end{tabular}\end{table*}

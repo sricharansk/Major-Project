@@ -7,11 +7,12 @@ it is 0.03--0.08\,mph below the temporal Transformer at every horizon and the GR
 better at 15 minutes, a small advantage rather than a decisive one; the availability gate helps and the operational weather
 features hurt; conformal intervals hold their marginal coverage but under-cover congestion; retrieval removes
 fabricated citations and the constraint layer, not the model, decides admissibility; no advisory reached the
-simulation gate because the model chose monitoring on the mapped corridor; and no controller comparison is
-established, because an audit of the simulation testbed found that the first comparison let SUMO divert half of the
-corridor traffic and that, once corrected, the modelled corridor cannot serve the observed West Street volume within
-its baseline test, with generated or Webster re-timed signal programs. Future work, in the order the evidence suggests, is training with more seeds and without the compute budget,
-congestion-conditional calibration, a denser sensor network on which the spatial layer can matter, running the second preregistered testbed calibration (protocol v6: common cycle, wider green grid and 25\,mph
-progression offsets, prepared but not run), since widening splits alone reached 8.1 of the observed 10.95\,mph
-(or obtaining NYC DOT timing plans), pedestrian modelling, and an externally
-reviewed retrieval benchmark.
+simulation gate because the model chose monitoring on the mapped corridor; the first controller comparison is
+superseded, because an audit found that SUMO had diverted half of the corridor traffic, and the corrected comparison
+could only run after two preregistered calibrations, the second of which (a common cycle with 25\,mph progression
+offsets) brought the modelled link within 0.9\,mph of its observed speed; on that calibrated scenario testbed the
+deterministic forecast-informed rule lowers time loss by about 5\,\% under configured stress while completing more
+trips in every seed, a simulated result that is not a real-world gain. Future work, in the order the evidence suggests,
+is training with more seeds and without the compute budget, congestion-conditional calibration, a denser sensor network
+on which the spatial layer can matter, a testbed with side-street demand, NYC DOT timing plans and pedestrians, the live
+observational run, and an externally reviewed retrieval benchmark.

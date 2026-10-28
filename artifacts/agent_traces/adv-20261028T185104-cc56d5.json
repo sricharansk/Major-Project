@@ -1,0 +1,137 @@
+{
+  "run_id": "adv-20261028T185104-cc56d5",
+  "thread_id": "adv-20261028T185104-cc56d5",
+  "mode": "REPLAY",
+  "case": {
+    "name": "insufficient_evidence",
+    "origin": 77939,
+    "link_index": 13,
+    "query": "What is the recommended dosage schedule for pediatric antibiotics?",
+    "case_id": "case-insufficient_evidence-77939-13",
+    "auto_review": {
+      "action": "pending"
+    },
+    "policy": "full_system"
+  },
+  "forecast_origin": "2026-09-28T20:00:00+00:00",
+  "data_quality": {
+    "data_age_minutes": 0.0,
+    "input_missing_fraction": 0.0,
+    "source_timestamp_utc": "2026-09-28T20:00:00+00:00",
+    "stale_stress_steps": 0
+  },
+  "forecast": {
+    "link_id": "4616341",
+    "link_index": 13,
+    "horizons": [
+      {
+        "horizon_minutes": 15,
+        "predicted_speed_mph": 9.090421676635742,
+        "displayed_speed_mph": 9.090421676635742,
+        "lower_mph": -1.5315055847167969,
+        "upper_mph": 19.71234893798828,
+        "interval_level": 0.9,
+        "observed_speed_mph": 6.829999923706055
+      },
+      {
+        "horizon_minutes": 30,
+        "predicted_speed_mph": 9.314260482788086,
+        "displayed_speed_mph": 9.314260482788086,
+        "lower_mph": -3.2682933807373047,
+        "upper_mph": 21.896814346313477,
+        "interval_level": 0.9,
+        "observed_speed_mph": 4.96999979019165
+      },
+      {
+        "horizon_minutes": 60,
+        "predicted_speed_mph": 11.101858139038086,
+        "displayed_speed_mph": 11.101858139038086,
+        "lower_mph": -3.133880615234375,
+        "upper_mph": 25.337596893310547,
+        "interval_level": 0.9,
+        "observed_speed_mph": 4.96999979019165
+      }
+    ],
+    "train_reference_speed_mph": 26.19737434387207,
+    "congestion_ratio_30min": 0.35554175622820844,
+    "model_run_id": "proposed-20261020T201110-0e333f",
+    "speed_unit": "mph"
+  },
+  "forecast_artifact_id": "proposed-20261020T201110-0e333f",
+  "calibration_artifact_id": "artifacts/calibration/calibrator.json",
+  "uncertainty": {
+    "eligible": true,
+    "reasons": [],
+    "interval_widths": {
+      "15": 21.243854522705078,
+      "30": 25.16510772705078,
+      "60": 28.471477508544922
+    },
+    "gate_config": {
+      "max_interval_width_mph": 38.0967597961426,
+      "width_quantile_on_val": 0.8,
+      "max_input_missing_fraction": 0.34,
+      "max_data_age_minutes": 20,
+      "min_calibration_samples": 200
+    }
+  },
+  "explanation": {
+    "explanation_id": "xai-20261028T185110-09991a",
+    "method": "grouped KernelSHAP (exact, all coalitions) on the proposed model",
+    "link_id": "4616341",
+    "link_index": 13,
+    "horizon_minutes": 30,
+    "origin_index": 77939,
+    "origin_utc": 1790625600,
+    "background": "16 windows sampled from TRAIN partition (seed 42)",
+    "players": [
+      "traffic_target_last30min",
+      "traffic_target_30_120min",
+      "traffic_graph_neighbours",
+      "calendar",
+      "weather",
+      "infrastructure"
+    ],
+    "neighbours": [
+      "4616333"
+    ],
+    "group_contributions": {
+      "traffic_target_last30min": -10.156673149496338,
+      "traffic_target_30_120min": 0.09098892832518467,
+      "traffic_graph_neighbours": 0.36317384522449575,
+      "calendar": -3.664203737151512,
+      "weather": -0.0430890303319611,
+      "infrastructure": -0.10902614045964244
+    },
+    "base_value": 22.833089439262494,
+    "prediction": 9.314260155372722,
+    "additivity_gap": 0.0,
+    "observed_target_mph": 4.96999979019165,
+    "recent_target_steps_observed": 6,
+    "recent_steps": 6,
+    "runtime_s": 5.731348037719727,
+    "model_calls": 1040,
+    "note": "Attributions describe model sensitivity, not causal effects."
+  },
+  "explanation_artifact_id": "xai-20261028T185110-09991a",
+  "retrieval": {
+    "query": "What is the recommended dosage schedule for pediatric antibiotics?",
+    "status": "INSUFFICIENT_EVIDENCE",
+    "evidence": []
+  },
+  "retrieved_evidence_ids": [],
+  "decision": "DEFER_EVIDENCE",
+  "decision_reasons": [
+    "INSUFFICIENT_EVIDENCE: no passage above min_score for query"
+  ],
+  "errors": [],
+  "timings": {
+    "quality": 0.001,
+    "forecast": 0.015,
+    "uncertainty": 0.0,
+    "explanation": 5.828,
+    "retrieval": 0.023
+  },
+  "started_at": "2026-10-28T18:51:04Z",
+  "finished_at": "2026-10-28T18:51:10Z"
+}

@@ -10,6 +10,6 @@
   },
   "SIM-02": {
     "status": "PARTIAL",
-    "limitations": "The 45 matched-seed runs in simulation_metrics.csv (2026-10-20) are SUPERSEDED (SUMO insertion re-routing sent 1,120 of 2,189 mainline routes off West Street; 0.2 m NB entry stub). Corrected protocols (2014 count with netconvert or Webster programs; 2025 two-direction counts without OSM turn-lane restrictions, Webster programs) all fail the preregistered baseline test (simulation/scenarios/demand_selection_*.json); with 2025 counts the mapped link runs at 5.8 mph in simulation vs 10.95 mph observed. Corrected controller comparison: NOT_RUN; next: calibrate signal splits/progression to the observed speed or obtain NYC DOT timing plans."
+    "limitations": "Corrected comparison RUN on 2026-10-28 (workstation) on the protocol v6 calibrated plan (90 s cycle, green factor 1.5, 25 mph offsets; 10.08 vs 10.95 mph observed): 45 runs, 0 teleports, seeds 1-5 matched. The matched pair is fixed-time vs forecast rule (same plan, network, seeds); the actuated controller runs on netconvert's actuated programs (signal_timing netconvert_guess), so it is an uncalibrated reference and is not ranked. PARTIAL because of that, because side-street demand is 0 (the only admissible level) and because the stress scenarios leave 340-540 trips unfinished under both matched controllers. The 2026-10-20 runs are SUPERSEDED (kept in progress.md). SIMULATED results on a calibrated scenario testbed, never a real-world gain."
   }
 }
