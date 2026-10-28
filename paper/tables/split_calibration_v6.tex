@@ -1,2 +1,28 @@
-\begin{table}[t]\centering\caption{SUMO signal-timing calibration, protocol v6 (SIMULATION)}\label{tab:splitcal6}
-\begin{tabular}{c}\toprule NOT RUN \\ \bottomrule\end{tabular}\end{table}
+\begin{table}[t]\centering\caption{SUMO signal-timing calibration, protocol v6 (SIMULATION). Grid fixed before the run: every corridor signal on the per-signal Webster cycles or on a common cycle, corridor green scaled by a factor within the cycle (phase states unchanged, greens at least 7\,s, corridor green at most 90\,s) and, with a common cycle, offsets for a 25\,mph platoon along the southbound chain. Fixed-time baseline, seeds 101, 102, 103, no side-street demand, 2025 counts. Speed is the seed-mean space-mean speed on the SUMO edges mapped to DOT link 4456494; target 10.95\,mph $\pm$ 1.5. A cell is admissible with no teleport and at most 1\,\% unfinished trips in every seed. Outcome: selected cell: factor 1.5, 90\,s common cycle, 25\,mph offsets.}\label{tab:splitcal6}\small
+\begin{tabular}{rrrrrrc}\toprule Cycle (s) & Green factor & Offsets & Speed (mph) & Gap (mph) & Unfinished per seed & Admissible \\ \midrule
+Webster & 1.0 & none & 5.82 & -5.13 & 568/531/523 & no \\
+Webster & 1.5 & none & 6.78 & -4.17 & 237/194/214 & no \\
+Webster & 2.0 & none & 7.49 & -3.46 & 1/0/28 & yes \\
+Webster & 2.5 & none & 8.10 & -2.85 & 0/0/0 & yes \\
+Webster & 3.0 & none & 8.22 & -2.73 & 0/0/0 & yes \\
+90 & 1.0 & none & 6.79 & -4.16 & 263/270/258 & no \\
+90 & 1.0 & 25\,mph & 7.88 & -3.07 & 87/70/87 & no \\
+90 & 1.5 & none & 8.88 & -2.07 & 0/0/0 & yes \\
+90 & 1.5 & 25\,mph & 10.08 & -0.87 & 0/0/0 & yes \\
+90 & 2.0 & none & 8.88 & -2.07 & 0/0/0 & yes \\
+90 & 2.0 & 25\,mph & 10.08 & -0.87 & 0/0/0 & yes \\
+90 & 2.5 & none & 8.88 & -2.07 & 0/0/0 & yes \\
+90 & 2.5 & 25\,mph & 10.08 & -0.87 & 0/0/0 & yes \\
+90 & 3.0 & none & 8.88 & -2.07 & 0/0/0 & yes \\
+90 & 3.0 & 25\,mph & 10.08 & -0.87 & 0/0/0 & yes \\
+120 & 1.0 & none & 7.16 & -3.79 & 186/170/191 & no \\
+120 & 1.0 & 25\,mph & 8.22 & -2.73 & 0/0/9 & yes \\
+120 & 1.5 & none & 13.11 & +2.16 & 0/0/0 & yes \\
+120 & 1.5 & 25\,mph & 21.67 & +10.72 & 0/0/0 & yes \\
+120 & 2.0 & none & 13.11 & +2.16 & 0/0/0 & yes \\
+120 & 2.0 & 25\,mph & 21.67 & +10.72 & 0/0/0 & yes \\
+120 & 2.5 & none & 13.11 & +2.16 & 0/0/0 & yes \\
+120 & 2.5 & 25\,mph & 21.67 & +10.72 & 0/0/0 & yes \\
+120 & 3.0 & none & 13.11 & +2.16 & 0/0/0 & yes \\
+120 & 3.0 & 25\,mph & 21.67 & +10.72 & 0/0/0 & yes \\
+\bottomrule\end{tabular}\end{table}

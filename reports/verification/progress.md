@@ -304,6 +304,26 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Result: 0 of 75 cells run; no selection; select-demand, evaluate, agents evaluate, report export and paper sync NOT
   RUN. The preregistered rule and the v6 configuration were not changed.
 
+### Workstation run of protocol v6 completed (2026-10-25/26 and 2026-10-28/29)
+- Branch `claude/laptop-sumo-v6` on the fixed code (8b90c68, then main 640a0a2 merged; simulation code unchanged).
+- `simulation prepare`: exit 0; content hashes match (87174681 / ace93240 / 44e0e4fe).
+- `simulation calibrate-splits`: exit 0 (1,730 s, 75 runs). Selected cell: common cycle 90 s, green factor 1.5, 25 mph
+  offsets, 10.08 mph simulated on link 4456494 vs 10.95 observed (gap -0.87, tolerance 1.5); 0 unfinished, 0
+  teleports. Factors 1.5-3.0 give identical speeds at a common cycle (green bounds bind); least intervention chosen.
+- `simulation select-demand`: exit 0 (436 s). Only side-street scale 0.0 is admissible.
+- `simulation evaluate`: the first pass was interrupted when the workstation went offline (39/45 runs finished, no
+  metrics written); re-run in full on 2026-10-28: exit 0 (1,425 s), 45/45 OK, 0 teleports in every run, seeds 1-5.
+  Fixed-time vs forecast rule (same calibrated plan, network and seeds): routine peak identical (rule inactive); event
+  surge time loss 450.2 vs 426.0 s, completed 5,720 vs 5,910, unfinished 540 vs 350; incident 465.9 vs 443.9 s,
+  5,725 vs 5,919, 536 vs 341. The actuated controller runs on netconvert's actuated programs, not the calibrated plan
+  (signal_timing netconvert_guess), so it is an uncalibrated reference, not a matched comparison. Side-street demand
+  0; pedestrians NOT_EVALUATED.
+- `agents evaluate`: attempt 1 failed (WinError 4551: Windows Application Control blocked the unsigned
+  torch_sparse / torch_scatter CUDA extensions). Both were uninstalled from the workstation venv so that PyG-Temporal
+  uses the documented direct-module fallback; 87 unit/leakage/safety tests pass. Attempt 2: exit 0 (517 s), same 19
+  decisions as before; 12/12 schema-valid; the LLM chose monitor_only on the mapped corridor under every policy, so
+  no real advisory reached the (now admissible) simulation gate. `report export` and `paper sync` exit 0.
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK

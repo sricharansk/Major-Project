@@ -1,0 +1,96 @@
+{
+  "run_id": "adv-20261028T185104-edba60",
+  "thread_id": "adv-20261028T185104-edba60",
+  "mode": "REPLAY",
+  "case": {
+    "name": "wide_interval_stress",
+    "origin": 77939,
+    "link_index": 13,
+    "force_interval_width_mph": 99.0,
+    "case_id": "case-wide_interval_stress-77939-13",
+    "auto_review": {
+      "action": "pending"
+    },
+    "policy": "full_system"
+  },
+  "forecast_origin": "2026-09-28T20:00:00+00:00",
+  "data_quality": {
+    "data_age_minutes": 0.0,
+    "input_missing_fraction": 0.0,
+    "source_timestamp_utc": "2026-09-28T20:00:00+00:00",
+    "stale_stress_steps": 0
+  },
+  "forecast": {
+    "link_id": "4616341",
+    "link_index": 13,
+    "horizons": [
+      {
+        "horizon_minutes": 15,
+        "predicted_speed_mph": 9.090421676635742,
+        "displayed_speed_mph": 9.090421676635742,
+        "lower_mph": -1.5315055847167969,
+        "upper_mph": 19.71234893798828,
+        "interval_level": 0.9,
+        "observed_speed_mph": 6.829999923706055
+      },
+      {
+        "horizon_minutes": 30,
+        "predicted_speed_mph": 9.314260482788086,
+        "displayed_speed_mph": 9.314260482788086,
+        "lower_mph": -3.2682933807373047,
+        "upper_mph": 21.896814346313477,
+        "interval_level": 0.9,
+        "observed_speed_mph": 4.96999979019165
+      },
+      {
+        "horizon_minutes": 60,
+        "predicted_speed_mph": 11.101858139038086,
+        "displayed_speed_mph": 11.101858139038086,
+        "lower_mph": -3.133880615234375,
+        "upper_mph": 25.337596893310547,
+        "interval_level": 0.9,
+        "observed_speed_mph": 4.96999979019165
+      }
+    ],
+    "train_reference_speed_mph": 26.19737434387207,
+    "congestion_ratio_30min": 0.35554175622820844,
+    "model_run_id": "proposed-20261020T201110-0e333f",
+    "speed_unit": "mph"
+  },
+  "forecast_artifact_id": "proposed-20261020T201110-0e333f",
+  "calibration_artifact_id": "artifacts/calibration/calibrator.json",
+  "uncertainty": {
+    "eligible": false,
+    "reasons": [
+      "WIDE_INTERVAL: h=15 width 99.0 > 38.1 mph",
+      "WIDE_INTERVAL: h=30 width 99.0 > 38.1 mph",
+      "WIDE_INTERVAL: h=60 width 99.0 > 38.1 mph"
+    ],
+    "interval_widths": {
+      "15": 99.0,
+      "30": 99.0,
+      "60": 99.0
+    },
+    "gate_config": {
+      "max_interval_width_mph": 38.0967597961426,
+      "width_quantile_on_val": 0.8,
+      "max_input_missing_fraction": 0.34,
+      "max_data_age_minutes": 20,
+      "min_calibration_samples": 200
+    }
+  },
+  "decision": "DEFER_UNCERTAINTY",
+  "decision_reasons": [
+    "WIDE_INTERVAL: h=15 width 99.0 > 38.1 mph",
+    "WIDE_INTERVAL: h=30 width 99.0 > 38.1 mph",
+    "WIDE_INTERVAL: h=60 width 99.0 > 38.1 mph"
+  ],
+  "errors": [],
+  "timings": {
+    "quality": 0.001,
+    "forecast": 0.011,
+    "uncertainty": 0.0
+  },
+  "started_at": "2026-10-28T18:51:04Z",
+  "finished_at": "2026-10-28T18:51:04Z"
+}
