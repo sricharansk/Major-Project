@@ -106,3 +106,34 @@ def test_named_rule_handles_ramps_and_names_without_direction_tokens():
     nodes = {n["link_id"]: n for n in res["graph"]["nodes"]}
     assert nodes["c"]["direction_inferred"] and nodes["c"]["exit_dir"] == "S"
     assert not nodes["a"]["direction_inferred"] and (nodes["a"]["entry_dir"], nodes["a"]["exit_dir"]) == ("W", "S")
+
+
+def test_temporal_signal_falls_back_when_the_package_init_raises_oserror(monkeypatch):
+    """A blocked compiled extension (Windows Application Control, WinError 4551) raises OSError, not ImportError,
+    from the package __init__; the signal module must still load through the direct-module route."""
+    import importlib.abc
+    import importlib.machinery
+    import sys
+
+    from smartcity.graph import temporal
+
+    class _Blocked(importlib.abc.Loader):
+        def create_module(self, spec):
+            return None
+
+        def exec_module(self, module):
+            raise OSError(4551, "An Application Control policy has blocked this file")
+
+    class _Finder(importlib.abc.MetaPathFinder):
+        def find_spec(self, name, path, target=None):
+            if name == "torch_geometric_temporal.signal":
+                return importlib.machinery.ModuleSpec(name, _Blocked())
+            return None
+
+    for k in [k for k in sys.modules if k.startswith("torch_geometric_temporal")]:
+        monkeypatch.delitem(sys.modules, k)
+    monkeypatch.setattr(sys, "meta_path", [_Finder(), *sys.meta_path])
+    monkeypatch.setattr(temporal, "IMPORT_ROUTE", "unresolved")
+    cls = temporal._signal_class()
+    assert cls.__name__ == "StaticGraphTemporalSignal"
+    assert temporal.IMPORT_ROUTE.startswith("direct-module")

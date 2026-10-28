@@ -199,3 +199,12 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     a link with no observation in that margin (training saw the full history); the DOT feed's publication latency
     decides how many links pass the 20-minute data-age gate. Everything is labelled LIVE and reported with its
     retrieval times; NOT RUN until the workstation runs it (`docs/laptop_run.md` section 8).
+28. **Workstation environment deviation from 2026-10-28.** Windows Application Control began blocking the unsigned
+    compiled extensions `torch_scatter` and `torch_sparse` (WinError 4551, raised as OSError at import). They are not
+    used by the project's models (GATv2 runs on PyG's built-in ops); only the PyG-Temporal package `__init__` imports
+    them. The two packages were uninstalled from the workstation venv (reversible; the wheels are pinned in
+    `requirements.windows-cu128.lock`), so PyG-Temporal takes the documented direct-module route there, and the
+    fallback in `src/smartcity/graph/temporal.py` now also catches OSError (regression test in `tests/unit/test_graph.py`).
+    The v6 calibration, demand selection and controller comparison do not import PyG-Temporal and are unaffected; the
+    agent re-run after the change does. No Windows security setting was changed.
+
