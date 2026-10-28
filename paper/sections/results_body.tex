@@ -294,8 +294,14 @@ requests, stores them verbatim with their retrieval time, rebuilds the 24-step w
 transforms, runs the frozen model once per five-minute bin, writes the forecast before its earliest target time, and
 scores it only after the target bin is observed; links with fewer than 12 observed bins in the window are withheld
 and repeated or revised feed records are counted. Table~\ref{tab:live} reports the outcome of the collection
-window. At the time of writing it has NOT been run; whatever it yields is a short window on one day, a check that the
-pipeline works on data that did not exist at training time, not a second test set.
+window. It was attempted on Wednesday 28 October 2026 between 15:49 and 18:05 New York time: the pipeline ran (15
+speed, 15 weather and 14 311 pulls, nine forecast batches written), but the public speed feed was never less than about
+1\,h\,40\,min behind, its newest Manhattan record moving from 11:31 to 14:11, 13:36 and 15:36 local time across the
+pulls, with one batch published, withdrawn and republished, so every batch withheld all 16 links (at most 5 of the 24
+lookback bins observed against the 12 required) and the one-hour collection was not started. The run is therefore NOT
+RUN, the withholding rule was not relaxed, and the feed's publication latency is itself an operational finding: on such
+a day the deployed system would have issued no forecast. Whatever a later run yields is a short window on one day, a
+check that the pipeline works on data that did not exist at training time, not a second test set.
 
 \subsection{Runtime}
 Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs 5.7\,ms for the

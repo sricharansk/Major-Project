@@ -568,3 +568,9 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Still NOT RUN: the LIVE observational window (`docs/laptop_run.md` section 8, workstation). Still open: human review
   of the RAG labels; a testbed with side-street demand, DOT timing plans or pedestrians (future work).
 
+### Milestone 15: live-run attempt recorded (cloud container, 2026-10-28 22:30 UTC)
+- Workstation branch `claude/laptop-live` (ad91bf6) merged: nine live batches, forecast log, last pull and 44 pull-log
+  entries. `final_status.md` (Live mode: ATTEMPTED, NOT RUN, feed stale), `reports/limitations.md` 27, the paper's
+  live subsection (Table `tab:live` stays NOT RUN), README and claim C49 record the attempt and why no forecast was
+  issued; `paper/main.pdf` rebuilt (14 pages). Nothing was relaxed; the retry waits for a weekday afternoon with a
+  current feed.
