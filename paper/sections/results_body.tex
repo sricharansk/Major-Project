@@ -157,7 +157,7 @@ forecast link. Pedestrian performance is NOT\_EVALUATED because the scenarios co
 150 per side approach, both declared, and three scenarios (routine peak; event surge, demand $\times 1.25$; an
 incident that at the same surge caps one corridor edge at 2.5\,m/s for 20 minutes), all 45 matched-seed runs (fixed-time,
 actuated and forecast-informed-rule controllers, five seeds, 300\,s warm-up and 3{,}600\,s evaluation, SUMO 1.28.0,
-9{,}645\,s of wall time) completed (Table~\ref{tab:sim}). The corridor was oversaturated under every controller: of
+9{,}645\,s of wall time) completed. The corridor was oversaturated under every controller: of
 6{,}675 (routine) or 8{,}350 (surge and incident) loaded vehicles per run only 1{,}003 to 3{,}441 completed their trip,
 3{,}257 to 6{,}979 remained unfinished and 1{,}091 to 2{,}386 were teleported after waiting 300\,s. The forecast rule's
 lower time loss per completed trip in the two stress scenarios (739.0 and 806.0\,s against 780.5 and 898.4 for
@@ -170,7 +170,7 @@ filter. It reproduces the workstation corridor exactly (the same 82 corridor edg
 and exit edges and both DOT mappings; 24 of 25 side entries keep their edge id, the 25th is the same FDR Drive approach
 under another OSM way id), and the original design run on it reproduces the oversaturated regime (routine peak,
 fixed-time, seed 1: 2{,}981 completed, 3{,}294 unfinished and 928 teleports, against 2{,}746, 3{,}527 and 1{,}157 on
-the workstation). The audit found two defects behind Table~\ref{tab:sim}. First, demand was written as bare
+the workstation). The audit found two defects behind that comparison. First, demand was written as bare
 from/to flows, which SUMO routes at insertion on the current travel times~\cite{sumodocs_routing}: at the declared
 demand the rerouting device replaced 1{,}853 routes and sent 1{,}120 of 2{,}189 mainline vehicles off West Street into
 the Lower Manhattan grid (Table~\ref{tab:simaudit}), so the 45 runs did not compare controllers on the corridor.

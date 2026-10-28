@@ -400,6 +400,11 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Rebuilt on 43fe4c5 (2026-10-28): "Live observational run" subsection and its NOT RUN table (tab:live). The Word
   builder now renders `split_calibration_v6.tex` and `live.tex` from the generated tables (header, rows, caption
   detail as the note) once they carry results, instead of stopping.
+- Rebuilt on 382d9ca (2026-10-28) with the protocol v6 result and the corrected 45-run comparison: v6, comparison
+  and third agent-pass paragraphs, Table X (v6 grid, 25 cells) and Table XI (calibrated comparison) from the generated
+  tables, and the abstract (248 words), discussion, limitations and conclusion in the LaTeX wording. Also fixed in
+  LaTeX: the superseded 2026-10-20 comparison still cited Table~\ref{tab:sim}, which now holds the corrected runs;
+  `main.pdf` rebuilt (13 pages). Word paper: 11 A4 pages in LibreOffice.
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper

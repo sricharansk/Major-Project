@@ -386,17 +386,21 @@ def build_table(tid: str, refs: Refs) -> str:
         return x
     if tid == "sim":
         _, rows = tex_rows("simulation")
-        body = [[SCEN.get(detex(r[0]), detex(r[0])), CTRL.get(detex(r[1]), detex(r[1])), num(r[4]), num(r[5]),
-                 num(r[6]), r[7]] for r in rows]
-        x = caption("SUPERSEDED Controller Comparison of 2026-10-20 (SIMULATION)", refs)
-        x += table_xml([48, 48, 37, 37, 36, 37.3],
-                       [["Scenario", "Controller", "Completed", "Unfinished", "Teleports", "Time loss (s)"]],
-                       body, refs, ["start", "start", "end", "end", "end", "end"], size=13)
-        x += note("Kept as recorded, not a corridor controller comparison: bare from/to flows let SUMO re-route at "
-                  "insertion and about half of the mainline left West Street ({T:simaudit}). Mean over five matched "
-                  "seeds; 6,675 (routine) or 8,350 vehicles loaded per run. Time loss is per *completed* trip, so a "
-                  "lower value with fewer completed trips is survivorship, not improvement. Scenario-based testbed "
-                  "with OSM geometry and declared demand, not a calibrated digital twin; full columns in "
+        body = [[SCEN.get(detex(r[0]), detex(r[0])), CTRL.get(detex(r[1]), detex(r[1])), num(r[3]), num(r[4]),
+                 num(r[5]), num(r[6]), r[7]] for r in rows]
+        x = caption("Controller Comparison on the Calibrated Testbed (SIMULATION)", refs)
+        x += table_xml([39, 40, 28, 37, 38, 32, 29.3],
+                       [["Scenario", "Controller", "Loaded", "Completed", "Unfinished", "Teleports",
+                         "Time loss (s)"]],
+                       body, refs, ["start", "start", "end", "end", "end", "end", "end"], size=13)
+        x += note("Mean over five matched seeds, per run. Calibrated scenario testbed ({T:splitcal6}: 90 s common "
+                  "cycle, corridor green factor 1.5, 25 mph southbound offsets, tuned to one observed speed on one "
+                  "link; not NYC DOT timing), OSM geometry, 2025 two-direction counts, no side-street demand. "
+                  "Fixed time and the forecast rule share this plan, network and seeds and are the matched pair; "
+                  "the actuated controller runs on netconvert’s own actuated programs and is an uncalibrated "
+                  "reference, not ranked. Time loss is per *completed* trip (all of it on the corridor), so a lower "
+                  "value with fewer completed trips would be survivorship, not improvement. The superseded "
+                  "comparison of 2026-10-20 is described in the text; full columns in "
                   "`reports/experiments/simulation_metrics.csv`.", refs)
         return x
     if tid == "simaudit":
@@ -448,7 +452,25 @@ def build_table(tid: str, refs: Refs) -> str:
                   "2.85 mph short of the target.", refs)
         return x
     if tid == "splitcal6":
-        return generic_table("split_calibration_v6", "Signal-Timing Calibration, Protocol v6 (SIMULATION)", refs)
+        _, rows = tex_rows("split_calibration_v6")
+        if not rows or rows[0][0].startswith("NOT RUN"):
+            return generic_table("split_calibration_v6", "Signal-Timing Calibration, Protocol v6 (SIMULATION)",
+                                 refs)
+        body = [[r[0], r[1], detex(r[2]), num(r[3]), r[4].replace("-", "−"), r[5].replace("/", " / "), r[6]]
+                for r in rows]
+        x = caption("Signal-Timing Calibration, Protocol v6 (SIMULATION)", refs)
+        x += table_xml([28, 28, 31, 30, 30, 55, 41.3],
+                       [["Cycle (s)", "Green factor", "Offsets", "Speed (mph)", "Gap (mph)", "Unfinished per seed",
+                         "Admissible"]],
+                       body, refs, ["start", "center", "center", "end", "end", "center", "center"], size=13)
+        x += note("Every corridor signal on the per-signal Webster cycles or on a common cycle; corridor green "
+                  "scaled by a factor within the cycle (phase states unchanged, greens at least 7 s, corridor green "
+                  "at most 90 s) and, with a common cycle, offsets for a 25 mph platoon along the southbound chain; "
+                  "grid fixed before the run. Fixed-time baseline, seeds 101, 102 and 103, no side-street demand, "
+                  "2025 counts. Speed is the seed-mean space-mean speed on the SUMO edges mapped to DOT link "
+                  "4456494; target 10.95 mph ±1.5. A cell is admissible with no teleport and at most 1% unfinished "
+                  "trips in every seed. Selected: factor 1.5, 90 s common cycle, 25 mph offsets.", refs)
+        return x
     if tid == "live":
         return generic_table("live", "Live Observational Run (LIVE)", refs)
     raise KeyError(tid)
