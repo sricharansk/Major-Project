@@ -222,8 +222,9 @@ abstract = ("Traffic control rooms can see congestion as it happens, but rarely 
             "the trained model, and a LangGraph workflow uses a local LLM (qwen2.5 7B) with FAISS retrieval to draft signal "
             "advisories that deterministic safety rules and a SUMO simulation must pass before human review. On a 45-day test "
             "period the model reaches 4.77, 5.33 and 6.15 mph MAE, 7–16 % below persistence; intervals reach 90 % coverage "
-            "overall, and retrieval removed every fabricated citation. An audit of the simulation testbed showed it cannot yet "
-            "support a controller comparison, which is therefore reported as not run.")
+            "overall, and retrieval removed every fabricated citation. On a calibrated SUMO testbed (10.08 vs 10.95 mph observed) "
+            "a forecast-driven rule cut simulated time loss by 5.4 % and 4.7 % in surge and incident scenarios, a simulated "
+            "result only.")
 ph = body_ph(S[2])
 ph.left, ph.top, ph.width, ph.height = Inches(0.45), Inches(1.95), Inches(13.1), Inches(5.35)
 fill(ph.text_frame, [abstract], TNR, 24, INK, PP_ALIGN.JUSTIFY, after=0, line=1.05)
@@ -353,7 +354,7 @@ for i, p in enumerate(tf.paragraphs):
         for rr in p.runs:
             style(rr, ARIAL, 22, NAVY, bold=True)
 stats = [("1,968,303", "raw speed records processed"), ("16", "Manhattan links modelled"),
-         ("7", "forecasting models compared"), ("95", "automated tests passing")]
+         ("7", "forecasting models compared"), ("112", "automated tests passing")]
 for k, (v, lab) in enumerate(stats):
     box(S[8], 0.5 + k * 3.3, 5.45, 3.0, 1.75, [[(v, True, NAVY, 34)], [(lab, False, INK, 15)]], ARIAL, 15,
         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, bg=TINT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, after=2,
@@ -432,7 +433,7 @@ cols = [
         "Shared contracts frozen first: forecast, uncertainty, evidence, candidate action, decision",
         "A stage runner executes the real-data pipeline in fixed order with a stage log",
         "Only the recommendation node calls the LLM; every gate is deterministic code",
-        "95 automated tests: unit, leakage, safety, integration, end-to-end (CI, 2026-10-25)"]),
+        "112 automated tests: unit, leakage, safety, integration, end-to-end (CI, 2026-10-28)"]),
 ]
 for k, (head, items) in enumerate(cols):
     box(s, 0.5 + k * 4.0, 1.95, 3.75, 5.35, [[(head, True, NAVY, 18)]] + [[(it, False, INK, 15)] for it in items], TNR, 15,
@@ -456,8 +457,8 @@ ph = body_ph(s)
 ph.left, ph.top, ph.width, ph.height = Inches(0.45), Inches(1.95), Inches(6.9), Inches(5.35)
 fill(ph.text_frame, [
     [("Command-line pipeline: ", True), ("one command per stage, from data audit to paper tables", False)],
-    [("FastAPI service: ", True), ("18 endpoints for forecasts, explanations, retrieval, advisories, simulations and review; long jobs run in a PostgreSQL-backed worker", False)],
-    [("Streamlit dashboard: ", True), ("11 pages, from data audit and traffic map to forecasts, explanations, agent traces, SUMO results and the model card", False)],
+    [("FastAPI service: ", True), ("20 endpoints for forecasts, live forecasts, explanations, retrieval, advisories, simulations and review; long jobs run in a PostgreSQL-backed worker", False)],
+    [("Streamlit dashboard: ", True), ("12 pages, from data audit, traffic map and live monitoring to forecasts, explanations, agent traces, SUMO results and the model card", False)],
     [("Every view labels its mode: ", True), ("LIVE, REPLAY or SIMULATION", False)],
     [("Docker Compose: ", True), ("PostGIS, API, worker and dashboard images, built and smoke-tested", False)],
     [("Human review ", True), ("approves or rejects for simulation only; nothing is sent to real signals", False)],
@@ -515,8 +516,9 @@ box(s, 7.4, 1.9, 6.1, 5.4, [[("Observations", True, NAVY, 18)],
     [("Intervals meet 90 % overall but under-cover congestion, the regime that matters for advisories.", False, INK, 15)],
     [("Retrieval removed fabricated citations (3 of 3 without it, 0 of 9 with it); the constraint layer, not the LLM, "
       "decides admissibility.", False, INK, 15)],
-    [("The simulation testbed still fails its own baseline test after signal-split calibration (8.1 vs 10.95\u00a0mph), "
-      "so the controller comparison is not run.", False, INK, 15)]],
+    [("On the calibrated SUMO testbed the forecast rule lowered simulated time loss by 5.4 % (surge) and 4.7 % "
+      "(incident) against fixed time in every seed; routine peak unchanged. Simulated, not a real-world gain.",
+      False, INK, 15)]],
     TNR, 15, bg=TINT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, margin=0.18, after=9, name="Observations")
 for p in list(s.shapes)[-1].text_frame.paragraphs[1:]:
     bullet(p)
@@ -600,14 +602,13 @@ ch.value_axis.minimum_scale, ch.value_axis.maximum_scale = 0, 8
 box(s, 0.5, 6.0, 6.3, 1.3, [[("12 of 12 LLM responses were schema-valid. Without retrieval the model cited non-existent "
                               "evidence in 3 of 3 cases (all rejected); with retrieval in 0 of 9.", False, INK, 14)]],
     TNR, 14, margin=0.04, after=0)
-box(s, 7.2, 1.9, 6.3, 0.4, [[("SUMO testbed outcome (simulation only)", True, NAVY, 16)]], TNR, 16, margin=0.02, after=0)
+box(s, 7.2, 1.9, 6.3, 0.4, [[("SUMO testbed calibration (SIMULATION)", True, NAVY, 16)]], TNR, 16, margin=0.02, after=0)
 sim = [("Protocol", "Unfinished*", "Result"),
-       ("First comparison, 20 Oct (45 runs)", "—", "Withdrawn"),
-       ("2014 count, generated signal timing", "17.7 %", "Fails test"),
-       ("2014 count, Webster re-timed signals", "4.3 %", "Fails test"),
-       ("2025 counts, Webster, no turn-lane limits", "10.1 %", "Fails test"),
-       ("v5: 2025 counts, corridor green ×1.0–2.5", "0–0.5 % at ×2.0+", "8.1 of 10.95 mph")]
-gt = s.shapes.add_table(len(sim), 3, Inches(7.2), Inches(2.35), Inches(6.3), Inches(2.7))
+       ("First comparison, 20 Oct (45 runs)", "—", "Superseded"),
+       ("2014 / 2025 counts, generated or Webster timing", "4.3–17.7 %", "Fails test"),
+       ("v5: corridor green ×1.0–2.5", "0–0.5 % at ×2.0+", "8.1 of 10.95 mph"),
+       ("v6: 90 s cycle, green ×1.5, 25 mph offsets", "0 %", "10.08 mph: passes")]
+gt = s.shapes.add_table(len(sim), 3, Inches(7.2), Inches(2.35), Inches(6.3), Inches(2.5))
 gt.name = "Simulation protocols"
 tbl = gt.table
 for ci, wv in enumerate((3.25, 1.4, 1.65)):
@@ -615,18 +616,19 @@ for ci, wv in enumerate((3.25, 1.4, 1.65)):
 for ri, row in enumerate(sim):
     for ci, val in enumerate(row):
         cell = tbl.cell(ri, ci)
-        colr = WHITE if ri == 0 else (STOP if ci == 2 else INK)
+        colr = WHITE if ri == 0 else ((OK if ri == len(sim) - 1 else STOP) if ci == 2 else INK)
         fill(cell.text_frame, [[(val, ri == 0 or ci == 2, colr, 13)]], TNR, 13,
              align=PP_ALIGN.LEFT if ci == 0 else PP_ALIGN.CENTER, after=0)
         cell.fill.solid()
         cell.fill.fore_color.rgb = NAVY if ri == 0 else (TINT if ri % 2 else WHITE)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
-box(s, 7.2, 5.12, 6.3, 2.25, [
+box(s, 7.2, 4.95, 6.3, 2.4, [
     [("* Vehicles not finishing with no side-street traffic; the preregistered test allows at most 1 % and no stuck vehicles.", False, MUTED, 11)],
     [("The first comparison let SUMO re-route 1,120 of 2,189 main-road vehicles off West Street, so it did not test the corridor.", False, INK, 12)],
-    [("With real 2025 counts (2,510 NB / 2,444 SB veh/h) the modelled link runs at 5.8\u00a0mph; the real street runs at 10.95\u00a0mph in the PM peak.", False, INK, 12)],
-    [("v5 (23 Oct, 21 runs): more corridor green raises it to 8.1\u00a0mph, still 2.85\u00a0mph short of the 1.5\u00a0mph tolerance. "
-      "No timing selected; the comparison stays NOT RUN.", True, INK, 12)]],
+    [("Target: the real PM-peak speed of 10.95\u00a0mph (±1.5) with 2025 counts. Splits alone peaked at 8.88\u00a0mph; "
+      "southbound offsets closed the gap; 120\u00a0s cells overshot (13–22\u00a0mph).", False, INK, 12)],
+    [("v6 (26 Oct, 75 runs) selects 90\u00a0s / ×1.5 / 25\u00a0mph: 10.08\u00a0mph, 0 unfinished. A calibrated scenario "
+      "testbed, not NYC DOT timing; only side-street demand 0.0 is admissible.", True, INK, 12)]],
     TNR, 12, margin=0.04, after=4)
 
 # ---------------------------------------------------------------- 17-21. outcome: the working dashboard (screenshots)
@@ -657,9 +659,9 @@ def shot(slide, x, y, w, name, page, mode):
     return y + 0.42 + h
 
 
-DASH_NOTE = ("Screenshots of the project's Streamlit dashboard (src/smartcity/dashboard/app.py) captured on 21 Oct 2026; every "
-             "number on them is read from committed result files. Live NYC feeds were not reachable from the capture "
-             "machine, so no LIVE view is shown.")
+DASH_NOTE = ("Screenshots of the project's Streamlit dashboard (src/smartcity/dashboard/app.py) captured on 28 Oct 2026; every "
+             "number on them is read from committed result files. LIVE mode is built but not yet run, so no LIVE view "
+             "is shown.")
 LAPTOP_NOTE = ("Captured on 23 Oct 2026 on the training laptop, which holds the trained model and the processed NYC DOT data. "
                "The forecast is a REPLAY of the held-out test period (origin 20 Oct 2026, 90 % conformal intervals); "
                "no LIVE view is shown.")
@@ -682,41 +684,35 @@ s = S[20]
 set_title(s, "8. OUTCOME: WORKING DASHBOARD (5/5)")
 drop(body_ph(s))
 bottom = shot(s, 0.55, 1.75, 6.25, "sumo", "SUMO comparisons", "SIMULATION")
-box(s, 0.55, bottom + 0.08, 6.25, 0.3, [[("Captured 21 Oct 2026 from committed result files; no LIVE view.", False, MUTED, 10)]],
+box(s, 0.55, bottom + 0.08, 6.25, 0.3, [[("Captured 28 Oct 2026 from committed result files.", False, MUTED, 10)]],
     ARIAL, 10, margin=0.02, after=0)
-box(s, 7.2, 1.75, 6.25, 0.36, [[("Signal-split calibration, protocol v5", True, NAVY, 14),
+box(s, 7.2, 1.75, 6.25, 0.36, [[("Corrected controller comparison", True, NAVY, 14),
                                ("   Mode: ", False, MUTED, 12), ("SIMULATION", True, MODE_COLOUR["SIMULATION"], 12)]],
     ARIAL, 14, margin=0.02, after=0, anchor=MSO_ANCHOR.BOTTOM)
 cd = CategoryChartData()
-cd.categories = ["×1.0", "×1.2", "×1.4", "×1.6", "×1.8", "×2.0", "×2.5"]
-cd.add_series("Simulated speed, mean of 3 seeds", (5.82, 6.16, 6.52, 6.85, 7.13, 7.49, 8.10))
-cd.add_series("Observed PM-peak speed (target)", (10.95,) * 7)
-gfc = s.shapes.add_chart(XL_CHART_TYPE.LINE_MARKERS, Inches(7.2), Inches(2.17), Inches(6.25), Inches(3.2), cd)
-gfc.name = "Split calibration"
+cd.categories = ["Routine peak", "Event surge ×1.25", "Incident"]
+cd.add_series("Fixed time (calibrated plan)", (271.6, 450.2, 465.9))
+cd.add_series("Forecast rule", (271.6, 426.0, 443.9))
+gfc = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(7.2), Inches(2.17), Inches(6.25), Inches(3.2), cd)
+gfc.name = "Controller comparison"
 ch = gfc.chart
 ch.has_legend = True
 ch.legend.position = XL_LEGEND_POSITION.BOTTOM
 ch.legend.include_in_layout = False
 ch.legend.font.name, ch.legend.font.size = ARIAL, Pt(11)
-for ser, colr in zip(ch.series, (NAVY, OK)):
-    ser.format.line.color.rgb = colr
-    ser.format.line.width = Pt(2.25)
-    ser.smooth = False
-    ser.marker.format.fill.solid()
-    ser.marker.format.fill.fore_color.rgb = colr
-    ser.marker.format.line.color.rgb = colr
-ch.series[1].format.line.dash_style = MSO_LINE.DASH
-ch.series[1].marker.style = XL_MARKER_STYLE.NONE
-pl = ch.series[0].points
-for i in range(7):
-    dl = pl[i].data_label
-    dl.has_text_frame = False
-    dl.position = XL_LABEL_POSITION.ABOVE
-    dl.font.name, dl.font.size, dl.font.color.rgb = ARIAL, Pt(10), NAVY
-    dl.show_value = True
-ch.value_axis.minimum_scale, ch.value_axis.maximum_scale = 4, 12
+ch.plots[0].gap_width = 70
+ch.plots[0].overlap = -5
+for ser, colr in zip(ch.series, (MUTED, NAVY)):
+    ser.format.fill.solid()
+    ser.format.fill.fore_color.rgb = colr
+ch.plots[0].has_data_labels = True
+dls = ch.plots[0].data_labels
+dls.position = XL_LABEL_POSITION.OUTSIDE_END
+dls.number_format, dls.number_format_is_linked = "0.0", False
+dls.font.name, dls.font.size = ARIAL, Pt(10)
+ch.value_axis.minimum_scale, ch.value_axis.maximum_scale = 0, 550
 ch.value_axis.has_title = True
-ch.value_axis.axis_title.text_frame.text = "mph on link 4456494"
+ch.value_axis.axis_title.text_frame.text = "mean time loss (s), 5 seeds"
 for p in ch.value_axis.axis_title.text_frame.paragraphs:
     for rr in p.runs:
         rr.font.name, rr.font.size, rr.font.bold = ARIAL, Pt(10), False
@@ -724,14 +720,14 @@ ch.value_axis.tick_labels.font.name, ch.value_axis.tick_labels.font.size = ARIAL
 ch.category_axis.tick_labels.font.name, ch.category_axis.tick_labels.font.size = ARIAL, Pt(10)
 ch.value_axis.major_gridlines.format.line.color.rgb = RGBColor(0xD9, 0xDF, 0xE7)
 box(s, 7.2, 5.45, 6.25, 1.55, [
-    [("Corridor green share scaled ×1.0–2.5 (21 fixed-time runs, seeds 101–103, 2025 counts, 23 Oct 2026).", False, INK, 12)],
-    [("Admissible only at ×2.0 and ×2.5 (no teleports, at most 28 of 5,368 trips unfinished); ×1.0–1.8 leave "
-      "98–568 unfinished.", False, INK, 12)],
-    [("Best admissible 8.10\u00a0mph is 2.85\u00a0mph below 10.95, beyond the 1.5\u00a0mph tolerance: no timing selected, "
-      "controller comparison NOT RUN, rule not relaxed.", True, INK, 12)]],
-    ARIAL, 12, margin=0.04, after=3, bullets=True, name="Calibration notes")
-box(s, 7.2, bottom + 0.08, 6.25, 0.3, [[("Run 23 Oct, after the capture; from simulation_split_calibration_v5_*.csv",
-                                False, MUTED, 10)]], ARIAL, 10, margin=0.02, after=0)
+    [("45 runs on the v6 calibrated plan, 5 matched seeds, 0 teleports (28 Oct 2026).", False, INK, 12)],
+    [("Surge −5.4 %, incident −4.7 % time loss; 190–194 more of 6,712 trips finish; same direction in every seed. "
+      "Routine peak: identical.", False, INK, 12)],
+    [("Simulated on a calibrated scenario testbed, not a real-world gain. The actuated controller is an uncalibrated "
+      "reference and is not ranked.", True, INK, 12)]],
+    ARIAL, 12, margin=0.04, after=3, bullets=True, name="Comparison notes")
+box(s, 7.2, bottom + 0.08, 6.25, 0.3, [[("Source: reports/experiments/simulation_metrics.csv (claims C44–C46)",
+                                         False, MUTED, 10)]], ARIAL, 10, margin=0.02, after=0)
 
 # ---------------------------------------------------------------- 22. results and outcomes (replaces the Gantt chart)
 s = S[21]
@@ -769,7 +765,7 @@ box(s, 0.55, 5.45, 6.6, 1.9, [
 stats = [("7–16 %", "lower MAE than persistence (seed 42 run)"),
          ("0.91 / 0.91 / 0.90", "coverage of the 90 % conformal intervals; 0.76–0.80 under congestion"),
          ("15–22 %", "lower MAE on forecasts the reliability gate keeps (≈26 % deferred)"),
-         ("24 / 24", "local-LLM responses schema-valid over two workflow passes (qwen2.5 7B)"),
+         ("36 / 36", "local-LLM responses schema-valid over three workflow passes (qwen2.5 7B)"),
          ("3 of 3 → 0 of 9", "advisories citing non-existent evidence, without vs with retrieval"),
          ("19", "workflow runs per pass: 7 pending human review, 5 rejected by safety checks, 7 deferred")]
 for k, (v, lab) in enumerate(stats):
@@ -779,8 +775,8 @@ for k, (v, lab) in enumerate(stats):
 box(s, 0.55, 7.05, 12.9, 0.5, [
     [("Also measured: ", True, NAVY, 12),
      ("removing the availability-aware gate raises MAE by 0.067 mph (95 % CI 0.048–0.086); removing operational weather features "
-      "lowers it by 0.046 mph (a negative result). No simulated controller gain is claimed: the SUMO testbed fails its own "
-      "baseline test (8.1 vs 10.95 mph after signal-split calibration).", False, INK, 12)]],
+      "lowers it by 0.046 mph (a negative result). Simulated SUMO testbed: forecast rule −5.4 % / −4.7 % time loss "
+      "(surge / incident) in all 5 seeds.", False, INK, 12)]],
     ARIAL, 12, margin=0.02, after=0)
 
 # ---------------------------------------------------------------- 23. results and outcomes: status, deliverables, next steps
@@ -789,22 +785,24 @@ set_title(s, "9. RESULTS & OUTCOMES (CONTD.)")
 drop(next(sh for sh in s.shapes if sh.name == "TextBox 2"))
 cols = [
     ("Implemented and verified", OK, [
-        "Real-data pipeline on NYC DOT speeds, 1 Jan – 20 Oct 2026, with provenance hashes",
+        "Real-data pipeline on NYC DOT speeds (1 Jan – 20 Oct 2026), provenance hashed",
         "Seven forecasting models on identical targets; three-seed study of the deep models; ablations",
-        "Conformal intervals, reliability gate and grouped SHAP on the trained model",
-        "FAISS retrieval over 15 approved documents; local LLM with schema validation",
+        "Conformal intervals, reliability gate, grouped SHAP",
+        "FAISS retrieval (15 documents); local LLM with schema checks",
         "LangGraph workflow with 13 deterministic safety checks",
+        "Calibrated SUMO testbed; 45-run controller comparison",
         "FastAPI, PostGIS jobs, Streamlit, MLflow, Docker Compose"]),
     ("Partial or not run", WARN, [
-        "SUMO controller comparison NOT RUN: signal-split calibration (v5, 23 Oct) reaches 8.1 of 10.95 mph; the first 45-run comparison is superseded",
-        "No real advisory has reached the simulation gate (the LLM chose monitor-only in both passes)",
+        "SUMO gains are simulated on a calibrated scenario testbed, not NYC DOT timing; the first 45-run comparison is superseded",
+        "LIVE observational mode is built but not yet run on the public feed",
+        "No real advisory has reached the simulation gate (the LLM chose monitor-only in all three passes)",
         "Only three seeds; the proposed model is not bit-reproducible on GPU at a fixed seed",
         "Road graph is sparse: 26 nodes, 16 edges",
         "Intervals under-cover congested periods"]),
     ("Outcomes and next steps", NAVY, [
         "IEEE conference paper (LaTeX and Word), every claim traced in the claims ledger",
         "GitHub repository with tests, runbooks and result files",
-        "Next: run preregistered protocol v6 (cycle × green × offsets, 75 runs; prepared, not run), then the comparison",
+        "Next: run LIVE mode on the public feed and score its saved forecasts",
         "Next: more seeds without the compute budget",
         "Next: paper submission"]),
 ]

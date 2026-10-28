@@ -292,14 +292,22 @@ elif page == "SUMO comparisons":
     claims_path = ROOT / "reports" / "verification" / "paper_claims.csv"
     claims = pd.read_csv(claims_path).fillna("") if claims_path.exists() else pd.DataFrame()
     superseded = set()
+    current = pd.DataFrame()
     if len(claims):
         sim = claims[claims["evidence_artifact"].str.contains("simulation", case=False)]
+        cid = sim["claim_id"].str.lstrip("C").astype(int)
         for _, c in sim[sim["status"] == "SUPERSEDED"].iterrows():
             superseded.update(p.strip() for p in c["evidence_artifact"].split(";"))
             st.error(f"**SUPERSEDED ({c['claim_id']})** {c['claim']}: {c['notes']}")
         not_run = sim[(sim["claim"] + " " + sim["notes"]).str.contains("NOT RUN")]
-        if len(not_run):
-            latest = not_run.loc[not_run["claim_id"].str.lstrip("C").astype(int).idxmax()]
+        last_not_run = cid[not_run.index].max() if len(not_run) else 0
+        # verified comparison claims registered after the last NOT RUN claim describe the runs now in the file
+        current = sim[(sim["status"] == "VERIFIED") & (cid > last_not_run)
+                      & sim["evidence_artifact"].str.contains("simulation_metrics.csv", regex=False)]
+        for _, c in current.iterrows():
+            st.info(f"**Controller comparison ({c['claim_id']})** {c['claim']}; {c['notes']}.")
+        if len(not_run) and not len(current):
+            latest = not_run.loc[cid[not_run.index].idxmax()]
             st.warning(f"**Controller comparison: NOT RUN.** ({latest['claim_id']}) {latest['claim']}; {latest['notes']}.")
     st.subheader("Testbed audit: preregistered demand-selection runs (fixed-time only)")
     # newest protocol first, by the latest run timestamp recorded in each sweep (file mtimes do not survive git)
@@ -316,8 +324,10 @@ elif page == "SUMO comparisons":
             st.dataframe(sw[cols], hide_index=True, use_container_width=True)
     sm = exp / "simulation_metrics.csv"
     rel = str(sm.relative_to(ROOT)).replace("\\", "/")
-    label = "SUPERSEDED: " if rel in superseded else ""
-    with st.expander(f"{label}first controller comparison ({rel})", expanded=not label):
+    label = "SUPERSEDED: " if rel in superseded and not len(current) else ""
+    title = (f"controller comparison, {', '.join(current['claim_id'])}" if len(current) else
+             f"{label}first controller comparison")
+    with st.expander(f"{title} ({rel})", expanded=not label):
         df = csv_or_state(sm)
         if df is not None:
             if label:
