@@ -300,8 +300,14 @@ speed, 15 weather and 14 311 pulls, nine forecast batches written), but the publ
 pulls, with one batch published, withdrawn and republished, so every batch withheld all 16 links (at most 5 of the 24
 lookback bins observed against the 12 required) and the one-hour collection was not started. The run is therefore NOT
 RUN, the withholding rule was not relaxed, and the feed's publication latency is itself an operational finding: on such
-a day the deployed system would have issued no forecast. Whatever a later run yields is a short window on one day, a
-check that the pipeline works on data that did not exist at training time, not a second test set.
+a day the deployed system would have issued no forecast. A second attempt on Thursday 29 October (12:29 to 17:38 New
+York time, 25 pulls, 24 batches) found the same: the newest record moved from 10:11 to 15:36 local time and the lag
+never fell below about 1\,h\,50\,min, so again no link reached the required history and the hour never started.
+Across the two afternoons the feed ran 1.7 to 4.3\,h behind real time; under the preregistered rule a live forecast is
+therefore not reachable with the feed as it currently publishes, and any alternative (an origin at the newest
+available bin with its data age displayed, or a shorter lookback) would be a new preregistered protocol rather than a
+relaxation applied after the fact. Whatever a later run yields is a short window on one day, a check that the pipeline
+works on data that did not exist at training time, not a second test set.
 
 \subsection{Runtime}
 Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs 5.7\,ms for the

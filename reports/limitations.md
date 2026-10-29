@@ -212,7 +212,12 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     forecast batches withheld all 16 links (at most 5 of the 24 lookback bins observed, 12 required) and the one-hour
     run was not started; NOT RUN, rule not relaxed, evidence in `artifacts/live/` and `data/raw/live/*/fetch_log.jsonl`.
     The feed's publication latency is therefore itself a finding: on such a day the operational system would have
-    withheld every forecast. Retry on a weekday afternoon when the feed is current (`docs/laptop_run.md` section 8).
+    withheld every forecast. A second attempt on Thursday 2026-10-29 (12:29-17:38 New York, 25 pulls, 24 batches) found
+    the same: the newest record moved 10:11 to 15:36 local time and the lag never fell below about 1 h 50 min, so again
+    no link reached 12 observed bins and the hour never started. Across both afternoons the feed ran 1.7-4.3 h behind
+    real time, so under the preregistered rule a live forecast is not reachable with this feed as it currently
+    publishes. The alternatives, an origin at the newest available bin with its data age displayed, or a shorter
+    lookback, would be a new preregistered protocol, not a relaxation applied after the fact; none has been adopted.
 28. **Workstation environment deviation from 2026-10-28.** Windows Application Control began blocking the unsigned
     compiled extensions `torch_scatter` and `torch_sparse` (WinError 4551, raised as OSError at import). They are not
     used by the project's models (GATv2 runs on PyG's built-in ops); only the PyG-Temporal package `__init__` imports

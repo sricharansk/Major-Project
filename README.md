@@ -127,9 +127,10 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
   5,919 vs 5,725; same direction in every seed, 0 teleports. The actuated controller runs on netconvert's own programs
   and is an uncalibrated reference only. **Simulated result, not a real-world gain.** The agent re-run on this testbed
   reproduced the 19 decisions (LLM still monitor-only, so no real advisory reached the gate). Live mode (section
-  above) is implemented and was attempted on 2026-10-28 (Wednesday afternoon, New York): the pipeline ran but the DOT
-  feed was never less than ~1 h 40 min behind, so every batch withheld all 16 links and the run is **NOT RUN** (evidence
-  in `artifacts/live/`; `reports/limitations.md` 16, 24, 27, 28; paper Tables "SUMO testbed", "protocol v6").
+  above) is implemented and was attempted on 2026-10-28 and 2026-10-29 (weekday afternoons, New York): the pipeline ran
+  both times but the DOT feed was 1.7-4.3 h behind real time, so every batch withheld all 16 links and the run is
+  **NOT RUN**; under the preregistered history rule a live forecast is not reachable at this latency (evidence in
+  `artifacts/live/`; `reports/limitations.md` 16, 24, 27, 28; paper Tables "SUMO testbed", "protocol v6").
 
 ## Honesty rules this repository follows
 

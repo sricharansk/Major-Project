@@ -592,3 +592,9 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   live subsection (Table `tab:live` stays NOT RUN), README and claim C49 record the attempt and why no forecast was
   issued; `paper/main.pdf` rebuilt (14 pages). Nothing was relaxed; the retry waits for a weekday afternoon with a
   current feed.
+
+### Milestone 16: second live-run attempt recorded (cloud container, 2026-10-29 22:00 UTC)
+- Workstation branch `claude/laptop-live` (1bead47) merged: 24 more batches, 25 pulls per source. `final_status.md`,
+  `reports/limitations.md` 27, the paper's live subsection, README and claim C50 record that both weekday-afternoon
+  attempts found the feed 1.7-4.3 h behind and that under the preregistered rule a live forecast is not reachable at
+  this latency; no alternative protocol adopted. `paper/main.pdf` rebuilt.
