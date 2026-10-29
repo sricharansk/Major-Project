@@ -1,0 +1,278 @@
+{
+  "mode": "LIVE",
+  "forecast_batch_id": "live-029a4f3043",
+  "origin_utc": "2026-10-29T17:25:00+00:00",
+  "generated_at_utc": "2026-10-29T17:27:09.525995+00:00",
+  "generated_before_first_target": true,
+  "model_version": "proposed-20261020T201110-0e333f",
+  "graph_hash": "d8c69a468b82cbda",
+  "feature_schema_hash": "1d63c3fe45a729be",
+  "speed_unit": "mph",
+  "lookback_steps": 24,
+  "window_steps": 42,
+  "horizon_minutes": [
+    15,
+    30,
+    60
+  ],
+  "sources": {
+    "speeds": {
+      "files": 6,
+      "rows": 1894,
+      "unique_records": 576,
+      "repeated_records": 544,
+      "revised_records": 0,
+      "valid_rows": 466,
+      "speed_zero_or_negative": 110,
+      "speed_above_max": 0,
+      "tz_unresolved": 0,
+      "duplicates_removed": 1318,
+      "latest_observation_utc": "2026-10-29 15:31:06+00:00"
+    },
+    "weather": {
+      "file": "data/raw/live/weather/forecast_20261029T172649Z.json.gz",
+      "kind_in_training": "historical_forecast",
+      "kind_live": "open-meteo forecast API (current issue)",
+      "available_at_origin": true
+    },
+    "sr311": {
+      "file": "data/raw/live/sr311/sr311_20261029T172649Z.json.gz",
+      "available_at_origin": true
+    }
+  },
+  "n_links": 16,
+  "n_forecast": 0,
+  "n_withheld": 16,
+  "n_eligible_for_advisory": 0,
+  "links": [
+    {
+      "link_id": "4329507",
+      "data_as_of_utc": "2026-10-29T15:35:00+00:00",
+      "data_age_minutes": 110.0,
+      "observed_steps_in_window": 2,
+      "input_missing_fraction": 0.7917,
+      "last_observed_speed_mph": 35.40999984741211,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "2 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4456450",
+      "data_as_of_utc": null,
+      "data_age_minutes": null,
+      "observed_steps_in_window": 0,
+      "input_missing_fraction": 1.0,
+      "last_observed_speed_mph": null,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "0 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4456452",
+      "data_as_of_utc": null,
+      "data_age_minutes": null,
+      "observed_steps_in_window": 0,
+      "input_missing_fraction": 1.0,
+      "last_observed_speed_mph": null,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "0 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4456494",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 17.389999389648438,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4456501",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 18.639999389648438,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4456502",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 18.639999389648438,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4456511",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 33.54999923706055,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4616328",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 13.670000076293945,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4616329",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 18.639999389648438,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4616332",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 31.68000030517578,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4616333",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 39.7599983215332,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4616339",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 13.670000076293945,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4616340",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 1.8600000143051147,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4616341",
+      "data_as_of_utc": null,
+      "data_age_minutes": null,
+      "observed_steps_in_window": 0,
+      "input_missing_fraction": 1.0,
+      "last_observed_speed_mph": null,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "0 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4616342",
+      "data_as_of_utc": "2026-10-29T15:30:00+00:00",
+      "data_age_minutes": 115.0,
+      "observed_steps_in_window": 1,
+      "input_missing_fraction": 0.8333,
+      "last_observed_speed_mph": 13.670000076293945,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "1 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4620298",
+      "data_as_of_utc": "2026-10-29T15:35:00+00:00",
+      "data_age_minutes": 110.0,
+      "observed_steps_in_window": 2,
+      "input_missing_fraction": 0.7917,
+      "last_observed_speed_mph": 32.93000030517578,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "2 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    }
+  ],
+  "warnings": [
+    "LIVE: forecasts from newly retrieved public records; scored only after their targets are observed",
+    "weather group uses the current Open-Meteo forecast where training used the archived historical forecast",
+    "no connection to any traffic signal"
+  ]
+}
