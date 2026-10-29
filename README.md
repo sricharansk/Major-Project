@@ -80,6 +80,7 @@ reproduce the earlier protocols.
 python -m smartcity.cli live pull        # newest records of the modelled links (+ weather forecast, 311), stored verbatim
 python -m smartcity.cli live forecast    # one LIVE batch for the latest complete 5-min bin, written before its targets
 python -m smartcity.cli live run --polls 12 --interval-s 300   # 1 h of batches, settle, score (reports/experiments/live_metrics.csv)
+python -m smartcity.cli live run --polls 24 --interval-s 300 --origin latest-available --settle-max-hours 4   # preregistered 2026-10-29
 ```
 
 Forecasts made from records that did not exist at training time, scored only once the target bin is observed
@@ -130,7 +131,10 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
   above) is implemented and was attempted on 2026-10-28 and 2026-10-29 (weekday afternoons, New York): the pipeline ran
   both times but the DOT feed was 1.7-4.3 h behind real time, so every batch withheld all 16 links and the run is
   **NOT RUN**; under the preregistered history rule a live forecast is not reachable at this latency (evidence in
-  `artifacts/live/`; `reports/limitations.md` 16, 24, 27, 28; paper Tables "SUMO testbed", "protocol v6").
+  `artifacts/live/`; `reports/limitations.md` 16, 24, 27, 28; paper Tables "SUMO testbed", "protocol v6"). A
+  latest-available origin (`live run --origin latest-available`: the newest published bin, data age recorded, targets
+  scored only when first retrieved after the forecast was written) was preregistered on 2026-10-29
+  (`docs/live_latest_available_protocol.md`) and is NOT RUN until the workstation runs it.
 
 ## Honesty rules this repository follows
 

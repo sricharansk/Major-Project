@@ -529,12 +529,16 @@ def live_pull(weather: bool = True, sr311: bool = True):
 
 
 @live_app.command("forecast")
-def live_forecast():
-    """LIVE: forecast the latest complete 5-minute bin from the pulled records and save it before any target time."""
+def live_forecast(origin: str = typer.Option(None, help="wall-clock (default from configs/data.yaml) or latest-available")):
+    """LIVE: forecast one 5-minute origin from the pulled records and save it before any target is published.
+
+    --origin wall-clock forecasts the latest complete bin of the clock; --origin latest-available (preregistered
+    2026-10-29, docs/live_latest_available_protocol.md) the newest bin the feed has published, with its data age."""
     from smartcity.live import pipeline
 
-    rec = pipeline.forecast()
-    typer.echo(f"LIVE origin {rec['origin_utc']}: {rec['n_forecast']} links forecast, {rec['n_withheld']} withheld, "
+    rec = pipeline.forecast(origin_mode=origin.replace("-", "_") if origin else None)
+    typer.echo(f"{rec.get('label', 'LIVE')} origin {rec['origin_utc']} (lag {rec.get('origin_lag_minutes')} min): "
+               f"{rec['n_forecast']} links forecast, {rec['n_withheld']} withheld, "
                f"{rec['n_eligible_for_advisory']} eligible for advisory; generated {rec['generated_at_utc']}"
                + (f" ({rec['note']})" if rec.get("note") else ""))
     for ln in rec["links"]:
@@ -559,16 +563,21 @@ def live_score():
 
 
 @live_app.command("run")
-def live_run(polls: int = 12, interval_s: int = 300, settle: bool = True):
+def live_run(polls: int = 12, interval_s: int = 300, settle: bool = True,
+             origin: str = typer.Option(None, help="wall-clock (default from configs/data.yaml) or latest-available"),
+             settle_max_hours: float = typer.Option(None, help="latest-available only: wall-clock cap on the settle phase")):
     """LIVE: pull -> forecast -> score every ``interval_s`` for ``polls`` rounds, then wait for the last targets and score.
 
-    Twelve polls at 5 min is a one-hour collection window; with --settle the command keeps pulling for another
-    75 min so the 60-minute targets of the last batch can be scored."""
+    Twelve polls at 5 min is a one-hour collection window; with --settle the command keeps pulling (every 5 min, or
+    every 10 min with a latest-available origin) until the last batch's 60-minute target has been published, capped
+    at --settle-max-hours of wall time for the latest-available origin."""
     from smartcity.live import pipeline
 
-    s = pipeline.run(polls, interval_s, settle)
-    typer.echo(f"LIVE run: status {s['status']}, {s.get('n_batches')} batches, {s.get('n_scored')} scored, "
-               f"{s.get('n_pending')} pending, {s.get('n_late')} late")
+    s = pipeline.run(polls, interval_s, settle, origin_mode=origin.replace("-", "_") if origin else None,
+                     settle_max_hours=settle_max_hours)
+    typer.echo(f"LIVE run ({', '.join(s.get('origin_modes', []))}): status {s['status']}, {s.get('n_batches')} batches, "
+               f"{s.get('n_scored')} scored, {s.get('n_pending')} pending, {s.get('n_late')} late, "
+               f"{s.get('n_published_before_issue')} published before issue; mean origin lag {s.get('mean_origin_lag_minutes')} min")
 
 
 @report_app.command("export")
