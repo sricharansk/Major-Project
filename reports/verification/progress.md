@@ -343,6 +343,23 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   `data/raw/live/*/fetch_log.jsonl` (15 speed, 15 weather, 14 311 pulls with request, status and sha256). To retry on
   another weekday afternoon when the feed is current (about 13:00-16:00 New York).
 
+### Workstation LIVE attempt 2 (2026-10-29 16:29-21:38 UTC, Thursday 12:29-17:38 New York): NOT_RUN, feed stale
+- Branch `claude/laptop-live` from main 3e4ea83 (contains attempt 1); `tests/unit/test_live.py` 8 passed.
+- At 16:29 UTC the newest i4gi-tjb9 record for the modelled links was 10:11 New York time (about 2 h 18 min old).
+- Watcher (trigger: at least one link forecast): 25 pulls, 16:31-21:28 UTC. Newest record per pull moved 10:11 ->
+  11:31 -> 12:01 -> 12:31 -> 14:06 -> 13:21 -> 15:36 New York time (it also stepped back, and one pull returned 0
+  rows), i.e. 2-2.5 h behind throughout. All 24 `live forecast` batches (`artifacts/live/forecasts/live-20261029T*`)
+  forecast 0 links and withheld all 16 (INSUFFICIENT_HISTORY); `live run` was not started; stopped at 21:38 UTC after
+  the planned window. The withholding rule was not relaxed.
+- Deviation: the workstation dozed between some pulls (the app's keep-awake hold lapsed while the session was idle), so
+  three gaps were 20-34 min instead of 10; a 4-min heartbeat kept it awake from 19:47 UTC.
+- Across both attempts the public feed ran about 1.7-4.3 h behind real time on weekday afternoons, while the live
+  forecaster needs at least 12 of the last 24 five-minute bins (about the last hour). Under the current rule a live
+  forecast is therefore not reachable with this feed's present latency; changing that (e.g. a different lookback or
+  an origin at the newest available bin with its age shown) would be a new, preregistered decision for the authors.
+- Result: LIVE observational run NOT_RUN on 2026-10-29; `live_metrics.csv` not produced; Table `tab:live` stays NOT
+  RUN. Evidence: `artifacts/live/` and `data/raw/live/*/fetch_log.jsonl`.
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
@@ -425,6 +442,7 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   LaTeX: the superseded 2026-10-20 comparison still cited Table~\ref{tab:sim}, which now holds the corrected runs;
   `main.pdf` rebuilt (13 pages). Word paper: 11 A4 pages in LibreOffice.
 - Rebuilt on 7052433 (2026-10-28): the live-run paragraph records the stale-feed attempt (NOT RUN), as in LaTeX.
+- Rebuilt on aef5f83 (2026-10-29): the live-run paragraph adds the second stale-feed attempt (NOT RUN), as in LaTeX.
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
@@ -575,3 +593,9 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   live subsection (Table `tab:live` stays NOT RUN), README and claim C49 record the attempt and why no forecast was
   issued; `paper/main.pdf` rebuilt (14 pages). Nothing was relaxed; the retry waits for a weekday afternoon with a
   current feed.
+
+### Milestone 16: second live-run attempt recorded (cloud container, 2026-10-29 22:00 UTC)
+- Workstation branch `claude/laptop-live` (1bead47) merged: 24 more batches, 25 pulls per source. `final_status.md`,
+  `reports/limitations.md` 27, the paper's live subsection, README and claim C50 record that both weekday-afternoon
+  attempts found the feed 1.7-4.3 h behind and that under the preregistered rule a live forecast is not reachable at
+  this latency; no alternative protocol adopted. `paper/main.pdf` rebuilt.

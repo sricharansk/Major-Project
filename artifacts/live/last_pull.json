@@ -1,12 +1,12 @@
 {
-  "retrieved_at_utc": "2026-10-28T21:51:54.753065+00:00",
+  "retrieved_at_utc": "2026-10-29T21:28:24.672889+00:00",
   "files": {
-    "speeds": "data/raw/live/speeds/speeds_20261028T215154Z.json.gz",
-    "weather": "data/raw/live/weather/forecast_20261028T215154Z.json.gz",
-    "sr311": "data/raw/live/sr311/sr311_20261028T215154Z.json.gz"
+    "speeds": "data/raw/live/speeds/speeds_20261029T212824Z.json.gz",
+    "weather": "data/raw/live/weather/forecast_20261029T212824Z.json.gz",
+    "sr311": "data/raw/live/sr311/sr311_20261029T212824Z.json.gz"
   },
   "errors": {},
-  "speeds_rows": 336,
-  "speeds_latest_data_as_of_local": "2026-10-28T15:36:03.000",
-  "sr311_rows": 96
+  "speeds_rows": 402,
+  "speeds_latest_data_as_of_local": "2026-10-29T15:36:05.000",
+  "sr311_rows": 106
 }
