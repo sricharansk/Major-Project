@@ -42,3 +42,10 @@ live:
   window_steps: 42            # feature rows built per poll (lookback 24 + 18 margin for the 1 h rolling mean and ffill)
   min_observed_steps: 12      # a link is forecast only when at least this many of the 24 lookback bins were observed
   weather_point: {lat: 40.7549, lon: -73.9840}   # same point as the training weather download
+  # Origin mode.  wall_clock: the latest complete bin of the clock (a feed lag above ~1 h withholds every link; seen
+  # on 2026-10-28/29).  latest_available: preregistered 2026-10-29 (docs/live_latest_available_protocol.md): the
+  # newest bin the feed has published, same lookback rule, data age recorded, scored only when the target bin was
+  # first retrieved after the forecast was written.  The CLI --origin flag overrides this key for one command.
+  origin_mode: wall_clock
+  max_origin_lag_hours: 6.0   # latest_available: how far back a pulled bin may be used as the origin
+  settle_max_hours: 4.0       # latest_available: wall-clock cap on the settle phase of `live run`

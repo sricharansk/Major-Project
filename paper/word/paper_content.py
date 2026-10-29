@@ -575,7 +575,14 @@ BODY = [
           "Across the two afternoons the feed ran 1.7 to 4.3 h behind real time; under the preregistered rule a "
           "live forecast is therefore not reachable with the feed as it currently publishes, and any alternative "
           "(an origin at the newest available bin with its data age displayed, or a shorter lookback) would be a "
-          "new preregistered protocol rather than a relaxation applied after the fact. Whatever a later run yields "
+          "new preregistered protocol rather than a relaxation applied after the fact. Following those two "
+          "attempts, the latest-available variant was preregistered on 29 October 2026 "
+          "(`docs/live_latest_available_protocol.md`): the origin becomes the newest bin the feed has published, "
+          "the lookback rule, model, intervals and scoring are unchanged, the data age at issue is stored on every "
+          "forecast, and a target is scored only when the retrieval log shows its bin was first pulled after the "
+          "forecast was written. Its outcome, if it runs, is a forecast of bins the feed had not yet published, "
+          "with a stated data age of one to several hours, and is reported as such; it is NOT RUN at the time of "
+          "writing. Whatever a later run yields "
           "is a short window on one day, a check that the pipeline works on data that did not exist at training "
           "time, not a second test set."),
     ("table", "live"),

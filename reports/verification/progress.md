@@ -443,6 +443,7 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   `main.pdf` rebuilt (13 pages). Word paper: 11 A4 pages in LibreOffice.
 - Rebuilt on 7052433 (2026-10-28): the live-run paragraph records the stale-feed attempt (NOT RUN), as in LaTeX.
 - Rebuilt on aef5f83 (2026-10-29): the live-run paragraph adds the second stale-feed attempt (NOT RUN), as in LaTeX.
+- Rebuilt on 952c6e0 (2026-10-29): the live-run paragraph adds the preregistered latest-available origin (NOT RUN).
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
@@ -599,3 +600,15 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   `reports/limitations.md` 27, the paper's live subsection, README and claim C50 record that both weekday-afternoon
   attempts found the feed 1.7-4.3 h behind and that under the preregistered rule a live forecast is not reachable at
   this latency; no alternative protocol adopted. `paper/main.pdf` rebuilt.
+
+### Milestone 17: latest-available live protocol preregistered (cloud container, 2026-10-29 22:40 UTC)
+- Owner's decision after the two stale-feed attempts. `docs/live_latest_available_protocol.md` fixes the origin rule
+  (newest published bin), the unchanged lookback rule and scoring, the data-age fields, the publication-time leakage
+  guard (`first_seen_map` from the pull logs; `PUBLISHED_BEFORE_ISSUE` exclusion), the run plan (24 polls x 5 min,
+  settle until the last 60-min target is published or 4 h) and the outcome rule (OK / PARTIAL / NOT_RUN), before any
+  run. Implemented in `src/smartcity/live/pipeline.py` (`origin_mode`, `latest_available_origin`, `first_seen_map`,
+  scoring and run loop), `cli live forecast/run --origin`, `configs/data.yaml` `live.origin_mode`, the dashboard
+  "Live monitoring" page (origin mode, data age at issue, warning) and the paper caption of Table `tab:live`;
+  `tests/unit/test_live.py` grows from 8 to 13 (origin selection, first-seen map, publication-time scoring,
+  unknown-mode rejection, stale-feed end-to-end with the stub model). NOT RUN until the workstation runs section 9
+  of `docs/laptop_run.md`; claim C51.

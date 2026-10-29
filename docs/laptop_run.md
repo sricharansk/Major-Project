@@ -208,3 +208,30 @@ result, not an error.
 Hand back: `git add artifacts/live reports/experiments/live_metrics.csv reports/verification paper/tables data/raw/live/*/fetch_log.jsonl`
 (the raw pull bodies stay ignored; their hashes are in the fetch logs), commit with the usual trailers,
 `git push -u origin claude/laptop-live`, and post the branch name in the thread.
+
+## 9. Follow-up 2026-10-29: LIVE run with a latest-available origin (preregistered protocol)
+
+Two wall-clock attempts (section 8, 28 and 29 Oct) found the public feed 1.7-4.3 h behind on weekday afternoons, so
+every link was withheld. The owner chose the preregistered latest-available protocol
+(`docs/live_latest_available_protocol.md`): same model, features, lookback rule and scoring; the origin is the newest
+bin the feed has published, its data age is recorded on every forecast, and a target is scored only when its bin was
+first retrieved after the forecast was written. The wall-clock attempts stay recorded as NOT RUN.
+
+```powershell
+cd "C:\Users\S.K. Sricharan\Downloads\MAJOR PROJECT - FINAL YEAR\PROJECT\repo"
+git fetch origin && git checkout -B claude/laptop-live origin/main
+.\.venv\Scripts\Activate.ps1
+python -m pytest -q tests/unit/test_live.py
+python -m smartcity.cli live pull
+python -m smartcity.cli live forecast --origin latest-available      # should forecast links with a data age of 1-4 h
+python -m smartcity.cli live run --polls 24 --interval-s 300 --origin latest-available --settle-max-hours 4
+python -m smartcity.cli report export
+python -m smartcity.cli paper sync
+```
+
+Any weekday between about 12:00 and 18:00 New York time; keep the machine awake and online (a keep-awake heartbeat,
+as on 29 Oct) for the two-hour window plus up to four hours of settling: the settle phase stops early as soon as the
+feed publishes the last batch's 60-minute target. A poll that finds no newer published bin writes no new batch; that
+is expected. Hand back as in section 8, and report the `live_summary.json` status (OK / PARTIAL / NOT_RUN), the number
+of batches, the mean data age at issue and the number of rows excluded as published before issue.
+

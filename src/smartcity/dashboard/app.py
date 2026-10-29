@@ -153,21 +153,33 @@ elif page == "Live monitoring":
     origin = dt.datetime.fromisoformat(rec["origin_utc"])
     gen = dt.datetime.fromisoformat(rec["generated_at_utc"])
     now = dt.datetime.now(dt.timezone.utc)
-    c = st.columns(5)
-    c[0].metric("Latest origin (UTC)", origin.strftime("%Y-%m-%d %H:%M"))
-    c[1].metric("Generated (UTC)", gen.strftime("%H:%M:%S"), f"{(gen - origin).total_seconds():.0f} s after origin")
-    c[2].metric("Age of latest batch", f"{(now - origin).total_seconds() / 60:.0f} min")
-    c[3].metric("Links forecast / withheld", f"{rec['n_forecast']} / {rec['n_withheld']}")
-    c[4].metric("Eligible for advisory", rec["n_eligible_for_advisory"])
+    omode = rec.get("origin_mode", "wall_clock")
+    if omode == "latest_available":
+        st.warning(f"{rec.get('label')}: the origin is the newest bin the public feed had published, "
+                   f"{rec.get('origin_lag_minutes')} min old when the forecast was written; "
+                   f"{rec.get('n_targets_in_past_at_issue')} of {len(rec['horizon_minutes'])} target times already lay in "
+                   "the past on the wall clock. Forecasts concern bins the feed had not yet published and are scored only "
+                   "when the target bin was first retrieved after the forecast was written (preregistered 2026-10-29).")
+    c = st.columns(6)
+    c[0].metric("Origin mode", omode.replace("_", " "))
+    c[1].metric("Latest origin (UTC)", origin.strftime("%Y-%m-%d %H:%M"))
+    c[2].metric("Data age at issue", f"{rec.get('origin_lag_minutes', (gen - origin).total_seconds() / 60):.0f} min",
+                f"generated {gen.strftime('%H:%M:%S')} UTC")
+    c[3].metric("Age of latest batch now", f"{(now - origin).total_seconds() / 60:.0f} min")
+    c[4].metric("Links forecast / withheld", f"{rec['n_forecast']} / {rec['n_withheld']}")
+    c[5].metric("Eligible for advisory", rec["n_eligible_for_advisory"])
     src = rec["sources"]
-    st.caption(f"Sources: {src['speeds'].get('rows')} speed rows from {len(src['speeds'].get('files', []))} pull(s), "
+    _files = src["speeds"].get("files", [])
+    n_pulls = len(_files) if isinstance(_files, list) else _files   # older batches stored the count under this key
+    st.caption(f"Sources: {src['speeds'].get('rows')} speed rows from {n_pulls} pull(s), "
                f"latest observation {src['speeds'].get('latest_observation_utc')}; weather forecast "
                f"{'available' if src['weather'].get('available_at_origin') else 'unavailable'}; 311 "
                f"{'available' if src['sr311'].get('available_at_origin') else 'unavailable'}; model {rec['model_version']}")
     rows = []
     for ln in rec["links"]:
         r = {"link_id": ln["link_id"], "status": ln["status"], "data_as_of_utc": ln.get("data_as_of_utc"),
-             "age_min": ln.get("data_age_minutes"), "observed_bins": ln.get("observed_steps_in_window"),
+             "age_at_origin_min": ln.get("data_age_minutes"), "age_at_issue_min": ln.get("issue_lag_minutes"),
+             "observed_bins": ln.get("observed_steps_in_window"),
              "last_observed_mph": ln.get("last_observed_speed_mph"), "eligible": ln.get("eligible_for_advisory")}
         for h in ln.get("horizons", []):
             r[f"{h['horizon_minutes']} min"] = round(h["displayed_speed_mph"], 1)
@@ -180,7 +192,9 @@ elif page == "Live monitoring":
         st.subheader("Scored so far")
         st.caption(f"Status {summ['status']}: {summ.get('n_batches')} batches from {summ.get('first_origin_utc')} to "
                    f"{summ.get('last_origin_utc')}; {summ.get('n_scored')} scored, {summ.get('n_pending')} pending, "
-                   f"{summ.get('n_late')} late (excluded), {summ.get('n_withheld')} withheld; scored at {summ.get('scored_at_utc')}")
+                   f"{summ.get('n_late')} late (excluded), {summ.get('n_published_before_issue', 0)} published before issue "
+                   f"(excluded), {summ.get('n_withheld')} withheld; origin modes {', '.join(summ.get('origin_modes', []))}; "
+                   f"mean data age at issue {summ.get('mean_origin_lag_minutes')} min; scored at {summ.get('scored_at_utc')}")
         mdf = pd.DataFrame(summ.get("metrics_by_horizon", []))
         if len(mdf):
             st.dataframe(mdf, hide_index=True, use_container_width=True)

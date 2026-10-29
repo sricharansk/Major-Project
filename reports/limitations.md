@@ -217,7 +217,12 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     no link reached 12 observed bins and the hour never started. Across both afternoons the feed ran 1.7-4.3 h behind
     real time, so under the preregistered rule a live forecast is not reachable with this feed as it currently
     publishes. The alternatives, an origin at the newest available bin with its data age displayed, or a shorter
-    lookback, would be a new preregistered protocol, not a relaxation applied after the fact; none has been adopted.
+    lookback, would be a new preregistered protocol, not a relaxation applied after the fact. On 2026-10-29 the owner
+    chose the first of these, preregistered as `docs/live_latest_available_protocol.md` before any run: the origin is
+    the newest published bin, the lookback rule, model and scoring are unchanged, the data age at issue is recorded on
+    every forecast, and a target is scored only when the pull log shows its bin was first retrieved after the forecast
+    was written. Its result, when it exists, is a forecast of bins the feed had not yet published, with a stated data
+    age of one to several hours; it is not a real-time forecast, and the wall-clock protocol stays NOT RUN.
 28. **Workstation environment deviation from 2026-10-28.** Windows Application Control began blocking the unsigned
     compiled extensions `torch_scatter` and `torch_sparse` (WinError 4551, raised as OSError at import). They are not
     used by the project's models (GATv2 runs on PyG's built-in ops); only the PyG-Temporal package `__init__` imports

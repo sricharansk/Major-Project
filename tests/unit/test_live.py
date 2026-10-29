@@ -242,3 +242,127 @@ def test_forecast_and_score_end_to_end_with_a_stub_model(tmp_path, monkeypatch):
     m = {x["horizon_minutes"]: x for x in s["metrics_by_horizon"]}
     assert m[15]["mae_mph"] == pytest.approx(1.5) and m[15]["coverage"] == 1.0 and m[60]["n_pending"] == 1
     assert (tmp_path / "experiments" / "live_metrics.csv").exists() and (tmp_path / "live" / "scored.csv").exists()
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# latest-available origin (preregistered 2026-10-29)
+# ---------------------------------------------------------------------------------------------------------------
+
+def test_latest_available_origin_is_the_newest_published_bin():
+    origin = dt.datetime(2026, 10, 29, 14, 0, tzinfo=UTC)
+    grid = _grid(origin, {2: 11.0, 5: 12.0})          # L0 observed in bins +10 and +25 min; L1 never
+    assert lp.latest_available_origin(grid, ["L0", "L1"]) == origin + dt.timedelta(minutes=25)
+    assert lp.latest_available_origin(grid, ["L1"]) is None
+    assert lp.latest_available_origin(None, ["L0"]) is None
+
+
+def test_first_seen_map_records_the_first_retrieval_of_each_bin(tmp_path):
+    base = {"id": "1", "travel_time": "100", "status": "0", "borough": "Manhattan", "link_name": "x", "owner": "DOT"}
+    a = [dict(base, link_id="L0", data_as_of="2026-10-29T10:02:00.000", speed="12.0")]   # local 10:02 EDT -> bin 14:05 UTC
+    b = [dict(base, link_id="L0", data_as_of="2026-10-29T10:02:00.000", speed="12.0"),   # repeat
+         dict(base, link_id="L0", data_as_of="2026-10-29T10:07:00.000", speed="13.0")]   # new bin 14:10 UTC
+    _write_pull(tmp_path / "speeds_20261029T160000Z.json.gz", a)
+    _write_pull(tmp_path / "speeds_20261029T163000Z.json.gz", b)
+    seen = lp.first_seen_map(["L0"], sorted(tmp_path.glob("*.json.gz")))
+    t1 = int(dt.datetime(2026, 10, 29, 14, 5, tzinfo=UTC).timestamp())
+    t2 = int(dt.datetime(2026, 10, 29, 14, 10, tzinfo=UTC).timestamp())
+    assert seen[("L0", t1)] == dt.datetime(2026, 10, 29, 16, 0, tzinfo=UTC)
+    assert seen[("L0", t2)] == dt.datetime(2026, 10, 29, 16, 30, tzinfo=UTC)
+
+
+def test_latest_available_scoring_uses_publication_time_not_the_wall_clock():
+    origin = dt.datetime(2026, 10, 29, 14, 0, tzinfo=UTC)
+    gen = origin + dt.timedelta(hours=2)                      # written two hours after the origin (feed lag)
+    rec = _record(origin, gen)
+    rec.update(origin_mode="latest_available", origin_lag_minutes=120.0)
+    grid = _grid(origin, {3: 11.5, 6: 12.0, 12: 13.0})
+    t = lambda m: int((origin + dt.timedelta(minutes=m)).timestamp())  # noqa: E731
+    first_seen = {("L0", t(15)): gen + dt.timedelta(minutes=20),      # published after issue -> scored
+                  ("L0", t(30)): gen - dt.timedelta(minutes=1)}       # was already retrievable at issue -> excluded
+    rows = lp.score_records([rec], grid, origin + dt.timedelta(minutes=65), first_seen)
+    st = {r["horizon_minutes"]: r for r in rows if r["horizon_minutes"]}
+    assert st[15]["status"] == "SCORED" and st[15]["target_in_past_at_issue"] is True
+    assert st[15]["target_first_seen_utc"] == (gen + dt.timedelta(minutes=20)).isoformat()
+    assert st[30]["status"] == "PUBLISHED_BEFORE_ISSUE"
+    assert st[60]["status"] == "PUBLISHED_BEFORE_ISSUE" and "no retrieval record" in st[60]["reason"]
+    m = {x["horizon_minutes"]: x for x in lp.metrics_by_horizon(rows, [15, 30, 60])}
+    assert m[15]["n_scored"] == 1 and m[15]["n_target_in_past_at_issue"] == 1 and m[15]["mean_origin_lag_minutes"] == 120.0
+    assert m[30]["n_published_before_issue"] == 1 and m[30]["n_scored"] == 0 and m[15]["n_late"] == 0
+    # a wall-clock batch keeps the LATE rule and also honours the publication check
+    wc = _record(origin, origin + dt.timedelta(seconds=40))
+    rows = lp.score_records([wc], grid, origin + dt.timedelta(minutes=65),
+                            {("L0", t(15)): origin + dt.timedelta(seconds=10)})
+    st = {r["horizon_minutes"]: r["status"] for r in rows if r["horizon_minutes"]}
+    assert st == {15: "PUBLISHED_BEFORE_ISSUE", 30: "SCORED", 60: "SCORED"}
+
+
+def test_forecast_rejects_an_unknown_origin_mode(monkeypatch):
+    from smartcity.api import service
+
+    monkeypatch.setattr(service, "loaded", lambda: (_StubData(_meta(1)), _StubModel(), {}, {"proposed_run_id": "s"}))
+    with pytest.raises(ValueError, match="origin_mode"):
+        lp.forecast(dt.datetime(2026, 10, 29, 18, 0, tzinfo=UTC), origin_mode="newest")
+
+
+def test_latest_available_end_to_end_with_a_stale_feed(tmp_path, monkeypatch):
+    """The feed is two hours behind: the wall-clock origin would withhold every link; the latest-available origin
+    forecasts the unpublished bins, and scoring proves each target was retrieved only after the forecast."""
+    from smartcity.api import service
+
+    meta = _meta(2)
+    cal = {"alpha": 0.1, "q_by_horizon_mph": {"15": 2.0, "30": 3.0, "60": 4.0}, "n_calibration": {"15": 500, "30": 500, "60": 500},
+           "gate_config": {"max_interval_width_mph": None, "max_input_missing_fraction": 0.34, "max_data_age_minutes": 20,
+                           "min_calibration_samples": 200}}
+    monkeypatch.setattr(service, "loaded", lambda: (_StubData(meta), _StubModel(), cal, {"proposed_run_id": "stub-run"}))
+    monkeypatch.setattr(lp, "ART", tmp_path / "live")
+    monkeypatch.setattr(lp, "FORECASTS", tmp_path / "live" / "forecasts")
+    monkeypatch.setattr(lp, "EXP", tmp_path / "experiments")
+    raw = tmp_path / "raw"
+    monkeypatch.setattr(lp, "raw_live", lambda source: (raw / source).mkdir(parents=True, exist_ok=True) or raw / source)
+
+    now = dt.datetime(2026, 10, 29, 18, 7, tzinfo=UTC)
+    newest = dt.datetime(2026, 10, 29, 16, 2, tzinfo=UTC)         # feed 2 h behind: newest record 16:02 -> bin 16:05
+    base = {"id": "1", "travel_time": "100", "status": "0", "borough": "Manhattan", "link_name": "x", "owner": "DOT"}
+    loc = lambda t: t.astimezone(lp.NYC).replace(tzinfo=None).strftime("%Y-%m-%dT%H:%M:%S.000")  # noqa: E731
+    rows = [dict(base, link_id="L0", data_as_of=loc(newest - dt.timedelta(minutes=5 * k)), speed=str(18 + (k % 3)))
+            for k in range(40)]
+    rows.append(dict(base, link_id="L1", data_as_of=loc(newest), speed="25"))
+    (raw / "speeds").mkdir(parents=True, exist_ok=True)
+    _write_pull(raw / "speeds" / f"speeds_{now:%Y%m%dT%H%M%SZ}.json.gz", rows)
+    monkeypatch.setattr(lp, "utcnow", lambda: now + dt.timedelta(seconds=20))
+
+    wall = lp.forecast(now, origin_mode="wall_clock")
+    assert wall["origin_utc"] == "2026-10-29T18:05:00+00:00" and wall["n_forecast"] == 0 and wall["n_withheld"] == 2
+
+    rec = lp.forecast(now, origin_mode="latest_available")
+    assert rec["origin_mode"] == "latest_available" and rec["origin_utc"] == "2026-10-29T16:05:00+00:00"
+    assert rec["origin_lag_minutes"] == pytest.approx(122.3, abs=0.1) and "data age 122 min" in rec["label"]
+    assert rec["latest_published_bin_utc"] == "2026-10-29T16:05:00+00:00"
+    assert rec["generated_before_first_target"] is False and rec["generated_before_first_target_published"] is True
+    assert rec["n_targets_in_past_at_issue"] == 3 and rec["n_forecast"] == 1 and rec["n_withheld"] == 1
+    l0 = rec["links"][0]
+    assert l0["status"] == "FORECAST" and l0["data_age_minutes"] == 0.0 and l0["issue_lag_minutes"] == pytest.approx(122.3, abs=0.1)
+    assert l0["horizons"][0]["target_utc"] == "2026-10-29T16:20:00+00:00"
+    assert any("latest-available origin" in w for w in rec["warnings"])
+    assert lp.forecast(now + dt.timedelta(seconds=30), origin_mode="latest_available").get("note", "").startswith("already")
+
+    s = lp.score(now)
+    assert s["status"] == "PARTIAL" and s["n_pending"] == 3 and s["origin_modes"] == ["latest_available", "wall_clock"]
+
+    later = now + dt.timedelta(minutes=40)                        # the feed now publishes the 16:20 and 16:35 bins
+    obs = [dict(base, link_id="L0", data_as_of=loc(t), speed="21.0")
+           for t in (dt.datetime(2026, 10, 29, 16, 17, tzinfo=UTC), dt.datetime(2026, 10, 29, 16, 33, tzinfo=UTC))]
+    _write_pull(raw / "speeds" / f"speeds_{later:%Y%m%dT%H%M%SZ}.json.gz", obs)
+    s = lp.score(later)
+    assert s["status"] == "OK" and s["n_scored"] == 2 and s["n_pending"] == 1 and s["n_late"] == 0
+    assert s["n_published_before_issue"] == 0 and s["n_scored_target_in_past_at_issue"] == 2
+    assert s["generated_before_first_target_published_all"] is True
+    assert s["mean_origin_lag_minutes"] == pytest.approx(62.3, abs=0.1)   # mean over both batches: 122.3 and 2.3 min
+    assert s["max_origin_lag_minutes"] == pytest.approx(122.3, abs=0.1)
+    m = {x["horizon_minutes"]: x for x in s["metrics_by_horizon"]}
+    assert m[15]["mae_mph"] == pytest.approx(1.5) and m[15]["coverage"] == 1.0 and m[60]["n_pending"] == 1
+    import csv as _csv
+    scored = list(_csv.DictReader(open(tmp_path / "live" / "scored.csv", encoding="utf-8")))
+    row15 = next(r for r in scored if r["origin_mode"] == "latest_available" and r["horizon_minutes"] == "15")
+    assert row15["status"] == "SCORED" and row15["target_first_seen_utc"] == later.isoformat()
+    assert row15["target_in_past_at_issue"] == "True"

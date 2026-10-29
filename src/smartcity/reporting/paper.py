@@ -296,12 +296,21 @@ def live_table():
     summ = json.loads(summ_p.read_text())
     if not summ.get("n_scored"):
         return _write("live.tex", not_run(cap + " (forecasts saved, no target observed yet)", "tab:live"))
+    la = "latest_available" in (summ.get("origin_modes") or [])
+    origin_txt = ("the origin of each batch was the newest bin the feed had published, on average "
+                  f"{_f(summ.get('mean_origin_lag_minutes'), 0)}\\,min (at most {_f(summ.get('max_origin_lag_minutes'), 0)}\\,min) "
+                  "old when the forecast was written (latest-available protocol preregistered on 29 October 2026); every "
+                  "forecast was written before its target bin was published and scored only when that bin was first "
+                  f"retrieved afterwards ({summ.get('n_published_before_issue', 0)} rows excluded as published before issue; "
+                  f"{summ.get('n_scored_target_in_past_at_issue', 0)} scored targets already lay in the past on the wall clock)"
+                  if la else
+                  "every forecast was written before its target time and scored only after the target bin was observed")
     head = ("\\begin{table}[t]\\centering\\caption{" + cap + ". The frozen model was run on records pulled from the public "
             f"speed feed between {_esc(summ['first_origin_utc'][:16])} and {_esc(summ['last_origin_utc'][:16])} UTC "
-            f"({summ['n_batches']} five-minute batches, {summ['n_links']} links); every forecast was written before its "
-            "target time and scored only after the target bin was observed. Persistence is the last observed speed at the "
-            f"origin. Pending targets ({summ.get('n_pending', 0)}) and late forecasts ({summ.get('n_late', 0)}) are not scored. "
-            "A short window on one weekday, not a second test set.}\\label{tab:live}\\small")
+            f"({summ['n_batches']} five-minute batches, {summ['n_links']} links); {origin_txt}. Persistence is the last "
+            f"observed speed at the origin. Pending targets ({summ.get('n_pending', 0)}) and late forecasts "
+            f"({summ.get('n_late', 0)}) are not scored. A short window on one weekday, not a second test set.}}"
+            "\\label{tab:live}\\small")
     lines = [head, "\\begin{tabular}{rrrrrr}\\toprule Horizon (min) & Scored & MAE (mph) & Persistence MAE & "
                    "Coverage & Width (mph) \\\\ \\midrule"]
     for r in rows:
