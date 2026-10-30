@@ -285,6 +285,32 @@ def split_calibration_v6_table():
     _write("split_calibration_v6.tex", "\n".join(lines))
 
 
+def _live_batches(summ):
+    """Batch count for the tab:live caption: the batches that produced forecasts, by origin mode, separated from the
+    batches in which every link was withheld (the forecast log is the source when the summary lacks the counts)."""
+    log = R / "artifacts" / "live" / "forecast_log.jsonl"
+    recs = [json.loads(line) for line in log.read_text().splitlines() if line.strip()] if log.exists() else []
+    if not recs:
+        return f"{summ['n_batches']} five-minute batches"
+    by_mode = {}
+    for r in recs:
+        m = r.get("origin_mode", "wall_clock")
+        d = by_mode.setdefault(m, {"n": 0, "fc": 0, "days": set()})
+        d["n"] += 1
+        d["fc"] += bool(r.get("n_forecast"))
+        d["days"].add(r["origin_utc"][:10])
+    parts = []
+    for m, d in by_mode.items():
+        name = "latest-available" if m == "latest_available" else "wall-clock"
+        days = ", ".join(sorted(d["days"]))
+        if d["fc"] == 0:
+            parts.append(f"{d['n']} {name} batches on {days} in which every link was withheld for insufficient history")
+        else:
+            parts.append(f"{d['fc']} {name} batches on {days} that produced forecasts"
+                         + (f" plus {d['n'] - d['fc']} that withheld every link" if d["n"] > d["fc"] else ""))
+    return f"{len(recs)} five-minute batches: " + "; ".join(parts)
+
+
 def live_table():
     """LIVE observational run: per-horizon error, coverage and persistence of forecasts made from records pulled after
     training and scored once their targets were observed; NOT RUN placeholder until the workstation runs it."""
@@ -297,7 +323,8 @@ def live_table():
     if not summ.get("n_scored"):
         return _write("live.tex", not_run(cap + " (forecasts saved, no target observed yet)", "tab:live"))
     la = "latest_available" in (summ.get("origin_modes") or [])
-    origin_txt = ("the origin of each batch was the newest bin the feed had published, on average "
+    batches = _live_batches(summ)
+    origin_txt = ("the origin of each latest-available batch was the newest bin the feed had published, on average "
                   f"{_f(summ.get('mean_origin_lag_minutes'), 0)}\\,min (at most {_f(summ.get('max_origin_lag_minutes'), 0)}\\,min) "
                   "old when the forecast was written (latest-available protocol preregistered on 29 October 2026); every "
                   "forecast was written before its target bin was published and scored only when that bin was first "
@@ -307,7 +334,7 @@ def live_table():
                   "every forecast was written before its target time and scored only after the target bin was observed")
     head = ("\\begin{table}[t]\\centering\\caption{" + cap + ". The frozen model was run on records pulled from the public "
             f"speed feed between {_esc(summ['first_origin_utc'][:16])} and {_esc(summ['last_origin_utc'][:16])} UTC "
-            f"({summ['n_batches']} five-minute batches, {summ['n_links']} links); {origin_txt}. Persistence is the last "
+            f"({summ['n_links']} links; {batches}); {origin_txt}. Persistence is the last "
             f"observed speed at the origin. Pending targets ({summ.get('n_pending', 0)}) and late forecasts "
             f"({summ.get('n_late', 0)}) are not scored. A short window on one weekday, not a second test set.}}"
             "\\label{tab:live}\\small")

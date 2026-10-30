@@ -629,3 +629,14 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   `tests/unit/test_live.py` grows from 8 to 13 (origin selection, first-seen map, publication-time scoring,
   unknown-mode rejection, stale-feed end-to-end with the stub model). NOT RUN until the workstation runs section 9
   of `docs/laptop_run.md`; claim C51.
+
+### Milestone 18: latest-available live run integrated (cloud container, 2026-10-30 20:00 UTC)
+- Workstation branch `claude/laptop-live` (c84ac5f, on main 05a28ed) merged into the work branch unchanged: run
+  artifacts, `live_metrics.csv`, evidence registry (LIVE-01 VERIFIED), workstation run note above. Status OK, 117
+  scored, data age 114 min mean (148 max), 0 excluded by the publication-time guard.
+- Cloud edits: Table `tab:live` caption now separates the 3 latest-available batches that produced the forecasts from
+  the 33 all-withheld wall-clock batches of 28-29 Oct (`_live_batches` in `reporting/paper.py`, from the forecast
+  log; the summary of future runs also carries `n_batches_by_origin_mode` and `n_batches_with_forecasts`); results
+  live subsection, conclusion, README, limitation 27, `final_status.md`, claims C48, C51 updated and C52 added;
+  `paper/main.pdf` rebuilt. Wall-clock protocol stays NOT RUN. Reported as a forecast at the feed's latency with its
+  data age, never as real-time; one afternoon, not a second test set.

@@ -617,6 +617,9 @@ def score(now: dt.datetime | None = None) -> dict:
     summ = {"mode": MODE, "origin_modes": modes, "status": "OK" if n_scored else "PARTIAL",
             "reason": "" if n_scored else "forecasts saved; no target observed yet",
             "scored_at_utc": now.isoformat(), "n_batches": len(records),
+            "n_batches_by_origin_mode": {m: sum(r.get("origin_mode", "wall_clock") == m for r in records)
+                                         for m in modes},
+            "n_batches_with_forecasts": sum(bool(r.get("n_forecast")) for r in records),
             "first_origin_utc": records[0]["origin_utc"], "last_origin_utc": records[-1]["origin_utc"],
             "generated_before_first_target_all": all(r.get("generated_before_first_target") for r in records),
             "generated_before_first_target_published_all": all(r.get("generated_before_first_target_published", True)
