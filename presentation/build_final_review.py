@@ -1,4 +1,4 @@
-"""Fill the VIT final-review template (assets/final_review_template_25_slides.pptx) with the project's verified content."""
+"""Fill the VIT final-review template (assets/final_review_template_26_slides.pptx) with the project's verified content."""
 import copy
 import io
 import sys
@@ -633,15 +633,16 @@ box(s, 7.2, 4.95, 6.3, 2.4, [
 
 # ---------------------------------------------------------------- 17-21. outcome: the working dashboard (screenshots)
 MODE_COLOUR = {"REPLAY": RGBColor(0xC2, 0x5E, 0x00), "SIMULATION": RGBColor(0x6A, 0x3F, 0xA0), "LIVE": OK}
-LAPTOP_CROP = {"forecast_laptop": (340, 95, 1560, 945), "traffic_map_laptop": (340, 95, 1560, 775)}  # sidebar, toolbar
+CROP = {"forecast_laptop": (340, 95, 1560, 945), "traffic_map_laptop": (340, 95, 1560, 775),  # sidebar, toolbar
+        "live": (0, 0, 1770, 690), "live_scored": (0, 675, 1770, 1225)}  # page head; forecast-vs-observed chart
 
 
 def shot(slide, x, y, w, name, page, mode):
     """One dashboard screenshot with its page name and the mode label the page itself shows."""
     src = DASH / f"{name}.png"
     img = Image.open(src)
-    if name in LAPTOP_CROP:
-        img = img.crop(LAPTOP_CROP[name])
+    if name in CROP:
+        img = img.crop(CROP[name])
         src = io.BytesIO()
         img.save(src, "PNG")
         src.seek(0)
@@ -660,11 +661,10 @@ def shot(slide, x, y, w, name, page, mode):
 
 
 DASH_NOTE = ("Screenshots of the project's Streamlit dashboard (src/smartcity/dashboard/app.py) captured on 28 Oct 2026; every "
-             "number on them is read from committed result files. LIVE mode is built but not yet run, so no LIVE view "
-             "is shown.")
+             "number on them is read from committed result files. The LIVE page, run on 30 Oct 2026, is on slide 23.")
 LAPTOP_NOTE = ("Captured on 23 Oct 2026 on the training laptop, which holds the trained model and the processed NYC DOT data. "
                "The forecast is a REPLAY of the held-out test period (origin 20 Oct 2026, 90 % conformal intervals); "
-               "no LIVE view is shown.")
+               "the LIVE page is on slide 23.")
 pages = [
     (("forecast_laptop", "Multi-horizon forecast (proposed model)", "REPLAY"),
      ("traffic_map_laptop", "Traffic map: monitored links", "REPLAY"), LAPTOP_NOTE),
@@ -779,8 +779,54 @@ box(s, 0.55, 7.05, 12.9, 0.5, [
       "(surge / incident) in all 5 seeds.", False, INK, 12)]],
     ARIAL, 12, margin=0.02, after=0)
 
-# ---------------------------------------------------------------- 23. results and outcomes: status, deliverables, next steps
+# ---------------------------------------------------------------- 23. results and outcomes: LIVE check
 s = S[22]
+set_title(s, "9. RESULTS & OUTCOMES: LIVE CHECK")
+drop(next(sh for sh in s.shapes if sh.name == "TextBox 2"))
+bottom = shot(s, 0.55, 1.7, 6.25, "live", "Live monitoring", "LIVE")
+shot(s, 0.55, bottom + 0.05, 6.25, "live_scored", "Forecasts vs later observations", "LIVE")
+box(s, 7.2, 1.7, 6.25, 0.36, [[("Scored LIVE forecasts, 30 Oct 2026", True, NAVY, 14),
+                              ("   Mode: ", False, MUTED, 12), ("LIVE", True, MODE_COLOUR["LIVE"], 12)]],
+    ARIAL, 14, margin=0.02, after=0, anchor=MSO_ANCHOR.BOTTOM)
+lv = [("Horizon", "MAE (mph)", "Persistence", "90 % coverage", "Width (mph)"),
+      ("15 min", "3.62", "4.25", "0.90", "21.9"),
+      ("30 min", "5.50", "6.17", "0.87", "24.9"),
+      ("60 min", "5.25", "5.59", "0.92", "27.3"),
+      ("Eligible links", "3.96 / 5.14 / 4.65", "", "", "")]
+gt = s.shapes.add_table(len(lv), 5, Inches(7.2), Inches(2.12), Inches(6.25), Inches(1.9))
+gt.name = "LIVE scores"
+tbl = gt.table
+for ci, wv in enumerate((1.6, 1.2, 1.2, 1.2, 1.05)):
+    tbl.columns[ci].width = Inches(wv)
+tbl.cell(4, 1).merge(tbl.cell(4, 4))
+for ri, row in enumerate(lv):
+    for ci, val in enumerate(row):
+        cell = tbl.cell(ri, ci)
+        if ri == 4 and ci > 1:
+            continue
+        fill(cell.text_frame, [[(val, ri == 0, WHITE if ri == 0 else INK, 12)]], ARIAL, 12,
+             align=PP_ALIGN.LEFT if ci == 0 else PP_ALIGN.CENTER, after=0)
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = NAVY if ri == 0 else (TINT if ri % 2 else WHITE)
+        cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+box(s, 7.2, 4.3, 6.25, 1.15, [
+    [("117 forecasts scored (39 per horizon), 0 pending, 0 late; lower MAE than persistence at all three horizons. "
+      "Eligible-links row: n = 30 per horizon.", False, INK, 12)],
+    [("3 origins: 13:40, 14:55, 16:05 UTC; data age at issue 148 / 89 / 104 min (mean 114); 13 of 16 links each, "
+      "3 withheld for missing recent records.", False, INK, 12)]],
+    ARIAL, 12, margin=0.04, after=3, bullets=True, name="LIVE facts")
+box(s, 7.2, 5.5, 6.25, 1.5, [
+    [("A forecast at the feed's own latency of bins it had not yet published, with its data age; not a real-time "
+      "forecast.", True, INK, 12)],
+    [("One afternoon, three origins, not a second test set.", True, INK, 12)],
+    [("The wall-clock protocol stays NOT RUN: on 28 and 29 Oct the feed ran 1.7–4.3 h behind and every link was "
+      "withheld.", True, INK, 12)]],
+    ARIAL, 12, margin=0.04, after=3, bullets=True, name="LIVE caveats")
+box(s, 7.2, 7.02, 6.25, 0.3, [[("Source: reports/experiments/live_metrics.csv, artifacts/live/scored.csv (claims C50–C52)",
+                               False, MUTED, 10)]], ARIAL, 10, margin=0.02, after=0)
+
+# ---------------------------------------------------------------- 24. results and outcomes: status, deliverables, next steps
+s = S[23]
 set_title(s, "9. RESULTS & OUTCOMES (CONTD.)")
 drop(next(sh for sh in s.shapes if sh.name == "TextBox 2"))
 cols = [
@@ -794,7 +840,7 @@ cols = [
         "FastAPI, PostGIS jobs, Streamlit, MLflow, Docker Compose"]),
     ("Partial or not run", WARN, [
         "SUMO gains are simulated on a calibrated scenario testbed, not NYC DOT timing; the first 45-run comparison is superseded",
-        "LIVE observational mode is built but not yet run on the public feed",
+        "LIVE: one afternoon at the feed's ~2 h latency; the wall-clock protocol stayed NOT RUN (feed 1.7–4.3 h behind)",
         "No real advisory has reached the simulation gate (the LLM chose monitor-only in all three passes)",
         "Only three seeds; the proposed model is not bit-reproducible on GPU at a fixed seed",
         "Road graph is sparse: 26 nodes, 16 edges",
@@ -802,7 +848,7 @@ cols = [
     ("Outcomes and next steps", NAVY, [
         "IEEE conference paper (LaTeX and Word), every claim traced in the claims ledger",
         "GitHub repository with tests, runbooks and result files",
-        "Next: run LIVE mode on the public feed and score its saved forecasts",
+        "Next: repeat the LIVE run over more days; wall-clock forecasts need a fresher feed",
         "Next: more seeds without the compute budget",
         "Next: paper submission"]),
 ]
@@ -813,8 +859,8 @@ for k, (head, colr, items) in enumerate(cols):
     box(s, cx, 2.45, 4.1, 4.9, [[(t, False, INK, 14)] for t in items], ARIAL, 14, bg=TINT,
         shape=MSO_SHAPE.ROUNDED_RECTANGLE, margin=0.15, after=7, bullets=True, name=head)
 
-# ---------------------------------------------------------------- 24. references (IEEE)
-s = S[23]
+# ---------------------------------------------------------------- 25. references (IEEE)
+s = S[24]
 set_title(s, "REFERENCES")
 box(s, 0.6, 1.95, 12.8, 5.35, [[(REF[i], False, INK, 14)] for i in range(1, 13)], TNR, 14, margin=0.04, after=5)
 

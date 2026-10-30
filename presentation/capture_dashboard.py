@@ -19,7 +19,8 @@ OUT = Path(__file__).resolve().parent / "assets" / "dashboard"
 JOBS = [("Overview & status", "overview", None), ("Data audit & provenance", "data_audit", None),
         ("Experiment results", "experiments", None), ("Uncertainty & reliability", "uncertainty", "coverage_by_horizon.csv"),
         ("Explainability", "explainability", None), ("Agent trace & advisory", "agent", None),
-        ("SUMO comparisons", "sumo", None)]
+        ("SUMO comparisons", "sumo", None), ("Live monitoring", "live", None),
+        ("Live monitoring", "live_scored", "Scored so far")]
 
 OUT.mkdir(parents=True, exist_ok=True)
 with sync_playwright() as p, tempfile.TemporaryDirectory() as tmp:

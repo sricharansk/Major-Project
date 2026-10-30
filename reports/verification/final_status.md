@@ -1,6 +1,6 @@
 # Final status
 
-Last updated: 2026-10-30 20:00 UTC (latest-available LIVE run completed on the workstation on 2026-10-30, status OK, 117 forecasts scored at a data age of about two hours; the two wall-clock attempts of 2026-10-28 and 2026-10-29 stay NOT RUN; protocol v6 calibration and the corrected controller comparison ran on 2026-10-26 and 2026-10-28; see `progress.md` Milestones 13-18 and the workstation LIVE sections). Earlier
+Last updated: 2026-10-30 20:00 UTC (latest-available LIVE run completed on the workstation on 2026-10-30, status OK, 117 forecasts scored at a data age of about two hours; the two wall-clock attempts of 2026-10-28 and 2026-10-29 stay NOT RUN; protocol v6 calibration and the corrected controller comparison ran on 2026-10-26 and 2026-10-28; see `progress.md` Milestones 13-18 and the workstation LIVE sections; deck slide 23 added (PR #37)). Earlier
 baseline: 2026-10-21 02:55 UTC after the real-data run on the workstation, the SUMO testbed audits and the final-review deck. Statuses follow `progress.md`; evidence paths are in
 this repository unless marked "workstation".
 
@@ -26,7 +26,7 @@ this repository unless marked "workstation".
 | MLflow tracking + export | VERIFIED | `reports/verification/mlflow_runs.json` (workstation export) | |
 | Docker packaging | VERIFIED (workstation) | `reports/verification/docker_smoke.json` | compose build OK, 3 images 4.67 GB; the development container cannot build images |
 | Paper | VERIFIED (draft complete) | `paper/main.pdf` (14 pages, rebuilt 2026-10-30), `paper/tables/*.tex`, `reports/verification/paper_claims.csv` (C01-C52) | every results/discussion/limitations/conclusion statement written from artifacts; 26/26 references CHECKED; author block confirmed (student first, guide second) |
-| Final review presentation | VERIFIED | `presentation/Final_Review_S_K_Sricharan_25MML1010.pptx` (25 slides, VIT template) and PDF | built from committed result files by `presentation/build_final_review.py`; section 9 is results and outcomes with the three-seed table (no Gantt chart); slides 17-21 are dashboard screenshots (REPLAY/SIMULATION; forecast and traffic map captured on the workstation 2026-10-23, the rest in the development container 2026-10-28) plus the corrected 45-run comparison chart (SIMULATION, calibrated scenario testbed); LIVE mode not shown (NOT RUN) |
+| Final review presentation | VERIFIED | `presentation/Final_Review_S_K_Sricharan_25MML1010.pptx` (26 slides, VIT template) and PDF | built from committed result files by `presentation/build_final_review.py`; section 9 is results and outcomes with the three-seed table (no Gantt chart); slides 17-21 are dashboard screenshots (REPLAY/SIMULATION; forecast and traffic map captured on the workstation 2026-10-23, the rest in the development container 2026-10-28) plus the corrected 45-run comparison chart (SIMULATION, calibrated scenario testbed); slide 23 shows the 30 Oct latest-available LIVE run (Live monitoring page, LIVE label; claims C50-C52); the wall-clock protocol stays NOT RUN |
 
 Open items (need the authors or the workstation):
 1. Paper: author block confirmed by the student on 2026-10-21 (S K Sricharan; Dr. R. Srinivasa Perumal, guide). The
