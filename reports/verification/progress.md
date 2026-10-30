@@ -461,6 +461,8 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Rebuilt on 7052433 (2026-10-28): the live-run paragraph records the stale-feed attempt (NOT RUN), as in LaTeX.
 - Rebuilt on aef5f83 (2026-10-29): the live-run paragraph adds the second stale-feed attempt (NOT RUN), as in LaTeX.
 - Rebuilt on 952c6e0 (2026-10-29): the live-run paragraph adds the preregistered latest-available origin (NOT RUN).
+- Rebuilt on b1e773b (2026-10-30): latest-available live result (3 origins, 117 scored) in the live paragraph, Table XII
+  from `paper/tables/live.tex` and the future-work line, as in LaTeX. Word paper: 12 A4 pages in LibreOffice.
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
