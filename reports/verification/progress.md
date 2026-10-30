@@ -360,6 +360,23 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Result: LIVE observational run NOT_RUN on 2026-10-29; `live_metrics.csv` not produced; Table `tab:live` stays NOT
   RUN. Evidence: `artifacts/live/` and `data/raw/live/*/fetch_log.jsonl`.
 
+### Workstation LIVE run, latest-available origin (2026-10-30 16:06-19:15 UTC, Friday 12:06-15:15 New York): OK
+- Branch `claude/laptop-live` from main 05a28ed; `docs/laptop_run.md` section 9; `tests/unit/test_live.py` 13 passed.
+- `live pull`: 288 speed rows, newest record 09:36 New York time; `live forecast --origin latest-available`: origin
+  13:40 UTC, data age 148 min, 13 of 16 links forecast (3 with no recent data withheld), 10 advisory-eligible.
+- `live run --polls 24 --interval-s 300 --origin latest-available --settle-max-hours 4`: exit 0. The feed published new
+  bins only twice during the 24 polls (origins 14:55 UTC, lag 89 min; 16:05 UTC, lag 104 min); other polls found no
+  newer bin (several returned 0 rows) and wrote no batch, as specified. Settle phase ended at 19:14 UTC once the bin
+  after the last 60-minute target (17:25 UTC) was published.
+- `live_summary.json`: status OK; 3 latest-available batches with forecasts (36 batches in the LIVE log including the
+  33 all-withheld wall-clock batches of 28-29 Oct); 117 scored, 0 pending, 0 late, 0 rows published before issue; mean
+  data age at issue 113.6 min (max 148.1). Every forecast was written before its target bin was published; all 117
+  targets already lay in the past on the wall clock at issue (feed latency about 2 h).
+- `reports/experiments/live_metrics.csv` (n = 39 per horizon): MAE 3.62 / 5.50 / 5.25 mph at 15/30/60 min vs persistence
+  4.25 / 6.17 / 5.59; 90% interval coverage 0.897 / 0.872 / 0.923, mean width 21.9 / 24.9 / 27.3 mph. Small sample (3
+  origins, one weekday afternoon): not a second test set. `report export`, `paper sync` exit 0; Table `tab:live`
+  generated from these files.
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
@@ -444,6 +461,8 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Rebuilt on 7052433 (2026-10-28): the live-run paragraph records the stale-feed attempt (NOT RUN), as in LaTeX.
 - Rebuilt on aef5f83 (2026-10-29): the live-run paragraph adds the second stale-feed attempt (NOT RUN), as in LaTeX.
 - Rebuilt on 952c6e0 (2026-10-29): the live-run paragraph adds the preregistered latest-available origin (NOT RUN).
+- Rebuilt on b1e773b (2026-10-30): latest-available live result (3 origins, 117 scored) in the live paragraph, Table XII
+  from `paper/tables/live.tex` and the future-work line, as in LaTeX. Word paper: 12 A4 pages in LibreOffice.
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
@@ -612,3 +631,14 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   `tests/unit/test_live.py` grows from 8 to 13 (origin selection, first-seen map, publication-time scoring,
   unknown-mode rejection, stale-feed end-to-end with the stub model). NOT RUN until the workstation runs section 9
   of `docs/laptop_run.md`; claim C51.
+
+### Milestone 18: latest-available live run integrated (cloud container, 2026-10-30 20:00 UTC)
+- Workstation branch `claude/laptop-live` (c84ac5f, on main 05a28ed) merged into the work branch unchanged: run
+  artifacts, `live_metrics.csv`, evidence registry (LIVE-01 VERIFIED), workstation run note above. Status OK, 117
+  scored, data age 114 min mean (148 max), 0 excluded by the publication-time guard.
+- Cloud edits: Table `tab:live` caption now separates the 3 latest-available batches that produced the forecasts from
+  the 33 all-withheld wall-clock batches of 28-29 Oct (`_live_batches` in `reporting/paper.py`, from the forecast
+  log; the summary of future runs also carries `n_batches_by_origin_mode` and `n_batches_with_forecasts`); results
+  live subsection, conclusion, README, limitation 27, `final_status.md`, claims C48, C51 updated and C52 added;
+  `paper/main.pdf` rebuilt. Wall-clock protocol stays NOT RUN. Reported as a forecast at the feed's latency with its
+  data age, never as real-time; one afternoon, not a second test set.

@@ -222,7 +222,13 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     the newest published bin, the lookback rule, model and scoring are unchanged, the data age at issue is recorded on
     every forecast, and a target is scored only when the pull log shows its bin was first retrieved after the forecast
     was written. Its result, when it exists, is a forecast of bins the feed had not yet published, with a stated data
-    age of one to several hours; it is not a real-time forecast, and the wall-clock protocol stays NOT RUN.
+    age of one to several hours; it is not a real-time forecast, and the wall-clock protocol stays NOT RUN. The
+    latest-available run took place on Friday 2026-10-30 (12:06-15:15 New York, branch `claude/laptop-live`): the feed
+    published new bins only twice in two hours, so 3 batches were issued (origins 13:40, 14:55, 16:05 UTC; data age
+    148, 89, 104 min), 13 of 16 links each; 117 forecasts scored, 0 pending, 0 late, 0 excluded by the publication-time
+    guard, all 117 targets already in the past on the wall clock at issue. MAE 3.62 / 5.50 / 5.25 mph at 15/30/60 min vs
+    persistence 4.25 / 6.17 / 5.59; coverage 0.897 / 0.872 / 0.923. Three origins on one afternoon: a check that the
+    pipeline works on data that did not exist at training time, reported with its data age, never as real-time.
 28. **Workstation environment deviation from 2026-10-28.** Windows Application Control began blocking the unsigned
     compiled extensions `torch_scatter` and `torch_sparse` (WinError 4551, raised as OSError at import). They are not
     used by the project's models (GATv2 runs on PyG's built-in ops); only the PyG-Temporal package `__init__` imports

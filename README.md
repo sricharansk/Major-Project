@@ -80,7 +80,7 @@ reproduce the earlier protocols.
 python -m smartcity.cli live pull        # newest records of the modelled links (+ weather forecast, 311), stored verbatim
 python -m smartcity.cli live forecast    # one LIVE batch for the latest complete 5-min bin, written before its targets
 python -m smartcity.cli live run --polls 12 --interval-s 300   # 1 h of batches, settle, score (reports/experiments/live_metrics.csv)
-python -m smartcity.cli live run --polls 24 --interval-s 300 --origin latest-available --settle-max-hours 4   # preregistered 2026-10-29
+python -m smartcity.cli live run --polls 24 --interval-s 300 --origin latest-available --settle-max-hours 4   # preregistered 2026-10-29, run 2026-10-30
 ```
 
 Forecasts made from records that did not exist at training time, scored only once the target bin is observed
@@ -134,7 +134,11 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
   `artifacts/live/`; `reports/limitations.md` 16, 24, 27, 28; paper Tables "SUMO testbed", "protocol v6"). A
   latest-available origin (`live run --origin latest-available`: the newest published bin, data age recorded, targets
   scored only when first retrieved after the forecast was written) was preregistered on 2026-10-29
-  (`docs/live_latest_available_protocol.md`) and is NOT RUN until the workstation runs it.
+  (`docs/live_latest_available_protocol.md`) and **RUN on 2026-10-30** (Friday 12:06-15:15 New York): 3 batches
+  (origins 13:40, 14:55, 16:05 UTC, data age 148/89/104 min), 13 of 16 links each, 117 forecasts scored, 0 excluded by
+  the publication-time guard; MAE 3.62 / 5.50 / 5.25 mph at 15/30/60 min vs persistence 4.25 / 6.17 / 5.59, coverage
+  0.897 / 0.872 / 0.923 (`reports/experiments/live_metrics.csv`, `artifacts/live/live_summary.json`). A forecast at the
+  feed's own latency of bins it had not yet published, **not real-time**; one afternoon, not a second test set.
 
 ## Honesty rules this repository follows
 

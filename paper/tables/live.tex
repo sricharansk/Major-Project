@@ -1,2 +1,6 @@
-\begin{table}[t]\centering\caption{Live observational run (LIVE)}\label{tab:live}
-\begin{tabular}{c}\toprule NOT RUN \\ \bottomrule\end{tabular}\end{table}
+\begin{table}[t]\centering\caption{Live observational run (LIVE). The frozen model was run on records pulled from the public speed feed between 2026-10-28T19:50 and 2026-10-30T16:05 UTC (16 links; 36 five-minute batches: 33 wall-clock batches on 2026-10-28, 2026-10-29 in which every link was withheld for insufficient history; 3 latest-available batches on 2026-10-30 that produced forecasts); the origin of each latest-available batch was the newest bin the feed had published, on average 114\,min (at most 148\,min) old when the forecast was written (latest-available protocol preregistered on 29 October 2026); every forecast was written before its target bin was published and scored only when that bin was first retrieved afterwards (0 rows excluded as published before issue; 117 scored targets already lay in the past on the wall clock). Persistence is the last observed speed at the origin. Pending targets (0) and late forecasts (0) are not scored. A short window on one weekday, not a second test set.}\label{tab:live}\small
+\begin{tabular}{rrrrrr}\toprule Horizon (min) & Scored & MAE (mph) & Persistence MAE & Coverage & Width (mph) \\ \midrule
+15 & 39 & 3.62 & 4.25 & 0.897 & 21.9 \\
+30 & 39 & 5.50 & 6.17 & 0.872 & 24.9 \\
+60 & 39 & 5.25 & 5.59 & 0.923 & 27.3 \\
+\bottomrule\end{tabular}\end{table}

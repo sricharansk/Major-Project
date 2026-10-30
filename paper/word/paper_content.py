@@ -580,11 +580,21 @@ BODY = [
           "(`docs/live_latest_available_protocol.md`): the origin becomes the newest bin the feed has published, "
           "the lookback rule, model, intervals and scoring are unchanged, the data age at issue is stored on every "
           "forecast, and a target is scored only when the retrieval log shows its bin was first pulled after the "
-          "forecast was written. Its outcome, if it runs, is a forecast of bins the feed had not yet published, "
-          "with a stated data age of one to several hours, and is reported as such; it is NOT RUN at the time of "
-          "writing. Whatever a later run yields "
-          "is a short window on one day, a check that the pipeline works on data that did not exist at training "
-          "time, not a second test set."),
+          "forecast was written. It was run on Friday 30 October 2026 between 12:06 and 15:15 New York time "
+          "(branch `claude/laptop-live`, 24 polls at five-minute intervals, then a settle phase until the bin after "
+          "the last 60-minute target was published). The feed published new bins only twice during the two hours, "
+          "so three batches were written, with origins 13:40, 14:55 and 16:05 UTC that were 148, 89 and 104 min "
+          "old when the forecast was issued (mean 114 min); each batch forecast 13 of the 16 links and withheld "
+          "three that had no recent record. All 117 forecasts were scored (0 pending, 0 late) and none was "
+          "excluded by the publication-time guard: every forecast was written before its target bin was "
+          "published, although, because of the feed’s latency, every target had already occurred on the wall "
+          "clock. On these newly published records ({T:live}, *n* = 39 per horizon) the frozen model’s MAE was "
+          "3.62, 5.50 and 5.25 mph at 15, 30 and 60 min against persistence at 4.25, 6.17 and 5.59 mph, with 90% "
+          "interval coverage of 0.897, 0.872 and 0.923 (widths 22 to 27 mph); on the 30 advisory-eligible rows per "
+          "horizon the MAE was 3.96, 5.14 and 4.65 mph. This is a forecast at the feed’s own latency, of bins the "
+          "feed had not yet released, reported with its data age and not as a real-time prediction; three origins "
+          "on one afternoon are a check that the pipeline works on data that did not exist at training time, not "
+          "a second test set, and the wall-clock protocol remains NOT RUN."),
     ("table", "live"),
     ("h2", "Runtime"),
     ("p", "Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs "
@@ -745,7 +755,8 @@ BODY = [
           "that is not a real-world gain."),
     ("p", "Future work, in the order the evidence suggests, is training with more seeds and without the compute budget, "
           "congestion-conditional calibration, a denser sensor network on which the spatial layer can matter, a "
-          "testbed with side-street demand, NYC DOT timing plans and pedestrians, the live observational run, and "
+          "testbed with side-street demand, NYC DOT timing plans and pedestrians, a longer live observational "
+          "window (the one afternoon run beat persistence at every horizon at a data age of about two hours), and "
           "an externally reviewed retrieval benchmark."),
 ]
 
