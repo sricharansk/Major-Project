@@ -1,12 +1,9 @@
 {
-  "retrieved_at_utc": "2026-10-29T21:28:24.672889+00:00",
+  "retrieved_at_utc": "2026-10-30T19:14:20.199346+00:00",
   "files": {
-    "speeds": "data/raw/live/speeds/speeds_20261029T212824Z.json.gz",
-    "weather": "data/raw/live/weather/forecast_20261029T212824Z.json.gz",
-    "sr311": "data/raw/live/sr311/sr311_20261029T212824Z.json.gz"
+    "speeds": "data/raw/live/speeds/speeds_20261030T191420Z.json.gz"
   },
   "errors": {},
   "speeds_rows": 402,
-  "speeds_latest_data_as_of_local": "2026-10-29T15:36:05.000",
-  "sr311_rows": 106
+  "speeds_latest_data_as_of_local": "2026-10-30T13:21:06.000"
 }

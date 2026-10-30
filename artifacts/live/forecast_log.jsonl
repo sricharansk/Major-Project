@@ -31,3 +31,6 @@
 {"origin_utc": "2026-10-29T21:05:00+00:00", "generated_at_utc": "2026-10-29T21:07:15.887513+00:00", "file": "artifacts/live/forecasts/live-20261029T2105Z.json", "n_forecast": 0, "n_withheld": 16}
 {"origin_utc": "2026-10-29T21:15:00+00:00", "generated_at_utc": "2026-10-29T21:18:03.911623+00:00", "file": "artifacts/live/forecasts/live-20261029T2115Z.json", "n_forecast": 0, "n_withheld": 16}
 {"origin_utc": "2026-10-29T21:25:00+00:00", "generated_at_utc": "2026-10-29T21:28:46.592358+00:00", "file": "artifacts/live/forecasts/live-20261029T2125Z.json", "n_forecast": 0, "n_withheld": 16}
+{"origin_utc": "2026-10-30T13:40:00+00:00", "generated_at_utc": "2026-10-30T16:08:07.494100+00:00", "origin_mode": "latest_available", "origin_lag_minutes": 148.1, "file": "artifacts/live/forecasts/live-20261030T1340Z.json", "n_forecast": 13, "n_withheld": 3}
+{"origin_utc": "2026-10-30T14:55:00+00:00", "generated_at_utc": "2026-10-30T16:23:54.216290+00:00", "origin_mode": "latest_available", "origin_lag_minutes": 88.9, "file": "artifacts/live/forecasts/live-20261030T1455Z.json", "n_forecast": 13, "n_withheld": 3}
+{"origin_utc": "2026-10-30T16:05:00+00:00", "generated_at_utc": "2026-10-30T17:48:43.799166+00:00", "origin_mode": "latest_available", "origin_lag_minutes": 103.7, "file": "artifacts/live/forecasts/live-20261030T1605Z.json", "n_forecast": 13, "n_withheld": 3}

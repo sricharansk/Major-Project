@@ -1,0 +1,675 @@
+{
+  "mode": "LIVE",
+  "origin_mode": "latest_available",
+  "label": "LIVE (latest-available origin, data age 104 min at issue)",
+  "forecast_batch_id": "live-43ad6f6c8f",
+  "origin_utc": "2026-10-30T16:05:00+00:00",
+  "generated_at_utc": "2026-10-30T17:48:43.799166+00:00",
+  "origin_lag_minutes": 103.7,
+  "latest_published_bin_utc": "2026-10-30T16:05:00+00:00",
+  "generated_before_first_target": false,
+  "generated_before_first_target_published": true,
+  "n_targets_in_past_at_issue": 3,
+  "model_version": "proposed-20261020T201110-0e333f",
+  "graph_hash": "d8c69a468b82cbda",
+  "feature_schema_hash": "1d63c3fe45a729be",
+  "speed_unit": "mph",
+  "lookback_steps": 24,
+  "window_steps": 42,
+  "horizon_minutes": [
+    15,
+    30,
+    60
+  ],
+  "sources": {
+    "speeds": {
+      "files": [
+        "data/raw/live/speeds/speeds_20261030T160745Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T160838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T161338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T161838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T162338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T162838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T163338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T163838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T164338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T164838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T165338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T165838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T170338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T170838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T171338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T171838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T172338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T172838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T173338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T173838Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T174338Z.json.gz",
+        "data/raw/live/speeds/speeds_20261030T174838Z.json.gz"
+      ],
+      "rows": 3608,
+      "unique_records": 752,
+      "repeated_records": 514,
+      "revised_records": 0,
+      "valid_rows": 610,
+      "speed_zero_or_negative": 142,
+      "speed_above_max": 0,
+      "tz_unresolved": 0,
+      "duplicates_removed": 2856,
+      "latest_observation_utc": "2026-10-30 16:01:04+00:00",
+      "n_files": 22
+    },
+    "weather": {
+      "file": "data/raw/live/weather/forecast_20261030T174838Z.json.gz",
+      "kind_in_training": "historical_forecast",
+      "kind_live": "open-meteo forecast API (current issue)",
+      "available_at_origin": true
+    },
+    "sr311": {
+      "file": "data/raw/live/sr311/sr311_20261030T174838Z.json.gz",
+      "available_at_origin": false
+    }
+  },
+  "n_links": 16,
+  "n_forecast": 13,
+  "n_withheld": 3,
+  "n_eligible_for_advisory": 10,
+  "links": [
+    {
+      "link_id": "4329507",
+      "data_as_of_utc": "2026-10-30T16:05:00+00:00",
+      "data_age_minutes": 0.0,
+      "issue_lag_minutes": 103.7,
+      "observed_steps_in_window": 24,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 26.709999084472656,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 28.41213035583496,
+          "displayed_speed_mph": 28.41213035583496,
+          "lower_mph": 22.175823211669922,
+          "upper_mph": 34.6484375,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 28.511051177978516,
+          "displayed_speed_mph": 28.511051177978516,
+          "lower_mph": 20.455814361572266,
+          "upper_mph": 36.566287994384766,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 29.147998809814453,
+          "displayed_speed_mph": 29.147998809814453,
+          "lower_mph": 19.524150848388672,
+          "upper_mph": 38.771846771240234,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4456450",
+      "data_as_of_utc": null,
+      "data_age_minutes": null,
+      "issue_lag_minutes": null,
+      "observed_steps_in_window": 0,
+      "input_missing_fraction": 1.0,
+      "last_observed_speed_mph": null,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "0 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4456452",
+      "data_as_of_utc": null,
+      "data_age_minutes": null,
+      "issue_lag_minutes": null,
+      "observed_steps_in_window": 0,
+      "input_missing_fraction": 1.0,
+      "last_observed_speed_mph": null,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "0 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4456494",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 12.420000076293945,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 13.601333618164062,
+          "displayed_speed_mph": 13.601333618164062,
+          "lower_mph": 6.539377212524414,
+          "upper_mph": 20.66329002380371,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 13.453120231628418,
+          "displayed_speed_mph": 13.453120231628418,
+          "lower_mph": 5.139404296875,
+          "upper_mph": 21.766836166381836,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 13.723304748535156,
+          "displayed_speed_mph": 13.723304748535156,
+          "lower_mph": 5.020124435424805,
+          "upper_mph": 22.426485061645508,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4456501",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 26.09000015258789,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 29.729602813720703,
+          "displayed_speed_mph": 29.729602813720703,
+          "lower_mph": 19.340213775634766,
+          "upper_mph": 40.11899185180664,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 30.17148208618164,
+          "displayed_speed_mph": 30.17148208618164,
+          "lower_mph": 17.765037536621094,
+          "upper_mph": 42.57792663574219,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 30.672405242919922,
+          "displayed_speed_mph": 30.672405242919922,
+          "lower_mph": 15.615800857543945,
+          "upper_mph": 45.7290096282959,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4456502",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 16.149999618530273,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 21.4703369140625,
+          "displayed_speed_mph": 21.4703369140625,
+          "lower_mph": 9.822952270507812,
+          "upper_mph": 33.11772155761719,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 22.420650482177734,
+          "displayed_speed_mph": 22.420650482177734,
+          "lower_mph": 8.806089401245117,
+          "upper_mph": 36.03521156311035,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 25.974313735961914,
+          "displayed_speed_mph": 25.974313735961914,
+          "lower_mph": 10.659324645996094,
+          "upper_mph": 41.289302825927734,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4456511",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 29.81999969482422,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 29.80074691772461,
+          "displayed_speed_mph": 29.80074691772461,
+          "lower_mph": 23.525514602661133,
+          "upper_mph": 36.075979232788086,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 29.71856117248535,
+          "displayed_speed_mph": 29.71856117248535,
+          "lower_mph": 22.056062698364258,
+          "upper_mph": 37.381059646606445,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 29.81302261352539,
+          "displayed_speed_mph": 29.81302261352539,
+          "lower_mph": 20.635643005371094,
+          "upper_mph": 38.99040222167969,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4616328",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 39.7599983215332,
+      "status": "FORECAST",
+      "eligible_for_advisory": false,
+      "reasons": [
+        "WIDE_INTERVAL: h=15 width 43.0 > 38.1 mph",
+        "WIDE_INTERVAL: h=30 width 45.3 > 38.1 mph",
+        "WIDE_INTERVAL: h=60 width 46.0 > 38.1 mph"
+      ],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 37.28943634033203,
+          "displayed_speed_mph": 37.28943634033203,
+          "lower_mph": 15.772266387939453,
+          "upper_mph": 58.80660629272461,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 38.27992248535156,
+          "displayed_speed_mph": 38.27992248535156,
+          "lower_mph": 15.65130615234375,
+          "upper_mph": 60.908538818359375,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 36.50764846801758,
+          "displayed_speed_mph": 36.50764846801758,
+          "lower_mph": 13.49075698852539,
+          "upper_mph": 59.524539947509766,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4616329",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 4.340000152587891,
+      "status": "FORECAST",
+      "eligible_for_advisory": false,
+      "reasons": [
+        "WIDE_INTERVAL: h=15 width 39.0 > 38.1 mph",
+        "WIDE_INTERVAL: h=30 width 40.5 > 38.1 mph",
+        "WIDE_INTERVAL: h=60 width 40.5 > 38.1 mph"
+      ],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 11.244873046875,
+          "displayed_speed_mph": 11.244873046875,
+          "lower_mph": -8.255264282226562,
+          "upper_mph": 30.745010375976562,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 10.869787216186523,
+          "displayed_speed_mph": 10.869787216186523,
+          "lower_mph": -9.373531341552734,
+          "upper_mph": 31.11310577392578,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 11.751487731933594,
+          "displayed_speed_mph": 11.751487731933594,
+          "lower_mph": -8.483505249023438,
+          "upper_mph": 31.986480712890625,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4616332",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 41.630001068115234,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 39.088417053222656,
+          "displayed_speed_mph": 39.088417053222656,
+          "lower_mph": 32.579423904418945,
+          "upper_mph": 45.59741020202637,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 38.062652587890625,
+          "displayed_speed_mph": 38.062652587890625,
+          "lower_mph": 29.463977813720703,
+          "upper_mph": 46.66132736206055,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 37.45138168334961,
+          "displayed_speed_mph": 37.45138168334961,
+          "lower_mph": 27.573333740234375,
+          "upper_mph": 47.329429626464844,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4616333",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 44.11000061035156,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 41.53852081298828,
+          "displayed_speed_mph": 41.53852081298828,
+          "lower_mph": 31.08928680419922,
+          "upper_mph": 51.987754821777344,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 41.80722427368164,
+          "displayed_speed_mph": 41.80722427368164,
+          "lower_mph": 29.164005279541016,
+          "upper_mph": 54.450443267822266,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 40.58116912841797,
+          "displayed_speed_mph": 40.58116912841797,
+          "lower_mph": 25.901399612426758,
+          "upper_mph": 55.26093864440918,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4616339",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 12.420000076293945,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 14.444775581359863,
+          "displayed_speed_mph": 14.444775581359863,
+          "lower_mph": 9.109662055969238,
+          "upper_mph": 19.77988910675049,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 14.887238502502441,
+          "displayed_speed_mph": 14.887238502502441,
+          "lower_mph": 8.446011543273926,
+          "upper_mph": 21.328465461730957,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 16.94013023376465,
+          "displayed_speed_mph": 16.94013023376465,
+          "lower_mph": 9.042876243591309,
+          "upper_mph": 24.83738422393799,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4616340",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 3.0999999046325684,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 3.1982691287994385,
+          "displayed_speed_mph": 3.1982691287994385,
+          "lower_mph": -0.8391616344451904,
+          "upper_mph": 7.235699892044067,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 3.083489418029785,
+          "displayed_speed_mph": 3.083489418029785,
+          "lower_mph": -1.038970947265625,
+          "upper_mph": 7.205949783325195,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 3.3722567558288574,
+          "displayed_speed_mph": 3.3722567558288574,
+          "lower_mph": -0.7335858345031738,
+          "upper_mph": 7.478099346160889,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4616341",
+      "data_as_of_utc": null,
+      "data_age_minutes": null,
+      "issue_lag_minutes": null,
+      "observed_steps_in_window": 0,
+      "input_missing_fraction": 1.0,
+      "last_observed_speed_mph": null,
+      "status": "INSUFFICIENT_HISTORY",
+      "reasons": [
+        "0 of 24 lookback bins observed < 12"
+      ],
+      "eligible_for_advisory": false,
+      "horizons": []
+    },
+    {
+      "link_id": "4616342",
+      "data_as_of_utc": "2026-10-30T16:00:00+00:00",
+      "data_age_minutes": 5.0,
+      "issue_lag_minutes": 108.7,
+      "observed_steps_in_window": 23,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 12.420000076293945,
+      "status": "FORECAST",
+      "eligible_for_advisory": false,
+      "reasons": [
+        "WIDE_INTERVAL: h=15 width 44.4 > 38.1 mph",
+        "WIDE_INTERVAL: h=30 width 45.8 > 38.1 mph",
+        "WIDE_INTERVAL: h=60 width 45.1 > 38.1 mph"
+      ],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 14.380939483642578,
+          "displayed_speed_mph": 14.380939483642578,
+          "lower_mph": -7.837738037109375,
+          "upper_mph": 36.59961700439453,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 14.185290336608887,
+          "displayed_speed_mph": 14.185290336608887,
+          "lower_mph": -8.695006370544434,
+          "upper_mph": 37.06558704376221,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 14.750892639160156,
+          "displayed_speed_mph": 14.750892639160156,
+          "lower_mph": -7.8111114501953125,
+          "upper_mph": 37.312896728515625,
+          "interval_level": 0.9
+        }
+      ]
+    },
+    {
+      "link_id": "4620298",
+      "data_as_of_utc": "2026-10-30T16:05:00+00:00",
+      "data_age_minutes": 0.0,
+      "issue_lag_minutes": 103.7,
+      "observed_steps_in_window": 24,
+      "input_missing_fraction": 0.0,
+      "last_observed_speed_mph": 40.380001068115234,
+      "status": "FORECAST",
+      "eligible_for_advisory": true,
+      "reasons": [],
+      "horizons": [
+        {
+          "horizon_minutes": 15,
+          "target_utc": "2026-10-30T16:20:00+00:00",
+          "predicted_speed_mph": 38.897315979003906,
+          "displayed_speed_mph": 38.897315979003906,
+          "lower_mph": 27.98553466796875,
+          "upper_mph": 49.80909729003906,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 30,
+          "target_utc": "2026-10-30T16:35:00+00:00",
+          "predicted_speed_mph": 38.220001220703125,
+          "displayed_speed_mph": 38.220001220703125,
+          "lower_mph": 24.011771202087402,
+          "upper_mph": 52.42823123931885,
+          "interval_level": 0.9
+        },
+        {
+          "horizon_minutes": 60,
+          "target_utc": "2026-10-30T17:05:00+00:00",
+          "predicted_speed_mph": 37.16252899169922,
+          "displayed_speed_mph": 37.16252899169922,
+          "lower_mph": 19.921178817749023,
+          "upper_mph": 54.403879165649414,
+          "interval_level": 0.9
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    "LIVE: forecasts from newly retrieved public records; scored only after their targets are observed",
+    "latest-available origin: the feed's newest published bin was 104 min old at issue; 3 of 3 target times already lay in the past on the wall clock; a target is scored only if its bin was first retrieved after this forecast was written",
+    "weather group uses the current Open-Meteo forecast where training used the archived historical forecast",
+    "no connection to any traffic signal"
+  ]
+}

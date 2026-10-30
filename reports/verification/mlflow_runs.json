@@ -2,7 +2,7 @@
   "status": "OK",
   "tracking_uri": "sqlite:///C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\mlflow.db",
   "n_runs": 12,
-  "exported_at": "2026-10-29T21:39:13.250575+00:00",
+  "exported_at": "2026-10-30T19:14:46.558784+00:00",
   "runs": [
     {
       "experiment": "forecasting",

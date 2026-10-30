@@ -360,6 +360,23 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Result: LIVE observational run NOT_RUN on 2026-10-29; `live_metrics.csv` not produced; Table `tab:live` stays NOT
   RUN. Evidence: `artifacts/live/` and `data/raw/live/*/fetch_log.jsonl`.
 
+### Workstation LIVE run, latest-available origin (2026-10-30 16:06-19:15 UTC, Friday 12:06-15:15 New York): OK
+- Branch `claude/laptop-live` from main 05a28ed; `docs/laptop_run.md` section 9; `tests/unit/test_live.py` 13 passed.
+- `live pull`: 288 speed rows, newest record 09:36 New York time; `live forecast --origin latest-available`: origin
+  13:40 UTC, data age 148 min, 13 of 16 links forecast (3 with no recent data withheld), 10 advisory-eligible.
+- `live run --polls 24 --interval-s 300 --origin latest-available --settle-max-hours 4`: exit 0. The feed published new
+  bins only twice during the 24 polls (origins 14:55 UTC, lag 89 min; 16:05 UTC, lag 104 min); other polls found no
+  newer bin (several returned 0 rows) and wrote no batch, as specified. Settle phase ended at 19:14 UTC once the bin
+  after the last 60-minute target (17:25 UTC) was published.
+- `live_summary.json`: status OK; 3 latest-available batches with forecasts (36 batches in the LIVE log including the
+  33 all-withheld wall-clock batches of 28-29 Oct); 117 scored, 0 pending, 0 late, 0 rows published before issue; mean
+  data age at issue 113.6 min (max 148.1). Every forecast was written before its target bin was published; all 117
+  targets already lay in the past on the wall clock at issue (feed latency about 2 h).
+- `reports/experiments/live_metrics.csv` (n = 39 per horizon): MAE 3.62 / 5.50 / 5.25 mph at 15/30/60 min vs persistence
+  4.25 / 6.17 / 5.59; 90% interval coverage 0.897 / 0.872 / 0.923, mean width 21.9 / 24.9 / 27.3 mph. Small sample (3
+  origins, one weekday afternoon): not a second test set. `report export`, `paper sync` exit 0; Table `tab:live`
+  generated from these files.
+
 ### Milestone 1b: service smoke checks (cloud container)
 - `verify smoke`: API endpoints (live, sources, road-links, experiments, evidence; auth 401; deployment approval
   422) OK; Postgres/PostGIS upsert, spatial query and job-queue round trip OK; Streamlit headless start OK
