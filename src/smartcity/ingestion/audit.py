@@ -116,8 +116,17 @@ def run() -> dict:
     for src_dir in sorted(settings.path("raw").iterdir()):
         if src_dir.is_dir():
             logs = fetch_log(src_dir.name)
-            manifest["sources"][src_dir.name] = {"n_fetches": len(logs),
-                                                 "files": {lg["file"]: lg["sha256"] for lg in logs}}
+            entry = {"n_fetches": len(logs), "files": {lg["file"]: lg["sha256"] for lg in logs}}
+            # a source directory without its own log (data/raw/live/) holds one sub-source per child directory
+            subs = {sub.name: fetch_log(f"{src_dir.name}/{sub.name}") for sub in sorted(src_dir.iterdir())
+                    if sub.is_dir() and (sub / "fetch_log.jsonl").exists()}
+            if subs:
+                entry["sub_sources"] = {name: {"n_fetches": len(sl), "files": {lg["file"]: lg["sha256"] for lg in sl}}
+                                        for name, sl in subs.items()}
+                entry["n_fetches"] += sum(len(sl) for sl in subs.values())
+                for sl in subs.values():
+                    entry["files"].update({lg["file"]: lg["sha256"] for lg in sl})
+            manifest["sources"][src_dir.name] = entry
     manifest["manifest_hash"] = sha256_json(manifest["sources"])[:16]
     write_json(settings.ROOT / "data" / "manifests" / "source_manifest.json", manifest)
     return {"inventory": inventory, "link_coverage": link_cov, "manifest_hash": manifest["manifest_hash"]}
