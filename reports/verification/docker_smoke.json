@@ -1,14 +1,14 @@
 {
-  "checked_at": "2026-10-20T18:07:16.240340+00:00",
+  "checked_at": "2026-11-16T17:26:17.042151+00:00",
   "docker_version": {
     "cmd": "docker --version",
     "returncode": 0,
-    "tail": "Docker version 29.8.2, build 7fc2dff\n"
+    "tail": "Docker version 29.9.2, build a82e528\n"
   },
   "daemon": {
     "cmd": "docker info --format {{.ServerVersion}}",
     "returncode": 0,
-    "tail": "29.8.2\n"
+    "tail": "29.9.2\n"
   },
   "compose_config": {
     "cmd": "docker compose config -q",
@@ -18,12 +18,12 @@
   "compose_build": {
     "cmd": "docker compose build",
     "returncode": 0,
-    "tail": " naming to docker.io/library/smartcity-worker:latest 0.0s done\n#18 unpacking to docker.io/library/smartcity-worker:latest\n#18 ...\n\n#19 [api] exporting to image\n#19 exporting layers 9.4s done\n#19 exporting manifest sha256:cbbf7a4a805368601812dfb9043083f937986f19d624bfce8eeb7e2edfedad11 0.0s done\n#19 exporting config sha256:67d84b7bab5b74be9096de652cf1bcbda9d4f77c2c1ae6f285c5cd8f1d77b534 0.0s done\n#19 exporting attestation manifest sha256:11d751eac9f0dc9158376ec7ff42c50c90257eece1eddf40f82a7d0dc5ea3a5b 0.1s done\n#19 exporting manifest list sha256:8714dbd53a50882998042d9c239a961ae2ed8e96b8e01bb5490fd00a3787e8c0 0.0s done\n#19 naming to docker.io/library/smartcity-api:latest 0.0s done\n#19 unpacking to docker.io/library/smartcity-api:latest\n#19 ...\n\n#17 [dashboard] exporting to image\n#17 unpacking to docker.io/library/smartcity-dashboard:latest 2.1s done\n#17 DONE 11.9s\n\n#18 [worker] exporting to image\n#18 unpacking to docker.io/library/smartcity-worker:latest 2.2s done\n#18 DONE 11.9s\n\n#19 [api] exporting to image\n#19 unpacking to docker.io/library/smartcity-api:latest 2.2s done\n#19 DONE 11.9s\n\n#20 [dashboard] resolving provenance for metadata file\n#20 DONE 0.1s\n\n#21 [api] resolving provenance for metadata file\n#21 DONE 0.1s\n\n#22 [worker] resolving provenance for metadata file\n#22 DONE 0.1s\n Image smartcity-dashboard Building \n Image smartcity-api Building \n Image smartcity-worker Building \n Image smartcity-dashboard Built \n Image smartcity-worker Built \n Image smartcity-api Built \n"
+    "tail": "256:47e13d9ef17c7b01f0dea47257e7addaa3fcfd21d744ecafdf8fc8fab79f7940 0.0s done\n#17 exporting attestation manifest sha256:638b80727ad117bb4de4071421dcaac519be5a9fb9b8f132987add7f695bb8c9 0.0s done\n#17 exporting manifest list sha256:af3ede40624f3b183b06409ac2f0dfc6466ffd0ecc289e938cf4d86594ec3423 0.0s done\n#17 naming to docker.io/library/smartcity-api:latest done\n#17 unpacking to docker.io/library/smartcity-api:latest 4.0s done\n#17 DONE 18.8s\n\n#19 [dashboard] exporting to image\n#19 exporting layers 14.7s done\n#19 exporting manifest sha256:944f56a74c7af889cf59502cec4299fdf6fb4a77ae420e1ee879d11d02ae8aa5 0.0s done\n#19 exporting config sha256:3bf960ad34dd1fcd40b83918d83bbbe3c66a07aab40c7241e240c0c7716da699 0.0s done\n#19 exporting attestation manifest sha256:3d3ce972cf4c5900d2f5c11ee0c4b59a4628cc07baccff2b035d7c0a31386280 0.0s done\n#19 exporting manifest list sha256:816cd5a6d84c616e5c8252ae8c75136449cda990372f23c43c4f48b8238c7034 0.0s done\n#19 naming to docker.io/library/smartcity-dashboard:latest 0.0s done\n#19 unpacking to docker.io/library/smartcity-dashboard:latest 4.0s done\n#19 DONE 18.8s\n\n#20 [api] resolving provenance for metadata file\n#20 DONE 0.1s\n\n#21 [dashboard] resolving provenance for metadata file\n#21 DONE 0.1s\n\n#22 [worker] resolving provenance for metadata file\n#22 DONE 0.0s\n Image smartcity-api Building \n Image smartcity-worker Building \n Image smartcity-dashboard Building \n Image smartcity-worker Built \n Image smartcity-api Built \n Image smartcity-dashboard Built \n"
   },
   "images": {
     "cmd": "docker images --format {{.Repository}}:{{.Tag}} {{.Size}} --filter reference=smartcity*",
     "returncode": 0,
-    "tail": "smartcity-dashboard:latest 4.67GB\nsmartcity-api:latest 4.67GB\nsmartcity-worker:latest 4.67GB\n"
+    "tail": "smartcity-dashboard:latest 5.15GB\nsmartcity-worker:latest 5.15GB\nsmartcity-api:latest 5.15GB\n"
   },
   "status": "OK"
 }

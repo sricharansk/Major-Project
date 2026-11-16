@@ -11,9 +11,12 @@ from smartcity.simulation import sumo_runner as sr
 def toy(tmp_path_factory):
     d = tmp_path_factory.mktemp("sumo")
     net = d / "grid.net.xml"
-    r = subprocess.run([sr.binary("netgenerate"), "--grid", "--grid.number", "3", "--grid.length", "200",
-                        "--default-junction-type", "traffic_light", "--tls.yellow.time", "3", "-o", str(net),
-                        "--no-turnarounds", "true"], capture_output=True, text=True)
+    try:
+        r = subprocess.run([sr.binary("netgenerate"), "--grid", "--grid.number", "3", "--grid.length", "200",
+                            "--default-junction-type", "traffic_light", "--tls.yellow.time", "3", "-o", str(net),
+                            "--no-turnarounds", "true"], capture_output=True, text=True)
+    except OSError as exc:  # binary missing or blocked by the OS (e.g. Windows Application Control, WinError 4551)
+        pytest.skip(f"SUMO binaries cannot be launched on this machine: {exc}")
     assert r.returncode == 0, r.stderr
     import sumolib
 

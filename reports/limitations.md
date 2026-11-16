@@ -236,5 +236,10 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     `requirements.windows-cu128.lock`), so PyG-Temporal takes the documented direct-module route there, and the
     fallback in `src/smartcity/graph/temporal.py` now also catches OSError (regression test in `tests/unit/test_graph.py`).
     The v6 calibration, demand selection and controller comparison do not import PyG-Temporal and are unaffected; the
-    agent re-run after the change does. No Windows security setting was changed.
+    agent re-run after the change does. No Windows security setting was changed. On 2026-11-16 the same policy
+    also blocked `sumo.exe` and `netgenerate` on the workstation (WinError 4551 at launch): the results refresh ran
+    everything else (data audit, report export, API/DB/dashboard/Docker smoke, paper sync, 112 tests passed), but
+    the five SUMO integration tests could not run there (they now skip with the reason instead of erroring; they
+    run in CI), the environment record (`doctor`) could not be refreshed, and no further SUMO run is possible on
+    that machine until the block is lifted. The recorded SUMO results of 26 and 28 October are unaffected.
 
