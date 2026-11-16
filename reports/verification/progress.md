@@ -632,6 +632,21 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   unknown-mode rejection, stale-feed end-to-end with the stub model). NOT RUN until the workstation runs section 9
   of `docs/laptop_run.md`; claim C51.
 
+### Milestone 19: results refresh and dataset review (workstation + cloud container, 2026-11-16)
+- Dataset review against the implementation specification (cloud): all eight named sources are fetched, audited
+  and reported; events and collisions are retrospective-only by the availability rule; volume counts drive SUMO
+  demand only. PR #38 made `data audit` record the nested live pulls and the sources table show downloads instead
+  of blank cells (volume: 40,492 rows / 3 files; OSM: 3 files retrieved 2026-10-23).
+- Workstation refresh (branch `claude/laptop-results-refresh`, 948595f, on main 8480b1e): `data audit` (manifest
+  4d3b66bc3ae30d18; live 201 fetches = speeds 72, 311 64, weather 65; classification 1, volume_hist 1, OSM 3,
+  knowledge 14), `report export` (19 VERIFIED / 3 PARTIAL, unchanged; DATA-02 stays PARTIAL by the pinned
+  override for the October speed-links timeout), `verify smoke --docker-build` (API, DB, dashboard, Docker all
+  OK; two host addresses in the dashboard log redacted), `paper sync` (only `sources.tex` changed), full test
+  suite 112 passed. Deviation: Windows Application Control now blocks `sumo.exe` and `netgenerate` on the
+  workstation (WinError 4551), so the five SUMO integration tests errored there and the environment record
+  (`doctor`) could not be refreshed; limitation 28 extended; the SUMO fixture now skips with the reason when
+  the binaries cannot be launched (`tests/integration/test_sumo_runner.py`).
+
 ### Milestone 18: latest-available live run integrated (cloud container, 2026-10-30 20:00 UTC)
 - Workstation branch `claude/laptop-live` (c84ac5f, on main 05a28ed) merged into the work branch unchanged: run
   artifacts, `live_metrics.csv`, evidence registry (LIVE-01 VERIFIED), workstation run note above. Status OK, 117
