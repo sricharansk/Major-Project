@@ -1,36 +1,36 @@
 {
   "status": "OK",
-  "checked_at": "2026-10-20T18:07:11.674683+00:00",
+  "checked_at": "2026-11-16T17:15:36.822085+00:00",
   "checks": [
     {
       "endpoint": "/health/live",
       "status_code": 200,
-      "latency_ms": 47.5
+      "latency_ms": 29.1
     },
     {
       "endpoint": "/health/ready",
-      "status_code": 503,
-      "latency_ms": 136959.3
+      "status_code": 200,
+      "latency_ms": 137989.9
     },
     {
       "endpoint": "/sources/status",
       "status_code": 200,
-      "latency_ms": 4.6
+      "latency_ms": 10.7
     },
     {
       "endpoint": "/road-links",
       "status_code": 200,
-      "latency_ms": 16.0
+      "latency_ms": 21.2
     },
     {
       "endpoint": "/experiments",
       "status_code": 200,
-      "latency_ms": 15.8
+      "latency_ms": 28.9
     },
     {
       "endpoint": "/evidence/status",
       "status_code": 200,
-      "latency_ms": 0.0
+      "latency_ms": 7.8
     },
     {
       "endpoint": "POST /advisories (no token)",
@@ -43,5 +43,5 @@
       "status_code": 422
     }
   ],
-  "readiness": "not ready (503: a dependency is unavailable, reported as such)"
+  "readiness": "ready"
 }

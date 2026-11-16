@@ -1,12 +1,11 @@
 {
-  "checked_at": "2026-10-20T18:07:11.844081+00:00",
-  "command": "-m streamlit run C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\src\\smartcity\\dashboard\\app.py --server.headless true --server.port 51573 --browser.gatherUsageStats false",
-  "port": 51573,
+  "checked_at": "2026-11-16T17:15:37.016270+00:00",
+  "command": "-m streamlit run C:\\Users\\S.K. Sricharan\\Downloads\\MAJOR PROJECT - FINAL YEAR\\PROJECT\\repo\\src\\smartcity\\dashboard\\app.py --server.headless true --server.port 58278 --browser.gatherUsageStats false",
+  "port": 58278,
   "health_status": 200,
   "health_body": "ok",
-  "startup_s": 4.4,
+  "startup_s": 3.1,
   "index_status": 200,
-  "log_tail": "2026-10-20 23:37:15.238 Uvicorn server started on :::51573\n\n  You can now view your Streamlit app in your browser.\n\n  Local URL: http://localhost:51573\n  Network URL: http://<redacted>:51573\n  External URL: http://<redacted>:51573\n\n",
-  "status": "OK",
-  "redaction_note": "Workstation LAN and public IP addresses printed by Streamlit were replaced with <redacted> before commit."
+  "log_tail": "2026-11-16 22:45:39.462 Uvicorn server started on :::58278\n\n  You can now view your Streamlit app in your browser.\n\n  Local URL: http://localhost:58278\n  Network URL: http://redacted:58278\n  External URL: http://redacted:58278\n\n",
+  "status": "OK"
 }
