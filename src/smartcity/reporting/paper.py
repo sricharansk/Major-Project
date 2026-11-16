@@ -383,8 +383,21 @@ def sources_table():
     lines = [f"\\begin{{table*}}[t]\\centering\\caption{{{cap}}}\\label{{tab:sources}}\\small",
              "\\begin{tabular}{lllrl}\\toprule Source & Dataset & Observed range & Records & Role/limitation \\\\ \\midrule"]
     for r in rows:
-        rng = f"{(r.get('observation_min') or '')[:10]} -- {(r.get('observation_max') or '')[:10]}"
-        lines.append(f"{_esc(r['source_id'])} & {_esc(r.get('dataset_id') or '')} & {rng} & {r.get('record_count') or '--'} & "
+        # server-side observation range and count where the Socrata audit returned them; otherwise what was
+        # actually downloaded (files, rows) and when, so no verified source shows as a blank row
+        if r.get("observation_min") or r.get("observation_max"):
+            rng = f"{(r.get('observation_min') or '')[:10]} -- {(r.get('observation_max') or '')[:10]}"
+        else:
+            rng = f"retrieved {(r.get('retrieved_at_utc') or '')[:10]}" if r.get("retrieved_at_utc") else "--"
+        if r.get("record_count"):
+            n = str(r["record_count"])
+        elif r.get("raw_rows_downloaded"):
+            n = f"{int(float(r['raw_rows_downloaded']))} rows / {r.get('raw_files') or 0} files"
+        elif r.get("raw_files"):
+            n = f"{r['raw_files']} files"
+        else:
+            n = "--"
+        lines.append(f"{_esc(r['source_id'])} & {_esc(r.get('dataset_id') or '')} & {_esc(rng)} & {_esc(n)} & "
                      f"{_esc((r.get('limitations') or '')[:70])} \\\\")
     lines.append("\\bottomrule\\end{tabular}\\end{table*}\n")
     _write("sources.tex", "\n".join(lines))

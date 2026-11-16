@@ -87,6 +87,15 @@ Forecasts made from records that did not exist at training time, scored only onc
 (`artifacts/live/`); the dashboard's "Live monitoring" page and `GET /forecasts/live/latest` show them. Status: see
 `reports/verification/final_status.md`.
 
+### What a fresh clone can and cannot show
+
+Raw and processed data (`data/raw/`, `data/processed/`) and model weights (`artifacts/**/*.pt`) are deliberately not
+committed. Every table, figure and status file in the repository is generated from the committed result files, so the
+paper, the deck, the evidence registry and ten of the twelve dashboard pages render from a clone alone. The "Traffic
+map" and "Multi-horizon forecast" pages need the processed link geometries and the trained weights and read NOT RUN /
+NOT_TRAINED until the pipeline has been run on that machine (`docs/laptop_run.md`); on the workstation that holds
+the real-data run all twelve pages render.
+
 ### Services
 
 ```bash
