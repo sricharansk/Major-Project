@@ -9,7 +9,7 @@ from PIL import Image
 from pptx import Presentation
 from pptx.chart.data import CategoryChartData
 from pptx.dml.color import RGBColor
-from pptx.enum.chart import XL_CHART_TYPE, XL_LABEL_POSITION, XL_LEGEND_POSITION, XL_MARKER_STYLE
+from pptx.enum.chart import XL_CHART_TYPE, XL_LABEL_POSITION, XL_LEGEND_POSITION, XL_MARKER_STYLE, XL_TICK_LABEL_POSITION
 from pptx.enum.dml import MSO_LINE
 from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
@@ -354,7 +354,7 @@ for i, p in enumerate(tf.paragraphs):
         for rr in p.runs:
             style(rr, ARIAL, 22, NAVY, bold=True)
 stats = [("1,968,303", "raw speed records processed"), ("16", "Manhattan links modelled"),
-         ("7", "forecasting models compared"), ("112", "automated tests passing")]
+         ("7", "forecasting models compared"), ("119", "automated tests passing")]
 for k, (v, lab) in enumerate(stats):
     box(S[8], 0.5 + k * 3.3, 5.45, 3.0, 1.75, [[(v, True, NAVY, 34)], [(lab, False, INK, 15)]], ARIAL, 15,
         align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE, bg=TINT, shape=MSO_SHAPE.ROUNDED_RECTANGLE, after=2,
@@ -433,7 +433,7 @@ cols = [
         "Shared contracts frozen first: forecast, uncertainty, evidence, candidate action, decision",
         "A stage runner executes the real-data pipeline in fixed order with a stage log",
         "Only the recommendation node calls the LLM; every gate is deterministic code",
-        "112 automated tests: unit, leakage, safety, integration, end-to-end (CI, 2026-10-28)"]),
+        "119 automated tests: unit, leakage, safety, integration, end-to-end (CI, 2026-11-16)"]),
 ]
 for k, (head, items) in enumerate(cols):
     box(s, 0.5 + k * 4.0, 1.95, 3.75, 5.35, [[(head, True, NAVY, 18)]] + [[(it, False, INK, 15)] for it in items], TNR, 15,
@@ -634,7 +634,7 @@ box(s, 7.2, 4.95, 6.3, 2.4, [
 # ---------------------------------------------------------------- 17-21. outcome: the working dashboard (screenshots)
 MODE_COLOUR = {"REPLAY": RGBColor(0xC2, 0x5E, 0x00), "SIMULATION": RGBColor(0x6A, 0x3F, 0xA0), "LIVE": OK}
 CROP = {"forecast_laptop": (340, 95, 1560, 945), "traffic_map_laptop": (340, 95, 1560, 775),  # sidebar, toolbar
-        "live": (0, 0, 1770, 690), "live_scored": (0, 675, 1770, 1225)}  # page head; forecast-vs-observed chart
+        "live": (0, 0, 1770, 690)}  # page head
 
 
 def shot(slide, x, y, w, name, page, mode):
@@ -660,8 +660,8 @@ def shot(slide, x, y, w, name, page, mode):
     return y + 0.42 + h
 
 
-DASH_NOTE = ("Screenshots of the project's Streamlit dashboard (src/smartcity/dashboard/app.py) captured on 28 Oct 2026; every "
-             "number on them is read from committed result files. The LIVE page, run on 30 Oct 2026, is on slide 23.")
+DASH_NOTE = ("Screenshots of the project's Streamlit dashboard (src/smartcity/dashboard/app.py) captured between 28 Oct and "
+             "16 Nov 2026; every number on them is read from committed result files. LIVE results are on slide 23.")
 LAPTOP_NOTE = ("Captured on 23 Oct 2026 on the training laptop, which holds the trained model and the processed NYC DOT data. "
                "The forecast is a REPLAY of the held-out test period (origin 20 Oct 2026, 90 % conformal intervals); "
                "the LIVE page is on slide 23.")
@@ -783,46 +783,81 @@ box(s, 0.55, 7.05, 12.9, 0.5, [
 s = S[22]
 set_title(s, "9. RESULTS & OUTCOMES: LIVE CHECK")
 drop(next(sh for sh in s.shapes if sh.name == "TextBox 2"))
-bottom = shot(s, 0.55, 1.7, 6.25, "live", "Live monitoring", "LIVE")
-shot(s, 0.55, bottom + 0.05, 6.25, "live_scored", "Forecasts vs later observations", "LIVE")
-box(s, 7.2, 1.7, 6.25, 0.36, [[("Scored LIVE forecasts, 30 Oct 2026", True, NAVY, 14),
+bottom = shot(s, 0.55, 1.7, 6.25, "live", "Live monitoring (16 Nov batch)", "LIVE")
+box(s, 0.55, bottom + 0.08, 6.25, 0.36, [[("Model MAE minus persistence MAE", True, NAVY, 14),
+                                         ("   Mode: ", False, MUTED, 12), ("LIVE", True, MODE_COLOUR["LIVE"], 12)]],
+    ARIAL, 14, margin=0.02, after=0, anchor=MSO_ANCHOR.BOTTOM)
+cd = CategoryChartData()
+cd.categories = ["15 min", "30 min", "60 min"]
+cd.add_series("30 Oct (n 39)", (-0.63, -0.67, -0.34))
+cd.add_series("16 Nov (n 27)", (0.89, 0.97, -0.12))
+cd.add_series("Pooled (n 66)", (-0.01, 0.00, -0.25))
+gfc = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.55), Inches(bottom + 0.48), Inches(6.25),
+                         Inches(7.05 - bottom - 0.48), cd)
+gfc.name = "LIVE difference to persistence"
+ch = gfc.chart
+ch.has_legend = True
+ch.legend.position = XL_LEGEND_POSITION.RIGHT
+ch.legend.include_in_layout = False
+ch.legend.font.name, ch.legend.font.size = ARIAL, Pt(10)
+ch.plots[0].gap_width = 60
+for ser, colr in zip(ch.series, (NAVY, WARN, MUTED)):
+    ser.format.fill.solid()
+    ser.format.fill.fore_color.rgb = colr
+    ser.invert_if_negative = False
+ch.plots[0].has_data_labels = True
+dls = ch.plots[0].data_labels
+dls.position = XL_LABEL_POSITION.OUTSIDE_END
+dls.number_format, dls.number_format_is_linked = "+0.00;−0.00;0.00", False
+dls.font.name, dls.font.size = ARIAL, Pt(9)
+ch.value_axis.minimum_scale, ch.value_axis.maximum_scale = -1.0, 1.4
+ch.value_axis.has_title = True
+ch.value_axis.axis_title.text_frame.text = "mph (< 0: model better)"
+ch.category_axis.tick_label_position = XL_TICK_LABEL_POSITION.LOW
+for p in ch.value_axis.axis_title.text_frame.paragraphs:
+    for rr in p.runs:
+        rr.font.name, rr.font.size, rr.font.bold = ARIAL, Pt(9), False
+ch.value_axis.tick_labels.font.name, ch.value_axis.tick_labels.font.size = ARIAL, Pt(9)
+ch.category_axis.tick_labels.font.name, ch.category_axis.tick_labels.font.size = ARIAL, Pt(10)
+ch.value_axis.major_gridlines.format.line.color.rgb = RGBColor(0xD9, 0xDF, 0xE7)
+box(s, 7.2, 1.7, 6.25, 0.36, [[("Scored LIVE forecasts, two afternoons", True, NAVY, 14),
                               ("   Mode: ", False, MUTED, 12), ("LIVE", True, MODE_COLOUR["LIVE"], 12)]],
     ARIAL, 14, margin=0.02, after=0, anchor=MSO_ANCHOR.BOTTOM)
-lv = [("Horizon", "MAE (mph)", "Persistence", "90 % coverage", "Width (mph)"),
-      ("15 min", "3.62", "4.25", "0.90", "21.9"),
-      ("30 min", "5.50", "6.17", "0.87", "24.9"),
-      ("60 min", "5.25", "5.59", "0.92", "27.3"),
-      ("Eligible links", "3.96 / 5.14 / 4.65", "", "", "")]
-gt = s.shapes.add_table(len(lv), 5, Inches(7.2), Inches(2.12), Inches(6.25), Inches(1.9))
+lv = [("Model / persistence MAE (mph)", "15 min", "30 min", "60 min"),
+      ("30 Oct: 13 links, n 39", "3.62 / 4.25", "5.50 / 6.17", "5.25 / 5.59"),
+      ("16 Nov: 9 links, n 27", "4.94 / 4.05", "4.52 / 3.54", "5.65 / 5.78"),
+      ("Pooled, n 66", "4.16 / 4.17", "5.10 / 5.09", "5.42 / 5.67"),
+      ("Pooled 90 % coverage", "0.89", "0.91", "0.92"),
+      ("Pooled width (mph)", "22.6", "25.6", "27.9")]
+worse = {(2, 1), (2, 2)}                       # 16 Nov: model worse than persistence
+gt = s.shapes.add_table(len(lv), 4, Inches(7.2), Inches(2.12), Inches(6.25), Inches(2.1))
 gt.name = "LIVE scores"
 tbl = gt.table
-for ci, wv in enumerate((1.6, 1.2, 1.2, 1.2, 1.05)):
+for ci, wv in enumerate((2.65, 1.2, 1.2, 1.2)):
     tbl.columns[ci].width = Inches(wv)
-tbl.cell(4, 1).merge(tbl.cell(4, 4))
 for ri, row in enumerate(lv):
     for ci, val in enumerate(row):
         cell = tbl.cell(ri, ci)
-        if ri == 4 and ci > 1:
-            continue
-        fill(cell.text_frame, [[(val, ri == 0, WHITE if ri == 0 else INK, 12)]], ARIAL, 12,
-             align=PP_ALIGN.LEFT if ci == 0 else PP_ALIGN.CENTER, after=0)
+        bad = (ri, ci) in worse
+        fill(cell.text_frame, [[(val, ri == 0 or ri == 3 or bad, WHITE if ri == 0 else (WARN if bad else INK), 12)]],
+             ARIAL, 12, align=PP_ALIGN.LEFT if ci == 0 else PP_ALIGN.CENTER, after=0)
         cell.fill.solid()
         cell.fill.fore_color.rgb = NAVY if ri == 0 else (TINT if ri % 2 else WHITE)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
-box(s, 7.2, 4.3, 6.25, 1.15, [
-    [("117 forecasts scored (39 per horizon), 0 pending, 0 late; lower MAE than persistence at all three horizons. "
-      "Eligible-links row: n = 30 per horizon.", False, INK, 12)],
-    [("3 origins: 13:40, 14:55, 16:05 UTC; data age at issue 148 / 89 / 104 min (mean 114); 13 of 16 links each, "
-      "3 withheld for missing recent records.", False, INK, 12)]],
+box(s, 7.2, 4.45, 6.25, 1.0, [
+    [("198 forecasts scored over 6 batches, 0 pending, 0 late, 0 excluded; data age at issue 75–148 min; "
+      "pooled eligible-links MAE 3.89 / 4.64 / 4.83 (n 48).", False, INK, 12)],
+    [("16 Nov: the feed stalled ~80 min, so only 9 of 16 links met the 12-of-24 rule; the model was worse than "
+      "persistence at 15 and 30 min (orange).", False, INK, 12)]],
     ARIAL, 12, margin=0.04, after=3, bullets=True, name="LIVE facts")
 box(s, 7.2, 5.5, 6.25, 1.5, [
     [("A forecast at the feed's own latency of bins it had not yet published, with its data age; not a real-time "
       "forecast.", True, INK, 12)],
-    [("One afternoon, three origins, not a second test set.", True, INK, 12)],
-    [("The wall-clock protocol stays NOT RUN: on 28 and 29 Oct the feed ran 1.7–4.3 h behind and every link was "
-      "withheld.", True, INK, 12)]],
+    [("Two afternoons, not a second test set: at this data age the gain over persistence is small and unstable.",
+      True, INK, 12)],
+    [("The wall-clock protocol stays NOT RUN (28 and 29 Oct: feed 1.7–4.3 h behind).", True, INK, 12)]],
     ARIAL, 12, margin=0.04, after=3, bullets=True, name="LIVE caveats")
-box(s, 7.2, 7.02, 6.25, 0.3, [[("Source: reports/experiments/live_metrics.csv, artifacts/live/scored.csv (claims C50–C52)",
+box(s, 7.2, 7.02, 6.25, 0.3, [[("Source: reports/experiments/live_metrics_by_day.csv, live_metrics.csv (claims C50–C53)",
                                False, MUTED, 10)]], ARIAL, 10, margin=0.02, after=0)
 
 # ---------------------------------------------------------------- 24. results and outcomes: status, deliverables, next steps
@@ -840,7 +875,7 @@ cols = [
         "FastAPI, PostGIS jobs, Streamlit, MLflow, Docker Compose"]),
     ("Partial or not run", WARN, [
         "SUMO gains are simulated on a calibrated scenario testbed, not NYC DOT timing; the first 45-run comparison is superseded",
-        "LIVE: one afternoon at the feed's ~2 h latency; the wall-clock protocol stayed NOT RUN (feed 1.7–4.3 h behind)",
+        "LIVE: two afternoons at ~2 h data age, mixed vs persistence; wall-clock protocol NOT RUN",
         "No real advisory has reached the simulation gate (the LLM chose monitor-only in all three passes)",
         "Only three seeds; the proposed model is not bit-reproducible on GPU at a fixed seed",
         "Road graph is sparse: 26 nodes, 16 edges",
@@ -848,7 +883,7 @@ cols = [
     ("Outcomes and next steps", NAVY, [
         "IEEE conference paper (LaTeX and Word), every claim traced in the claims ledger",
         "GitHub repository with tests, runbooks and result files",
-        "Next: repeat the LIVE run over more days; wall-clock forecasts need a fresher feed",
+        "Next: more LIVE afternoons; wall-clock forecasts need a fresher feed",
         "Next: more seeds without the compute budget",
         "Next: paper submission"]),
 ]
