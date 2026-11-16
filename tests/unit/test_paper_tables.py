@@ -136,3 +136,25 @@ def test_live_table_from_summary(tmp_path, monkeypatch):
     body = (tmp_path / "tables" / "live.tex").read_text()
     assert "NOT RUN" not in body and "tab:live" in body and "12 five-minute batches" in body
     assert "15 & 12 & 4.10 & 4.80 & 0.917 & 24.3 \\\\" in body
+
+
+def test_live_table_shows_each_afternoon_then_pooled(tmp_path, monkeypatch):
+    import json
+    monkeypatch.setattr(paper, "R", tmp_path)
+    monkeypatch.setattr(paper, "T", tmp_path / "tables")
+    (tmp_path / "artifacts" / "live").mkdir(parents=True)
+    (tmp_path / "reports" / "experiments").mkdir(parents=True)
+    (tmp_path / "artifacts" / "live" / "live_summary.json").write_text(json.dumps(
+        {"status": "OK", "n_scored": 66, "n_batches": 6, "n_links": 16, "n_pending": 0, "n_late": 0,
+         "first_origin_utc": "2026-10-30T13:40:00+00:00", "last_origin_utc": "2026-11-16T17:55:00+00:00"}))
+    head = "mode,horizon_minutes,n_scored,mae_mph,coverage,mean_interval_width_mph,persistence_mae_mph\n"
+    (tmp_path / "reports" / "experiments" / "live_metrics.csv").write_text(head + "LIVE,15,66,4.16,0.894,22.6,4.17\n")
+    (tmp_path / "reports" / "experiments" / "live_metrics_by_day.csv").write_text(
+        "origin_date,n_batches,n_links,mean_origin_lag_minutes," + head
+        + "2026-10-30,3,13,113.6,LIVE,15,39,3.62,0.897,21.9,4.25\n2026-11-16,3,9,99.6,LIVE,15,27,4.94,0.889,23.7,4.05\n")
+    paper.live_table()
+    body = (tmp_path / "tables" / "live.tex").read_text()
+    assert "Fri 30 Oct 2026 (3 batches, 13 links, data age 114\\,min)" in body
+    assert "Mon 16 Nov 2026 (3 batches, 9 links, data age 100\\,min)" in body
+    assert body.index("15 & 39 & 3.62") < body.index("15 & 27 & 4.94") < body.index("Pooled") < body.index("15 & 66 & 4.16")
+    assert "Each afternoon is shown separately" in body

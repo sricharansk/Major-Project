@@ -577,6 +577,46 @@ def metrics_by_horizon(rows: list[dict], horizons: list[int]) -> list[dict]:
     return out
 
 
+def metrics_by_day(rows: list[dict], horizons: list[int]) -> list[dict]:
+    """Per-origin-day metrics: the pooled table hides that the two afternoons behaved differently, so each day in which a
+    forecast was scored gets its own rows (same columns as metrics_by_horizon plus origin_date, n_batches, n_links)."""
+    days = sorted({r["origin_utc"][:10] for r in rows if r["status"] == "SCORED"})
+    out = []
+    for day in days:
+        dr = [r for r in rows if r["origin_utc"][:10] == day]
+        sc = [r for r in dr if r["status"] == "SCORED"]
+        for m in metrics_by_horizon(dr, horizons):
+            if not m["n_scored"]:
+                continue
+            out.append({"origin_date": day, "n_batches": len({r["forecast_batch_id"] for r in sc}),
+                        "n_links": len({r["link_id"] for r in sc}), **m})
+    return out
+
+
+def _typed(v: str, kind: str):
+    if v in ("", None):
+        return None
+    if kind == "bool":
+        return v in ("True", "true", "1")
+    if kind == "int":
+        return int(float(v))
+    return float(v)
+
+
+def by_day_from_scored_csv(path: Path | None = None) -> list[dict]:
+    """Rebuild the per-day metrics from artifacts/live/scored.csv (for runs scored on another machine)."""
+    path = path or ART / "scored.csv"
+    if not path.exists():
+        return []
+    kinds = {"horizon_minutes": "int", "abs_error_mph": "float", "persistence_abs_error_mph": "float",
+             "covered": "bool", "upper_mph": "float", "lower_mph": "float", "eligible_for_advisory": "bool",
+             "origin_lag_minutes": "float", "target_in_past_at_issue": "bool"}
+    with open(path, newline="", encoding="utf-8") as fh:
+        rows = [{k: (_typed(v, kinds[k]) if k in kinds else v) for k, v in r.items()} for r in csv.DictReader(fh)]
+    horizons = sorted({r["horizon_minutes"] for r in rows if r["horizon_minutes"] is not None})
+    return metrics_by_day(rows, horizons)
+
+
 def score(now: dt.datetime | None = None) -> dict:
     """Match stored LIVE forecasts to observations retrieved since; write the metrics files and the summary."""
     now = now or utcnow()
@@ -610,6 +650,12 @@ def score(now: dt.datetime | None = None) -> dict:
         w = csv.DictWriter(fh, fieldnames=list(mets[0].keys()))
         w.writeheader()
         w.writerows(mets)
+    by_day = metrics_by_day(rows, horizons)
+    if by_day:
+        with open(EXP / "live_metrics_by_day.csv", "w", newline="", encoding="utf-8") as fh:
+            w = csv.DictWriter(fh, fieldnames=list(by_day[0].keys()))
+            w.writeheader()
+            w.writerows(by_day)
 
     n_scored = sum(m["n_scored"] for m in mets)
     modes = sorted({r.get("origin_mode", "wall_clock") for r in records})

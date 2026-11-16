@@ -324,6 +324,13 @@ def live_table():
         return _write("live.tex", not_run(cap + " (forecasts saved, no target observed yet)", "tab:live"))
     la = "latest_available" in (summ.get("origin_modes") or [])
     batches = _live_batches(summ)
+    by_day = _rows("reports/experiments/live_metrics_by_day.csv")
+    if not by_day and (R / "artifacts" / "live" / "scored.csv").exists():
+        from smartcity.live.pipeline import by_day_from_scored_csv
+        by_day = by_day_from_scored_csv(R / "artifacts" / "live" / "scored.csv")
+    by_day = [r for r in by_day if int(r.get("n_scored") or 0)]
+    if len({r["origin_date"] for r in by_day}) < 2:
+        by_day = []
     origin_txt = ("the origin of each latest-available batch was the newest bin the feed had published, on average "
                   f"{_f(summ.get('mean_origin_lag_minutes'), 0)}\\,min (at most {_f(summ.get('max_origin_lag_minutes'), 0)}\\,min) "
                   "old when the forecast was written (latest-available protocol preregistered on 29 October 2026); every "
@@ -336,15 +343,33 @@ def live_table():
             f"speed feed between {_esc(summ['first_origin_utc'][:16])} and {_esc(summ['last_origin_utc'][:16])} UTC "
             f"({summ['n_links']} links; {batches}); {origin_txt}. Persistence is the last "
             f"observed speed at the origin. Pending targets ({summ.get('n_pending', 0)}) and late forecasts "
-            f"({summ.get('n_late', 0)}) are not scored. A short window on one weekday, not a second test set.}}"
-            "\\label{tab:live}\\small")
+            f"({summ.get('n_late', 0)}) are not scored. "
+            + ("Each afternoon is shown separately and then pooled; a few afternoons are not a second test set.}"
+               if by_day else "A short window on one weekday, not a second test set.}")
+            + "\\label{tab:live}\\small")
     lines = [head, "\\begin{tabular}{rrrrrr}\\toprule Horizon (min) & Scored & MAE (mph) & Persistence MAE & "
                    "Coverage & Width (mph) \\\\ \\midrule"]
-    for r in rows:
-        lines.append(f"{r['horizon_minutes']} & {r['n_scored']} & {_f(r['mae_mph'])} & {_f(r['persistence_mae_mph'])} & "
-                     f"{_f(r['coverage'], 3)} & {_f(r['mean_interval_width_mph'], 1)} \\\\")
+
+    def _row(r):
+        return (f"{r['horizon_minutes']} & {r['n_scored']} & {_f(r['mae_mph'])} & {_f(r['persistence_mae_mph'])} & "
+                f"{_f(r['coverage'], 3)} & {_f(r['mean_interval_width_mph'], 1)} \\\\")
+
+    if by_day:
+        for day in sorted({r["origin_date"] for r in by_day}):
+            drs = [r for r in by_day if r["origin_date"] == day]
+            lines.append(f"\\multicolumn{{6}}{{l}}{{\\emph{{{_esc(_day_label(day))} ({drs[0]['n_batches']} batches, "
+                         f"{drs[0]['n_links']} links, data age {_f(drs[0].get('mean_origin_lag_minutes'), 0)}\\,min)}}}} \\\\")
+            lines.extend(_row(r) for r in drs)
+        lines.append("\\midrule\\multicolumn{6}{l}{\\emph{Pooled}} \\\\")
+    lines.extend(_row(r) for r in rows)
     lines.append("\\bottomrule\\end{tabular}\\end{table}\n")
     _write("live.tex", "\n".join(lines))
+
+
+def _day_label(day: str) -> str:
+    import datetime as _dt
+    d = _dt.date.fromisoformat(day)
+    return f"{d:%a} {d.day} {d:%b %Y}"
 
 
 def retrieval_table():

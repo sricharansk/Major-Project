@@ -463,6 +463,9 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
 - Rebuilt on 952c6e0 (2026-10-29): the live-run paragraph adds the preregistered latest-available origin (NOT RUN).
 - Rebuilt on b1e773b (2026-10-30): latest-available live result (3 origins, 117 scored) in the live paragraph, Table XII
   from `paper/tables/live.tex` and the future-work line, as in LaTeX. Word paper: 12 A4 pages in LibreOffice.
+- Rebuilt on 662924f (2026-11-16): second live afternoon (16 Nov) in the live paragraph and future-work line, Table XII
+  with per-afternoon and pooled blocks, and the sources table showing retrieval date and downloaded rows/files where
+  the server-side audit has no range or count (as `paper.sources_table`). 12 pages.
 
 ### Milestone 9: integration of the multi-seed study, agent re-run and Word paper (development container, 2026-10-21 04:40-05:30 UTC)
 - Merged the workstation branch (Milestone 7: nine GPU seed runs, `agents evaluate` re-run, counts) with the Word-paper
@@ -631,6 +634,28 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   `tests/unit/test_live.py` grows from 8 to 13 (origin selection, first-seen map, publication-time scoring,
   unknown-mode rejection, stale-feed end-to-end with the stub model). NOT RUN until the workstation runs section 9
   of `docs/laptop_run.md`; claim C51.
+
+### Milestone 20: second latest-available LIVE run (workstation 2026-11-16, integrated in the cloud container)
+- Workstation (branch `claude/laptop-live-2`, 9cd407e, on main b0ad3fc): `docs/laptop_run.md` section 9, run
+  2026-11-16 17:36-20:37 UTC (Monday 12:36-15:37 New York), 24 polls at five-minute intervals, settle phase 4 h
+  max, `tests/unit/test_live.py` 13 passed first. The 30 Oct batches are unchanged; the pipeline appended three
+  batches with origins 15:30, 16:45 and 17:55 UTC (data age 127.5, 75.4, 95.9 min), each forecasting 9 links and
+  withholding 7 (INSUFFICIENT_HISTORY): the feed stalled at 11:41 New York for about 80 min, then alternated
+  between two snapshots on polls 21-24; one poll hit a DNS failure and was retried. `live_summary.json`: status
+  OK, 39 batches (latest_available 6, wall_clock 33), 198 scored, 0 pending, 0 late, 0 published before issue,
+  mean origin lag 106.6 min, max 148.1.
+- Result, reported as it came out: on 16 Nov alone (27 scored per horizon) MAE 4.94 / 4.52 / 5.65 mph at
+  15/30/60 min vs persistence 4.05 / 3.54 / 5.78, coverage 0.889 / 0.963 / 0.926, eligible-only 3.78 / 3.81 / 5.13
+  (n 18): the model is worse than persistence at 15 and 30 min on an afternoon whose speeds barely moved and
+  marginally better at 60. Pooled over both afternoons (66 per horizon) 4.16 / 5.10 / 5.42 vs 4.17 / 5.09 / 5.67,
+  coverage 0.894 / 0.909 / 0.924, widths 22.6 / 25.6 / 27.9, eligible-only 3.89 / 4.64 / 4.83 (n 48). The 30 Oct
+  run stays recorded as it was (C52); both afternoons together are the headline live result (C53).
+- Cloud integration: `metrics_by_day` and `by_day_from_scored_csv` in `smartcity.live.pipeline` write
+  `reports/experiments/live_metrics_by_day.csv` (also rebuilt from `scored.csv` by `paper sync` when absent);
+  Table `tab:live` shows each afternoon (batches, links, data age) and then the pooled rows; paper LIVE paragraph
+  and conclusion, README, limitation 27, `final_status.md`, claims C52-C53 rewritten; dashboard page and deck
+  slide 23 updated by their threads. Not changed: the 12-of-24 rule, the model, the scoring; the wall-clock
+  protocol stays NOT RUN.
 
 ### Milestone 19: results refresh and dataset review (workstation + cloud container, 2026-11-16)
 - Dataset review against the implementation specification (cloud): all eight named sources are fetched, audited

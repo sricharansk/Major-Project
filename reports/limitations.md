@@ -227,8 +227,16 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     published new bins only twice in two hours, so 3 batches were issued (origins 13:40, 14:55, 16:05 UTC; data age
     148, 89, 104 min), 13 of 16 links each; 117 forecasts scored, 0 pending, 0 late, 0 excluded by the publication-time
     guard, all 117 targets already in the past on the wall clock at issue. MAE 3.62 / 5.50 / 5.25 mph at 15/30/60 min vs
-    persistence 4.25 / 6.17 / 5.59; coverage 0.897 / 0.872 / 0.923. Three origins on one afternoon: a check that the
-    pipeline works on data that did not exist at training time, reported with its data age, never as real-time.
+    persistence 4.25 / 6.17 / 5.59; coverage 0.897 / 0.872 / 0.923. A second afternoon, Monday 2026-11-16 (12:36-15:37
+    New York, branch `claude/laptop-live-2`), produced 3 more batches (origins 15:30, 16:45, 17:55 UTC; data age 128,
+    75, 96 min) of only 9 links each, because the feed stalled for about 80 min and then alternated between two
+    snapshots, so 7 links fell short of the 12-of-24 lookback rule; 81 forecasts scored, none pending, late or
+    excluded. On that afternoon the model was WORSE than persistence at 15 and 30 min (MAE 4.94 / 4.52 / 5.65 mph vs
+    persistence 4.05 / 3.54 / 5.78; coverage 0.889 / 0.963 / 0.926). Pooled over both afternoons (66 per horizon) the
+    model ties persistence at 15 and 30 min (4.16 vs 4.17; 5.10 vs 5.09) and is 0.25 mph better at 60 min (5.42 vs
+    5.67). Six origins on two afternoons: a check that the pipeline works on data that did not exist at training time,
+    reported with its data age, never as real-time, and evidence that the model's advantage over persistence at that
+    data age is small and not stable from one afternoon to the next. The second run is reported as it came out.
 28. **Workstation environment deviation from 2026-10-28.** Windows Application Control began blocking the unsigned
     compiled extensions `torch_scatter` and `torch_sparse` (WinError 4551, raised as OSError at import). They are not
     used by the project's models (GATv2 runs on PyG's built-in ops); only the PyG-Temporal package `__init__` imports

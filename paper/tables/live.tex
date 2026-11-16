@@ -1,6 +1,15 @@
-\begin{table}[t]\centering\caption{Live observational run (LIVE). The frozen model was run on records pulled from the public speed feed between 2026-10-28T19:50 and 2026-10-30T16:05 UTC (16 links; 36 five-minute batches: 33 wall-clock batches on 2026-10-28, 2026-10-29 in which every link was withheld for insufficient history; 3 latest-available batches on 2026-10-30 that produced forecasts); the origin of each latest-available batch was the newest bin the feed had published, on average 114\,min (at most 148\,min) old when the forecast was written (latest-available protocol preregistered on 29 October 2026); every forecast was written before its target bin was published and scored only when that bin was first retrieved afterwards (0 rows excluded as published before issue; 117 scored targets already lay in the past on the wall clock). Persistence is the last observed speed at the origin. Pending targets (0) and late forecasts (0) are not scored. A short window on one weekday, not a second test set.}\label{tab:live}\small
+\begin{table}[t]\centering\caption{Live observational run (LIVE). The frozen model was run on records pulled from the public speed feed between 2026-10-28T19:50 and 2026-11-16T17:55 UTC (16 links; 39 five-minute batches: 33 wall-clock batches on 2026-10-28, 2026-10-29 in which every link was withheld for insufficient history; 6 latest-available batches on 2026-10-30, 2026-11-16 that produced forecasts); the origin of each latest-available batch was the newest bin the feed had published, on average 107\,min (at most 148\,min) old when the forecast was written (latest-available protocol preregistered on 29 October 2026); every forecast was written before its target bin was published and scored only when that bin was first retrieved afterwards (0 rows excluded as published before issue; 198 scored targets already lay in the past on the wall clock). Persistence is the last observed speed at the origin. Pending targets (0) and late forecasts (0) are not scored. Each afternoon is shown separately and then pooled; a few afternoons are not a second test set.}\label{tab:live}\small
 \begin{tabular}{rrrrrr}\toprule Horizon (min) & Scored & MAE (mph) & Persistence MAE & Coverage & Width (mph) \\ \midrule
+\multicolumn{6}{l}{\emph{Fri 30 Oct 2026 (3 batches, 13 links, data age 114\,min)}} \\
 15 & 39 & 3.62 & 4.25 & 0.897 & 21.9 \\
 30 & 39 & 5.50 & 6.17 & 0.872 & 24.9 \\
 60 & 39 & 5.25 & 5.59 & 0.923 & 27.3 \\
+\multicolumn{6}{l}{\emph{Mon 16 Nov 2026 (3 batches, 9 links, data age 100\,min)}} \\
+15 & 27 & 4.94 & 4.05 & 0.889 & 23.7 \\
+30 & 27 & 4.52 & 3.54 & 0.963 & 26.6 \\
+60 & 27 & 5.65 & 5.78 & 0.926 & 28.7 \\
+\midrule\multicolumn{6}{l}{\emph{Pooled}} \\
+15 & 66 & 4.16 & 4.17 & 0.894 & 22.6 \\
+30 & 66 & 5.10 & 5.09 & 0.909 & 25.6 \\
+60 & 66 & 5.42 & 5.67 & 0.924 & 27.9 \\
 \bottomrule\end{tabular}\end{table}
