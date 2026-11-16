@@ -366,3 +366,37 @@ def test_latest_available_end_to_end_with_a_stale_feed(tmp_path, monkeypatch):
     row15 = next(r for r in scored if r["origin_mode"] == "latest_available" and r["horizon_minutes"] == "15")
     assert row15["status"] == "SCORED" and row15["target_first_seen_utc"] == later.isoformat()
     assert row15["target_in_past_at_issue"] == "True"
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# per-afternoon metrics (second latest-available run, 2026-11-16)
+# ---------------------------------------------------------------------------------------------------------------
+
+def test_metrics_by_day_splits_afternoons(tmp_path):
+    rows = []
+    for day, errs, pers in (("2026-10-30", (1.0, 2.0), (2.0, 3.0)), ("2026-11-16", (3.0, 1.0), (1.0, 1.0))):
+        for i, (e, p) in enumerate(zip(errs, pers)):
+            rows.append({"forecast_batch_id": f"b-{day}-{i}", "origin_utc": f"{day}T15:30:00+00:00",
+                         "origin_mode": "latest_available", "origin_lag_minutes": 100.0, "link_id": f"L{i}",
+                         "horizon_minutes": 15, "status": "SCORED", "abs_error_mph": e, "persistence_abs_error_mph": p,
+                         "covered": True, "lower_mph": 10.0, "upper_mph": 30.0, "eligible_for_advisory": True})
+    rows.append({"forecast_batch_id": "b-w", "origin_utc": "2026-10-28T19:50:00+00:00", "origin_mode": "wall_clock",
+                 "link_id": "L0", "horizon_minutes": None, "status": "WITHHELD", "eligible_for_advisory": False})
+    out = lp.metrics_by_day(rows, [15, 30])
+    assert [(r["origin_date"], r["horizon_minutes"], r["n_scored"]) for r in out] == [("2026-10-30", 15, 2), ("2026-11-16", 15, 2)]
+    assert out[0]["mae_mph"] == pytest.approx(1.5) and out[0]["persistence_mae_mph"] == pytest.approx(2.5)
+    assert out[1]["mae_mph"] == pytest.approx(2.0) and out[1]["persistence_mae_mph"] == pytest.approx(1.0)
+    assert out[0]["n_batches"] == 2 and out[0]["n_links"] == 2 and out[1]["mean_origin_lag_minutes"] == 100.0
+
+    p = tmp_path / "scored.csv"
+    cols = ["forecast_batch_id", "origin_utc", "origin_mode", "origin_lag_minutes", "link_id", "horizon_minutes",
+            "status", "abs_error_mph", "persistence_abs_error_mph", "covered", "lower_mph", "upper_mph",
+            "eligible_for_advisory"]
+    import csv
+    with open(p, "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=cols, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(rows)
+    again = lp.by_day_from_scored_csv(p)
+    assert [(r["origin_date"], r["mae_mph"], r["coverage"]) for r in again] == [("2026-10-30", 1.5, 1.0), ("2026-11-16", 2.0, 1.0)]
+    assert lp.by_day_from_scored_csv(tmp_path / "missing.csv") == []
