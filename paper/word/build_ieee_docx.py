@@ -291,14 +291,27 @@ def build_table(tid: str, refs: Refs) -> str:
         rows = []
         for r in csv.DictReader(SOURCES_CSV.open(encoding="utf-8")):
             lo, hi = (r["observation_min"] or "")[:10], (r["observation_max"] or "")[:10]
-            rows.append([r["source_id"], r["dataset_id"] or "–", f"{lo} to {hi}" if lo else "–",
-                         num(r["record_count"]) if r["record_count"] else "–", r["limitations"]])
+            # as paper.sources_table: without a server-side range or count, show what was downloaded and when
+            if lo or hi:
+                rng = f"{lo} to {hi}"
+            else:
+                rng = f"retrieved {r['retrieved_at_utc'][:10]}" if r.get("retrieved_at_utc") else "–"
+            if r["record_count"]:
+                n = num(r["record_count"])
+            elif r.get("raw_rows_downloaded"):
+                n = f"{num(str(int(float(r['raw_rows_downloaded']))))} rows / {r.get('raw_files') or 0} files"
+            elif r.get("raw_files"):
+                n = f"{r['raw_files']} files"
+            else:
+                n = "–"
+            rows.append([r["source_id"], r["dataset_id"] or "–", rng, n, r["limitations"]])
         x = caption("Verified Public Data Sources (Server-Side Audit)", refs)
         x += table_xml([31, 36, 46, 42, 88.3], [["Source", "Dataset", "Observed range", "Records", "Role / limitation"]],
                        rows, refs, ["start", "center", "center", "end", "start"], size=13)
         x += note("Observed ranges and record counts are server-side counts over each whole dataset "
-                  "(`reports/data_audit/source_inventory.csv`); the speed feed’s 1930 minimum is an outlier "
-                  "timestamp excluded by the 2026 study window.", refs)
+                  "(`reports/data_audit/source_inventory.csv`); where the server reports none, the row gives the "
+                  "retrieval date and what was downloaded. The speed feed’s 1930 minimum is an outlier timestamp "
+                  "excluded by the 2026 study window.", refs)
         return x
     if tid == "forecast":
         cap, rows = tex_rows("forecast")
@@ -485,7 +498,13 @@ def generic_table(name: str, title: str, refs: Refs) -> str:
     tex = (TABLES / f"{name}.tex").read_text(encoding="utf-8")
     head = tex.split("\\toprule", 1)[1].split("\\midrule", 1)[0].replace("\\\\", "")
     header = [detex(c.strip()) for c in head.split("&")]
-    body = [[detex(c).replace("$\\pm$", "±") for c in r] for r in rows]
+    body = []
+    for r in rows:
+        g = re.match(r"\\multicolumn\{\d+\}\{l\}\{\\emph\{(.*)\}\}$", r[0])
+        if g and len(r) == 1:  # group label spanning the table
+            body.append(["*" + detex(g.group(1)) + "*"])
+        else:
+            body.append([detex(c).replace("$\\pm$", "±") for c in r])
     n = len(header)
     x += table_xml([round(COL_PT / n, 2)] * n, [header], body, refs, ["start"] + ["center"] * (n - 1), size=13)
     detail = detex(cap).split(". ", 1)
