@@ -143,13 +143,15 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
   `artifacts/live/`; `reports/limitations.md` 16, 24, 27, 28; paper Tables "SUMO testbed", "protocol v6"). A
   latest-available origin (`live run --origin latest-available`: the newest published bin, data age recorded, targets
   scored only when first retrieved after the forecast was written) was preregistered on 2026-10-29
-  (`docs/live_latest_available_protocol.md`) and **RUN on two afternoons, 2026-10-30 and 2026-11-16** (12:06-15:15
-  and 12:36-15:37 New York): 3 batches each (data age 75-148 min), 13 and 9 of 16 links, 198 forecasts scored, 0
-  excluded by the publication-time guard. 30 Oct: MAE 3.62 / 5.50 / 5.25 mph at 15/30/60 min vs persistence
-  4.25 / 6.17 / 5.59. 16 Nov: 4.94 / 4.52 / 5.65 vs 4.05 / 3.54 / 5.78, **worse than persistence at 15 and 30 min**.
-  Pooled (n 66): 4.16 / 5.10 / 5.42 vs 4.17 / 5.09 / 5.67, coverage 0.894 / 0.909 / 0.924
-  (`reports/experiments/live_metrics.csv`, `live_metrics_by_day.csv`, `artifacts/live/live_summary.json`). A forecast
-  at the feed's own latency of bins it had not yet published, **not real-time**; two afternoons, not a second test set.
+  (`docs/live_latest_available_protocol.md`) and **RUN on three afternoons, 2026-10-30, 2026-11-16 and 2026-11-18**
+  (New York midday to mid-afternoon): 3 batches each (data age 75-159 min), 13, 9 and 8-9 of 16 links, 274 forecasts
+  scored, 0 excluded by the publication-time guard. 30 Oct: MAE 3.62 / 5.50 / 5.25 mph at 15/30/60 min vs persistence
+  4.25 / 6.17 / 5.59. 16 Nov: 4.94 / 4.52 / 5.65 vs 4.05 / 3.54 / 5.78, worse at 15 and 30 min. 18 Nov: 6.37 / 4.52 /
+  5.65 vs 5.79 / 2.63 / 4.90, worse at every horizon. **Pooled (n 91-92): 4.79 / 4.94 / 5.48 vs persistence
+  4.63 / 4.42 / 5.46, so persistence is ahead at 15 and 30 min and level at 60**; coverage 0.880 / 0.901 / 0.912
+  (`reports/experiments/live_metrics.csv`, `live_metrics_by_day.csv`, `artifacts/live/live_summary.json`). The
+  test-set gain over persistence did not carry over at the feed's data age. A forecast at the feed's own latency of
+  bins it had not yet published, **not real-time**; three afternoons, not a second test set.
 
 ## Honesty rules this repository follows
 

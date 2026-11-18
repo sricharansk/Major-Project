@@ -635,6 +635,29 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   unknown-mode rejection, stale-feed end-to-end with the stub model). NOT RUN until the workstation runs section 9
   of `docs/laptop_run.md`; claim C51.
 
+### Milestone 21: third latest-available LIVE run (workstation 2026-11-18, integrated in the cloud container)
+- SK asked for a further run on 2026-11-18 (project chat, "run it ... get the most positive result"); the answer
+  recorded here is that the protocol runs unchanged and every run is reported as it comes out, none dropped or
+  re-selected. Workstation (branch `claude/laptop-live-3`, 994ff99, on main 45e9cc7): `docs/laptop_run.md` section
+  9, 2026-11-18 16:58-20:36 UTC (Wednesday 11:58-15:36 New York), `tests/unit/test_live.py` 14 passed first, 24
+  polls at five-minute intervals, settle phase. Three batches with origins 14:20, 15:25 and 17:05 UTC (data age
+  159.3, 122.6, 107.9 min) forecasting 8, 9 and 9 links. Feed behaviour: alternating snapshots on polls 1-4, a stall
+  of about 1 h 40 min from 10:23 New York (polls 8-22), and in the settle phase a 1 h 20 min stall at 17:10 UTC
+  followed by a jump to 18:30 UTC that let every pending forecast be scored; no laptop sleep, no network drop.
+  `live_summary.json`: status OK, 42 batches (latest_available 9, wall_clock 33), 274 scored, 0 pending, 0 late,
+  0 published before issue, 2 TARGET_UNOBSERVED (one link's two targets never published), mean origin lag
+  114.4 min, max 159.3.
+- Result, reported as it came out: on 18 Nov alone (26/25/25 scored) MAE 6.37 / 4.52 / 5.65 mph at 15/30/60 min vs
+  persistence 5.79 / 2.63 / 4.90, coverage 0.846 / 0.880 / 0.880, eligible-only 3.85 / 3.12 / 4.36 (n 18): worse
+  than persistence at every horizon. Pooled over three afternoons (92/91/91) 4.79 / 4.94 / 5.48 vs 4.63 / 4.42 /
+  5.46, coverage 0.880 / 0.901 / 0.912, widths 22.8 / 25.6 / 27.9, eligible-only 3.88 / 4.22 / 4.70 (n 66):
+  persistence ahead at 15 and 30 min, level at 60. The live evidence does not show the model beating a no-change
+  forecast at the feed's data age; the test-set gain (fresh five-minute origin) stands as measured.
+- Cloud integration: Table `tab:live` carries the 18 Nov block (regenerated on the workstation and unchanged here);
+  paper LIVE paragraph, discussion "Forecasting" paragraph (gain did not carry over live) and conclusion rewritten;
+  README, limitation 27, `final_status.md`, claim C54 added; dashboard and deck slide 23 updated by their threads.
+  Not changed: the 12-of-24 rule, the model, the scoring; the wall-clock protocol stays NOT RUN.
+
 ### Milestone 20: second latest-available LIVE run (workstation 2026-11-16, integrated in the cloud container)
 - Workstation (branch `claude/laptop-live-2`, 9cd407e, on main b0ad3fc): `docs/laptop_run.md` section 9, run
   2026-11-16 17:36-20:37 UTC (Monday 12:36-15:37 New York), 24 polls at five-minute intervals, settle phase 4 h

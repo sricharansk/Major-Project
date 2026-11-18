@@ -6,7 +6,9 @@ cases under four policies that switch off retrieval, the constraint layer or the
 results support some of the proposals in Section~\ref{sec:intro} and not others.
 
 \textit{Forecasting.} The accuracy gain of the proposed model over persistence (7--16\,\% MAE) is real and consistent
-across horizons, and its margin over the tree baselines is consistent in sign (0.05--0.25\,mph) though at 15\,min no
+across horizons on the chronological test set, but it did not carry over to the live afternoons, where the origin was
+one to two and a half hours old and persistence was ahead at 15 and 30\,min (Table~\ref{tab:live}); the gain is a
+property of fresh five-minute origins, not of the feed as it is published. The margin over the tree baselines is consistent in sign (0.05--0.25\,mph) though at 15\,min no
 larger than the GRU margin. Over three seeds its margin over the temporal-only Transformer
 (0.04--0.08\,mph) and over the GRU at 30 and 60 minutes (0.03\,mph) is consistent across test days, while the GRU is
 better at 15 minutes; these are small effects from three seeds, not a decisive architectural advantage. Two measured facts explain why the spatial layer adds little here: the graph
