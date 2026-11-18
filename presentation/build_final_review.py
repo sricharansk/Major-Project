@@ -783,7 +783,7 @@ box(s, 0.55, 7.05, 12.9, 0.5, [
 s = S[22]
 set_title(s, "9. RESULTS & OUTCOMES: LIVE CHECK")
 drop(next(sh for sh in s.shapes if sh.name == "TextBox 2"))
-bottom = shot(s, 0.55, 1.7, 6.25, "live", "Live monitoring (16 Nov batch)", "LIVE")
+bottom = shot(s, 0.55, 1.7, 6.25, "live", "Live monitoring (18 Nov batch)", "LIVE")
 box(s, 0.55, bottom + 0.08, 6.25, 0.36, [[("Model MAE minus persistence MAE", True, NAVY, 14),
                                          ("   Mode: ", False, MUTED, 12), ("LIVE", True, MODE_COLOUR["LIVE"], 12)]],
     ARIAL, 14, margin=0.02, after=0, anchor=MSO_ANCHOR.BOTTOM)
@@ -791,7 +791,8 @@ cd = CategoryChartData()
 cd.categories = ["15 min", "30 min", "60 min"]
 cd.add_series("30 Oct (n 39)", (-0.63, -0.67, -0.34))
 cd.add_series("16 Nov (n 27)", (0.89, 0.97, -0.12))
-cd.add_series("Pooled (n 66)", (-0.01, 0.00, -0.25))
+cd.add_series("18 Nov (n 26/25/25)", (0.59, 1.88, 0.75))
+cd.add_series("Pooled (n 92/91/91)", (0.16, 0.52, 0.02))
 gfc = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(0.55), Inches(bottom + 0.48), Inches(6.25),
                          Inches(7.05 - bottom - 0.48), cd)
 gfc.name = "LIVE difference to persistence"
@@ -800,8 +801,8 @@ ch.has_legend = True
 ch.legend.position = XL_LEGEND_POSITION.RIGHT
 ch.legend.include_in_layout = False
 ch.legend.font.name, ch.legend.font.size = ARIAL, Pt(10)
-ch.plots[0].gap_width = 60
-for ser, colr in zip(ch.series, (NAVY, WARN, MUTED)):
+ch.plots[0].gap_width = 50
+for ser, colr in zip(ch.series, (NAVY, WARN, RGBColor(0x8C, 0x2D, 0x19), MUTED)):
     ser.format.fill.solid()
     ser.format.fill.fore_color.rgb = colr
     ser.invert_if_negative = False
@@ -810,7 +811,7 @@ dls = ch.plots[0].data_labels
 dls.position = XL_LABEL_POSITION.OUTSIDE_END
 dls.number_format, dls.number_format_is_linked = "+0.00;−0.00;0.00", False
 dls.font.name, dls.font.size = ARIAL, Pt(9)
-ch.value_axis.minimum_scale, ch.value_axis.maximum_scale = -1.0, 1.4
+ch.value_axis.minimum_scale, ch.value_axis.maximum_scale = -1.0, 2.2
 ch.value_axis.has_title = True
 ch.value_axis.axis_title.text_frame.text = "mph (< 0: model better)"
 ch.category_axis.tick_label_position = XL_TICK_LABEL_POSITION.LOW
@@ -820,44 +821,44 @@ for p in ch.value_axis.axis_title.text_frame.paragraphs:
 ch.value_axis.tick_labels.font.name, ch.value_axis.tick_labels.font.size = ARIAL, Pt(9)
 ch.category_axis.tick_labels.font.name, ch.category_axis.tick_labels.font.size = ARIAL, Pt(10)
 ch.value_axis.major_gridlines.format.line.color.rgb = RGBColor(0xD9, 0xDF, 0xE7)
-box(s, 7.2, 1.7, 6.25, 0.36, [[("Scored LIVE forecasts, two afternoons", True, NAVY, 14),
+box(s, 7.2, 1.7, 6.25, 0.36, [[("Scored LIVE forecasts, three afternoons", True, NAVY, 14),
                               ("   Mode: ", False, MUTED, 12), ("LIVE", True, MODE_COLOUR["LIVE"], 12)]],
     ARIAL, 14, margin=0.02, after=0, anchor=MSO_ANCHOR.BOTTOM)
 lv = [("Model / persistence MAE (mph)", "15 min", "30 min", "60 min"),
       ("30 Oct: 13 links, n 39", "3.62 / 4.25", "5.50 / 6.17", "5.25 / 5.59"),
       ("16 Nov: 9 links, n 27", "4.94 / 4.05", "4.52 / 3.54", "5.65 / 5.78"),
-      ("Pooled, n 66", "4.16 / 4.17", "5.10 / 5.09", "5.42 / 5.67"),
-      ("Pooled 90 % coverage", "0.89", "0.91", "0.92"),
-      ("Pooled width (mph)", "22.6", "25.6", "27.9")]
-worse = {(2, 1), (2, 2)}                       # 16 Nov: model worse than persistence
+      ("18 Nov: 8–9 links, n 26/25/25", "6.37 / 5.79", "4.52 / 2.63", "5.65 / 4.90"),
+      ("Pooled, n 92/91/91", "4.79 / 4.63", "4.94 / 4.42", "5.48 / 5.46"),
+      ("Pooled 90 % coverage", "0.88", "0.90", "0.91")]
+worse = {(2, 1), (2, 2), (3, 1), (3, 2), (3, 3), (4, 1), (4, 2)}   # model worse than persistence
 gt = s.shapes.add_table(len(lv), 4, Inches(7.2), Inches(2.12), Inches(6.25), Inches(2.1))
 gt.name = "LIVE scores"
 tbl = gt.table
-for ci, wv in enumerate((2.65, 1.2, 1.2, 1.2)):
+for ci, wv in enumerate((2.83, 1.14, 1.14, 1.14)):
     tbl.columns[ci].width = Inches(wv)
 for ri, row in enumerate(lv):
     for ci, val in enumerate(row):
         cell = tbl.cell(ri, ci)
         bad = (ri, ci) in worse
-        fill(cell.text_frame, [[(val, ri == 0 or ri == 3 or bad, WHITE if ri == 0 else (WARN if bad else INK), 12)]],
-             ARIAL, 12, align=PP_ALIGN.LEFT if ci == 0 else PP_ALIGN.CENTER, after=0)
+        fill(cell.text_frame, [[(val, ri == 0 or ri == 4 or bad, WHITE if ri == 0 else (WARN if bad else INK), 11)]],
+             ARIAL, 11, align=PP_ALIGN.LEFT if ci == 0 else PP_ALIGN.CENTER, after=0)
         cell.fill.solid()
         cell.fill.fore_color.rgb = NAVY if ri == 0 else (TINT if ri % 2 else WHITE)
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
-box(s, 7.2, 4.45, 6.25, 1.0, [
-    [("198 forecasts scored over 6 batches, 0 pending, 0 late, 0 excluded; data age at issue 75–148 min; "
-      "pooled eligible-links MAE 3.89 / 4.64 / 4.83 (n 48).", False, INK, 12)],
-    [("16 Nov: the feed stalled ~80 min, so only 9 of 16 links met the 12-of-24 rule; the model was worse than "
-      "persistence at 15 and 30 min (orange).", False, INK, 12)]],
-    ARIAL, 12, margin=0.04, after=3, bullets=True, name="LIVE facts")
-box(s, 7.2, 5.5, 6.25, 1.5, [
-    [("A forecast at the feed's own latency of bins it had not yet published, with its data age; not a real-time "
-      "forecast.", True, INK, 12)],
-    [("Two afternoons, not a second test set: at this data age the gain over persistence is small and unstable.",
+box(s, 7.2, 4.4, 6.25, 1.05, [
+    [("274 forecasts scored over 9 batches, 0 pending, 0 late, 0 excluded (2 targets never published); data age "
+      "75–159 min; pooled eligible-links MAE 3.88 / 4.22 / 4.70 (n 66).", False, INK, 11)],
+    [("16 and 18 Nov: the feed stalled (~80 and ~100 min), so only 8–9 of 16 links met the 12-of-24 rule. "
+      "Orange: model worse than persistence.", False, INK, 11)]],
+    ARIAL, 11, margin=0.04, after=2, bullets=True, name="LIVE facts")
+box(s, 7.2, 5.45, 6.25, 1.57, [
+    [("The test-set gain over persistence did not carry over to the live afternoons at the feed's 1–2.5 h data age.",
       True, INK, 12)],
-    [("The wall-clock protocol stays NOT RUN (28 and 29 Oct: feed 1.7–4.3 h behind).", True, INK, 12)]],
-    ARIAL, 12, margin=0.04, after=3, bullets=True, name="LIVE caveats")
-box(s, 7.2, 7.02, 6.25, 0.3, [[("Source: reports/experiments/live_metrics_by_day.csv, live_metrics.csv (claims C50–C53)",
+    [("LIVE at the feed's own latency, with its data age, not real-time; three afternoons on 8–13 links are not a "
+      "second test set.", True, INK, 12)],
+    [("Every run reported as it came out, none dropped; the wall-clock protocol stays NOT RUN.", True, INK, 12)]],
+    ARIAL, 12, margin=0.04, after=2, bullets=True, name="LIVE caveats")
+box(s, 7.2, 7.02, 6.25, 0.3, [[("Source: reports/experiments/live_metrics_by_day.csv, live_metrics.csv (claims C50–C54)",
                                False, MUTED, 10)]], ARIAL, 10, margin=0.02, after=0)
 
 # ---------------------------------------------------------------- 24. results and outcomes: status, deliverables, next steps
@@ -875,7 +876,7 @@ cols = [
         "FastAPI, PostGIS jobs, Streamlit, MLflow, Docker Compose"]),
     ("Partial or not run", WARN, [
         "SUMO gains are simulated on a calibrated scenario testbed, not NYC DOT timing; the first 45-run comparison is superseded",
-        "LIVE: two afternoons at ~2 h data age, mixed vs persistence; wall-clock protocol NOT RUN",
+        "LIVE: three afternoons at 1–2.5 h data age; persistence ahead pooled at 15/30 min; wall-clock NOT RUN",
         "No real advisory has reached the simulation gate (the LLM chose monitor-only in all three passes)",
         "Only three seeds; the proposed model is not bit-reproducible on GPU at a fixed seed",
         "Road graph is sparse: 26 nodes, 16 edges",
