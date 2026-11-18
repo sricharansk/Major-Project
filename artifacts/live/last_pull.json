@@ -1,9 +1,9 @@
 {
-  "retrieved_at_utc": "2026-11-16T20:36:10.898399+00:00",
+  "retrieved_at_utc": "2026-11-18T20:36:14.503124+00:00",
   "files": {
-    "speeds": "data/raw/live/speeds/speeds_20261116T203610Z.json.gz"
+    "speeds": "data/raw/live/speeds/speeds_20261118T203614Z.json.gz"
   },
   "errors": {},
-  "speeds_rows": 448,
-  "speeds_latest_data_as_of_local": "2026-11-16T13:56:04.000"
+  "speeds_rows": 368,
+  "speeds_latest_data_as_of_local": "2026-11-18T13:28:12.000"
 }
