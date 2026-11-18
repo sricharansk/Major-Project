@@ -310,26 +310,33 @@ relaxation applied after the fact. Following those two attempts, the latest-avai
 29 October 2026 (\texttt{docs/live\_latest\_available\_protocol.md}): the origin becomes the newest bin the feed has
 published, the lookback rule, model, intervals and scoring are unchanged, the data age at issue is stored on every
 forecast, and a target is scored only when the retrieval log shows its bin was first pulled after the forecast was
-written. It was run on two weekday afternoons with the same frozen model, 24 polls at five-minute intervals each and a
-settle phase until the bin after the last 60-minute target was published: Friday 30 October 2026, 12:06 to 15:15 New
-York time (branch \texttt{claude/laptop-live}), and Monday 16 November 2026, 12:36 to 15:37 (branch
-\texttt{claude/laptop-live-2}). On each afternoon the feed released new bins only a few times, so three batches were
-written per day: origins 13:40, 14:55 and 16:05 UTC on 30 October (148, 89 and 104\,min old at issue; 13 of 16 links
-forecast, three withheld for no recent record) and 15:30, 16:45 and 17:55 UTC on 16 November (128, 75 and 96\,min old;
-9 links forecast, seven withheld because the feed had stalled for about 80\,min and then alternated between two
-snapshots, leaving those links short of the 12-of-24 lookback rule). All 198 forecasts were scored (0 pending, 0 late)
-and none was excluded by the publication-time guard: every forecast was written before its target bin was published,
-although, because of the feed's latency, every target had already occurred on the wall clock. The two afternoons
-differ (Table~\ref{tab:live}). On 30 October ($n = 39$ per horizon) the model's MAE was 3.62, 5.50 and 5.25\,mph at
-15, 30 and 60\,min against persistence at 4.25, 6.17 and 5.59\,mph. On 16 November ($n = 27$) it was 4.94, 4.52 and
-5.65\,mph against persistence at 4.05, 3.54 and 5.78\,mph: worse than persistence at 15 and 30\,min on an afternoon
-whose speeds barely moved, and marginally better at 60\,min. Pooled ($n = 66$) the model ties persistence at 15 and
-30\,min (4.16 vs 4.17 and 5.10 vs 5.09\,mph) and is 0.25\,mph better at 60\,min (5.42 vs 5.67), with 90\,\% interval
-coverage of 0.894, 0.909 and 0.924 (widths 23 to 28\,mph); on the 48 advisory-eligible rows per horizon the MAE was
-3.89, 4.64 and 4.83\,mph. This is a forecast at the feed's own latency, of bins the feed had not yet released, reported
-with its data age and not as a real-time prediction; six origins on two afternoons are a check that the pipeline runs on
-data that did not exist at training time and an honest signal that its advantage over persistence is small and
-unstable at that data age, not a second test set, and the wall-clock protocol remains NOT RUN.
+written. It was run on three weekday afternoons with the same frozen model, 24 polls at five-minute intervals each and
+a settle phase until the bin after the last 60-minute target was published: Friday 30 October 2026, 12:06 to 15:15
+New York time (branch \texttt{claude/laptop-live}), Monday 16 November, 12:36 to 15:37 (\texttt{claude/laptop-live-2}),
+and Wednesday 18 November, 11:58 to 15:36 (\texttt{claude/laptop-live-3}). On every afternoon the feed released new
+bins only a few times, so three batches were written per day: origins 13:40, 14:55 and 16:05 UTC on 30 October (148,
+89 and 104\,min old at issue; 13 of 16 links forecast, three withheld for no recent record); 15:30, 16:45 and 17:55 UTC
+on 16 November (128, 75 and 96\,min old; 9 links forecast, seven withheld because the feed had stalled for about
+80\,min and then alternated between two snapshots, leaving those links short of the 12-of-24 lookback rule); and
+14:20, 15:25 and 17:05 UTC on 18 November (159, 123 and 108\,min old; 8, 9 and 9 links forecast after a stall of about
+100\,min). Of the 276 forecasts, 274 were scored (0 pending, 0 late; two 18 November targets on one link were never
+published by the feed) and none was excluded by the publication-time guard: every forecast was written before its
+target bin was published, although, because of the feed's latency, every target had already occurred on the wall
+clock. The afternoons disagree (Table~\ref{tab:live}). On 30 October ($n = 39$ per horizon) the model's MAE was 3.62,
+5.50 and 5.25\,mph at 15, 30 and 60\,min against persistence at 4.25, 6.17 and 5.59\,mph. On 16 November ($n = 27$) it
+was 4.94, 4.52 and 5.65\,mph against 4.05, 3.54 and 5.78\,mph, worse than persistence at 15 and 30\,min on an afternoon
+whose speeds barely moved. On 18 November ($n = 25$--$26$) it was 6.37, 4.52 and 5.65\,mph against 5.79, 2.63 and
+4.90\,mph, worse than persistence at every horizon, with interval coverage of 0.846 to 0.880 below the 90\,\% target.
+Pooled ($n = 91$--$92$) persistence is ahead at 15 and 30\,min (4.79 vs 4.63 and 4.94 vs 4.42\,mph) and the two are
+level at 60\,min (5.48 vs 5.46), with 90\,\% interval coverage of 0.880, 0.901 and 0.912 (widths 23 to 28\,mph); on the
+66 advisory-eligible rows per horizon the model's MAE was 3.88, 4.22 and 4.70\,mph. The live evidence therefore does
+not show the model beating a no-change forecast on data that did not exist at training time: the test-set gain of
+Table~\ref{tab:forecast} was measured with a fresh 5-minute origin, whereas every live forecast started from a bin
+one to two and a half hours old, on 8 to 13 of the 16 links, during afternoons on which the feed stalled. This is a
+forecast at the feed's own latency, of bins the feed had not yet released, reported with its data age and not as a
+real-time prediction; nine origins on three afternoons are a check that the pipeline runs on new data and a negative
+finding about the model's advantage at that data age, not a second test set, and the wall-clock protocol remains
+NOT RUN.
 
 \subsection{Runtime}
 Training times above are on the GPU; inference of one forecast origin for all links on the CPU costs 5.7\,ms for the

@@ -234,9 +234,17 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     excluded. On that afternoon the model was WORSE than persistence at 15 and 30 min (MAE 4.94 / 4.52 / 5.65 mph vs
     persistence 4.05 / 3.54 / 5.78; coverage 0.889 / 0.963 / 0.926). Pooled over both afternoons (66 per horizon) the
     model ties persistence at 15 and 30 min (4.16 vs 4.17; 5.10 vs 5.09) and is 0.25 mph better at 60 min (5.42 vs
-    5.67). Six origins on two afternoons: a check that the pipeline works on data that did not exist at training time,
-    reported with its data age, never as real-time, and evidence that the model's advantage over persistence at that
-    data age is small and not stable from one afternoon to the next. The second run is reported as it came out.
+    5.67). A third afternoon, Wednesday 2026-11-18 (11:58-15:36 New York, branch `claude/laptop-live-3`), produced 3
+    batches (origins 14:20, 15:25, 17:05 UTC; data age 159, 123, 108 min) of 8, 9 and 9 links after a feed stall of
+    about 100 min; 78 forecasts, 76 scored (two targets on one link were never published), none pending, late or
+    excluded. On that afternoon the model was WORSE than persistence at every horizon (MAE 6.37 / 4.52 / 5.65 mph vs
+    persistence 5.79 / 2.63 / 4.90; coverage 0.846 / 0.880 / 0.880, below the 90 % target). Pooled over the three
+    afternoons (91-92 per horizon) persistence is ahead at 15 and 30 min (4.79 vs 4.63; 4.94 vs 4.42) and level at 60
+    (5.48 vs 5.46); coverage 0.880 / 0.901 / 0.912. Nine origins on three afternoons: a check that the pipeline works
+    on data that did not exist at training time, reported with its data age, never as real-time, and a negative
+    finding: at the feed's one-to-two-and-a-half-hour data age, on 8-13 links, the model does not beat a no-change
+    forecast, although it does on the chronological test set with a fresh origin. Every run is reported as it came
+    out; none was dropped or re-selected.
 28. **Workstation environment deviation from 2026-10-28.** Windows Application Control began blocking the unsigned
     compiled extensions `torch_scatter` and `torch_sparse` (WinError 4551, raised as OSError at import). They are not
     used by the project's models (GATv2 runs on PyG's built-in ops); only the PyG-Temporal package `__init__` imports
