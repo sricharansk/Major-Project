@@ -374,10 +374,14 @@ BODY = [
           "chapters 5 and 6, MUTCD 2009 [@mutcd2009] chapters 4D and 4E, nine SUMO documentation pages pinned to "
           "v1.28.0 and the project-defined policy), 1,633 chunks embedded with all-MiniLM-L6-v2 into a FAISS "
           "inner-product index; 171 chunks exceed the encoder’s 256-token window and are truncated by it (recorded "
-          "in `index_manifest.json`). On the 28 project-labelled queries the index reaches Recall@8 of 0.818 and "
-          "MRR of 0.702, and the support-status decision (SUPPORTED against INSUFFICIENT_EVIDENCE at a 0.35 score "
+          "in `index_manifest.json`). On the 28 labelled queries the index reaches Recall@8 of 0.841 and "
+          "MRR of 0.748, and the support-status decision (SUPPORTED against INSUFFICIENT_EVIDENCE at a 0.35 score "
           "threshold) matches the label on 27 of 28 queries (0.964, {T:ret}). The labels were drafted by the "
-          "project and have not been reviewed externally."),
+          "project and reviewed by the first author on 19 November 2026 against the retrieved passages: all 28 "
+          "were kept and one query (TraCI phase change) gained a second relevant document, the SUMO traffic-lights "
+          "page whose TraCI section answers it, which raised Recall@8 from 0.818 and MRR from 0.702; the one "
+          "status error (a congestion-pricing question matched to the policy’s own disclaimer) stands. The review "
+          "was internal, not by an independent annotator."),
     ("table", "ret"),
     ("h2", "Advisory Workflow"),
     ("p", "{T:adv} lists all 19 policy-by-case runs (REPLAY mode on test-partition forecast origins). The "
@@ -715,8 +719,8 @@ BODY = [
           "the model never saw during training, and only incoming edges can change a link’s own prediction."),
     ("p", "*Knowledge, language model and agents:* The approved corpus is small and is not NYC DOT’s signal-timing "
           "policy; the project-defined policy is labelled as such. 171 of 1,633 chunks exceed the encoder’s "
-          "256-token window. The retrieval labels were drafted by the project without external review, so recall "
-          "and MRR are an internal consistency check. The language model is a 7B quantised model served locally; "
+          "256-token window. The retrieval labels were drafted by the project and reviewed only by the "
+          "first author, not by an independent annotator, so recall and MRR are an internal consistency check. The language model is a 7B quantised model served locally; "
           "its advisories are only as good as the evidence and the constraints that follow it. The advisory "
           "evaluation is functional (seven cases, four policies, 19 runs), not statistical, and on the mapped "
           "corridor the model proposed no signal change, so the simulation acceptance path was not exercised by a "
