@@ -124,7 +124,7 @@ Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 
   **no weather -0.046 [-0.069, -0.021] (negative result)**.
 * Conformal 90% intervals: coverage 0.91/0.91/0.90 overall, 0.80/0.79/0.76 under congestion; gate defers ~26%,
   retained MAE 3.72/4.38/5.25.
-* Retrieval: 28 queries, Recall@8 0.818, MRR 0.702 (project-drafted labels). LLM agents (two passes): 24/24 schema-valid calls;
+* Retrieval: 28 queries, Recall@8 0.841, MRR 0.748, status accuracy 0.964 (labels drafted by the project, reviewed by the author 2026-11-19). LLM agents (two passes): 24/24 schema-valid calls;
   per pass 3/3 fabricated citations without retrieval (all rejected), 0/9 with; constraints reject the unmapped link; the
   LLM chose monitor-only on the mapped corridor, so no advisory reached the simulation gate.
 * SUMO: the first 45-run controller comparison (2026-10-20) is **superseded** (a testbed audit found SUMO re-routing

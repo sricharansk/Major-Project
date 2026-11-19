@@ -119,10 +119,13 @@ to weather and link identity. All of these are model sensitivities, not causal e
 The approved corpus holds 15 documents (the FHWA 2008 Signal Timing Manual and its chapters 5 and 6, MUTCD 2009
 chapters 4D and 4E, nine SUMO documentation pages pinned to v1.28.0 and the project-defined policy), 1{,}633 chunks
 embedded with all-MiniLM-L6-v2 into a FAISS inner-product index; 171 chunks exceed the encoder's 256-token window and
-are truncated by it (recorded in \texttt{index\_manifest.json}). On the 28 project-labelled queries the index reaches
-Recall@8 of 0.818 and MRR of 0.702, and the support-status decision (SUPPORTED against INSUFFICIENT\_EVIDENCE at a
+are truncated by it (recorded in \texttt{index\_manifest.json}). On the 28 labelled queries the index reaches
+Recall@8 of 0.841 and MRR of 0.748, and the support-status decision (SUPPORTED against INSUFFICIENT\_EVIDENCE at a
 0.35 score threshold) matches the label on 27 of 28 queries (0.964, Table~\ref{tab:ret}). The labels were drafted by
-the project and have not been reviewed externally.
+the project and reviewed by the first author on 19 November 2026 against the retrieved passages: all 28 were kept and
+one query (TraCI phase change) gained a second relevant document, the SUMO traffic-lights page whose TraCI section
+answers it, which raised Recall@8 from 0.818 and MRR from 0.702; the one status error (a congestion-pricing question
+matched to the policy's own disclaimer) stands. The review was internal, not by an independent annotator.
 
 \subsection{Advisory workflow}
 Table~\ref{tab:adv} lists all 19 policy-by-case runs (REPLAY mode on test-partition forecast origins). The deterministic

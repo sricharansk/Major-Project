@@ -100,8 +100,11 @@ updated here and in `reports/verification/final_status.md`. Nothing here is soft
     project-defined policy is labelled as such and must not be read as an agency rule.
 12a. **Chunk length.** 171 of the 1,633 indexed chunks exceed the encoder's 256-token window and are truncated by it
     (`knowledge/indexes/index_manifest.json`); mostly tables of the PDF manual.
-13. **Retrieval labels** in `knowledge/retrieval_eval_queries.csv` were drafted by the project and are marked
-    `drafted_by_project_unreviewed`; recall/MRR are therefore an internal consistency check, not an external benchmark.
+13. **Retrieval labels** in `knowledge/retrieval_eval_queries.csv` were drafted by the project and reviewed by the first
+    author on 2026-11-19 (`reviewed_by_SK_2026-11-19`, walkthrough in the shared results folder): all 28 kept, q17 gained
+    `sumo_Simulation_Traffic_Lights` as a second relevant document, so Recall@8 rose from 0.818 to 0.841 and MRR from
+    0.702 to 0.748; status accuracy 0.964 unchanged (q26 still matches the policy's disclaimer). The review was internal,
+    not by an independent annotator; recall/MRR remain an internal consistency check, not an external benchmark.
 14. **LLM.** A 7B quantised model (`qwen2.5:7b`, Q4_K_M) run through Ollama on the author's workstation; outputs are
     schema-validated but their content is only as good as the retrieved evidence and the constraints that follow.
     The LLM is never the safety boundary.

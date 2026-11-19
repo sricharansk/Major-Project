@@ -380,7 +380,7 @@ def retrieval_table():
     s = json.loads(p.read_text())["summary"]
     k = s["k"]
     body = (f"\\begin{{table}}[t]\\centering\\caption{{{cap} (labels drafted by the project; review status: "
-            f"{_esc(', '.join(s['label_review_status']))})}}\\label{{tab:ret}}\n\\begin{{tabular}}{{lr}}\\toprule\n"
+            f"{_esc(', '.join(s['label_review_status']))}; the review is by the first author, not independent)}}\\label{{tab:ret}}\n\\begin{{tabular}}{{lr}}\\toprule\n"
             f"Queries & {s['n_queries']} \\\\ Recall@{k} & {_f(s.get(f'mean_recall@{k}'), 3)} \\\\ MRR & {_f(s.get('mrr'), 3)} \\\\ "
             f"Support-status accuracy & {_f(s['status_accuracy'], 3)} \\\\ \\bottomrule\\end{{tabular}}\\end{{table}}\n")
     _write("retrieval.tex", body)

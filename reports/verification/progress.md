@@ -131,7 +131,7 @@ Stage log: `reports/verification/stage_log.jsonl` (every stage rc=0 after the fi
   `n_out_edges` are now recorded per row.
 - Retrieval (`artifacts/retrieval/retrieval_eval.json`, corpus 50ff3107ae21057d: 15 documents, 1,633 chunks, 171 over
   the encoder's 256-token window): 28/28 queries scored, Recall@8 0.818, MRR 0.702, status accuracy 0.964
-  (labels drafted_by_project_unreviewed).
+  (labels drafted_by_project_unreviewed at the time; reviewed by SK on 2026-11-19, Milestone 22).
 - Agents (`advisory_metrics.csv`, `artifacts/agent_traces/`, `llm_calls.csv`): 7 cases x policies = 19 runs; 12 LLM
   calls, 12/12 schema-valid, 1 attempt each, 15.9-125.5 s per call (first call cold). Stale data -> DEFER_DATA;
   wide interval and the rain period (44-46 mph > 38.1) -> DEFER_UNCERTAINTY; out-of-scope query -> DEFER_EVIDENCE.
@@ -636,6 +636,21 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   `tests/unit/test_live.py` grows from 8 to 13 (origin selection, first-seen map, publication-time scoring,
   unknown-mode rejection, stale-feed end-to-end with the stub model). NOT RUN until the workstation runs section 9
   of `docs/laptop_run.md`; claim C51.
+
+### Milestone 22: retrieval labels reviewed by the author (2026-11-19)
+- SK reviewed the 28 retrieval evaluation queries against a walkthrough listing, for each query, the labelled
+  document's answering passage and the retriever's result (shared results folder,
+  `rag_label_review_walkthrough_2026-11-19.md`), and kept all 28 labels. The one change the walkthrough
+  recommended was applied: q17 (TraCI phase change) also accepts `sumo_Simulation_Traffic_Lights`, whose
+  "Controlling traffic lights via TraCI" section answers it. q26 keeps INSUFFICIENT_EVIDENCE. `review_status` is
+  `reviewed_by_SK_2026-11-19` on every row (1591e4a).
+- Workstation re-run (`claude/laptop-rag-review`, 3b785e6): `rag evaluate` on the same index (corpus hash
+  50ff3107ae21057d, min_score 0.35), `report export`, `paper sync`; tests/unit + tests/safety 99 passed. Result as
+  it came out: Recall@8 0.841 (was 0.818), MRR 0.748 (was 0.702), status accuracy 0.964 (unchanged); the whole gain
+  is q17, whose first-ranked page now counts as relevant.
+- Paper retrieval paragraph, Table `tab:ret` caption, limitations (paper and report, item 13), README, claim C09
+  and `final_status.md` updated. The review is internal (first author), not by an independent annotator, and the
+  paper says so.
 
 ### Milestone 21: third latest-available LIVE run (workstation 2026-11-18, integrated in the cloud container)
 - SK asked for a further run on 2026-11-18 (project chat, "run it ... get the most positive result"); the answer
