@@ -381,7 +381,8 @@ def build_table(tid: str, refs: Refs) -> str:
         body = [[k.strip(), v] for k, v in pairs]
         x = caption("Retrieval Evaluation on the Labelled Query Set", refs)
         x += table_xml([120, 60], [["Measure", "Value"]], body, refs, ["start", "end"], size=16)
-        x += note("Labels drafted by the project, not externally reviewed.", refs)
+        x += note("Labels drafted by the project and reviewed by the first author on 2026-11-19; the review "
+                  "is not independent.", refs)
         return x
     if tid == "adv":
         _, rows = tex_rows("advisory")
