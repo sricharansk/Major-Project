@@ -1,4 +1,4 @@
-"""Capture the Streamlit dashboard pages used in the final-review deck and the paper (presentation/assets/dashboard/*.png).
+"""Capture the Streamlit dashboard pages used in the final-review deck and the paper (presentation/assets/dashboard_2026-11-20/*.png).
 
 Start the dashboard first (PYTHONPATH=src streamlit run src/smartcity/dashboard/app.py --server.headless true), then:
     python presentation/capture_dashboard.py [http://localhost:8501] [chromium executable | msedge]
@@ -15,7 +15,7 @@ from playwright.sync_api import sync_playwright
 
 URL = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8501"
 EXE = sys.argv[2] if len(sys.argv) > 2 else None
-OUT = Path(__file__).resolve().parent / "assets" / "dashboard"
+OUT = Path(__file__).resolve().parent / "assets" / "dashboard_2026-11-20"  # fresh 2x captures; the original set in assets/dashboard is cropped by the deck and paper builders
 SCALE = 2  # device scale factor; crop boxes below are in CSS pixels
 SIDEBAR, RIGHT, TOP = 360, 40, 70
 # sidebar label, output name, text to scroll to (None = top of page), action before the capture
