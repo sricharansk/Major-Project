@@ -5,8 +5,8 @@ Markup inside strings: *italic*, **bold**, `mono`, _{subscript}, ^{superscript},
 project's result files (reports/experiments/, artifacts/); tables and figures are generated from those files.
 """
 
-TITLE = ("Predictive Analytics for Smart City Infrastructure: Multi-Horizon Traffic Forecasting and an Explainable "
-         "Agentic Signal Advisory with Graph Transformers and Retrieval-Augmented Generation")
+TITLE = ("Predictive Analytics for Smart City Infrastructure: Multi-Horizon Traffic Congestion Forecasting and "
+         "Explainable Agentic Signal Advisory Using Spatiotemporal Transformers and RAG")
 
 AUTHORS = [
     {"name": "S K Sricharan",
@@ -161,9 +161,9 @@ BODY = [
           "models ({F:area}). A directed graph joins two links when the end of one lies within 150 m of the start of "
           "the next with a compatible heading, or when the link names state a shared endpoint; this gives 16 "
           "accepted edges, each with a recorded reason."),
-    ("fig", "area", "fig05_study_area.png", 3.38,
-     "Monitored Manhattan road links (red) shown on the project dashboard. The links cover the main avenues, the "
-     "FDR Drive, the West Side Highway and river-crossing approaches.", False),
+    ("fig", "area", "fig05_study_area.png", 6.8,
+     "Monitored Manhattan road links (red) on the project dashboard map. The links cover the main avenues, the "
+     "FDR Drive, the West Side Highway and the tunnel and bridge approaches.", True),
     ("h2", "Data Sources"),
     ("p", "All inputs are public ({T:sources}). Link speed is the forecasting target [@nycdotspeeds]. Weather comes "
           "from Open-Meteo [@openmeteo]: archived forecasts are used for the operational track, so the model only "
@@ -173,6 +173,21 @@ BODY = [
           "Automated volume counts [@nycclasscounts] and OpenStreetMap geometry are used only to build the "
           "simulation corridor."),
     ("table", "sources"),
+    ("h2", "Data Quality"),
+    ("p", "The speed feed needed heavy cleaning ({T:quality}). Almost half of the raw records report a speed of "
+          "zero or less, and more than half of those come from the seven links that reported zero in every "
+          "record of the year; such values are treated as missing readings, not as stopped traffic, and removed, "
+          "together with a handful above a plausibility limit. On the 5-minute grid, 61.1% of the "
+          "link-step cells hold a measurement, and the share varies from month to month ({F:data}). Coverage also "
+          "differs sharply between links and between the training, validation, calibration and test periods "
+          "({F:links}); links with too little training data are kept on the grid but left out of the models."),
+    ("table", "quality"),
+    ("fig", "data", "fig19_data.png", 3.38,
+     "(a) Raw speed records by cleaning outcome. (b) Monthly share of 5-minute grid cells with an observed "
+     "speed.", False),
+    ("fig", "links", "fig20_link_heatmap.png", 3.38,
+     "Observed share of 5-minute steps for each grid link in the training, validation, calibration and test "
+     "periods. Darker cells hold more data.", False),
     ("h2", "Preprocessing and Quality Control"),
     ("p", "The study window is 1 January to 20 October 2026. Each download is logged with its source, time and "
           "checksum, and a server-side audit confirms dataset identity before use. Timestamps are converted from "
@@ -317,6 +332,12 @@ BODY = [
     ("fig", "mae", "fig06_mae.png", 3.38,
      "Test MAE of all models at the three horizons (REPLAY). The vertical axis starts at 4 mph to make the "
      "differences between learned models visible.", False),
+    ("p", "{F:radar} puts the same results on a common scale as skill relative to persistence. The learned models "
+          "gain more skill as the horizon grows, and the deep models form an outer ring at 30 and 60 minutes, "
+          "while the tree ensembles stay slightly inside."),
+    ("fig", "radar", "fig21_radar.png", 3.38,
+     "Skill over persistence (%) in MAE and RMSE at each horizon (REPLAY). A larger polygon is better; the "
+     "centre is persistence.", False),
     ("h2", "Robustness Across Seeds"),
     ("p", "A single run can flatter a model, so the three deep models were retrained with three seeds ({T:seeds}, "
           "{F:seeds}). The proposed model is significantly better than the temporal Transformer at every horizon, "
@@ -339,6 +360,7 @@ BODY = [
     ("fig", "ablation", "fig08_ablation_window.png", 3.38,
      "(a) Change in mean test MAE when a component is removed, with 95% day-block bootstrap intervals. (b) MAE "
      "when the link's own history is cut to shorter windows.", False),
+    ("table", "ablation"),
     ("h2", "Uncertainty and the Reliability Gate"),
     ("p", "The conformal intervals reach 0.909, 0.907 and 0.903 coverage at the three horizons, close to the "
           "nominal 0.90 ({T:unc}). Coverage is not uniform, though ({F:unc}a). It is about 0.93 in free flow and "
@@ -349,7 +371,7 @@ BODY = [
           "({F:unc}b). The gate thus trades coverage of the network for reliability of what is passed on."),
     ("table", "unc"),
     ("fig", "unc", "fig09_uncertainty.png", 3.38,
-     "(a) Empirical coverage of the 90% intervals by traffic state; the dashed line is the nominal level. (b) "
+     "(a) Empirical coverage of the 90% intervals by traffic state and horizon (nominal level 0.90). (b) "
      "MAE of retained forecasts against the share deferred, for the gate's missing-data threshold.", False),
     ("h2", "Explanations"),
     ("p", "Across twelve explained alerts, the link's own last 30 minutes dominate the attributions (mean absolute "
@@ -364,11 +386,17 @@ BODY = [
     ("fig", "shap", "fig10_shap.png", 3.38,
      "(a) Mean absolute grouped Shapley value of the proposed model over twelve alerts. (b) Share of TreeSHAP "
      "attribution by group for the LightGBM baseline at each horizon.", False),
+    ("table", "xai"),
     ("h2", "Retrieval and Advisory Workflow"),
     ("p", "On 28 labelled queries, retrieval reaches **Recall@8 of 0.841** and an MRR of 0.748, and the "
-          "supported/unsupported status is right for 27 of 28 queries (0.964). The labels were reviewed by the "
-          "first author and not by an independent annotator, which limits how far these figures can be "
-          "generalised."),
+          "supported/unsupported status is right for 27 of 28 queries (0.964) ({T:retrieval}). The one error is "
+          "an out-of-scope query whose best passage scored above the evidence threshold ({F:advret}b). The labels were "
+          "reviewed by the first author and not by an independent annotator, which limits how far these figures "
+          "can be generalised. {F:retshot} shows a retrieval result as the operator sees it."),
+    ("table", "retrieval"),
+    ("fig", "advret", "fig24_advisory_retrieval.png", 3.38,
+     "(a) Advisory decisions under each policy, summed over the three passes (REPLAY). (b) Top-1 retrieval score "
+     "of each labelled query by expected status; the dashed line is the evidence threshold.", False),
     ("p", "{T:adv} summarises 19 advisory runs (seven cases under the full system and four under each of three "
           "reduced policies), repeated in three passes with 36 language-model calls in total. Every call returned "
           "valid JSON and every pass reached the same 19 decisions. Without retrieval, the model invented an "
@@ -378,29 +406,38 @@ BODY = [
           "system rejected it. In the full system, wide intervals, stale data and missing evidence ended runs "
           "early as intended, and the two corridor cases ended as monitor-only advisories pending human review. "
           "**No real advisory reached the simulation gate**, so the gate has only been exercised by the "
-          "controller study below. After the first call, an advisory took 19 to 30 s."),
+          "controller study below. After the first call, an advisory took 19 to 30 s. {F:advret}a shows the "
+          "decisions per policy, and {F:agent} shows the audit table in which each run is listed with its "
+          "recorded reasons."),
     ("table", "adv"),
     ("h2", "Simulation Calibration"),
     ("p", "The testbed did not match reality at first. With Webster-style timing the corridor ran at 5.82 mph "
           "against the observed 10.95 mph, and scaling the green split alone never rose above 8.22 mph "
-          "({F:calib}). A common 90 s cycle reached 8.88 mph, and adding offsets for a 25 mph southbound platoon "
+          "({F:calib}, {T:calib}). A common 90 s cycle reached 8.88 mph, and adding offsets for a 25 mph southbound platoon "
           "brought it to **10.08 mph, inside the ±1.5 mph band**; this cell (green factor 1.5) was selected by the "
           "preregistered rule. A 120 s cycle overshot to 13.1 to 21.7 mph. The calibrated network is a scenario "
           "testbed tuned to one speed on one link, not a model of the city's actual timing plans. An earlier "
           "version of the testbed wrote demand as origin-destination flows, which the simulator re-routes on "
           "current travel times [@sumodocs_routing], so part of the traffic left the corridor; an audit found "
           "this, and all runs reported here use fixed free-flow routes on the corridor."),
+    ("fig", "retshot", "fig16_dash_retrieval.png", 6.4,
+     "Evidence retrieval page of the dashboard: a query about signal timing returns ranked passages from the "
+     "public manuals, each with its source and similarity score.", True),
+    ("fig", "agent", "fig17_dash_agent.png", 6.4,
+     "Audit table of advisory runs on the dashboard (REPLAY). Each run records its case, its final decision and "
+     "the reasons, such as a wide interval, a missing network mapping or an invented evidence identifier.", True),
     ("fig", "calib", "fig11_calibration.png", 3.38,
      "Calibration of the SUMO corridor (SIMULATION): mean simulated speed on the mapped link against the green "
      "factor for each timing family. Filled markers are admissible cells; the band is the observed speed ±1.5 mph.",
      False),
+    ("table", "calib"),
     ("h2", "Controller Comparison in Simulation"),
     ("p", "On the calibrated corridor, three controllers were run in three scenarios with five matched seeds, 45 "
           "runs in all, none with a teleport ({T:sim}, {F:ctrl}). The forecast rule extends corridor green by 5 s "
           "when the forecast flags congestion. In the routine peak it is never triggered, so it equals fixed time "
           "(271.6 s time loss per trip). Under the event surge it lowers time loss from 450.2 s to 426.0 s "
           "(**−5.4%**) and completes 5,910 trips instead of 5,720; in the incident scenario time loss falls from "
-          "465.9 s to 443.9 s (**−4.7%**) with 5,919 trips completed instead of 5,725. The rule wins in every seed, "
+          "465.9 s to 443.9 s (**−4.7%**) with 5,919 trips completed instead of 5,725. The rule wins in every seed ({F:simseeds}), "
           "by 12.9 to 33.7 s, and it is not a survivorship effect, because more trips finish rather than fewer. "
           "The actuated controller uses the simulator's own uncalibrated programs and is shown only as a "
           "reference. These are simulation results on a calibrated scenario testbed without side-street demand or "
@@ -409,9 +446,12 @@ BODY = [
     ("fig", "ctrl", "fig12_controllers.png", 3.38,
      "Fixed time against the forecast-triggered rule on the calibrated corridor (SIMULATION, five seeds). (a) "
      "Time loss per completed trip with the range over seeds. (b) Completed trips per run.", False),
+    ("fig", "simseeds", "fig22_sim_seeds.png", 3.38,
+     "Time loss per trip in each matched seed under fixed time and the forecast rule (SIMULATION). Every line "
+     "slopes down, so the rule helps in every seed of both disturbed scenarios.", False),
     ("h2", "Live Test"),
-    ("p", "{T:live} and {F:live} give the live results, and {F:dash}b shows how the dashboard labels a live "
-          "batch. On the first afternoon the model beat persistence at all three horizons. On the second it lost "
+    ("p", "{T:live} and {F:live} give the live results, and {F:liveshot} shows how the dashboard reports the "
+          "live batches. On the first afternoon the model beat persistence at all three horizons. On the second it lost "
           "at 15 and 30 minutes, and on the third it lost at every horizon. Pooled over 274 scored forecasts "
           "(two of 276 targets were never published), the MAE is 4.79, 4.94 and 5.48 mph against 4.63, 4.42 and "
           "5.46 mph for persistence: **persistence is ahead at 15 and 30 minutes and level at 60 minutes**. "
@@ -424,17 +464,29 @@ BODY = [
     ("fig", "live", "fig13_live.png", 3.38,
      "Live MAE of the proposed model and of persistence on three afternoons (A1 to A3) and pooled (LIVE, "
      "latest-available origin).", False),
+    ("p", "{F:livescatter} looks at the individual forecasts. Both the model and persistence follow the observed "
+          "speeds and their error distributions are similar in shape, but the model's median and 90th-percentile "
+          "errors are slightly larger (3.25 and 12.3 mph against 3.11 and 11.2 mph), which is enough to put "
+          "persistence ahead on the pooled MAE."),
+    ("fig", "livescatter", "fig23_live_scatter.png", 3.38,
+     "(a) Predicted against observed speed for all 274 scored live forecasts. (b) Absolute error of the model "
+     "and of persistence at each horizon (LIVE).", False),
+    ("fig", "liveshot", "fig18_dash_live.png", 6.0,
+     "Live monitoring page of the dashboard (LIVE). Top: the protocol banner with the data age of the latest "
+     "batch. Middle: live forecasts of one link at 15, 30 and 60 minutes against the observations pulled later. "
+     "Bottom: the labels that every live batch carries.", True),
+    ("fig", "dash", "fig14_dash_forecast.png", 5.0,
+     "Multi-horizon forecast page of the dashboard (REPLAY): the observed speed of one link with the 15, 30 and "
+     "60 minute forecasts and their 90% intervals.", True),
     ("h2", "Dashboard and Run Time"),
     ("p", "The dashboard ({F:dash}) shows each forecast with its interval, data age and mode label, and lists every "
           "advisory with its decision and reasons. On a CPU, one forecast for all links takes 5.7 ms with the "
-          "proposed model, 2.2 ms with the temporal Transformer and 0.7 ms with the GRU, and a retrieval query takes "
-          "tens of milliseconds. The language-model step dominates the latency of an advisory, which is "
+          "proposed model, 2.2 ms with the temporal Transformer and 0.7 ms with the GRU ({T:runtime}, {F:runtime}), "
+          "a grouped explanation takes a few seconds per alert and a retrieval query takes tens of milliseconds. The language-model step dominates the latency of an advisory, which is "
           "acceptable for monitor-only advice but would need attention for faster control loops."),
-    ("fig", "dash", "fig14_dashboard.png", 7.0,
-     "Project dashboard. (a) Multi-horizon forecast for one link with 90% intervals at 15, 30 and 60 minutes "
-     "(REPLAY). (b) Live monitoring banner stating the data age and protocol of a batch (LIVE). (c) Audit table of "
-     "advisory runs with their decisions and recorded reasons (REPLAY).",
-     True),
+    ("table", "runtime"),
+    ("fig", "runtime", "fig25_runtime.png", 3.38,
+     "CPU inference time per forecast origin for each model, on a logarithmic scale.", False),
     ("h2", "Discussion"),
     ("p", "Three lessons stand out. First, graph structure helps, but modestly: the graph layers beat a temporal "
           "Transformer reliably, yet a GRU stays within a few hundredths of a mph. Second, calibration in "

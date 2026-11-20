@@ -36,6 +36,7 @@ FIG_NS = ('xmlns:a="http://purl.oclc.org/ooxml/drawingml/main"',
           'xmlns:pic="http://purl.oclc.org/ooxml/drawingml/picture"')
 
 H = (15, 30, 60)
+BALANCE_REF = 33  # reference that opens the right column of the last page (IEEE: last-page columns of equal length)
 
 
 def rows(path: Path) -> list[dict]:
@@ -61,7 +62,15 @@ def tbl(title: str, widths, header, body, aligns, refs, size=14, notes: str | No
         x += B.note(notes, refs)
     else:
         x += B.para("tablecopy", "", '<w:spacing w:before="0pt" w:after="6pt"/>')
-    return x
+    # caption, table and note share one unsplittable, borderless cell, so they always stay on one page and column
+    return (f'<w:tbl><w:tblPr><w:tblW w:w="{COL:.2f}pt" w:type="dxa"/><w:jc w:val="center"/>'
+            '<w:tblLayout w:type="fixed"/><w:tblCellMar><w:start w:w="0pt" w:type="dxa"/>'
+            '<w:end w:w="0pt" w:type="dxa"/></w:tblCellMar><w:tblLook w:firstRow="0" w:lastRow="0" '
+            'w:firstColumn="0" w:lastColumn="0" w:noHBand="1" w:noVBand="1"/></w:tblPr>'
+            f'<w:tblGrid><w:gridCol w:w="{round(COL * 20)}"/></w:tblGrid>'
+            '<w:tr><w:trPr><w:cantSplit/><w:jc w:val="center"/></w:trPr>'
+            f'<w:tc><w:tcPr><w:tcW w:w="{COL:.2f}pt" w:type="dxa"/></w:tcPr>{x}</w:tc></w:tr></w:tbl>'
+            + B.para(None, "", '<w:spacing w:before="0pt" w:after="2pt" w:line="2pt" w:lineRule="exact"/>'))
 
 
 def table_related(refs) -> str:
@@ -236,8 +245,179 @@ def table_live(refs) -> str:
                      f"{f2(pool[60]['coverage'], 3)}.")
 
 
+AUD = REPO / "reports" / "data_audit"
+EXPL = REPO / "artifacts" / "explanations"
+
+
+def table_quality(refs) -> str:
+    import json
+    sp = json.loads((AUD / "speeds_preprocessing.json").read_text(encoding="utf-8"))
+    cov = rows(AUD / "link_split_coverage.csv")
+    edges = sum(1 for e in rows(AUD / "graph_edges.csv") if e["accepted"] == "True")
+    raw = sp["raw_rows"]
+    pct = lambda v: f"{v:,} ({100 * v / raw:.1f}%)"  # noqa: E731
+    body = [["Raw speed records", f"{raw:,}"],
+            ["Zero or negative speed (removed)", pct(sp["speed_zero_or_negative"])],
+            ["Above plausibility limit (removed)", f"{sp['speed_above_max']:,}"],
+            ["Duplicates or unparseable times", f"{sp['duplicates_removed'] + sp['unparseable_time']:,}"],
+            ["Valid records kept", pct(sp["valid_rows"])],
+            ["Manhattan links in the feed", str(sp["links"])],
+            ["Links on the 5-min grid", str(sum(1 for c in cov if c["in_grid"] == "True"))],
+            ["Links used by the models", str(sum(1 for c in cov if c["in_features"] == "True"))],
+            ["Grid time steps (5 min)", f"{sp['grid_steps']:,}"],
+            ["Observed share of grid cells", f"{100 * sp['grid_observed_fraction']:.1f}%"],
+            ["Accepted directed graph edges", str(edges)]]
+    return tbl("Speed Data Before and After Cleaning", [163.3, 80], [["Quantity", "Value"]], body,
+               ["start", "end"], refs, size=14,
+               notes="A link enters the models when at least half of its training period is observed. Missing "
+                     "grid cells are masked in the loss and never scored.")
+
+
+def table_ablation(refs) -> str:
+    import json
+    lab = {"proposed": "Proposed (reference)", "ablation_no_gate": "No availability gate",
+           "ablation_no_weather": "No weather group", "ablation_no_infrastructure": "No 311 group",
+           "ablation_no_events": "No events group", "ablation_no_incidents": "No incidents group"}
+    body = [["*(a) Component removed, mean over horizons*"]]
+    for r in rows(EXP / "ablation_metrics.csv"):
+        name = lab.get(r["variant"], r["variant"])
+        if r["status"].startswith("NOT_APPLICABLE"):
+            body.append([name, "–", "–", "not applicable"])
+        elif r["status"] == "REFERENCE":
+            body.append([name, f2(r["mae_mean_mph"], 3), "–", "–"])
+        else:
+            body.append([name, f2(r["mae_mean_mph"], 3), (f2(r["delta_vs_proposed_mph"], 3) if float(r["delta_vs_proposed_mph"]) < 0
+                          else "+" + f2(r["delta_vs_proposed_mph"], 3)),
+                         f"[{f2(r['ci95_low'], 3)}, {f2(r['ci95_high'], 3)}]"])
+    tw = json.loads((EXPL / "explanations_summary.json").read_text(encoding="utf-8"))["temporal_window"]
+    tw = sorted(tw, key=lambda r: -r["minutes_kept"])
+    base = tw[0]["mae_mph"]
+    body.append(["*(b) Own history kept, reference model*"])
+    for r in tw:
+        h = r["minutes_kept"]
+        name = f"{h // 60} h (full window)" if h == 120 else (f"{h // 60} h" if h >= 60 else f"{h} min")
+        body.append([name, f2(r["mae_mph"], 3), "–" if h == 120 else "+" + f2(r["mae_mph"] - base, 3), "–"])
+    return tbl("Ablation and History-Window Sensitivity (Test MAE, mph)", [93.3, 40, 42, 68],
+               [["Variant", "MAE", "Δ MAE", "95% interval"]], body, ["start", "end", "end", "center"], refs,
+               size=14, notes="Δ: variant minus reference; positive values mean the removed part helped. Intervals "
+                              "from a paired day-block bootstrap over 44 test days. Events and incidents are not "
+                              "available in time for operational use, so those ablations do not apply.")
+
+
+GROUPS = {"traffic_target_last30min": "Own speed, last 30 min", "traffic_target_30_120min": "Own speed, 30–120 min",
+          "calendar": "Calendar", "traffic_graph_neighbours": "Graph neighbours", "weather": "Weather",
+          "infrastructure": "311 requests"}
+
+
+def table_xai(refs) -> str:
+    import json
+    js = json.loads((EXPL / "explanations_summary.json").read_text(encoding="utf-8"))
+    g = js["global_grouped_mean_abs_shap_mph"]
+    tot = sum(g.values())
+    top = {}
+    for a in js["local_alerts"]:
+        k = max(a["group_contributions"], key=lambda q: abs(a["group_contributions"][q]))
+        top[k] = top.get(k, 0) + 1
+    n = len(js["local_alerts"])
+    body = [[GROUPS[k], f2(v), f"{100 * v / tot:.1f}", f"{top.get(k, 0)} of {n}"]
+            for k, v in sorted(g.items(), key=lambda kv: -kv[1])]
+    tb = js["tree_baseline_shap"][0]["by_horizon"]
+    tl = {"traffic": "Traffic lags", "calendar": "Calendar", "weather": "Weather", "infrastructure": "311 requests",
+          "link_identity": "Link identity"}
+    body.append(["*LightGBM, TreeSHAP share (%) at 15 / 30 / 60 min*"])
+    for k, name in tl.items():
+        sh = []
+        for h in ("15", "30", "60"):
+            gg = tb[h]["grouped_mean_abs_shap_z"]
+            sh.append(f"{100 * gg[k] / sum(gg.values()):.0f}")
+        body.append([name, "", " / ".join(sh), ""])
+    return tbl("Grouped Attributions of the Forecasts", [91.3, 44, 54, 54],
+               [["Feature group", "Mean |*φ*|\n(mph)", "Share (%)", "Largest in\nalerts"]], body,
+               ["start", "end", "center", "center"], refs, size=14,
+               notes=f"Proposed model: exact grouped KernelSHAP over {n} alerts (half the largest drops, half random). "
+                     "Attributions describe model sensitivity, not causes on the street.")
+
+
+def table_retrieval(refs) -> str:
+    import json
+    import statistics
+    man = json.loads((REPO / "knowledge" / "indexes" / "index_manifest.json").read_text(encoding="utf-8"))
+    sm = json.loads((REPO / "artifacts" / "retrieval" / "retrieval_eval.json").read_text(encoding="utf-8"))["summary"]
+    q = rows(EXP / "retrieval_metrics.csv")
+    ans = [r for r in q if r["expected_status"] == "SUPPORTED"]
+    oos = [r for r in q if r["expected_status"] != "SUPPORTED"]
+    lat = [float(r["latency_s"]) for r in q[1:]]  # the first query also loads the encoder
+    ok = sum(1 for r in q if r["status_correct"] == "True")
+    body = [["Documents / chunks", f"{len(man['documents'])} / {man['n_chunks']:,}"],
+            ["Chunks cut at the encoder limit", f"{man['chunks_over_model_limit']}"],
+            ["Embedding size", str(man["dim"])],
+            ["Labelled queries (answerable / out of scope)", f"{len(q)} ({len(ans)} / {len(oos)})"],
+            [f"Recall@{sm['k']} (answerable)", f2(sm["mean_recall@8"], 3)],
+            ["Mean reciprocal rank (answerable)", f2(sm["mrr"], 3)],
+            ["Correct status, all queries", f"{ok} of {len(q)} ({f2(sm['status_accuracy'], 3)})"],
+            ["Out-of-scope queries refused", f"{sum(1 for r in oos if r['status_correct'] == 'True')} of {len(oos)}"],
+            ["Evidence threshold (cosine)", f2(sm["min_score"])],
+            ["Median query time (s)", f"{statistics.median(lat):.3f}"]]
+    return tbl("Retrieval Evaluation on 28 Labelled Queries", [163.3, 80], [["Measure", "Value"]], body,
+               ["start", "end"], refs, size=14,
+               notes="Labels reviewed by the first author, not by an independent annotator. Query time excludes the "
+                     "first query, which also loads the encoder.")
+
+
+def table_calib(refs) -> str:
+    tex = (REPO / "paper" / "tables" / "split_calibration_v6.tex").read_text(encoding="utf-8")
+    cells = []
+    for line in tex.split("\\midrule", 1)[1].split("\\bottomrule", 1)[0].split("\\\\"):
+        c = [v.strip().replace("\\,", " ") for v in line.split("&")]
+        if len(c) >= 7:
+            cells.append((c[0], float(c[1]), c[2], float(c[3]), c[6]))
+    fam = [("Webster", "none", "Webster"), ("90", "none", "90 s"), ("90", "25 mph", "90 s + offsets"),
+           ("120", "none", "120 s"), ("120", "25 mph", "120 s + offsets")]
+    body = []
+    for cyc, off, name in fam:
+        x = [c for c in cells if c[0] == cyc and c[2] == off]
+        adm = [c for c in x if c[4] == "yes"]
+        lo, hi = min(c[3] for c in x), max(c[3] for c in x)
+        best = min(adm, key=lambda c: abs(c[3] - 10.95)) if adm else None
+        inband = "yes" if best and abs(best[3] - 10.95) <= 1.5 else "no"
+        body.append([name, f"{len(adm)} of {len(x)}", f"{lo:.2f}–{hi:.2f}",
+                     f"{best[1]:.1f} / {best[3]:.2f}" if best else "–",
+                     (f"{best[3] - 10.95:+.2f}".replace("-", "−") if best else "–"), inband])
+    body[2] = [f"**{v}**" for v in body[2]]
+    hdr = [["Timing family", "Admis-\nsible", "Speed range\n(mph)", "Closest: factor\n/ speed", "Gap\n(mph)",
+            "In\nband"]]
+    return tbl("Calibration Grid Summary (SIMULATION)", [50.3, 32, 46, 52, 33, 30], hdr, body,
+               ["start", "center", "center", "center", "end", "center"], refs, size=14,
+               notes="Five green factors (1.0 to 3.0) per family, three seeds each. Target: observed 10.95 mph ± 1.5 "
+                     "on the mapped link. Admissible: no teleport and at most 1% unfinished trips in every seed. "
+                     "Bold: the family of the selected cell.")
+
+
+def table_runtime(refs) -> str:
+    r = rows(EXP / "runtime_metrics.csv")
+    first = {}
+    for x in r:
+        if x["metric"] == "inference_ms_per_origin" and x["component"] not in first:
+            first[x["component"]] = float(x["value"])
+    names = [("forecast:proposed", "Proposed"), ("forecast:temporal_transformer", "Temporal Transf."),
+             ("forecast:gru", "GRU"), ("forecast:lightgbm", "LightGBM"), ("forecast:xgboost", "XGBoost"),
+             ("forecast:historical_average", "Historical average"), ("forecast:persistence", "Persistence")]
+    body = [[n, f"{first[k]:.3f} ms" if first[k] >= 0.01 else f"{first[k] * 1000:.1f} µs"] for k, n in names]
+    shap = [float(x["value"]) for x in r if x["component"] == "explanation:grouped_kernel_shap"]
+    lat = sorted(float(x["value"]) for x in r if x["component"] == "retrieval:faiss")[:-1]
+    body.append(["*Explanation and retrieval*"])
+    body.append(["Grouped KernelSHAP, per alert", f"{min(shap):.1f}–{max(shap):.1f} s"])
+    body.append(["Retrieval query (median)", f"{lat[len(lat) // 2] * 1000:.0f} ms"])
+    return tbl("Inference Time on a CPU", [163.3, 80], [["Component", "Time"]], body,
+               ["start", "end"], refs, size=14,
+               notes="Forecast times are per origin; one origin covers all modelled links and three horizons. Retrieval median excludes the first "
+                     "query, which loads the encoder.")
+
+
 TABLES = {"related": table_related, "sources": table_sources, "setup": table_setup, "forecast": table_forecast,
-          "seeds": table_seeds, "unc": table_unc, "adv": table_adv, "sim": table_sim, "live": table_live}
+          "seeds": table_seeds, "unc": table_unc, "adv": table_adv, "sim": table_sim, "live": table_live,
+          "quality": table_quality, "ablation": table_ablation, "xai": table_xai, "retrieval": table_retrieval,
+          "calib": table_calib, "runtime": table_runtime}
 
 # ---------------------------------------------------------------------------------------------------------
 # figures
@@ -358,12 +538,14 @@ def build(out: Path) -> None:
         else:
             raise ValueError(kind)
 
-    x += B.para("Heading5", R("References"))
+    x += B.para("Heading5", R("References"), "<w:keepNext/>")
     for n, key in enumerate(refs.cites):
         last = n == len(refs.cites) - 1
-        x += B.para("references", R(T.REFERENCES[key]),
-                    '<w:ind w:start="17.70pt" w:hanging="17.70pt"/>' + (body_sect if last else ""))
-    x += "<w:p/>" + final_sect
+        brk = '<w:r><w:br w:type="column"/></w:r>' if n + 1 == BALANCE_REF else ""  # equal columns, last page
+        x += B.para("references", brk + R(T.REFERENCES[key]),
+                    '<w:ind w:start="17.70pt" w:hanging="17.70pt"/>')
+    del last
+    x += body_sect  # the reference list closes the document in two columns, so no trailing page can appear
 
     unused = sorted(set(T.REFERENCES) - set(refs.cites))
     if unused:
@@ -381,7 +563,7 @@ def build(out: Path) -> None:
     core = zin.read("docProps/core.xml").decode("utf-8")
     core = re.sub(r"<dc:title>.*?</dc:title>", f"<dc:title>{escape(T.TITLE)}</dc:title>", core)
     core = re.sub(r"<dc:creator>.*?</dc:creator>",
-                  "<dc:creator>" + escape("; ".join(a["name"].rstrip("*") for a in T.AUTHORS)) + "</dc:creator>", core)
+                  "<dc:creator>" + escape("; ".join(a["name"].rstrip("*∗") for a in T.AUTHORS)) + "</dc:creator>", core)
     core = re.sub(r"<cp:keywords>.*?</cp:keywords>|<cp:keywords/>",
                   "<cp:keywords>" + escape(", ".join(T.KEYWORDS)) + "</cp:keywords>", core)
     core = re.sub(r"<cp:lastModifiedBy>.*?</cp:lastModifiedBy>", "<cp:lastModifiedBy></cp:lastModifiedBy>", core)
