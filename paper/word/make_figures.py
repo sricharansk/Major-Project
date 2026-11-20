@@ -25,7 +25,6 @@ REPO = HERE.parent.parent
 EXP = REPO / "reports" / "experiments"
 CAL = REPO / "artifacts" / "calibration"
 EXPL = REPO / "artifacts" / "explanations"
-SHOTS = REPO / "presentation" / "assets" / "dashboard"
 OUT = HERE / "figures"
 
 COL_IN = 3.38   # one column of the A4 template
@@ -373,31 +372,39 @@ def fig_ablation_window() -> None:
 def fig_uncertainty() -> None:
     sc = pd.read_csv(CAL / "coverage_by_scenario.csv")
     dt = pd.read_csv(CAL / "deferral_tradeoff.csv")
-    groups = [("free_ratio>=0.8", "free flow"), ("moderate_0.5-0.8", "moderate"), ("congested<0.5", "congested")]
-    extra = sc.group.unique().tolist()
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(COL_IN, 1.7), gridspec_kw={"width_ratios": [1.15, 1]})
-    w = 0.25
-    x = np.arange(len(groups))
-    for k, h in enumerate(H):
-        vals = [sc[(sc.horizon_min == h) & (sc.group == g)].coverage.iloc[0] for g, _ in groups]
-        a1.bar(x + (k - 1) * w, vals, w, color=[C_PROP, C_TR, C_GRU][k], label=f"{h} min")
-    a1.axhline(0.9, color=INK, lw=0.6, ls="--")
-    a1.set_ylim(0.6, 1.1)
-    a1.set_yticks([0.6, 0.7, 0.8, 0.9, 1.0])
-    a1.set_xticks(x, [g for _, g in groups])
-    a1.set_ylabel("Empirical coverage")
-    a1.set_title("(a) coverage by traffic state", pad=2)
-    a1.legend(loc="upper center", handlelength=0.8, ncol=3, columnspacing=0.6, handletextpad=0.3)
-    del extra
+    groups = [("free_ratio>=0.8", "free flow"), ("moderate_0.5-0.8", "moderate"), ("congested<0.5", "congested"),
+              ("rush_hour_7-10_16-19", "rush hour"), ("non_rush", "off-peak"), ("weather_dry", "dry"),
+              ("weather_wet_code", "wet")]
+    unc = pd.read_csv(EXP / "uncertainty_metrics.csv")
+    m = np.array([[unc[(unc.horizon_min == h) & (unc.group == g)].empirical_coverage.iloc[0] for h in H]
+                  for g, _ in groups])
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(COL_IN, 1.95), gridspec_kw={"width_ratios": [1.0, 1.05]})
+    im = a1.imshow(m, cmap="RdYlGn", vmin=0.75, vmax=0.95, aspect="auto")
+    a1.set_xticks(range(3), [f"{h} min" for h in H])
+    a1.set_yticks(range(len(groups)), [g for _, g in groups])
+    for i in range(m.shape[0]):
+        for j in range(3):
+            a1.text(j, i, f"{m[i, j]:.2f}", ha="center", va="center", fontsize=5.8,
+                    color="white" if m[i, j] < 0.8 else INK)
+    a1.set_title("(a) coverage by condition", pad=2)
+    a1.tick_params(length=0)
+    for sp in a1.spines.values():
+        sp.set_visible(False)
+    cb = fig.colorbar(im, ax=a1, fraction=0.06, pad=0.03)
+    cb.ax.tick_params(labelsize=5.5, length=1.5)
+    cb.outline.set_linewidth(0.4)
     for k, h in enumerate(H):
         d = dt[dt.horizon_min == h].sort_values("deferral_rate")
         a2.plot(d.deferral_rate * 100, d.mae_retained, "o-", ms=2.4, color=[C_PROP, C_TR, C_GRU][k],
                 label=f"{h} min")
-    a2.set_xlabel("Deferred forecasts (%)")
+        a2.text(d.deferral_rate.iloc[0] * 100, d.mae_retained.iloc[0] + 0.1, f"{h} min", fontsize=5.6,
+                color=[C_PROP, C_TR, C_GRU][k], ha="left", va="bottom")
+    a2.set_ylim(3.3, 5.6)
+    a2.set_xlabel("deferred forecasts (%)")
     a2.set_ylabel("MAE of retained (mph)")
     a2.set_title("(b) deferral trade-off", pad=2)
     a2.grid(lw=0.3, color="#dddddd")
-    fig.tight_layout(w_pad=0.8)
+    fig.tight_layout(w_pad=0.6)
     save(fig, "fig09_uncertainty")
 
 
@@ -556,50 +563,261 @@ def fig_live() -> None:
 # screenshots
 
 
-def crop(name: str, box_px: tuple[int, int, int, int]) -> Image.Image:
-    return Image.open(SHOTS / name).convert("RGB").crop(box_px)
+SHOTS2 = REPO / "presentation" / "assets" / "dashboard_2026-11-20"  # 2x captures of the final dashboard
+
+
+def crop(name: str, box_px: tuple[int, int, int, int], folder: Path = SHOTS2) -> Image.Image:
+    return Image.open(folder / name).convert("RGB").crop(box_px)
+
+
+def shot(im: Image.Image, name: str) -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
+    im.save(OUT / f"{name}.png", dpi=(DPI, DPI))
+
+
+def stack(parts: list[Image.Image], gap: int = 24) -> Image.Image:
+    w = max(p.width for p in parts)
+    out = Image.new("RGB", (w, sum(p.height for p in parts) + gap * (len(parts) - 1)), "white")
+    y = 0
+    for p in parts:
+        out.paste(p, (0, y))
+        y += p.height + gap
+    return out
 
 
 def fig_study_area() -> None:
-    im = crop("traffic_map_laptop.png", (379, 226, 1519, 726))
-    OUT.mkdir(parents=True, exist_ok=True)
-    im.save(OUT / "fig05_study_area.png", dpi=(DPI, DPI))
+    shot(crop("traffic_map_laptop.png", (300, 312, 2322, 1312)), "fig05_study_area")
 
 
-def fig_dashboard() -> None:
-    a = crop("forecast_laptop.png", (372, 118, 1530, 945))
-    b = crop("live.png", (14, 285, 1760, 620))
-    c = crop("agent.png", (356, 139, 1741, 721))
-    rb, rc = b.height / b.width, c.height / c.width
-    w_right = 1.0
-    w_left = 1.13 * (rb + rc) * a.width / a.height  # about equal heights, allowing for the gap on the right
-    fig = plt.figure(figsize=(FULL_IN, FULL_IN * (rb + rc) / (w_left + w_right) + 0.45))
-    gs = fig.add_gridspec(2, 2, width_ratios=[w_left, w_right], height_ratios=[rb, rc], wspace=0.04, hspace=0.16)
-    panels = [(fig.add_subplot(gs[:, 0]), a, "(a) multi-horizon forecast page (REPLAY)"),
-              (fig.add_subplot(gs[0, 1]), b, "(b) live monitoring banner (LIVE)"),
-              (fig.add_subplot(gs[1, 1]), c, "(c) advisory audit table (REPLAY)")]
-    for ax, im, t in panels:
-        ax.imshow(im)
-        ax.set_xticks([])
-        ax.set_yticks([])
-        for sp in ax.spines.values():
-            sp.set_visible(True)
-            sp.set_linewidth(0.5)
-            sp.set_color("#999999")
-        ax.set_xlabel(t, fontsize=7, labelpad=2)
-    save(fig, "fig14_dashboard")
+def fig_dashboard() -> None:  # crops avoid file paths, commands and run identifiers shown on some pages
+    shot(crop("forecast_laptop.png", (20, 60, 2340, 1750)), "fig14_dash_forecast")
+    shot(crop("retrieval.png", (30, 230, 2330, 1300)), "fig16_dash_retrieval")
+    shot(crop("agent.png", (470, 230, 2330, 1010)), "fig17_dash_agent")
+    shot(stack([crop("live.png", (20, 420, 2340, 840)), crop("live_table.png", (30, 900, 2350, 1990))]),
+         "fig18_dash_live")
 
 
-def fig_live_screen() -> None:
-    im = crop("live.png", (14, 285, 1760, 620))
-    OUT.mkdir(parents=True, exist_ok=True)
-    im.save(OUT / "fig15_live_screen.png", dpi=(DPI, DPI))
+# ---------------------------------------------------------------------------------------------------------
+# further chart types
+
+
+def fig_data() -> None:
+    pre = json.loads((REPO / "reports" / "data_audit" / "speeds_preprocessing.json").read_text(encoding="utf-8"))
+    miss = pd.read_csv(REPO / "reports" / "data_audit" / "missingness.csv")
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(COL_IN, 1.6), gridspec_kw={"width_ratios": [0.9, 1.2]})
+    vals = [pre["valid_rows"], pre["speed_zero_or_negative"], pre["speed_above_max"]]
+    labs = ["valid", "zero speed\n(no measurement)", "above limit"]
+    wedges, _ = a1.pie(vals, colors=[C_PROP, "#d9d9d9", C_GRU], startangle=90, counterclock=False,
+                       wedgeprops=dict(width=0.38, edgecolor="white", linewidth=0.8))
+    a1.text(0, 0, f"{pre['raw_rows'] / 1e6:.2f} M\nrecords", ha="center", va="center", fontsize=6.2)
+    a1.legend(wedges[:2], [f"{labs[i]}: {vals[i] / pre['raw_rows'] * 100:.1f}%" for i in range(2)],
+              loc="upper center", bbox_to_anchor=(0.5, 0.02), fontsize=5.6, handlelength=0.8)
+    a1.set_title("(a) raw speed records", pad=2)
+    mon = pd.to_datetime(miss.month_utc)
+    a2.fill_between(range(len(miss)), miss.observed_fraction_all_links, color=C_PROP, alpha=0.18, lw=0)
+    a2.plot(range(len(miss)), miss.observed_fraction_all_links, "o-", color=C_PROP, ms=2.6)
+    a2.set_xticks(range(len(miss)), [m.strftime("%b") for m in mon], fontsize=5.8)
+    a2.set_ylim(0, 1)
+    a2.set_ylabel("observed fraction")
+    a2.set_title("(b) grid coverage by month, 2026", pad=2)
+    a2.grid(lw=0.3, color="#dddddd")
+    fig.tight_layout(w_pad=0.8)
+    save(fig, "fig19_data")
+
+
+def fig_link_heatmap() -> None:
+    d = pd.read_csv(REPO / "reports" / "data_audit" / "link_split_coverage.csv")
+    d = d[d.in_grid == True].copy()  # noqa: E712
+    def short(n: str) -> str:
+        words = [w if any(ch.isdigit() for ch in w) or len(w) <= 3 and w.isalpha() and w in ("FDR", "BQE", "GWB",
+                 "CBE", "QMT", "BBT", "TBB", "NJ", "NY", "BKN", "MAN", "E", "W", "N", "S") else w.capitalize()
+                 for w in n.replace(" - ", " – ").split()]
+        out = ""
+        for w in words:
+            if len(out) + len(w) + 1 > 36:
+                return out + " …"
+            out = (out + " " + w).strip()
+        return out
+    d["name"] = d.link_name.map(short)
+    d = d.sort_values("all", ascending=False)
+    cols = ["train", "val", "calib", "test"]
+    m = d[cols].to_numpy(float)
+    fig, ax = plt.subplots(figsize=(COL_IN, 3.0))
+    im = ax.imshow(m, cmap="Blues", vmin=0, vmax=1, aspect="auto")
+    ax.set_xticks(range(4), ["train", "validation", "calibration", "test"], fontsize=6)
+    ax.set_yticks(range(len(d)), [n + ("" if f else "  (not modelled)") for n, f in zip(d.name, d.in_features)],
+                  fontsize=5.2)
+    for i in range(m.shape[0]):
+        for j in range(4):
+            ax.text(j, i, f"{m[i, j]:.2f}", ha="center", va="center", fontsize=4.9,
+                    color="white" if m[i, j] > 0.55 else INK)
+    ax.tick_params(length=0)
+    ax.xaxis.tick_top()
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    cb = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02)
+    cb.ax.tick_params(labelsize=5.5, length=1.5)
+    cb.set_label("observed fraction", fontsize=6)
+    cb.outline.set_linewidth(0.4)
+    save(fig, "fig20_link_heatmap")
+
+
+def fig_radar() -> None:
+    df = pd.read_csv(EXP / "forecast_metrics.csv")
+    df = df[(df.split == "test") & (df.track == "operational")]
+    models = [("xgboost", "XGBoost", C_TREE), ("gru", "GRU", C_GRU), ("temporal_transformer", "Temp. Transf.", C_TR),
+              ("proposed", "Proposed", C_PROP)]
+    axes_ = [(m, h) for m in ("mae_mph", "rmse_mph") for h in H]
+    lab = [f"{'MAE' if m == 'mae_mph' else 'RMSE'} {h}" for m, h in axes_]
+    pers = {(m, h): df[(df.model == "persistence") & (df.horizon_min == h)][m].iloc[0] for m, h in axes_}
+    ang = np.linspace(0, 2 * np.pi, len(axes_), endpoint=False).tolist()
+    fig = plt.figure(figsize=(COL_IN, 2.1))
+    ax = fig.add_subplot(111, polar=True)
+    for key, name, c in models:
+        v = [100 * (1 - df[(df.model == key) & (df.horizon_min == h)][m].iloc[0] / pers[(m, h)]) for m, h in axes_]
+        ax.plot(ang + ang[:1], v + v[:1], color=c, lw=1.0 if key == "proposed" else 0.8, label=name)
+        if key == "proposed":
+            ax.fill(ang + ang[:1], v + v[:1], color=c, alpha=0.12)
+    ax.set_xticks(ang, lab, fontsize=6)
+    ax.set_ylim(0, 25)
+    ax.set_rlabel_position(200)
+    ax.set_yticks([5, 10, 15, 20], ["5%", "10%", "15%", "20%"], fontsize=5.2)
+    ax.grid(lw=0.3, color="#bbbbbb")
+    ax.spines["polar"].set_linewidth(0.4)
+    ax.legend(loc="upper left", bbox_to_anchor=(1.05, 1.0), fontsize=6, handlelength=1.2)
+    save(fig, "fig21_radar")
+
+
+def fig_sim_seeds() -> None:
+    df = pd.read_csv(EXP / "simulation_metrics.csv")
+    df = df[df.status == "OK"]
+    fig, axes = plt.subplots(1, 2, figsize=(COL_IN, 1.55), sharey=True)
+    for ax, (s, t) in zip(axes, (("event_surge", "(a) event surge"), ("incident_reduced_capacity", "(b) incident"))):
+        f = df[(df.scenario == s) & (df.controller == "fixed_time")].set_index("seed").corridor_mean_time_loss_s
+        r = df[(df.scenario == s) & (df.controller == "forecast_rule")].set_index("seed").corridor_mean_time_loss_s
+        seeds = sorted(f.index)
+        for k, sd in enumerate(seeds):
+            ax.plot([r[sd], f[sd]], [k, k], color="#bbbbbb", lw=1.6, zorder=1)
+            ax.scatter(f[sd], k, color=C_PERS, s=14, zorder=2, label="fixed time" if k == 0 else None)
+            ax.scatter(r[sd], k, color=C_PROP, s=14, zorder=3, label="forecast rule" if k == 0 else None)
+            ax.text(f[sd] + 3, k, f"−{f[sd] - r[sd]:.0f} s", va="center", fontsize=5.4, color=INK)
+        ax.set_yticks(range(len(seeds)), [f"seed {sd}" for sd in seeds], fontsize=5.8)
+        ax.set_title(t, pad=2)
+        ax.set_xlabel("time loss per trip (s)")
+        ax.grid(axis="x", lw=0.3, color="#dddddd")
+        ax.margins(x=0.18)
+    h_, l_ = axes[0].get_legend_handles_labels()
+    fig.legend(h_, l_, loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.09), handlelength=1.0)
+    fig.tight_layout(w_pad=0.5)
+    save(fig, "fig22_sim_seeds")
+
+
+def fig_live_scatter() -> None:
+    s = pd.read_csv(REPO / "artifacts" / "live" / "scored.csv")
+    s = s[s.status == "SCORED"]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(COL_IN, 2.0), gridspec_kw={"width_ratios": [1, 1.15]})
+    for h, c, mk in zip(H, (C_PROP, C_TR, C_GRU), ("o", "s", "^")):
+        d = s[s.horizon_minutes == h]
+        a1.scatter(d.observed_speed_mph, d.predicted_speed_mph, s=5, color=c, marker=mk, alpha=0.6, lw=0,
+                   label=f"{h} min")
+    lim = [0, max(s.observed_speed_mph.max(), s.predicted_speed_mph.max()) + 2]
+    a1.plot(lim, lim, color=INK, lw=0.5, ls="--")
+    a1.set_xlim(lim)
+    a1.set_ylim(lim)
+    a1.set_xlabel("observed (mph)")
+    a1.set_ylabel("predicted (mph)")
+    a1.set_title("(a) predicted vs observed", pad=2)
+    h1, l1 = a1.get_legend_handles_labels()
+    a1.set_aspect("equal")
+    data, pos, cols = [], [], []
+    for k, h in enumerate(H):
+        d = s[s.horizon_minutes == h]
+        data += [d.abs_error_mph.dropna(), d.persistence_abs_error_mph.dropna()]
+        pos += [k * 3 + 0.6, k * 3 + 1.4]
+        cols += [C_PROP, C_PERS]
+    bp = a2.boxplot(data, positions=pos, widths=0.65, patch_artist=True, showfliers=True,
+                    flierprops=dict(marker=".", markersize=2, markeredgecolor="#777777"),
+                    medianprops=dict(color="white", lw=0.9), whiskerprops=dict(lw=0.6), capprops=dict(lw=0.6),
+                    boxprops=dict(lw=0.5))
+    for patch, c in zip(bp["boxes"], cols):
+        patch.set_facecolor(c)
+    a2.set_xticks([1, 4, 7], [f"{h} min" for h in H])
+    a2.set_ylabel("absolute error (mph)")
+    a2.set_title("(b) error distribution", pad=2)
+    a2.grid(axis="y", lw=0.3, color="#dddddd")
+    from matplotlib.patches import Patch
+    fig.legend(h1 + [Patch(color=C_PROP), Patch(color=C_PERS)], l1 + ["proposed", "persistence"],
+               loc="upper center", bbox_to_anchor=(0.5, 1.0), ncol=5, fontsize=5.6, handlelength=0.9,
+               handletextpad=0.3, columnspacing=0.8, markerscale=1.5)
+    fig.tight_layout(w_pad=0.6, rect=(0, 0, 1, 0.9))
+    save(fig, "fig23_live_scatter")
+
+
+def fig_advisory_retrieval() -> None:
+    adv = pd.read_csv(EXP / "advisory_metrics.csv")
+    pol = [("full_system", "full system"), ("llm_without_retrieval", "no retrieval"),
+           ("rag_without_constraints", "no constraints"), ("rag_constraints_without_simulation", "no sim. gate")]
+    cats = [("PENDING", "pending review", "#2e7d32"), ("DEFER", "deferred", "#d9a441"), ("REJECT", "rejected", C_GRU)]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(COL_IN, 1.7), gridspec_kw={"width_ratios": [1.25, 1]})
+    left = np.zeros(len(pol))
+    for pre, lab, c in cats:
+        v = np.array([sum(adv[adv.policy == k].decision.str.startswith(pre)) for k, _ in pol])
+        a1.barh(range(len(pol)), v, left=left, color=c, label=lab, height=0.55)
+        for i, (x0, w) in enumerate(zip(left, v)):
+            if w:
+                a1.text(x0 + w / 2, i, str(w), ha="center", va="center", fontsize=5.6, color="white")
+        left += v
+    a1.set_yticks(range(len(pol)), [n for _, n in pol], fontsize=6)
+    a1.invert_yaxis()
+    a1.set_xlabel("advisory runs")
+    a1.set_title("(a) decisions by policy", pad=2)
+    h_, l_ = a1.get_legend_handles_labels()
+    fig.legend(h_, l_, loc="upper center", bbox_to_anchor=(0.5, 1.08), ncol=3, fontsize=5.8, handlelength=0.8,
+               columnspacing=0.8)
+    a1.tick_params(axis="y", length=0)
+    r = pd.read_csv(EXP / "retrieval_metrics.csv")
+    for k, (st, lab, c) in enumerate((("SUPPORTED", "answerable", C_PROP),
+                                      ("INSUFFICIENT_EVIDENCE", "out of scope", C_GRU))):
+        d = r[r.expected_status == st]
+        jitter = np.linspace(-0.18, 0.18, len(d))
+        a2.scatter(np.full(len(d), k) + jitter, d.top1_score, s=8, color=c, lw=0, alpha=0.85)
+    a2.axhline(0.35, color=INK, lw=0.6, ls="--")
+    a2.text(-0.45, 0.36, "threshold 0.35", fontsize=5.4, ha="left", va="bottom")
+    a2.set_xticks([0, 1], ["answerable", "out of\nscope"], fontsize=6)
+    a2.set_xlim(-0.5, 1.5)
+    a2.set_ylabel("top-1 similarity")
+    a2.set_title("(b) retrieval scores", pad=2)
+    a2.grid(axis="y", lw=0.3, color="#dddddd")
+    fig.tight_layout(w_pad=0.6)
+    save(fig, "fig24_advisory_retrieval")
+
+
+def fig_runtime() -> None:
+    rt = pd.read_csv(EXP / "runtime_metrics.csv")
+    rt = rt[rt.metric == "inference_ms_per_origin"].drop_duplicates("component")  # first row: reference run
+    order = [("forecast:persistence", "Persistence"), ("forecast:historical_average", "Hist. avg."),
+             ("forecast:xgboost", "XGBoost"), ("forecast:lightgbm", "LightGBM"), ("forecast:gru", "GRU"),
+             ("forecast:temporal_transformer", "Temp. Transf."), ("forecast:proposed", "Proposed")]
+    v = [float(rt[rt.component == k].value.iloc[0]) for k, _ in order]
+    fig, ax = plt.subplots(figsize=(COL_IN, 1.45))
+    cols = [C_PERS, C_BASE, C_TREE, "#c9ada7", C_GRU, C_TR, C_PROP]
+    ax.barh(range(len(order)), v, color=cols, height=0.6)
+    ax.set_xscale("log")
+    ax.set_yticks(range(len(order)), [n for _, n in order], fontsize=6)
+    for i, x in enumerate(v):
+        ax.text(x * 1.15, i, f"{x:.3g} ms", va="center", fontsize=5.6)
+    ax.set_xlim(3e-4, 60)
+    ax.set_xlabel("CPU inference time per forecast origin, all links (ms, log scale)")
+    ax.grid(axis="x", lw=0.3, color="#dddddd", which="major")
+    ax.tick_params(axis="y", length=0)
+    save(fig, "fig25_runtime")
 
 
 def main() -> None:
     for f in (fig_architecture, fig_forecaster, fig_workflow, fig_modules, fig_study_area, fig_mae, fig_seeds,
               fig_ablation_window, fig_uncertainty, fig_shap, fig_calibration, fig_controllers, fig_live,
-              fig_dashboard):
+              fig_dashboard, fig_data, fig_link_heatmap, fig_radar, fig_sim_seeds, fig_live_scatter,
+              fig_advisory_retrieval, fig_runtime):
         f()
         print("drew", f.__name__)
 
