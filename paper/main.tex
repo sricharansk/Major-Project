@@ -15,7 +15,7 @@
 \setcounter{totalnumber}{6}
 \urlstyle{same}
 \begin{document}
-\title{Predictive Analytics for Smart City Infrastructure: Multi-Horizon Traffic Forecasting and an Explainable Agentic Signal Advisory with Graph Transformers and Retrieval-Augmented Generation}
+\title{Predictive Analytics for Smart City Infrastructure: Multi-Horizon Traffic Congestion Forecasting and Explainable Agentic Signal Advisory Using Spatiotemporal Transformers and RAG}
 \author{\IEEEauthorblockN{S K Sricharan}
 \IEEEauthorblockA{\textit{M.Tech. Artificial Intelligence and Machine Learning,} \\
 \textit{School of Computer Science and Engineering (SCOPE)} \\
@@ -89,7 +89,7 @@ Table~\ref{tab:related} compares representative studies with this work. To our k
 \begin{table}[!t]
 \caption{Comparison With Related Studies}
 \label{tab:related}
-\centering\footnotesize
+\centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.08}
 \begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.2807\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1028\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1028\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1028\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1028\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1028\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1028\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1028\columnwidth-2\tabcolsep\relax}}
@@ -115,12 +115,12 @@ IntelliLight \cite{wei2018intellilight} & -- & -- & -- & -- & -- & \checkmark & 
 \subsection{Study Area}
 The study covers Manhattan, New York City, where the city transport department publishes real-time speeds for directed road links such as avenues, the FDR Drive, the West Side Highway and tunnel and bridge approaches. Of 26 Manhattan links in the feed, seven had no valid record in 2026, leaving 19 links on the study grid. The 16 links with at least half of their training period observed enter the models (Fig.~\ref{fig:area}). A directed graph joins two links when the end of one lies within 150 m of the start of the next with a compatible heading, or when the link names state a shared endpoint; this gives 16 accepted edges, each with a recorded reason.
 
-\begin{figure}[!t]
+\begin{figure*}[!t]
 \centering
-\includegraphics[width=\columnwidth]{fig05_study_area.png}
-\caption{Monitored Manhattan road links (red) shown on the project dashboard. The links cover the main avenues, the FDR Drive, the West Side Highway and river-crossing approaches.}
+\includegraphics[width=\textwidth]{fig05_study_area.png}
+\caption{Monitored Manhattan road links (red) on the project dashboard map. The links cover the main avenues, the FDR Drive, the West Side Highway and the tunnel and bridge approaches.}
 \label{fig:area}
-\end{figure}
+\end{figure*}
 
 \subsection{Data Sources}
 All inputs are public (Table~\ref{tab:sources}). Link speed is the forecasting target \cite{nycdotspeeds}. Weather comes from Open-Meteo \cite{openmeteo}: archived forecasts are used for the operational track, so the model only sees what a forecaster would have known, and reanalysis is kept for a retrospective track. Service requests (311) are used with a 24 h lag that matches their publication delay. Collisions and permitted events are published too late for operational use and are kept for retrospective analysis only. Automated volume counts \cite{nycclasscounts} and OpenStreetMap geometry are used only to build the simulation corridor.
@@ -148,6 +148,50 @@ OpenStreetMap & simulation corridor geometry & extract \\
 \begin{minipage}{\columnwidth}\scriptsize Rows used are the Manhattan or study-window subsets downloaded for this work; every download is logged with a checksum.\end{minipage}
 \end{table}
 
+\subsection{Data Quality}
+The speed feed needed heavy cleaning (Table~\ref{tab:quality}). Almost half of the raw records report a speed of zero or less, and more than half of those come from the seven links that reported zero in every record of the year; such values are treated as missing readings, not as stopped traffic, and removed, together with a handful above a plausibility limit. On the 5-minute grid, 61.1\% of the link-step cells hold a measurement, and the share varies from month to month (Fig.~\ref{fig:data}). Coverage also differs sharply between links and between the training, validation, calibration and test periods (Fig.~\ref{fig:links}); links with too little training data are kept on the grid but left out of the models.
+
+\begin{table}[!t]
+\caption{Speed Data Before and After Cleaning}
+\label{tab:quality}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.6712\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.3288\columnwidth-2\tabcolsep\relax}}
+\toprule
+\textbf{Quantity} & \textbf{Value} \\
+\midrule
+Raw speed records & 1,968,303 \\
+Zero or negative speed (removed) & 978,018 (49.7\%) \\
+Above plausibility limit (removed) & 59 \\
+Duplicates or unparseable times & 0 \\
+Valid records kept & 990,226 (50.3\%) \\
+Manhattan links in the feed & 26 \\
+Links on the 5-min grid & 19 \\
+Links used by the models & 16 \\
+Grid time steps (5 min) & 84,084 \\
+Observed share of grid cells & 61.1\% \\
+Accepted directed graph edges & 16 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\begin{minipage}{\columnwidth}\scriptsize A link enters the models when at least half of its training period is observed. Missing grid cells are masked in the loss and never scored.\end{minipage}
+\end{table}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig19_data.png}
+\caption{(a) Raw speed records by cleaning outcome. (b) Monthly share of 5-minute grid cells with an observed speed.}
+\label{fig:data}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig20_link_heatmap.png}
+\caption{Observed share of 5-minute steps for each grid link in the training, validation, calibration and test periods. Darker cells hold more data.}
+\label{fig:links}
+\end{figure}
+
 \subsection{Preprocessing and Quality Control}
 The study window is 1 January to 20 October 2026. Each download is logged with its source, time and checksum, and a server-side audit confirms dataset identity before use. Timestamps are converted from local time to UTC, and the ambiguous daylight-saving hour is dropped instead of guessed. Of 1,968,303 raw Manhattan speed records, \textbf{978,018 report a speed of zero}, which in this feed means that no measurement was taken; these records are treated as missing and never imputed. The remaining 990,226 records are averaged onto a 5-minute grid of 84,084 steps per link, with an observed fraction of 0.611, and gaps of at most three steps are forward-filled using past values only.
 
@@ -170,7 +214,7 @@ together with an interval [\emph{$\hat{y}$} $-$ \emph{q}\textsubscript{h}, \emph
 The forecaster is drawn in Fig.~\ref{fig:model}. Six feature groups are used on the operational track: the link's own speed over the last 30 minutes, its speed from 30 to 120 minutes ago, the speeds of its graph neighbours, calendar terms, weather and lagged 311 counts. Each group is projected to \emph{d} = 64 dimensions, \emph{h}\textsubscript{t,v,g} = ReLU(\emph{W}\textsubscript{g}\emph{x}\textsubscript{t,v,g}). A scoring network then gives each group a weight, and groups that are missing at that step are masked out before the softmax:
 
 \begin{equation}
-\alpha_{t,v,g} = \operatorname{softmax}_{g:\, m_{t,v,g}=1}\!\big(w^{\top}\tanh(U h_{t,v,g})\big),\quad z_{t,v} = \sum_{g} \alpha_{t,v,g}\, h_{t,v,g}
+\begin{aligned} \alpha_{t,v,g} &= \operatorname{softmax}_{g:\, m_{t,v,g}=1}\big(w^{\top}\tanh(U h_{t,v,g})\big), \\ z_{t,v} &= \sum_{g} \alpha_{t,v,g}\, h_{t,v,g} \end{aligned}
 \end{equation}
 This \textbf{availability-masked gate} lets the model keep working when a context source is late, which is common with open city data. Two \textbf{GATv2} layers with four heads, residual connections and layer normalisation then pass \emph{z} along the directed graph at every step \cite{brody2022gatv2,fey2019pyg,rozemberczki2021pgt}. Each link's sequence receives a positional embedding and enters a two-layer, four-head \textbf{Transformer encoder} (feed-forward width 128, dropout 0.1), and a linear head on the last state outputs the three horizons. The model has 158,403 parameters. Targets are standardised per link and the loss is a Huber loss averaged only over observed targets \emph{O}:
 
@@ -275,7 +319,7 @@ Table~\ref{tab:forecast} and Fig.~\ref{fig:mae} give the test errors. All learne
 \begin{table}[!t]
 \caption{Test Error by Model and Horizon (mph, REPLAY)}
 \label{tab:forecast}
-\centering\footnotesize
+\centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.08}
 \begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.2682\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1220\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1220\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1220\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1220\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1220\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1220\columnwidth-2\tabcolsep\relax}}
@@ -304,13 +348,22 @@ Temporal Transf. & 4.73 & 7.62 & 5.34 & 8.31 & 6.18 & 9.12 \\
 \label{fig:mae}
 \end{figure}
 
+Fig.~\ref{fig:radar} puts the same results on a common scale as skill relative to persistence. The learned models gain more skill as the horizon grows, and the deep models form an outer ring at 30 and 60 minutes, while the tree ensembles stay slightly inside.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig21_radar.png}
+\caption{Skill over persistence (\%) in MAE and RMSE at each horizon (REPLAY). A larger polygon is better; the centre is persistence.}
+\label{fig:radar}
+\end{figure}
+
 \subsection{Robustness Across Seeds}
 A single run can flatter a model, so the three deep models were retrained with three seeds (Table~\ref{tab:seeds}, Fig.~\ref{fig:seeds}). The proposed model is significantly better than the temporal Transformer at every horizon, which credits the graph layers, but its edge over the GRU is small: the GRU is better at 15 minutes (difference $-$0.021 mph, 95\% interval [$-$0.040, $-$0.004]) and worse at 30 and 60 minutes by about 0.03 mph. \textbf{The accuracy gain is therefore real but small}, and a simpler recurrent model remains a fair choice for the shortest horizon. The graph layers use non-deterministic scatter operations, so runs with the same seed are not bit-identical; the later stages all use the seed-42 reference model.
 
 \begin{table}[!t]
 \caption{Test MAE Over Three Seeds (mph)}
 \label{tab:seeds}
-\centering\footnotesize
+\centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.08}
 \begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.2643\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.2454\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.2454\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.2450\columnwidth-2\tabcolsep\relax}}
@@ -345,13 +398,42 @@ Removing the availability gate raises the mean MAE by 0.067 mph (95\% interval [
 \label{fig:ablation}
 \end{figure}
 
+\begin{table}[!t]
+\caption{Ablation and History-Window Sensitivity (Test MAE, mph)}
+\label{tab:ablation}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.3835\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1644\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1726\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.2795\columnwidth-2\tabcolsep\relax}}
+\toprule
+\textbf{Variant} & \textbf{MAE} & \textbf{$\Delta$ MAE} & \textbf{95\% interval} \\
+\midrule
+\emph{(a) Component removed, mean over horizons} \\
+Proposed (reference) & 5.419 & -- & -- \\
+No availability gate & 5.487 & +0.067 & [0.048, 0.086] \\
+No weather group & 5.373 & $-$0.046 & [$-$0.069, $-$0.021] \\
+No 311 group & 5.433 & +0.014 & [0.002, 0.026] \\
+No events group & -- & -- & not applicable \\
+No incidents group & -- & -- & not applicable \\
+\emph{(b) Own history kept, reference model} \\
+2 h (full window) & 5.427 & -- & -- \\
+1 h & 5.997 & +0.569 & -- \\
+30 min & 6.293 & +0.866 & -- \\
+15 min & 6.540 & +1.113 & -- \\
+5 min & 7.113 & +1.686 & -- \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\begin{minipage}{\columnwidth}\scriptsize $\Delta$: variant minus reference; positive values mean the removed part helped. Intervals from a paired day-block bootstrap over 44 test days. Events and incidents are not available in time for operational use, so those ablations do not apply.\end{minipage}
+\end{table}
+
 \subsection{Uncertainty and the Reliability Gate}
 The conformal intervals reach 0.909, 0.907 and 0.903 coverage at the three horizons, close to the nominal 0.90 (Table~\ref{tab:unc}). Coverage is not uniform, though (Fig.~\ref{fig:unc}a). It is about 0.93 in free flow and moderate traffic but falls to \textbf{0.80, 0.79 and 0.76 in congestion}, exactly where advice matters most, because the intervals have one width per horizon. Rush hours (0.93 to 0.94) and wet periods (0.92 to 0.93) are slightly over-covered. The reliability gate defers about a quarter of forecasts; on the retained ones the MAE falls to 3.72, 4.38 and 5.25 mph and coverage rises to 0.93 to 0.95 (Fig.~\ref{fig:unc}b). The gate thus trades coverage of the network for reliability of what is passed on.
 
 \begin{table}[!t]
 \caption{Conformal Intervals and Reliability Gate (REPLAY)}
 \label{tab:unc}
-\centering\footnotesize
+\centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.08}
 \begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.1534\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1411\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1411\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1411\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1411\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1411\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1411\columnwidth-2\tabcolsep\relax}}
@@ -370,7 +452,7 @@ The conformal intervals reach 0.909, 0.907 and 0.903 coverage at the three horiz
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig09_uncertainty.png}
-\caption{(a) Empirical coverage of the 90\% intervals by traffic state; the dashed line is the nominal level. (b) MAE of retained forecasts against the share deferred, for the gate's missing-data threshold.}
+\caption{(a) Empirical coverage of the 90\% intervals by traffic state and horizon (nominal level 0.90). (b) MAE of retained forecasts against the share deferred, for the gate's missing-data threshold.}
 \label{fig:unc}
 \end{figure}
 
@@ -384,15 +466,76 @@ Across twelve explained alerts, the link's own last 30 minutes dominate the attr
 \label{fig:shap}
 \end{figure}
 
-\subsection{Retrieval and Advisory Workflow}
-On 28 labelled queries, retrieval reaches \textbf{Recall@8 of 0.841} and an MRR of 0.748, and the supported/unsupported status is right for 27 of 28 queries (0.964). The labels were reviewed by the first author and not by an independent annotator, which limits how far these figures can be generalised.
+\begin{table}[!t]
+\caption{Grouped Attributions of the Forecasts}
+\label{tab:xai}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.3753\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1808\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.2219\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.2219\columnwidth-2\tabcolsep\relax}}
+\toprule
+\textbf{Feature group} & \textbf{Mean |\emph{$\varphi$}|\newline (mph)} & \textbf{Share (\%)} & \textbf{Largest in\newline alerts} \\
+\midrule
+Own speed, last 30 min & 8.22 & 67.7 & 8 of 12 \\
+Own speed, 30--120 min & 2.04 & 16.8 & 4 of 12 \\
+Calendar & 1.09 & 9.0 & 0 of 12 \\
+Graph neighbours & 0.52 & 4.3 & 0 of 12 \\
+Weather & 0.19 & 1.6 & 0 of 12 \\
+311 requests & 0.09 & 0.7 & 0 of 12 \\
+\emph{LightGBM, TreeSHAP share (\%) at 15 / 30 / 60 min} \\
+Traffic lags &  & 72 / 64 / 52 &  \\
+Calendar &  & 18 / 24 / 34 &  \\
+Weather &  & 4 / 5 / 7 &  \\
+311 requests &  & 0 / 1 / 1 &  \\
+Link identity &  & 5 / 6 / 6 &  \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\begin{minipage}{\columnwidth}\scriptsize Proposed model: exact grouped KernelSHAP over 12 alerts (half the largest drops, half random). Attributions describe model sensitivity, not causes on the street.\end{minipage}
+\end{table}
 
-Table~\ref{tab:adv} summarises 19 advisory runs (seven cases under the full system and four under each of three reduced policies), repeated in three passes with 36 language-model calls in total. Every call returned valid JSON and every pass reached the same 19 decisions. Without retrieval, the model invented an evidence identifier in all three cases where it drafted an advisory, and the citation check rejected each one; with retrieval, none of nine drafts cited a missing passage. Without the constraint layer, an advisory for a link that has no mapping to the simulator reached human review, whereas the full system rejected it. In the full system, wide intervals, stale data and missing evidence ended runs early as intended, and the two corridor cases ended as monitor-only advisories pending human review. \textbf{No real advisory reached the simulation gate}, so the gate has only been exercised by the controller study below. After the first call, an advisory took 19 to 30 s.
+\subsection{Retrieval and Advisory Workflow}
+On 28 labelled queries, retrieval reaches \textbf{Recall@8 of 0.841} and an MRR of 0.748, and the supported/unsupported status is right for 27 of 28 queries (0.964) (Table~\ref{tab:retrieval}). The one error is an out-of-scope query whose best passage scored above the evidence threshold (Fig.~\ref{fig:advret}b). The labels were reviewed by the first author and not by an independent annotator, which limits how far these figures can be generalised. Fig.~\ref{fig:retshot} shows a retrieval result as the operator sees it.
+
+\begin{table}[!t]
+\caption{Retrieval Evaluation on 28 Labelled Queries}
+\label{tab:retrieval}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.6712\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.3288\columnwidth-2\tabcolsep\relax}}
+\toprule
+\textbf{Measure} & \textbf{Value} \\
+\midrule
+Documents / chunks & 15 / 1,633 \\
+Chunks cut at the encoder limit & 171 \\
+Embedding size & 384 \\
+Labelled queries (answerable / out of scope) & 28 (22 / 6) \\
+Recall@8 (answerable) & 0.841 \\
+Mean reciprocal rank (answerable) & 0.748 \\
+Correct status, all queries & 27 of 28 (0.964) \\
+Out-of-scope queries refused & 5 of 6 \\
+Evidence threshold (cosine) & 0.35 \\
+Median query time (s) & 0.028 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\begin{minipage}{\columnwidth}\scriptsize Labels reviewed by the first author, not by an independent annotator. Query time excludes the first query, which also loads the encoder.\end{minipage}
+\end{table}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig24_advisory_retrieval.png}
+\caption{(a) Advisory decisions under each policy, summed over the three passes (REPLAY). (b) Top-1 retrieval score of each labelled query by expected status; the dashed line is the evidence threshold.}
+\label{fig:advret}
+\end{figure}
+
+Table~\ref{tab:adv} summarises 19 advisory runs (seven cases under the full system and four under each of three reduced policies), repeated in three passes with 36 language-model calls in total. Every call returned valid JSON and every pass reached the same 19 decisions. Without retrieval, the model invented an evidence identifier in all three cases where it drafted an advisory, and the citation check rejected each one; with retrieval, none of nine drafts cited a missing passage. Without the constraint layer, an advisory for a link that has no mapping to the simulator reached human review, whereas the full system rejected it. In the full system, wide intervals, stale data and missing evidence ended runs early as intended, and the two corridor cases ended as monitor-only advisories pending human review. \textbf{No real advisory reached the simulation gate}, so the gate has only been exercised by the controller study below. After the first call, an advisory took 19 to 30 s. Fig.~\ref{fig:advret}a shows the decisions per policy, and Fig.~\ref{fig:agent} shows the audit table in which each run is listed with its recorded reasons.
 
 \begin{table}[!t]
 \caption{Advisory Outcomes by Policy (REPLAY)}
 \label{tab:adv}
-\centering\footnotesize
+\centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.08}
 \begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.3424\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1151\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1397\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1315\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1315\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1397\columnwidth-2\tabcolsep\relax}}
@@ -410,7 +553,21 @@ Without simulation gate & 4 & 2 & 1 & 1 & 0 \\
 \end{table}
 
 \subsection{Simulation Calibration}
-The testbed did not match reality at first. With Webster-style timing the corridor ran at 5.82 mph against the observed 10.95 mph, and scaling the green split alone never rose above 8.22 mph (Fig.~\ref{fig:calib}). A common 90 s cycle reached 8.88 mph, and adding offsets for a 25 mph southbound platoon brought it to \textbf{10.08 mph, inside the $\pm$1.5 mph band}; this cell (green factor 1.5) was selected by the preregistered rule. A 120 s cycle overshot to 13.1 to 21.7 mph. The calibrated network is a scenario testbed tuned to one speed on one link, not a model of the city's actual timing plans. An earlier version of the testbed wrote demand as origin-destination flows, which the simulator re-routes on current travel times \cite{sumodocs_routing}, so part of the traffic left the corridor; an audit found this, and all runs reported here use fixed free-flow routes on the corridor.
+The testbed did not match reality at first. With Webster-style timing the corridor ran at 5.82 mph against the observed 10.95 mph, and scaling the green split alone never rose above 8.22 mph (Fig.~\ref{fig:calib}, Table~\ref{tab:calib}). A common 90 s cycle reached 8.88 mph, and adding offsets for a 25 mph southbound platoon brought it to \textbf{10.08 mph, inside the $\pm$1.5 mph band}; this cell (green factor 1.5) was selected by the preregistered rule. A 120 s cycle overshot to 13.1 to 21.7 mph. The calibrated network is a scenario testbed tuned to one speed on one link, not a model of the city's actual timing plans. An earlier version of the testbed wrote demand as origin-destination flows, which the simulator re-routes on current travel times \cite{sumodocs_routing}, so part of the traffic left the corridor; an audit found this, and all runs reported here use fixed free-flow routes on the corridor.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{fig16_dash_retrieval.png}
+\caption{Evidence retrieval page of the dashboard: a query about signal timing returns ranked passages from the public manuals, each with its source and similarity score.}
+\label{fig:retshot}
+\end{figure*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{fig17_dash_agent.png}
+\caption{Audit table of advisory runs on the dashboard (REPLAY). Each run records its case, its final decision and the reasons, such as a wide interval, a missing network mapping or an invented evidence identifier.}
+\label{fig:agent}
+\end{figure*}
 
 \begin{figure}[!t]
 \centering
@@ -419,13 +576,34 @@ The testbed did not match reality at first. With Webster-style timing the corrid
 \label{fig:calib}
 \end{figure}
 
+\begin{table}[!t]
+\caption{Calibration Grid Summary (SIMULATION)}
+\label{tab:calib}
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.2067\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1315\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1891\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.2137\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1356\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1233\columnwidth-2\tabcolsep\relax}}
+\toprule
+\textbf{Timing family} & \textbf{Admis-\newline sible} & \textbf{Speed range\newline (mph)} & \textbf{Closest: factor\newline / speed} & \textbf{Gap\newline (mph)} & \textbf{In\newline band} \\
+\midrule
+Webster & 3 of 5 & 5.82--8.22 & 3.0 / 8.22 & $-$2.73 & no \\
+90 s & 4 of 5 & 6.79--8.88 & 1.5 / 8.88 & $-$2.07 & no \\
+\textbf{90 s + offsets} & \textbf{4 of 5} & \textbf{7.88--10.08} & \textbf{1.5 / 10.08} & \textbf{$-$0.87} & \textbf{yes} \\
+120 s & 4 of 5 & 7.16--13.11 & 1.5 / 13.11 & +2.16 & no \\
+120 s + offsets & 5 of 5 & 8.22--21.67 & 1.0 / 8.22 & $-$2.73 & no \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\begin{minipage}{\columnwidth}\scriptsize Five green factors (1.0 to 3.0) per family, three seeds each. Target: observed 10.95 mph $\pm$ 1.5 on the mapped link. Admissible: no teleport and at most 1\% unfinished trips in every seed. Bold: the family of the selected cell.\end{minipage}
+\end{table}
+
 \subsection{Controller Comparison in Simulation}
-On the calibrated corridor, three controllers were run in three scenarios with five matched seeds, 45 runs in all, none with a teleport (Table~\ref{tab:sim}, Fig.~\ref{fig:ctrl}). The forecast rule extends corridor green by 5 s when the forecast flags congestion. In the routine peak it is never triggered, so it equals fixed time (271.6 s time loss per trip). Under the event surge it lowers time loss from 450.2 s to 426.0 s (\textbf{$-$5.4\%}) and completes 5,910 trips instead of 5,720; in the incident scenario time loss falls from 465.9 s to 443.9 s (\textbf{$-$4.7\%}) with 5,919 trips completed instead of 5,725. The rule wins in every seed, by 12.9 to 33.7 s, and it is not a survivorship effect, because more trips finish rather than fewer. The actuated controller uses the simulator's own uncalibrated programs and is shown only as a reference. These are simulation results on a calibrated scenario testbed without side-street demand or pedestrians; they are \textbf{not evidence of a real-world gain}.
+On the calibrated corridor, three controllers were run in three scenarios with five matched seeds, 45 runs in all, none with a teleport (Table~\ref{tab:sim}, Fig.~\ref{fig:ctrl}). The forecast rule extends corridor green by 5 s when the forecast flags congestion. In the routine peak it is never triggered, so it equals fixed time (271.6 s time loss per trip). Under the event surge it lowers time loss from 450.2 s to 426.0 s (\textbf{$-$5.4\%}) and completes 5,910 trips instead of 5,720; in the incident scenario time loss falls from 465.9 s to 443.9 s (\textbf{$-$4.7\%}) with 5,919 trips completed instead of 5,725. The rule wins in every seed (Fig.~\ref{fig:simseeds}), by 12.9 to 33.7 s, and it is not a survivorship effect, because more trips finish rather than fewer. The actuated controller uses the simulator's own uncalibrated programs and is shown only as a reference. These are simulation results on a calibrated scenario testbed without side-street demand or pedestrians; they are \textbf{not evidence of a real-world gain}.
 
 \begin{table}[!t]
 \caption{Controller Comparison on the Calibrated Corridor (SIMULATION)}
 \label{tab:sim}
-\centering\footnotesize
+\centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.08}
 \begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.1808\columnwidth-2\tabcolsep\relax}>{\raggedright\arraybackslash}p{\dimexpr 0.2137\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1562\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1574\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1562\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1356\columnwidth-2\tabcolsep\relax}}
@@ -451,13 +629,20 @@ Incident & Fixed time & 465.9 & 5,725 & 536 & 385 \\
 \label{fig:ctrl}
 \end{figure}
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig22_sim_seeds.png}
+\caption{Time loss per trip in each matched seed under fixed time and the forecast rule (SIMULATION). Every line slopes down, so the rule helps in every seed of both disturbed scenarios.}
+\label{fig:simseeds}
+\end{figure}
+
 \subsection{Live Test}
-Table~\ref{tab:live} and Fig.~\ref{fig:live} give the live results, and Fig.~\ref{fig:dash}b shows how the dashboard labels a live batch. On the first afternoon the model beat persistence at all three horizons. On the second it lost at 15 and 30 minutes, and on the third it lost at every horizon. Pooled over 274 scored forecasts (two of 276 targets were never published), the MAE is 4.79, 4.94 and 5.48 mph against 4.63, 4.42 and 5.46 mph for persistence: \textbf{persistence is ahead at 15 and 30 minutes and level at 60 minutes}. Coverage held up better, at 0.880, 0.901 and 0.912. The forecasts started from data that were already 100 to 130 minutes old, and at that age the most recent observed speed is a hard baseline to beat. Restricted to the links eligible for advice, the model's MAE is lower (3.88, 4.22 and 4.70 mph), but with nine afternoon batches this is not a second test set. \textbf{The test-set gain did not carry over to the live feed at its present delay}, and we report this as the main live finding.
+Table~\ref{tab:live} and Fig.~\ref{fig:live} give the live results, and Fig.~\ref{fig:liveshot} shows how the dashboard reports the live batches. On the first afternoon the model beat persistence at all three horizons. On the second it lost at 15 and 30 minutes, and on the third it lost at every horizon. Pooled over 274 scored forecasts (two of 276 targets were never published), the MAE is 4.79, 4.94 and 5.48 mph against 4.63, 4.42 and 5.46 mph for persistence: \textbf{persistence is ahead at 15 and 30 minutes and level at 60 minutes}. Coverage held up better, at 0.880, 0.901 and 0.912. The forecasts started from data that were already 100 to 130 minutes old, and at that age the most recent observed speed is a hard baseline to beat. Restricted to the links eligible for advice, the model's MAE is lower (3.88, 4.22 and 4.70 mph), but with nine afternoon batches this is not a second test set. \textbf{The test-set gain did not carry over to the live feed at its present delay}, and we report this as the main live finding.
 
 \begin{table}[!t]
 \caption{Live Forecast Error, Model / Persistence (mph, LIVE)}
 \label{tab:live}
-\centering\footnotesize
+\centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.08}
 \begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.1233\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1028\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.1110\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.0904\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1907\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1907\columnwidth-2\tabcolsep\relax}>{\centering\arraybackslash}p{\dimexpr 0.1911\columnwidth-2\tabcolsep\relax}}
@@ -481,15 +666,64 @@ Pooled & -- & 114 & 92 & \textbf{4.79} / \textbf{4.63} & \textbf{4.94} / \textbf
 \label{fig:live}
 \end{figure}
 
-\subsection{Dashboard and Run Time}
-The dashboard (Fig.~\ref{fig:dash}) shows each forecast with its interval, data age and mode label, and lists every advisory with its decision and reasons. On a CPU, one forecast for all links takes 5.7 ms with the proposed model, 2.2 ms with the temporal Transformer and 0.7 ms with the GRU, and a retrieval query takes tens of milliseconds. The language-model step dominates the latency of an advisory, which is acceptable for monitor-only advice but would need attention for faster control loops.
+Fig.~\ref{fig:livescatter} looks at the individual forecasts. Both the model and persistence follow the observed speeds and their error distributions are similar in shape, but the model's median and 90th-percentile errors are slightly larger (3.25 and 12.3 mph against 3.11 and 11.2 mph), which is enough to put persistence ahead on the pooled MAE.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig23_live_scatter.png}
+\caption{(a) Predicted against observed speed for all 274 scored live forecasts. (b) Absolute error of the model and of persistence at each horizon (LIVE).}
+\label{fig:livescatter}
+\end{figure}
 
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=\textwidth]{fig14_dashboard.png}
-\caption{Project dashboard. (a) Multi-horizon forecast for one link with 90\% intervals at 15, 30 and 60 minutes (REPLAY). (b) Live monitoring banner stating the data age and protocol of a batch (LIVE). (c) Audit table of advisory runs with their decisions and recorded reasons (REPLAY).}
+\includegraphics[width=\textwidth]{fig18_dash_live.png}
+\caption{Live monitoring page of the dashboard (LIVE). Top: the protocol banner with the data age of the latest batch. Middle: live forecasts of one link at 15, 30 and 60 minutes against the observations pulled later. Bottom: the labels that every live batch carries.}
+\label{fig:liveshot}
+\end{figure*}
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{fig14_dash_forecast.png}
+\caption{Multi-horizon forecast page of the dashboard (REPLAY): the observed speed of one link with the 15, 30 and 60 minute forecasts and their 90\% intervals.}
 \label{fig:dash}
 \end{figure*}
+
+\subsection{Dashboard and Run Time}
+The dashboard (Fig.~\ref{fig:dash}) shows each forecast with its interval, data age and mode label, and lists every advisory with its decision and reasons. On a CPU, one forecast for all links takes 5.7 ms with the proposed model, 2.2 ms with the temporal Transformer and 0.7 ms with the GRU (Table~\ref{tab:runtime}, Fig.~\ref{fig:runtime}), a grouped explanation takes a few seconds per alert and a retrieval query takes tens of milliseconds. The language-model step dominates the latency of an advisory, which is acceptable for monitor-only advice but would need attention for faster control loops.
+
+\begin{table}[!t]
+\caption{Inference Time on a CPU}
+\label{tab:runtime}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{>{\raggedright\arraybackslash}p{\dimexpr 0.6712\columnwidth-2\tabcolsep\relax}>{\raggedleft\arraybackslash}p{\dimexpr 0.3288\columnwidth-2\tabcolsep\relax}}
+\toprule
+\textbf{Component} & \textbf{Time} \\
+\midrule
+Proposed & 5.693 ms \\
+Temporal Transf. & 2.156 ms \\
+GRU & 0.679 ms \\
+LightGBM & 0.386 ms \\
+XGBoost & 0.081 ms \\
+Historical average & 0.9 µs \\
+Persistence & 0.6 µs \\
+\emph{Explanation and retrieval} \\
+Grouped KernelSHAP, per alert & 1.7--4.2 s \\
+Retrieval query (median) & 28 ms \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\begin{minipage}{\columnwidth}\scriptsize Forecast times are per origin; one origin covers all modelled links and three horizons. Retrieval median excludes the first query, which loads the encoder.\end{minipage}
+\end{table}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig25_runtime.png}
+\caption{CPU inference time per forecast origin for each model, on a logarithmic scale.}
+\label{fig:runtime}
+\end{figure}
 
 \subsection{Discussion}
 Three lessons stand out. First, graph structure helps, but modestly: the graph layers beat a temporal Transformer reliably, yet a GRU stays within a few hundredths of a mph. Second, calibration in aggregate hides failure in the tail; coverage drops below 0.80 in congestion, which argues for state-dependent or adaptive intervals \cite{gibbs2021aci,barber2023beyond}. Third, the most useful parts of the advisory are the deterministic ones. Retrieval stopped invented citations, and the constraint layer caught an advisory that retrieval alone let through. The live test shows that accuracy on held-out history does not guarantee value on a delayed feed, and that a fair live comparison must keep persistence in view.

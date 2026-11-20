@@ -147,8 +147,8 @@ def tex(s: str, refs: Refs) -> str:
 
 EQUATIONS = {
     "*ŷ*_{t+h,v} = *f*_{θ}": r"\hat{y}_{t+h,v} = f_{\theta}\big(X_{t-L+1:t}, G\big), \qquad h \in \{3, 6, 12\}",
-    "*α*_{t,v,g} = softmax": (r"\alpha_{t,v,g} = \operatorname{softmax}_{g:\, m_{t,v,g}=1}\!\big(w^{\top}\tanh(U h_{t,v,g})\big),"
-                              r"\quad z_{t,v} = \sum_{g} \alpha_{t,v,g}\, h_{t,v,g}"),
+    "*α*_{t,v,g} = softmax": (r"\begin{aligned} \alpha_{t,v,g} &= \operatorname{softmax}_{g:\, m_{t,v,g}=1}"
+                              r"\big(w^{\top}\tanh(U h_{t,v,g})\big), \\ z_{t,v} &= \sum_{g} \alpha_{t,v,g}\, h_{t,v,g} \end{aligned}"),
     "ℒ(*θ*) = (1/|*O*|)": (r"\mathcal{L}(\theta) = \frac{1}{|O|} \sum_{(t,v,h)\in O} "
                             r"\operatorname{Huber}_{\delta}\big(y_{t+h,v} - \hat{y}_{t+h,v}\big)"),
     "*q*_{h} = the ⌈": (r"q_{h} = \text{the } \lceil (n+1)(1-\alpha) \rceil\text{-th smallest of } "
@@ -181,8 +181,10 @@ def latex_table(title: str, widths, header, body, aligns, refs: Refs, size=14, n
     for w, a in zip(widths, aligns):
         frac = w / total
         cols.append(ALIGN[a] + r"{\dimexpr " + f"{frac:.4f}" + r"\columnwidth-2\tabcolsep\relax}")
+    dense = len(widths) >= 6 or any("\n" in c for row in body for c in row)
     lines = [r"\begin{table}[!t]", r"\caption{" + tex(title, refs) + "}", r"\label{tab:" + tid + "}",
-             r"\centering\footnotesize", r"\setlength{\tabcolsep}{3pt}", r"\renewcommand{\arraystretch}{1.08}",
+             r"\centering" + (r"\scriptsize" if dense else r"\footnotesize"), r"\setlength{\tabcolsep}{3pt}",
+             r"\renewcommand{\arraystretch}{1.08}",
              r"\begin{tabular}{" + "".join(cols) + "}", r"\toprule"]
     for hrow in header:
         cells, cmid, col = [], [], 1

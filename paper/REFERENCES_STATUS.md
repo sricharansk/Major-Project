@@ -1,5 +1,7 @@
 # Bibliography verification status
 
+Note (2026-11-21): the rebuilt paper keeps its reference list in `paper/word/ieee_paper_text.py` (REFERENCES), which both the Word and the LaTeX build read; the keys below are the same keys. Entries added for the rebuilt edition are marked in that file.
+
 Each entry was checked on 2026-10-20 from the development container by web search against the publisher's or
 repository's own record (IJCAI proceedings, ACL Anthology, PMLR, NeurIPS proceedings, Springer, Project Euclid,
 IEEE Xplore, ACM/CIKM anthology, arXiv, FHWA). `CHECKED` means title, authors, venue, year and (where given) pages
