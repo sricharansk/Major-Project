@@ -475,7 +475,7 @@ def build(out: Path) -> None:
     doc = zin.read("word/document.xml").decode("utf-8")
     head, body = doc.split("<w:body>", 1)
     sects = re.findall(r"<w:sectPr\b.*?</w:sectPr>", body, re.S)
-    title_sect, authors_sect, body_sect, final_sect = sects[0], sects[1], sects[3], sects[4]
+    title_sect, authors_sect, body_sect = sects[0], sects[1], sects[3]
     authors_sect = authors_sect.replace('w:num="3"', f'w:num="{len(T.AUTHORS)}"')
     one_col_sect = re.sub(r'<w:cols [^>]*/>', '<w:cols w:space="18pt"/>', body_sect)
     figs = Figs()
