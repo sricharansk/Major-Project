@@ -370,7 +370,6 @@ def fig_ablation_window() -> None:
 
 
 def fig_uncertainty() -> None:
-    sc = pd.read_csv(CAL / "coverage_by_scenario.csv")
     dt = pd.read_csv(CAL / "deferral_tradeoff.csv")
     groups = [("free_ratio>=0.8", "free flow"), ("moderate_0.5-0.8", "moderate"), ("congested<0.5", "congested"),
               ("rush_hour_7-10_16-19", "rush hour"), ("non_rush", "off-peak"), ("weather_dry", "dry"),
