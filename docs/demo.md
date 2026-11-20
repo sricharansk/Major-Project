@@ -7,5 +7,5 @@
 5. **Agent trace & advisory**: LLM candidate, constraint table, SUMO comparison, decision; a DEFER and a REJECT case.
 6. Record a human review through `POST /advisories/{id}/review` (simulation-only approval).
 7. **SUMO comparisons** (SIMULATION badge) and **Experiment results**; MLflow UI: `mlflow ui --backend-store-uri sqlite:///mlflow.db`.
-8. Paper tables: `python -m smartcity.cli paper sync` then compile `paper/main.tex`.
+8. Paper: `make paper-docx` (Word + PDF) and `make paper` (LaTeX, `paper/main.tex` generated from the same text and result files); `python -m smartcity.cli paper sync` refreshes the verification tables in `paper/tables/`.
 9. Finish on **Limitations & model card**.
