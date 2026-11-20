@@ -63,7 +63,8 @@ paper:
 	$(PY) -m smartcity.cli paper sync && cd paper && pdflatex -interaction=nonstopmode main.tex && bibtex main && pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex
 
 paper-docx:
-	$(PY) paper/word/build_ieee_docx.py
+	$(PY) paper/word/make_figures.py && $(PY) paper/word/build_ieee_paper.py
+	cd paper && soffice --headless --convert-to pdf ieee_conference_paper.docx
 
 verify:
 	$(PY) -m smartcity.cli verify all
