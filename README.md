@@ -110,7 +110,7 @@ mlflow ui --backend-store-uri sqlite:///mlflow.db
 ## Results of the real-data run (2026-10-20/21, workstation)
 
 Every number is read from `reports/experiments/` and `artifacts/`; `python scripts/results_summary.py` prints them.
-Full narrative: `paper/main.pdf`, `reports/verification/progress.md` (Milestone 3), `reports/limitations.md`.
+Full narrative: the paper (`paper/ieee_conference_paper.pdf`, Word build, and `paper/main.pdf`, LaTeX build, both generated from `paper/word/ieee_paper_text.py` by `make paper-docx` and `make paper`), `reports/verification/progress.md` (Milestones 3 and 23), `reports/limitations.md`.
 
 * 26 Manhattan DOT links, 7 dead feeds, 16 modelled, 3 without test data; test 2026-09-06..10-20 (about 44 days over 45 calendar dates,
   ~144k targets per horizon); all deep models trained under a recorded 4,096-windows-per-epoch budget; the three deep

@@ -639,6 +639,32 @@ on CPU torch 2.14.1 (torch-geometric-temporal `--no-deps`, as in the Dockerfiles
   unknown-mode rejection, stale-feed end-to-end with the stub model). NOT RUN until the workstation runs section 9
   of `docs/laptop_run.md`; claim C51.
 
+### Milestone 23: paper rebuilt on the IEEE conference template (cloud container, 2026-11-20 to 2026-11-22)
+- The author uploaded the IEEE A4 Word template, an IEEE formatting guideline, the old `main.pdf` (author block) and a
+  requirements note (diagrams, charts, tables, screenshots, current numbers, no paths or run ids, short abstract,
+  similarity under 10 %). The paper was rewritten from scratch rather than patched: text, keywords and references live
+  in `paper/word/ieee_paper_text.py`; `paper/word/build_ieee_paper.py` builds the Word file and its 15 tables from the
+  committed result files, `paper/word/make_figures.py` draws the 20 figures (`paper/word/figures/`, including the
+  dashboard screenshots captured on the workstation at 2x); `paper/latex/build_ieee_tex.py` generates `paper/main.tex`
+  from the same modules (IEEEtran conference, A4; equations hand-set once; the Word table functions emit booktabs
+  tables through a monkey-patched writer). The old hand-written `paper/sections/*.tex` and `references.bib` are gone.
+- Content: full literature review (40 references, same key list in both builds), architecture, advisory-workflow and
+  code-structure diagrams, result charts (test MAE, seeds, ablations, coverage and deferral, grouped attributions,
+  calibration grid, controller comparison, live MAE and scatter), five dashboard screenshots, and every result
+  section with its table. Numbers as in the result files, including the negative pooled LIVE result (persistence ahead
+  at 15 and 30 min) and the GRU's 15-min edge. Four decorative charts (radar, per-seed dumbbell, advisory/retrieval,
+  run time) were removed on the author's instruction to keep only significant charts.
+- Checks: both PDFs read page by page against the uploaded guideline (Keywords line, 5-7 alphabetical keywords,
+  150-250 word abstract without citations, Roman-numeral sections, captions below figures and above tables, every
+  figure and table cited and numbered by first citation, references by first appearance, corresponding-author mark,
+  embedded fonts, no page numbers). LaTeX build: 14 pages, 0 errors, 0 overfull boxes, full-width screenshots
+  anchored at the subsection that first cites them so none sits among the references, last page balanced. Word build:
+  12 pages. Four numbers in the draft text were corrected against the result files before merge (proposed 60-min MAE
+  6.15, GRU 15-min MAE 4.71, LightGBM TreeSHAP shares 72/64/52 %, advisory timing 23-59 s).
+- Delivered to the author as PDFs first (shared results folder), merged afterwards on the author's word: PR #46
+  (Word + PDF, text, figures) then PR #47 (LaTeX build, screenshots). The template's copyright footer is left out until
+  the conference is known. The author's similarity report is pending; corrections, if any, follow it.
+
 ### Milestone 22: retrieval labels reviewed by the author (2026-11-19)
 - SK reviewed the 28 retrieval evaluation queries against a walkthrough listing, for each query, the labelled
   document's answering passage and the retriever's result (shared results folder,
