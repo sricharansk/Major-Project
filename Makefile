@@ -60,7 +60,7 @@ export:
 	$(PY) -m smartcity.cli report export
 
 paper:
-	$(PY) -m smartcity.cli paper sync && cd paper && pdflatex -interaction=nonstopmode main.tex && bibtex main && pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex
+	$(PY) paper/latex/build_ieee_tex.py && cd paper && pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex
 
 paper-docx:
 	$(PY) paper/word/make_figures.py && $(PY) paper/word/build_ieee_paper.py
