@@ -36,6 +36,7 @@ FIG_NS = ('xmlns:a="http://purl.oclc.org/ooxml/drawingml/main"',
           'xmlns:pic="http://purl.oclc.org/ooxml/drawingml/picture"')
 
 H = (15, 30, 60)
+COPYRIGHT_LINE = ""  # e.g. the conference's "979-8-xxxx-xxxx-x/26/$31.00 ©2026 IEEE" line
 BALANCE_REF = 34  # reference that opens the right column of the last page (IEEE: last-page columns of equal length)
 
 
@@ -588,6 +589,13 @@ def build(out: Path) -> None:
                 data = ctypes.encode("utf-8")
             elif item.filename == "docProps/core.xml":
                 data = core.encode("utf-8")
+            elif item.filename == "word/footer1.xml":
+                # first-page copyright line: the template's placeholder is left out until the conference supplies
+                # its own line (set COPYRIGHT_LINE then)
+                ftr = data.decode("utf-8")
+                ftr = re.sub(r"<w:t>XXX-X-XXXX-XXXX-X/XX/\$XX\.00 ©20XX IEEE</w:t>",
+                             f"<w:t>{escape(COPYRIGHT_LINE)}</w:t>" if COPYRIGHT_LINE else "", ftr)
+                data = ftr.encode("utf-8")
             elif item.filename == "word/numbering.xml":
                 # one space after the section numeral ("VIII. Conclusion"), so long numerals never run into the
                 # heading text, whatever tab stops the reader's word processor applies
