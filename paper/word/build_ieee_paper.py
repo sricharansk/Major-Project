@@ -36,7 +36,7 @@ FIG_NS = ('xmlns:a="http://purl.oclc.org/ooxml/drawingml/main"',
           'xmlns:pic="http://purl.oclc.org/ooxml/drawingml/picture"')
 
 H = (15, 30, 60)
-BALANCE_REF = 33  # reference that opens the right column of the last page (IEEE: last-page columns of equal length)
+BALANCE_REF = 0  # reference that opens the right column of the last page (IEEE: last-page columns of equal length)
 
 
 def rows(path: Path) -> list[dict]:
