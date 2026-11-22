@@ -412,14 +412,14 @@ Removing the availability gate raises the mean MAE by 0.067 mph (95\% interval [
 \toprule
 \textbf{Variant} & \textbf{MAE} & \textbf{$\Delta$ MAE} & \textbf{95\% interval} \\
 \midrule
-\emph{(a) Component removed, mean over horizons} \\
+\multicolumn{4}{@{}l@{}}{\emph{(a) Component removed, mean over horizons}} \\
 Proposed (reference) & 5.419 & -- & -- \\
 No availability gate & 5.487 & +0.067 & [0.048, 0.086] \\
 No weather group & 5.373 & $-$0.046 & [$-$0.069, $-$0.021] \\
 No 311 group & 5.433 & +0.014 & [0.002, 0.026] \\
 No events group & -- & -- & not applicable \\
 No incidents group & -- & -- & not applicable \\
-\emph{(b) Own history kept, reference model} \\
+\multicolumn{4}{@{}l@{}}{\emph{(b) Own history kept, reference model}} \\
 2 h (full window) & 5.427 & -- & -- \\
 1 h & 5.997 & +0.569 & -- \\
 30 min & 6.293 & +0.866 & -- \\
@@ -488,7 +488,7 @@ Calendar & 1.09 & 9.0 & 0 of 12 \\
 Graph neighbours & 0.52 & 4.3 & 0 of 12 \\
 Weather & 0.19 & 1.6 & 0 of 12 \\
 311 requests & 0.09 & 0.7 & 0 of 12 \\
-\emph{LightGBM, TreeSHAP share (\%) at 15 / 30 / 60 min} \\
+\multicolumn{4}{@{}l@{}}{\emph{LightGBM, TreeSHAP share (\%) at 15 / 30 / 60 min}} \\
 Traffic lags &  & 72 / 64 / 52 &  \\
 Calendar &  & 18 / 24 / 34 &  \\
 Weather &  & 4 / 5 / 7 &  \\
@@ -709,7 +709,7 @@ LightGBM & 0.386 ms \\
 XGBoost & 0.081 ms \\
 Historical average & 0.9 µs \\
 Persistence & 0.6 µs \\
-\emph{Explanation and retrieval} \\
+\multicolumn{2}{@{}l@{}}{\emph{Explanation and retrieval}} \\
 Grouped KernelSHAP, per alert & 1.7--4.2 s \\
 Retrieval query (median) & 28 ms \\
 \bottomrule
@@ -729,6 +729,7 @@ This paper presented an auditable predictive analytics system for city traffic b
 
 Future work will add state-dependent and adaptive conformal intervals, test on more links and longer live periods with a lower-latency feed, include side-street and pedestrian demand in the testbed, and invite independent reviewers to label retrieval queries and judge advisories.
 
+\IEEEtriggeratref{26}
 \begin{thebibliography}{40}
 \bibitem{ji2023hallucination} Z. Ji \emph{et al.}, ``Survey of hallucination in natural language generation,'' \emph{ACM Comput. Surv.}, vol. 55, no. 12, pp. 1--38, 2023, doi: 10.1145/3571730.
 \bibitem{vlahogianni2014shortterm} E. I. Vlahogianni, M. G. Karlaftis, and J. C. Golias, ``Short-term traffic forecasting: Where we are and where we're going,'' \emph{Transp. Res. Part C: Emerg. Technol.}, vol. 43, pp. 3--19, 2014, doi: 10.1016/j.trc.2014.01.005.

@@ -202,7 +202,10 @@ def latex_table(title: str, widths, header, body, aligns, refs: Refs, size=14, n
             lines.append(" ".join(cmid))
     lines.append(r"\midrule")
     for row in body:
-        lines.append(" & ".join(tex(c, refs).replace("\n", r"\newline ") for c in row) + r" \\")
+        if len(row) == 1 and len(widths) > 1:  # group label: span the whole table
+            lines.append(r"\multicolumn{" + str(len(widths)) + "}{@{}l@{}}{" + tex(row[0], refs) + r"} \\")
+        else:
+            lines.append(" & ".join(tex(c, refs).replace("\n", r"\newline ") for c in row) + r" \\")
     lines += [r"\bottomrule", r"\end{tabular}"]
     if notes:
         lines += [r"\par\vspace{2pt}", r"\begin{minipage}{\columnwidth}\scriptsize " + tex(notes, refs)
@@ -263,6 +266,7 @@ PREAMBLE = r"""\documentclass[conference,a4paper]{IEEEtran}
 # same page instead of leaving a column gap.
 FULL_WIDTH_FRACTION = {"area": 0.85}
 TEXT_WIDTH_IN = 7.16  # IEEEtran conference, A4
+BALANCE_AT_REF = 26  # reference before which IEEEtran breaks the column so the last page is balanced
 
 
 def first_cite(seq, kind, fid):
@@ -344,6 +348,7 @@ def build(out: Path) -> None:
     unused = sorted(set(T.REFERENCES) - set(refs.cites))
     if unused:
         raise SystemExit(f"references never cited: {unused}")
+    doc.append(r"\IEEEtriggeratref{" + str(BALANCE_AT_REF) + "}\n")
     doc.append(r"\begin{thebibliography}{" + str(len(refs.cites)) + "}\n")
     for key in refs.cites:
         doc.append(r"\bibitem{" + key + "} " + tex(T.REFERENCES[key], refs) + "\n")
