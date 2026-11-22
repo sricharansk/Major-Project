@@ -347,7 +347,7 @@ BODY = [
      "standard deviation.", False),
     ("h2", "Ablation and Sensitivity"),
     ("p", "Removing the availability gate raises the mean MAE by 0.067 mph (95% interval [0.048, 0.086]) and "
-          "removing the 311 group by 0.014 mph, so both help slightly ({F:ablation}a). Removing weather, however, "
+          "removing the 311 group by 0.014 mph, so both help slightly ({T:ablation}, {F:ablation}a). Removing weather, however, "
           "**lowers** the error by 0.046 mph: on this test period the weather forecasts added noise rather than "
           "signal, and we report this as a negative finding. Shortening the history window raises the error "
           "steadily, from 5.43 mph with two hours to 7.11 mph with five minutes ({F:ablation}b), so the model does "
@@ -371,7 +371,7 @@ BODY = [
     ("h2", "Explanations"),
     ("p", "Across twelve explained alerts, the link's own last 30 minutes dominate the attributions (mean absolute "
           "value 8.22 mph), followed by its older history (2.04), calendar (1.09) and neighbours (0.52), with "
-          "weather (0.19) and 311 (0.09) close to zero ({F:shap}a). This agrees with the ablation, in which weather "
+          "weather (0.19) and 311 (0.09) close to zero ({T:xai}, {F:shap}a). This agrees with the ablation, in which weather "
           "did not help. In one alert on a bridge approach the model predicted 2.25 mph against a background of "
           "26.9 mph (observed 1.24 mph), and the recent-history group accounted for −21.3 mph of that drop, a "
           "reading an operator can check against the raw series. Removing a link's graph edges changes its "
@@ -412,10 +412,6 @@ BODY = [
           "version of the testbed wrote demand as origin-destination flows, which the simulator re-routes on "
           "current travel times [@sumodocs_routing], so part of the traffic left the corridor; an audit found "
           "this, and all runs reported here use fixed free-flow routes on the corridor."),
-    ("fig", "calib", "fig11_calibration.png", 3.38,
-     "Calibration of the SUMO corridor (SIMULATION): mean simulated speed on the mapped link against the green "
-     "factor for each timing family. Filled markers are admissible cells; the band is the observed speed ±1.5 mph.",
-     False),
     ("table", "calib"),
     ("h2", "Controller Comparison in Simulation"),
     ("p", "On the calibrated corridor, three controllers were run in three scenarios with five matched seeds, 45 "
@@ -427,20 +423,24 @@ BODY = [
           "by 12.9 to 33.7 s, and it is not a survivorship effect, because more trips finish rather than fewer. "
           "The actuated controller uses the simulator's own uncalibrated programs and is shown only as a "
           "reference. These are simulation results on a calibrated scenario testbed without side-street demand or "
-          "pedestrians; they are **not evidence of a real-world gain**."),    ("fig", "retshot", "fig16_dash_retrieval.png", 7.0,
+          "pedestrians; they are **not evidence of a real-world gain**."),
+    ("fig", "retshot", "fig16_dash_retrieval.png", 7.0,
      "Evidence retrieval page of the dashboard: a query about signal timing returns ranked passages from the "
      "public manuals, each with its source and similarity score.", True),
     ("fig", "agent", "fig17_dash_agent.png", 7.0,
      "Audit table of advisory runs on the dashboard (REPLAY). Each run records its case, its final decision and "
      "the reasons, such as a wide interval, a missing network mapping or an invented evidence identifier.", True),
+    ("fig", "calib", "fig11_calibration.png", 3.38,
+     "Calibration of the SUMO corridor (SIMULATION): mean simulated speed on the mapped link against the green "
+     "factor for each timing family. Filled markers are admissible cells; the band is the observed speed ±1.5 mph.",
+     False),
 
     ("table", "sim"),
     ("fig", "ctrl", "fig12_controllers.png", 3.38,
      "Fixed time against the forecast-triggered rule on the calibrated corridor (SIMULATION, five seeds). (a) "
      "Time loss per completed trip with the range over seeds. (b) Completed trips per run.", False),
     ("h2", "Live Test"),
-    ("p", "{T:live} and {F:live} give the live results, and {F:liveshot} shows how the dashboard reports the "
-          "live batches. On the first afternoon the model beat persistence at all three horizons. On the second it lost "
+    ("p", "{T:live} and {F:live} give the live results. On the first afternoon the model beat persistence at all three horizons. On the second it lost "
           "at 15 and 30 minutes, and on the third it lost at every horizon. Pooled over 274 scored forecasts "
           "(two of 276 targets were never published), the MAE is 4.79, 4.94 and 5.48 mph against 4.63, 4.42 and "
           "5.46 mph for persistence: **persistence is ahead at 15 and 30 minutes and level at 60 minutes**. "
@@ -456,7 +456,7 @@ BODY = [
     ("p", "{F:livescatter} looks at the individual forecasts. Both the model and persistence follow the observed "
           "speeds and their error distributions are similar in shape, but the model's median and 90th-percentile "
           "errors are slightly larger (3.25 and 12.3 mph against 3.11 and 11.2 mph), which is enough to put "
-          "persistence ahead on the pooled MAE."),
+          "persistence ahead on the pooled MAE. {F:liveshot} shows how the dashboard reports the live batches with their data age and labels."),
     ("fig", "livescatter", "fig23_live_scatter.png", 3.38,
      "(a) Predicted against observed speed for all 274 scored live forecasts. (b) Absolute error of the model "
      "and of persistence at each horizon (LIVE).", False),
@@ -486,14 +486,7 @@ BODY = [
           "street. Retrieval labels were reviewed by the first author only. The simulation testbed is calibrated "
           "to one observed speed, has no side-street demand or pedestrians and uses assumed timing plans, so its "
           "gains are illustrative. The live test spans three afternoons and nine batches. Finally, nothing was "
-          "deployed on real signals, and every advisory stops at human review."),    ("fig", "liveshot", "fig18_dash_live.png", 6.6,
-     "Live monitoring page of the dashboard (LIVE). Top: the protocol banner with the data age of the latest "
-     "batch. Middle: live forecasts of one link at 15, 30 and 60 minutes against the observations pulled later. "
-     "Bottom: the labels that every live batch carries.", True),
-    ("fig", "dash", "fig14_dash_forecast.png", 5.8,
-     "Multi-horizon forecast page of the dashboard (REPLAY): the observed speed of one link with the 15, 30 and "
-     "60 minute forecasts and their 90% intervals.", True),
-
+          "deployed on real signals, and every advisory stops at human review."),
 
     # ------------------------------------------------------------------------------------------------------
     ("h1", "Conclusion and Future Work", "concl"),
@@ -507,7 +500,14 @@ BODY = [
           "stress. Live, at the feed's present delay, the model did not beat persistence at short horizons."),
     ("p", "Future work will add state-dependent and adaptive conformal intervals, test on more links and longer "
           "live periods with a lower-latency feed, include side-street and pedestrian demand in the testbed, and "
-          "invite independent reviewers to label retrieval queries and judge advisories."),
+          "invite independent reviewers to label retrieval queries and judge advisories."),    ("fig", "liveshot", "fig18_dash_live.png", 6.6,
+     "Live monitoring page of the dashboard (LIVE). Top: the protocol banner with the data age of the latest "
+     "batch. Middle: live forecasts of one link at 15, 30 and 60 minutes against the observations pulled later. "
+     "Bottom: the labels that every live batch carries.", True),
+    ("fig", "dash", "fig14_dash_forecast.png", 5.8,
+     "Multi-horizon forecast page of the dashboard (REPLAY): the observed speed of one link with the 15, 30 and "
+     "60 minute forecasts and their 90% intervals.", True),
+
 ]
 
 # ------------------------------------------------------------------------------------------------------------
