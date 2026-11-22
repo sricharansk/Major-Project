@@ -26,7 +26,7 @@ import ieee_paper_text as T  # noqa: E402
 # inline markup -> LaTeX
 
 SYMBOLS = {
-    "∈": r"$\in$", "Σ": r"$\sum$", "⊤": r"$\top$", "−": r"$-$", "≤": r"$\le$", "≥": r"$\ge$", "×": r"$\times$",
+    "†": r"\dag{}", "∈": r"$\in$", "Σ": r"$\sum$", "⊤": r"$\top$", "−": r"$-$", "≤": r"$\le$", "≥": r"$\ge$", "×": r"$\times$",
     "δ": r"$\delta$", "α": r"$\alpha$", "θ": r"$\theta$", "φ": r"$\varphi$", "Δ": r"$\Delta$", "ℒ": r"$\mathcal{L}$",
     "ŷ": r"$\hat{y}$", "⌈": r"$\lceil$", "⌉": r"$\rceil$", "∖": r"$\setminus$", "∪": r"$\cup$", "⊆": r"$\subseteq$",
     "±": r"$\pm$", "✓": r"\checkmark", "–": "--", "—": "---", "“": "``", "”": "''", "‘": "`", "’": "'",
@@ -248,11 +248,45 @@ PREAMBLE = r"""\documentclass[conference,a4paper]{IEEEtran}
 \renewcommand{\bottomfraction}{0.6}
 \renewcommand{\textfraction}{0.05}
 \renewcommand{\floatpagefraction}{0.85}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\dblfloatpagefraction}{0.8}
 \setcounter{topnumber}{4}
 \setcounter{totalnumber}{6}
 \urlstyle{same}
+\renewcommand{\IEEEkeywordsname}{Keywords}
 \begin{document}
 """
+
+
+# LaTeX-only width of a full-width figure as a fraction of \textwidth. The map is slightly narrower than in
+# the Word layout so that the section heading after it fits on the same page instead of leaving a column gap.
+FULL_WIDTH_FRACTION = {"area": 0.85}
+
+
+def hoist_full_figures(body):
+    """Anchor each full-width figure right after the heading of the subsection that first cites it.
+
+    In two-column LaTeX a figure* can only appear at the top of a page after its anchor, so an anchor
+    placed after the citing paragraph (right for Word) pushes the figure a page further than needed.
+    Figure numbers follow anchor order, so a hoisted figure is never moved ahead of a column figure
+    that the text cites earlier.
+    """
+    def first_cite(seq, fid):
+        tag = "{F:" + fid + "}"
+        for i, b in enumerate(seq):
+            if b[0] in ("p", "pn") and tag in b[1]:
+                return (i, b[1].index(tag))
+        raise SystemExit(f"figure never cited: {fid}")
+
+    rest = [b for b in body if not (b[0] == "fig" and b[5])]
+    for fig in [b for b in body if b[0] == "fig" and b[5]]:
+        cite = first_cite(rest, fig[1])
+        pos = max(i for i, b in enumerate(rest[:cite[0]]) if b[0] in ("h1", "h2")) + 1
+        for i, b in enumerate(rest):
+            if b[0] == "fig" and i >= pos and first_cite(rest, b[1]) < cite:
+                pos = i + 1
+        rest.insert(pos, fig)
+    return rest
 
 
 def build(out: Path) -> None:
@@ -264,7 +298,7 @@ def build(out: Path) -> None:
     doc.append(r"\begin{IEEEkeywords}" + "\n" + tex(", ".join(T.KEYWORDS), refs) + "\n" + r"\end{IEEEkeywords}"
                + "\n\n")
     n_fig = n_tab = n_eq = 0
-    for blk in T.BODY:
+    for blk in hoist_full_figures(T.BODY):
         kind = blk[0]
         if kind == "h1":
             doc.append(r"\section{" + tex(blk[1], refs) + "}\\label{sec:" + blk[2] + "}\n")
@@ -287,6 +321,8 @@ def build(out: Path) -> None:
                 raise SystemExit(f"figure file missing: {fname}")
             env = "figure*" if full else "figure"
             width = r"\textwidth" if full else r"\columnwidth"
+            if fid in FULL_WIDTH_FRACTION:
+                width = f"{FULL_WIDTH_FRACTION[fid]}\\textwidth"
             doc.append("\n".join([r"\begin{" + env + "}[!t]", r"\centering",
                                   r"\includegraphics[width=" + width + "]{" + fname + "}",
                                   r"\caption{" + tex(cap, refs) + "}", r"\label{fig:" + fid + "}",
