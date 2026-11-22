@@ -246,6 +246,7 @@ PREAMBLE = r"""\documentclass[conference,a4paper]{IEEEtran}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb,booktabs,array,graphicx,url}
 \usepackage[hidelinks]{hyperref}
+\usepackage{balance}
 \graphicspath{{word/figures/}}
 \renewcommand{\topfraction}{0.95}
 \renewcommand{\bottomfraction}{0.6}
@@ -266,7 +267,6 @@ PREAMBLE = r"""\documentclass[conference,a4paper]{IEEEtran}
 # same page instead of leaving a column gap.
 FULL_WIDTH_FRACTION = {"area": 0.85}
 TEXT_WIDTH_IN = 7.16  # IEEEtran conference, A4
-BALANCE_AT_REF = 26  # reference before which IEEEtran breaks the column so the last page is balanced
 
 
 def first_cite(seq, kind, fid):
@@ -348,7 +348,7 @@ def build(out: Path) -> None:
     unused = sorted(set(T.REFERENCES) - set(refs.cites))
     if unused:
         raise SystemExit(f"references never cited: {unused}")
-    doc.append(r"\IEEEtriggeratref{" + str(BALANCE_AT_REF) + "}\n")
+    doc.append("\\balance\n")
     doc.append(r"\begin{thebibliography}{" + str(len(refs.cites)) + "}\n")
     for key in refs.cites:
         doc.append(r"\bibitem{" + key + "} " + tex(T.REFERENCES[key], refs) + "\n")
