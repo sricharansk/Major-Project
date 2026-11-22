@@ -50,25 +50,27 @@ KEYWORDS = ["Conformal prediction", "explainable artificial intelligence", "grap
 
 BODY = [
     ("h1", "Introduction", "intro"),
-    ("p", "Congestion in dense city centres is costly in time, fuel and emissions, and most of it is managed at "
-          "signalised intersections. Agencies already publish large volumes of open data on link speeds, weather, "
-          "service requests and incidents, but turning that data into decisions an engineer can trust is still "
-          "hard. A forecast that is only a number gives no hint of when it is likely to be wrong, a black-box "
-          "model gives no reason that an operator can check, and a language model that suggests signal changes "
-          "can invent facts unless it is tied to evidence and to hard rules [@ji2023hallucination]."),
-    ("p", "Short-term traffic forecasting has moved from statistical time-series models to deep sequence models and, "
-          "more recently, to graph neural networks that treat the road network as a graph "
-          "[@vlahogianni2014shortterm, jiang2022gnnsurvey]. Most of this work, however, reports accuracy on "
-          "fixed benchmark files and stops at the point forecast. Fewer studies ask whether the uncertainty is "
-          "calibrated, whether the explanation is faithful, or whether the model still helps when it meets a "
-          "real, delayed data feed. Signal control research, in turn, usually evaluates controllers in simulation "
-          "without tying them to a forecasting model that has been tested on observed data."),
-    ("p", "This paper connects these pieces in one auditable system and evaluates each piece separately and "
-          "honestly. Every output carries one of three labels: **LIVE** for forecasts made from the public feed "
-          "before the target was observed, **REPLAY** for evaluation on held-out history, and **SIMULATION** for "
-          "results from the microscopic simulator. No signal is changed in the real world; the system only "
-          "advises, and every advisory ends in human review."),
-    ("p", "{F:arch} gives an overview of the system. The main contributions are as follows."),
+    ("p", "A traffic engineer watching a busy city grid has to decide, many times a day, whether a slowdown on one "
+          "avenue will spread and whether a signal plan should change. Cities now publish road speeds, weather, "
+          "service requests and incidents as open data, so the raw material for such decisions is freely available."
+          " What is missing is a way of using it that an engineer can check. A single predicted number does not say"
+          " when it may be wrong, a model that gives no reasons cannot be questioned, and a language model asked "
+          "for timing advice may state things that are not true unless its answer is tied to documents and held to "
+          "fixed rules [@ji2023hallucination]."),
+    ("p", "Research on short-term traffic prediction has moved from time-series statistics to deep sequence "
+          "networks and then to graph neural networks that follow the shape of the road network "
+          "[@vlahogianni2014shortterm, jiang2022gnnsurvey]. Most of these studies measure accuracy on a few public "
+          "benchmark files and report a point forecast. Much less is known about three practical questions: are the"
+          " error bands honest, do the explanations reflect what the model really does, and does the model still "
+          "help once it runs on a feed that arrives late? Signal control research has a gap of its own. New "
+          "controllers are usually tested in a simulator, but seldom together with a forecaster that has itself "
+          "been checked against real observations."),
+    ("p", "We join these pieces in a single auditable system and test each one on its own terms. Every output "
+          "carries one of three labels: **LIVE** for forecasts made from the public feed before the target was "
+          "observed, **REPLAY** for evaluation on held-out history, and **SIMULATION** for results from the "
+          "microscopic simulator. No signal is changed in the real world; the system only advises, and every "
+          "advisory ends in human review."),
+    ("p", "{F:arch} gives an overview. The paper makes four contributions."),
     ("pn", "1) **Context-gated graph transformer.** A forecaster that projects six feature groups into a common "
            "space, weights them with an availability-masked softmax gate, mixes information across links with "
            "two GATv2 layers and models time with a Transformer encoder, predicting 15, 30 and 60 minutes ahead."),
@@ -81,9 +83,10 @@ BODY = [
     ("pn", "4) **Three-way evaluation with negative results kept.** A held-out test with multiple seeds and "
            "bootstrap intervals, a 45-run simulation study on a calibrated corridor, and a live test on three "
            "afternoons, in which the model did not beat persistence at short horizons."),
-    ("p", "Section {S:related} reviews related work. Section {S:data} describes the study area and data, Section "
-          "{S:method} the method and Section {S:setup} the experimental setup. Section {S:results} reports and "
-          "discusses the results, Section {S:limits} states the limitations and Section {S:concl} concludes."),
+    ("p", "The rest of the paper is organised as follows. Section {S:related} reviews earlier work and Section "
+          "{S:data} introduces the study area and the data. Section {S:method} explains the method, Section "
+          "{S:setup} the experimental setup and Section {S:results} the results. Section {S:limits} lists the "
+          "limitations, and Section {S:concl} closes the paper."),
 
     ("fig", "arch", "fig01_architecture.png", 7.0,
      "Architecture of the proposed system. The upper row produces calibrated forecasts; the lower row turns a "
@@ -92,63 +95,68 @@ BODY = [
     # ------------------------------------------------------------------------------------------------------
     ("h1", "Related Work", "related"),
     ("h2", "Statistical and Deep Sequence Forecasting"),
-    ("p", "Early short-term forecasting relied on autoregressive and Kalman-type models, which work well on "
-          "stable motorway flow but struggle with the abrupt changes of urban streets. Vlahogianni *et al.* "
-          "[@vlahogianni2014shortterm] surveyed this line of work and set out its open challenges, among them "
-          "network-level prediction and the use of richer data sources. Deep learning entered with stacked autoencoders "
-          "trained on large flow archives [@lv2014bigdata] and with recurrent networks; Ma *et al.* "
-          "[@ma2015lstm] showed that an LSTM captures long temporal dependencies in speed data better than "
-          "classical models. Gated recurrent units [@cho2014gru] offer similar accuracy with fewer parameters and "
-          "remain a strong baseline. Gradient-boosted trees such as XGBoost [@chen2016xgboost] and LightGBM "
-          "[@ke2017lightgbm] are also competitive on tabular lag features and are fast to train, which is why "
-          "both appear as baselines in this study."),
+    ("p", "The first short-term predictors were autoregressive and Kalman-filter models. They suit steady motorway "
+          "flow but cope poorly with the stop-and-go behaviour of city streets. In their review, Vlahogianni *et "
+          "al.* [@vlahogianni2014shortterm] listed the open problems of the field, among them prediction for whole "
+          "networks rather than single sensors and better use of new data sources. Deep learning arrived through "
+          "stacked autoencoders trained on large flow archives [@lv2014bigdata] and through recurrent networks; Ma "
+          "*et al.* [@ma2015lstm] found that an LSTM tracks long-range patterns in microwave-sensor speed data "
+          "better than the classical methods they tried. The gated recurrent unit [@cho2014gru] has fewer "
+          "parameters than an LSTM and is still a hard baseline to beat. Boosted tree ensembles, XGBoost "
+          "[@chen2016xgboost] and LightGBM [@ke2017lightgbm], also do well when traffic history is given to them as"
+          " lag features, and they train quickly, so both serve as baselines here."),
     ("h2", "Graph-Based Spatiotemporal Models"),
-    ("p", "Graph neural networks model the influence of neighbouring roads directly. DCRNN [@li2018dcrnn] treats "
-          "traffic as a diffusion process on a directed graph inside a recurrent encoder-decoder, and STGCN "
-          "[@yu2018stgcn] replaces recurrence with graph and temporal convolutions. Graph WaveNet "
-          "[@wu2019graphwavenet] learns an adaptive adjacency matrix with dilated convolutions, and AGCRN "
-          "[@bai2020agcrn] learns node-specific parameters together with the graph. Attention has become central: "
-          "ASTGCN [@guo2019astgcn] adds spatial and temporal attention to graph convolution, and GMAN "
-          "[@zheng2020gman] stacks multi-attention blocks in an encoder-decoder for long horizons. Graph attention "
-          "networks [@velickovic2017gat] compute neighbour weights from node features, and GATv2 "
-          "[@brody2022gatv2] fixes their static-attention limitation, which is the variant we use. The Transformer "
-          "[@vaswani2017attention] has replaced recurrence for sequence modelling in many domains. Jiang and Luo "
-          "[@jiang2022gnnsurvey] survey this fast-growing family of models. In much of this literature, "
-          "evaluation is carried out on fixed benchmark files, and external context or live data are rarely used."),
+    ("p", "Graph neural networks let the forecast for one road depend directly on the roads around it. DCRNN "
+          "[@li2018dcrnn] describes traffic as diffusion over a directed graph and places this inside a recurrent "
+          "encoder-decoder, while STGCN [@yu2018stgcn] drops recurrence in favour of graph and temporal "
+          "convolutions. Graph WaveNet [@wu2019graphwavenet] learns its own adjacency matrix and pairs it with "
+          "dilated convolutions, and AGCRN [@bai2020agcrn] learns separate parameters for each node as well as the "
+          "graph. Later models lean on attention: ASTGCN [@guo2019astgcn] adds spatial and temporal attention to "
+          "graph convolution, and GMAN [@zheng2020gman] builds a whole encoder-decoder from attention blocks to "
+          "reach longer horizons. In graph attention networks [@velickovic2017gat] the weight given to each "
+          "neighbour is computed from node features; GATv2 [@brody2022gatv2] lets the ranking of neighbours change "
+          "with the node that attends to them, and it is the version used in this work. Beyond traffic, the "
+          "Transformer [@vaswani2017attention] has largely taken over from recurrent networks for sequence data. "
+          "Jiang and Luo [@jiang2022gnnsurvey] give a broad survey of graph models for traffic. A common thread in "
+          "this literature is evaluation on fixed benchmark files, with little use of outside context or live data."),
     ("h2", "Uncertainty Quantification"),
-    ("p", "Conformal prediction [@vovk2005algorithmic] gives prediction intervals with a finite-sample coverage "
-          "guarantee under exchangeability, and the split variant needs only a held-out calibration set "
-          "[@angelopoulos2021gentle]. Traffic data are not exchangeable over time, so coverage can drift. EnbPI "
-          "[@xu2021enbpi] builds intervals for dynamic time series from bootstrap ensembles, adaptive conformal "
-          "inference [@gibbs2021aci] adjusts the miscoverage level online, and Barber *et al.* "
-          "[@barber2023beyond] bound the coverage loss under distribution shift. We use plain split conformal "
-          "per horizon and measure where its coverage breaks down rather than assuming it holds."),
+    ("p", "Conformal prediction [@vovk2005algorithmic] builds intervals that contain the true value at a chosen "
+          "rate in finite samples, as long as the data are exchangeable. Its split form needs nothing more than a "
+          "separate calibration set [@angelopoulos2021gentle]. Traffic observed over time is not exchangeable, so "
+          "the promised coverage can slip. Several remedies have been proposed: EnbPI [@xu2021enbpi] uses bootstrap"
+          " ensembles for dynamic time series, adaptive conformal inference [@gibbs2021aci] moves the target "
+          "miscoverage level as errors come in, and Barber *et al.* [@barber2023beyond] bound how much coverage is "
+          "lost when the distribution shifts. We keep the simple split method with one quantile per horizon and, "
+          "instead of trusting its guarantee, measure where it fails."),
     ("h2", "Explainable Machine Learning"),
-    ("p", "Local surrogate methods such as LIME [@ribeiro2016lime] explain a single prediction with a simple local "
-          "model. SHAP [@lundberg2017shap] unifies several attribution methods through Shapley values, and "
-          "TreeSHAP [@lundberg2020treeshap] computes them exactly for tree ensembles. For deep spatiotemporal "
-          "models, feature-level attributions are hard to read because inputs number in the thousands. We "
-          "therefore compute exact Shapley values over a small set of meaningful feature groups and check them "
-          "against two perturbation tests."),
+    ("p", "LIME [@ribeiro2016lime] explains one prediction by fitting a small, readable model around it. SHAP "
+          "[@lundberg2017shap] brings several such methods under one framework built on Shapley values from game "
+          "theory, and TreeSHAP [@lundberg2020treeshap] computes these values exactly for tree ensembles. Deep "
+          "spatiotemporal models are harder to explain: their inputs run into the thousands, and a list of "
+          "per-feature attributions is too long for an operator to read. Our approach is to group the inputs into a"
+          " few meaningful blocks, compute exact Shapley values over those blocks, and test the result against two "
+          "simple perturbations."),
     ("h2", "Language-Model Agents and Retrieval"),
-    ("p", "Retrieval-augmented generation [@lewis2020rag] grounds a language model in passages retrieved from a "
-          "document store, which reduces but does not remove hallucination [@ji2023hallucination]. Dense "
-          "retrieval with sentence embeddings [@reimers2019sbert] and a vector index [@johnson2019faiss] is now "
-          "standard. ReAct [@yao2023react] lets a model interleave reasoning and tool calls; in a safety-relevant "
-          "setting we take the opposite approach and fix the control flow in code, allowing the model a single, "
-          "schema-bound step."),
+    ("p", "Retrieval-augmented generation [@lewis2020rag] lets a language model answer from passages fetched out of"
+          " a document collection. This lowers the rate of invented content but does not remove it "
+          "[@ji2023hallucination]. Sentence embeddings [@reimers2019sbert] combined with a fast vector index "
+          "[@johnson2019faiss] are the usual way to fetch those passages. Agent designs such as ReAct "
+          "[@yao2023react] let the model decide when to reason and when to call a tool. For signal advice, where a "
+          "wrong step can matter, we do the opposite: the order of steps is fixed in code, and the model is called "
+          "only once, with a strict output schema."),
     ("h2", "Signal Control and Simulation"),
-    ("p", "Signal timing practice is codified in the FHWA Signal Timing Manual [@fhwa2008stm] and the MUTCD "
-          "[@mutcd2009]. Reinforcement-learning controllers such as IntelliLight [@wei2018intellilight] learn "
-          "phase decisions in simulation, and SUMO [@lopez2018sumo] is a widely used open microscopic "
-          "simulator for such studies. A recurring weakness is that the simulated network is rarely calibrated "
-          "against observed speeds, so gains may reflect the testbed rather than the controller. Our simulation "
-          "gate is only used after a preregistered calibration against an observed corridor speed."),
+    ("p", "Signal timing practice in the United States is set out in the FHWA Signal Timing Manual [@fhwa2008stm] "
+          "and in the MUTCD [@mutcd2009]. Learning-based controllers such as IntelliLight [@wei2018intellilight] "
+          "are trained to choose phases inside a simulator, and SUMO [@lopez2018sumo] is a common open simulator "
+          "for such work. A weakness of many of these studies is that the simulated network is never compared with "
+          "measured speeds, so an apparent gain may come from the testbed rather than from the controller. In our "
+          "system the simulation gate is used only after the corridor has passed a calibration against an observed "
+          "speed, under a rule fixed in advance."),
     ("h2", "Research Gap"),
-    ("p", "{T:related} compares representative studies with this work. To our knowledge, no previous study "
-          "combines a graph forecaster on open city data with calibrated intervals, grouped explanations, a "
-          "retrieval-grounded advisory under hard constraints, a calibrated simulation check and a live test, "
-          "while reporting the parts that did not work."),
+    ("p", "{T:related} sets representative studies side by side with this work. We did not find an earlier study "
+          "that brings together a graph forecaster trained on open city data, calibrated intervals, grouped "
+          "explanations, a retrieval-backed advisory held to hard constraints, a calibrated simulation check and a "
+          "live test, and that also reports which parts did not work."),
     ("table", "related"),
 
     # ------------------------------------------------------------------------------------------------------
@@ -206,12 +214,13 @@ BODY = [
     # ------------------------------------------------------------------------------------------------------
     ("h1", "Methodology", "method"),
     ("h2", "System Overview"),
-    ("p", "{F:arch} shows the full system. Public sources pass through an audited ingestion stage into a feature "
-          "and graph builder. The forecaster produces speeds at three horizons, which are wrapped in conformal "
-          "intervals and checked by a reliability gate. Alerts that pass are explained with grouped Shapley "
-          "values and handed to the advisory workflow, which retrieves evidence, drafts an advisory, applies "
-          "safety constraints and, for signal changes, a simulation gate, before a human reviewer sees the "
-          "result. A dashboard and an API expose every stage with its mode label."),
+    ("p", "{F:arch} shows how the parts fit together. Public data enter through an ingestion stage that audits "
+          "every download, and a builder turns them into features and a link graph. The forecaster predicts speed "
+          "at three horizons; each prediction receives a conformal interval and is then checked by a reliability "
+          "gate. An alert that passes is explained with grouped Shapley values and handed to the advisory workflow,"
+          " which fetches evidence, drafts an advisory and applies the safety rules. When a signal change is "
+          "proposed, the simulation gate runs before a person reviews the result. A dashboard and an API show every"
+          " stage together with its mode label."),
     ("h2", "Problem Formulation"),
     ("p", "Let *G* = (*V*, *E*) be the directed link graph. At each 5-minute step *t*, link *v* has a feature vector "
           "*x*_{t,v} split into groups *g* with availability flags *m*_{t,v,g} ∈ {0, 1}. Given the last *L* = 24 "
@@ -246,8 +255,8 @@ BODY = [
           "temporal-only Transformer that equals the proposed model without the graph layers. Ablations remove "
           "the gate (plain concatenation) or one feature group at a time."),
     ("h2", "Conformal Intervals and Reliability Gate"),
-    ("p", "With the model frozen, the absolute residuals on the calibration partition give, for each horizon, the "
-          "split-conformal quantile [@angelopoulos2021gentle]"),
+    ("p", "Once trained, the model is frozen, and its absolute errors on the calibration partition set the interval"
+          " for each horizon. Following the split-conformal recipe [@angelopoulos2021gentle], the half-width is"),
     ("eq", "*q*_{h} = the ⌈(*n* + 1)(1 − *α*)⌉-th smallest of |*y*_{i} − *ŷ*_{i}|,  *α* = 0.1"),
     ("p", "which gives half-widths of 12.1, 13.5 and 14.8 mph. The **reliability gate** defers a forecast when its "
           "interval is wider than 38.1 mph (the 80th percentile of per-link calibration widths), more than 34% of "
@@ -322,7 +331,7 @@ BODY = [
     # ------------------------------------------------------------------------------------------------------
     ("h1", "Results and Discussion", "results"),
     ("h2", "Forecast Accuracy"),
-    ("p", "{T:forecast} and {F:mae} give the test errors. All learned models clearly beat persistence and the "
+    ("p", "{T:forecast} and {F:mae} give the test errors. Every learned model beats persistence and the "
           "historical average. The proposed model has the lowest MAE at 30 and 60 minutes (5.33 and 6.15 mph), "
           "**7%, 12% and 16% below persistence** at the three horizons, with *R*^{2} of 0.69, 0.63 and 0.56 "
           "against 0.55, 0.46 and 0.30 for persistence. At 15 minutes the GRU is best (4.71 mph). The gap between "
@@ -490,14 +499,15 @@ BODY = [
 
     # ------------------------------------------------------------------------------------------------------
     ("h1", "Conclusion and Future Work", "concl"),
-    ("p", "This paper presented an auditable predictive analytics system for city traffic built on open data. A "
-          "context-gated graph transformer lowers forecast error against persistence by 7% to 16% on a held-out "
-          "period and consistently beats a temporal Transformer, although its margin over a GRU is small. "
-          "Conformal intervals with a reliability gate make the forecasts safer to use but under-cover congestion. "
-          "Grouped Shapley values give readable explanations that agree with the ablations. A retrieval-grounded "
-          "language model, bounded by deterministic constraints and a calibrated simulation gate, produced valid, "
-          "cited and conservative advisories, and a forecast-triggered rule cut simulated delay by about 5% under "
-          "stress. Live, at the feed's present delay, the model did not beat persistence at short horizons."),
+    ("p", "We built and tested an auditable system that forecasts city traffic from open data and turns reliable "
+          "alerts into checked advice. The context-gated graph transformer cut forecast error against persistence "
+          "by 7% to 16% on held-out data and beat a temporal Transformer at every horizon, but it was only "
+          "marginally better than a GRU. Conformal intervals with a reliability gate made the forecasts safer to "
+          "act on, although they covered congested periods too rarely. Grouped Shapley values produced explanations"
+          " that an operator can read, and they agreed with the ablations. The language model, held in place by "
+          "retrieval, deterministic rules and a calibrated simulation gate, gave valid, cited and cautious "
+          "advisories, and a forecast-triggered rule reduced simulated delay by about 5% under stress. On the live "
+          "feed, at its present delay, the model did not beat persistence at short horizons."),
     ("p", "Future work will add state-dependent and adaptive conformal intervals, test on more links and longer "
           "live periods with a lower-latency feed, include side-street and pedestrian demand in the testbed, and "
           "invite independent reviewers to label retrieval queries and judge advisories."),    ("fig", "liveshot", "fig18_dash_live.png", 6.6,
