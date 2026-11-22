@@ -258,35 +258,43 @@ PREAMBLE = r"""\documentclass[conference,a4paper]{IEEEtran}
 """
 
 
-# LaTeX-only width of a full-width figure as a fraction of \textwidth. The map is slightly narrower than in
-# the Word layout so that the section heading after it fits on the same page instead of leaving a column gap.
+# LaTeX-only width of a full-width figure as a fraction of \textwidth, overriding the width in the text
+# module. The map is set narrower than in the Word layout so that the section heading after it fits on the
+# same page instead of leaving a column gap.
 FULL_WIDTH_FRACTION = {"area": 0.85}
+TEXT_WIDTH_IN = 7.16  # IEEEtran conference, A4
+
+
+def first_cite(seq, kind, fid):
+    tag = "{" + kind + ":" + fid + "}"
+    for i, b in enumerate(seq):
+        if b[0] in ("p", "pn") and tag in b[1]:
+            return (i, b[1].index(tag))
+    raise SystemExit(f"{kind} never cited in the text: {fid}")
 
 
 def hoist_full_figures(body):
     """Anchor each full-width figure right after the heading of the subsection that first cites it.
 
     In two-column LaTeX a figure* can only appear at the top of a page after its anchor, so an anchor
-    placed after the citing paragraph (right for Word) pushes the figure a page further than needed.
-    Figure numbers follow anchor order, so a hoisted figure is never moved ahead of a column figure
-    that the text cites earlier.
+    placed after the citing paragraph (right for Word) pushes the figure a page further than needed,
+    in the worst case among the references.
     """
-    def first_cite(seq, fid):
-        tag = "{F:" + fid + "}"
-        for i, b in enumerate(seq):
-            if b[0] in ("p", "pn") and tag in b[1]:
-                return (i, b[1].index(tag))
-        raise SystemExit(f"figure never cited: {fid}")
-
     rest = [b for b in body if not (b[0] == "fig" and b[5])]
     for fig in [b for b in body if b[0] == "fig" and b[5]]:
-        cite = first_cite(rest, fig[1])
+        cite = first_cite(rest, "F", fig[1])
         pos = max(i for i, b in enumerate(rest[:cite[0]]) if b[0] in ("h1", "h2")) + 1
-        for i, b in enumerate(rest):
-            if b[0] == "fig" and i >= pos and first_cite(rest, b[1]) < cite:
-                pos = i + 1
+        while pos < len(rest) and rest[pos][0] == "fig" and rest[pos][5]:
+            pos += 1
         rest.insert(pos, fig)
     return rest
+
+
+def figure_numbers(body):
+    """Figure numbers in order of first citation, independent of where the floats are anchored."""
+    figs = [b[1] for b in body if b[0] == "fig"]
+    order = sorted(figs, key=lambda fid: first_cite(body, "F", fid))
+    return {fid: n for n, fid in enumerate(order, 1)}
 
 
 def build(out: Path) -> None:
@@ -298,7 +306,9 @@ def build(out: Path) -> None:
     doc.append(r"\begin{IEEEkeywords}" + "\n" + tex(", ".join(T.KEYWORDS), refs) + "\n" + r"\end{IEEEkeywords}"
                + "\n\n")
     n_fig = n_tab = n_eq = 0
-    for blk in hoist_full_figures(T.BODY):
+    body = hoist_full_figures(T.BODY)
+    numbers = figure_numbers(body)
+    for blk in body:
         kind = blk[0]
         if kind == "h1":
             doc.append(r"\section{" + tex(blk[1], refs) + "}\\label{sec:" + blk[2] + "}\n")
@@ -320,10 +330,12 @@ def build(out: Path) -> None:
             if not (WORD / "figures" / fname).exists():
                 raise SystemExit(f"figure file missing: {fname}")
             env = "figure*" if full else "figure"
-            width = r"\textwidth" if full else r"\columnwidth"
-            if fid in FULL_WIDTH_FRACTION:
-                width = f"{FULL_WIDTH_FRACTION[fid]}\\textwidth"
-            doc.append("\n".join([r"\begin{" + env + "}[!t]", r"\centering",
+            width = r"\columnwidth"
+            if full:
+                frac = FULL_WIDTH_FRACTION.get(fid, min(1.0, width_in / TEXT_WIDTH_IN))
+                width = r"\textwidth" if frac >= 0.999 else f"{frac:.3f}\\textwidth"
+            doc.append("\n".join([r"\setcounter{figure}{" + str(numbers[fid] - 1) + "}",
+                                  r"\begin{" + env + "}[!t]", r"\centering",
                                   r"\includegraphics[width=" + width + "]{" + fname + "}",
                                   r"\caption{" + tex(cap, refs) + "}", r"\label{fig:" + fid + "}",
                                   r"\end{" + env + "}"]) + "\n\n")

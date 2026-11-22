@@ -42,9 +42,10 @@ Conformal prediction, explainable artificial intelligence, graph neural networks
 \end{IEEEkeywords}
 
 \section{Introduction}\label{sec:intro}
+\setcounter{figure}{0}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=\textwidth]{fig01_architecture.png}
+\includegraphics[width=0.978\textwidth]{fig01_architecture.png}
 \caption{Architecture of the proposed system. The upper row produces calibrated forecasts; the lower row turns a reliable alert into an explained, evidence-grounded and rule-checked advisory that always ends in human review. Any failed check exits early with a named status.}
 \label{fig:arch}
 \end{figure*}
@@ -116,9 +117,10 @@ IntelliLight \cite{wei2018intellilight} & -- & -- & -- & -- & -- & \checkmark & 
 
 \section{Study Area and Data}\label{sec:data}
 \subsection{Study Area}
+\setcounter{figure}{1}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=0.85\textwidth]{fig05_study_area.png}
+\includegraphics[width=0.850\textwidth]{fig05_study_area.png}
 \caption{Monitored Manhattan road links (red) on the project dashboard map. The links cover the main avenues, the FDR Drive, the West Side Highway and the tunnel and bridge approaches.}
 \label{fig:area}
 \end{figure*}
@@ -181,6 +183,7 @@ Accepted directed graph edges & 16 \\
 \begin{minipage}{\columnwidth}\scriptsize A link enters the models when at least half of its training period is observed. Missing grid cells are masked in the loss and never scored.\end{minipage}
 \end{table}
 
+\setcounter{figure}{2}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig19_data.png}
@@ -188,6 +191,7 @@ Accepted directed graph edges & 16 \\
 \label{fig:data}
 \end{figure}
 
+\setcounter{figure}{3}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig20_link_heatmap.png}
@@ -224,6 +228,7 @@ This \textbf{availability-masked gate} lets the model keep working when a contex
 \begin{equation}
 \mathcal{L}(\theta) = \frac{1}{|O|} \sum_{(t,v,h)\in O} \operatorname{Huber}_{\delta}\big(y_{t+h,v} - \hat{y}_{t+h,v}\big)
 \end{equation}
+\setcounter{figure}{4}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig02_forecaster.png}
@@ -255,6 +260,7 @@ The knowledge base holds 15 public documents: the FHWA Signal Timing Manual \cit
 
 The workflow in Fig.~\ref{fig:flow} is a fixed state machine. Only the recommendation step calls the language model, an open-weight instruction-tuned model of about seven billion parameters that runs locally, so no data leave the machine. The model receives the forecast, interval, quality flags, attributions, retrieved passages (marked as untrusted text) and the action catalogue, and must return JSON that matches a strict schema and cites only retrieved passages. Every other step is deterministic code.
 
+\setcounter{figure}{5}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig03_workflow.png}
@@ -270,6 +276,7 @@ The testbed is the West Street corridor in lower Manhattan, built from OpenStree
 \subsection{Implementation}
 The system is written in Python as one package of nineteen sub-packages grouped into six layers (Fig.~\ref{fig:modules}). Typed record contracts are shared by all layers, a single command-line entry point runs every stage, and each run writes its configuration, data hashes and metrics so that every reported number can be traced back to the run that produced it. The graph layers use PyTorch Geometric \cite{fey2019pyg}, the workflow is a state graph with a human-review interrupt, and a twelve-page dashboard presents the results with their mode labels.
 
+\setcounter{figure}{6}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig04_modules.png}
@@ -344,6 +351,7 @@ Temporal Transf. & 4.73 & 7.62 & 5.34 & 8.31 & 6.18 & 9.12 \\
 \begin{minipage}{\columnwidth}\scriptsize Held-out test period of 44 days; \emph{n} = 144,217, 144,213 and 144,205 valid targets. Same mask for all models; reference run with seed 42. Bold: lowest MAE.\end{minipage}
 \end{table}
 
+\setcounter{figure}{7}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig06_mae.png}
@@ -375,6 +383,7 @@ $\Delta$ Temporal Transf. & +0.035\newline [+0.019, +0.051] & +0.037\newline [+0
 \begin{minipage}{\columnwidth}\scriptsize Mean $\pm$ standard deviation over seeds 1, 2 and 42. $\Delta$ rows: model minus proposed, with a 95\% paired day-block bootstrap interval; positive values favour the proposed model.\end{minipage}
 \end{table}
 
+\setcounter{figure}{8}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig07_seeds.png}
@@ -383,8 +392,9 @@ $\Delta$ Temporal Transf. & +0.035\newline [+0.019, +0.051] & +0.037\newline [+0
 \end{figure}
 
 \subsection{Ablation and Sensitivity}
-Removing the availability gate raises the mean MAE by 0.067 mph (95\% interval [0.048, 0.086]) and removing the 311 group by 0.014 mph, so both help slightly (Fig.~\ref{fig:ablation}a). Removing weather, however, \textbf{lowers} the error by 0.046 mph: on this test period the weather forecasts added noise rather than signal, and we report this as a negative finding. Shortening the history window raises the error steadily, from 5.43 mph with two hours to 7.11 mph with five minutes (Fig.~\ref{fig:ablation}b), so the model does use its full window.
+Removing the availability gate raises the mean MAE by 0.067 mph (95\% interval [0.048, 0.086]) and removing the 311 group by 0.014 mph, so both help slightly (Table~\ref{tab:ablation}, Fig.~\ref{fig:ablation}a). Removing weather, however, \textbf{lowers} the error by 0.046 mph: on this test period the weather forecasts added noise rather than signal, and we report this as a negative finding. Shortening the history window raises the error steadily, from 5.43 mph with two hours to 7.11 mph with five minutes (Fig.~\ref{fig:ablation}b), so the model does use its full window.
 
+\setcounter{figure}{9}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig08_ablation_window.png}
@@ -443,6 +453,7 @@ The conformal intervals reach 0.909, 0.907 and 0.903 coverage at the three horiz
 \begin{minipage}{\columnwidth}\scriptsize Nominal coverage 0.90. Half-width in mph. Congested: speed below half of free flow. Retained: forecasts that pass the reliability gate.\end{minipage}
 \end{table}
 
+\setcounter{figure}{10}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig09_uncertainty.png}
@@ -451,8 +462,9 @@ The conformal intervals reach 0.909, 0.907 and 0.903 coverage at the three horiz
 \end{figure}
 
 \subsection{Explanations}
-Across twelve explained alerts, the link's own last 30 minutes dominate the attributions (mean absolute value 8.22 mph), followed by its older history (2.04), calendar (1.09) and neighbours (0.52), with weather (0.19) and 311 (0.09) close to zero (Fig.~\ref{fig:shap}a). This agrees with the ablation, in which weather did not help. In one alert on a bridge approach the model predicted 2.25 mph against a background of 26.9 mph (observed 1.24 mph), and the recent-history group accounted for $-$21.3 mph of that drop, a reading an operator can check against the raw series. Removing a link's graph edges changes its predictions by 0.67 to 1.34 mph, and not at all for the West Street link. The LightGBM baseline, explained with TreeSHAP, gives a similar ranking (Fig.~\ref{fig:shap}b): traffic lags take 72\%, 64\% and 52\% of the attribution at 15, 30 and 60 minutes, and calendar terms gain weight with the horizon (18\%, 24\% and 34\%).
+Across twelve explained alerts, the link's own last 30 minutes dominate the attributions (mean absolute value 8.22 mph), followed by its older history (2.04), calendar (1.09) and neighbours (0.52), with weather (0.19) and 311 (0.09) close to zero (Table~\ref{tab:xai}, Fig.~\ref{fig:shap}a). This agrees with the ablation, in which weather did not help. In one alert on a bridge approach the model predicted 2.25 mph against a background of 26.9 mph (observed 1.24 mph), and the recent-history group accounted for $-$21.3 mph of that drop, a reading an operator can check against the raw series. Removing a link's graph edges changes its predictions by 0.67 to 1.34 mph, and not at all for the West Street link. The LightGBM baseline, explained with TreeSHAP, gives a similar ranking (Fig.~\ref{fig:shap}b): traffic lags take 72\%, 64\% and 52\% of the attribution at 15, 30 and 60 minutes, and calendar terms gain weight with the horizon (18\%, 24\% and 34\%).
 
+\setcounter{figure}{11}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig10_shap.png}
@@ -489,16 +501,18 @@ Link identity &  & 5 / 6 / 6 &  \\
 \end{table}
 
 \subsection{Retrieval and Advisory Workflow}
+\setcounter{figure}{12}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=\textwidth]{fig16_dash_retrieval.png}
+\includegraphics[width=0.978\textwidth]{fig16_dash_retrieval.png}
 \caption{Evidence retrieval page of the dashboard: a query about signal timing returns ranked passages from the public manuals, each with its source and similarity score.}
 \label{fig:retshot}
 \end{figure*}
 
+\setcounter{figure}{13}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=\textwidth]{fig17_dash_agent.png}
+\includegraphics[width=0.978\textwidth]{fig17_dash_agent.png}
 \caption{Audit table of advisory runs on the dashboard (REPLAY). Each run records its case, its final decision and the reasons, such as a wide interval, a missing network mapping or an invented evidence identifier.}
 \label{fig:agent}
 \end{figure*}
@@ -556,13 +570,6 @@ Without simulation gate & 4 & 2 & 1 & 1 & 0 \\
 \subsection{Simulation Calibration}
 The testbed did not match reality at first. With Webster-style timing the corridor ran at 5.82 mph against the observed 10.95 mph, and scaling the green split alone never rose above 8.22 mph (Fig.~\ref{fig:calib}, Table~\ref{tab:calib}). A common 90 s cycle reached 8.88 mph, and adding offsets for a 25 mph southbound platoon brought it to \textbf{10.08 mph, inside the $\pm$1.5 mph band}; this cell (green factor 1.5) was selected by the preregistered rule. A 120 s cycle overshot to 13.1 to 21.7 mph. The calibrated network is a scenario testbed tuned to one speed on one link, not a model of the city's actual timing plans. An earlier version of the testbed wrote demand as origin-destination flows, which the simulator re-routes on current travel times \cite{sumodocs_routing}, so part of the traffic left the corridor; an audit found this, and all runs reported here use fixed free-flow routes on the corridor.
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\columnwidth]{fig11_calibration.png}
-\caption{Calibration of the SUMO corridor (SIMULATION): mean simulated speed on the mapped link against the green factor for each timing family. Filled markers are admissible cells; the band is the observed speed $\pm$1.5 mph.}
-\label{fig:calib}
-\end{figure}
-
 \begin{table}[!t]
 \caption{Calibration Grid Summary (SIMULATION)}
 \label{tab:calib}
@@ -587,6 +594,14 @@ Webster & 3 of 5 & 5.82--8.22 & 3.0 / 8.22 & $-$2.73 & no \\
 \subsection{Controller Comparison in Simulation}
 On the calibrated corridor, three controllers were run in three scenarios with five matched seeds, 45 runs in all, none with a teleport (Table~\ref{tab:sim}, Fig.~\ref{fig:ctrl}). The forecast rule extends corridor green by 5 s when the forecast flags congestion. In the routine peak it is never triggered, so it equals fixed time (271.6 s time loss per trip). Under the event surge it lowers time loss from 450.2 s to 426.0 s (\textbf{$-$5.4\%}) and completes 5,910 trips instead of 5,720; in the incident scenario time loss falls from 465.9 s to 443.9 s (\textbf{$-$4.7\%}) with 5,919 trips completed instead of 5,725. The rule wins in every seed, by 12.9 to 33.7 s, and it is not a survivorship effect, because more trips finish rather than fewer. The actuated controller uses the simulator's own uncalibrated programs and is shown only as a reference. These are simulation results on a calibrated scenario testbed without side-street demand or pedestrians; they are \textbf{not evidence of a real-world gain}.
 
+\setcounter{figure}{14}
+\begin{figure}[!t]
+\centering
+\includegraphics[width=\columnwidth]{fig11_calibration.png}
+\caption{Calibration of the SUMO corridor (SIMULATION): mean simulated speed on the mapped link against the green factor for each timing family. Filled markers are admissible cells; the band is the observed speed $\pm$1.5 mph.}
+\label{fig:calib}
+\end{figure}
+
 \begin{table}[!t]
 \caption{Controller Comparison on the Calibrated Corridor (SIMULATION)}
 \label{tab:sim}
@@ -609,6 +624,7 @@ Incident & Fixed time & 465.9 & 5,725 & 536 & 385 \\
 \begin{minipage}{\columnwidth}\scriptsize Mean over five matched seeds; no teleports. Uncalibrated actuated reference: routine 384.8 s, event surge 538.2 s, incident 554.4 s.\end{minipage}
 \end{table}
 
+\setcounter{figure}{15}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig12_controllers.png}
@@ -617,7 +633,15 @@ Incident & Fixed time & 465.9 & 5,725 & 536 & 385 \\
 \end{figure}
 
 \subsection{Live Test}
-Table~\ref{tab:live} and Fig.~\ref{fig:live} give the live results, and Fig.~\ref{fig:liveshot} shows how the dashboard reports the live batches. On the first afternoon the model beat persistence at all three horizons. On the second it lost at 15 and 30 minutes, and on the third it lost at every horizon. Pooled over 274 scored forecasts (two of 276 targets were never published), the MAE is 4.79, 4.94 and 5.48 mph against 4.63, 4.42 and 5.46 mph for persistence: \textbf{persistence is ahead at 15 and 30 minutes and level at 60 minutes}. Coverage held up better, at 0.880, 0.901 and 0.912. The forecasts started from data that were on average 100 to 130 minutes old, and at that age the most recent observed speed is a hard baseline to beat. Restricted to the links eligible for advice, the model's MAE is lower (3.88, 4.22 and 4.70 mph), but with nine afternoon batches this is not a second test set. \textbf{The test-set gain did not carry over to the live feed at its present delay}, and we report this as the main live finding.
+\setcounter{figure}{18}
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.922\textwidth]{fig18_dash_live.png}
+\caption{Live monitoring page of the dashboard (LIVE). Top: the protocol banner with the data age of the latest batch. Middle: live forecasts of one link at 15, 30 and 60 minutes against the observations pulled later. Bottom: the labels that every live batch carries.}
+\label{fig:liveshot}
+\end{figure*}
+
+Table~\ref{tab:live} and Fig.~\ref{fig:live} give the live results. On the first afternoon the model beat persistence at all three horizons. On the second it lost at 15 and 30 minutes, and on the third it lost at every horizon. Pooled over 274 scored forecasts (two of 276 targets were never published), the MAE is 4.79, 4.94 and 5.48 mph against 4.63, 4.42 and 5.46 mph for persistence: \textbf{persistence is ahead at 15 and 30 minutes and level at 60 minutes}. Coverage held up better, at 0.880, 0.901 and 0.912. The forecasts started from data that were on average 100 to 130 minutes old, and at that age the most recent observed speed is a hard baseline to beat. Restricted to the links eligible for advice, the model's MAE is lower (3.88, 4.22 and 4.70 mph), but with nine afternoon batches this is not a second test set. \textbf{The test-set gain did not carry over to the live feed at its present delay}, and we report this as the main live finding.
 
 \begin{table}[!t]
 \caption{Live Forecast Error, Model / Persistence (mph, LIVE)}
@@ -639,6 +663,7 @@ Pooled & -- & 114 & 92 & \textbf{4.79} / \textbf{4.63} & \textbf{4.94} / \textbf
 \begin{minipage}{\columnwidth}\scriptsize Latest-available origin; age is the mean data age when the forecast was issued; \emph{n} at 15 min (the pooled 30 and 60 min rows have 91). Pooled coverage of the 90\% intervals: 0.880, 0.901 and 0.912.\end{minipage}
 \end{table}
 
+\setcounter{figure}{16}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig13_live.png}
@@ -646,15 +671,9 @@ Pooled & -- & 114 & 92 & \textbf{4.79} / \textbf{4.63} & \textbf{4.94} / \textbf
 \label{fig:live}
 \end{figure}
 
-\begin{figure*}[!t]
-\centering
-\includegraphics[width=\textwidth]{fig18_dash_live.png}
-\caption{Live monitoring page of the dashboard (LIVE). Top: the protocol banner with the data age of the latest batch. Middle: live forecasts of one link at 15, 30 and 60 minutes against the observations pulled later. Bottom: the labels that every live batch carries.}
-\label{fig:liveshot}
-\end{figure*}
+Fig.~\ref{fig:livescatter} looks at the individual forecasts. Both the model and persistence follow the observed speeds and their error distributions are similar in shape, but the model's median and 90th-percentile errors are slightly larger (3.25 and 12.3 mph against 3.11 and 11.2 mph), which is enough to put persistence ahead on the pooled MAE. Fig.~\ref{fig:liveshot} shows how the dashboard reports the live batches with their data age and labels.
 
-Fig.~\ref{fig:livescatter} looks at the individual forecasts. Both the model and persistence follow the observed speeds and their error distributions are similar in shape, but the model's median and 90th-percentile errors are slightly larger (3.25 and 12.3 mph against 3.11 and 11.2 mph), which is enough to put persistence ahead on the pooled MAE.
-
+\setcounter{figure}{17}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{fig23_live_scatter.png}
@@ -663,9 +682,10 @@ Fig.~\ref{fig:livescatter} looks at the individual forecasts. Both the model and
 \end{figure}
 
 \subsection{Dashboard and Run Time}
+\setcounter{figure}{19}
 \begin{figure*}[!t]
 \centering
-\includegraphics[width=\textwidth]{fig14_dash_forecast.png}
+\includegraphics[width=0.810\textwidth]{fig14_dash_forecast.png}
 \caption{Multi-horizon forecast page of the dashboard (REPLAY): the observed speed of one link with the 15, 30 and 60 minute forecasts and their 90\% intervals.}
 \label{fig:dash}
 \end{figure*}
