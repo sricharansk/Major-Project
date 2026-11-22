@@ -582,6 +582,12 @@ def build(out: Path) -> None:
                 data = ctypes.encode("utf-8")
             elif item.filename == "docProps/core.xml":
                 data = core.encode("utf-8")
+            elif item.filename == "word/numbering.xml":
+                # one space after the section numeral ("VIII. Conclusion"), so long numerals never run into the
+                # heading text, whatever tab stops the reader's word processor applies
+                data = data.decode("utf-8").replace(  # w:suff must precede w:lvlText (schema order)
+                    '<w:pStyle w:val="Heading1"/><w:lvlText w:val="%1."/>',
+                    '<w:pStyle w:val="Heading1"/><w:suff w:val="space"/><w:lvlText w:val="%1."/>', 1).encode("utf-8")
             zout.writestr(item, data)
         for _, p in figs.media:
             zout.write(p, f"word/media/{p.name}")
