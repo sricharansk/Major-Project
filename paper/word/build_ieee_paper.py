@@ -36,7 +36,7 @@ FIG_NS = ('xmlns:a="http://purl.oclc.org/ooxml/drawingml/main"',
           'xmlns:pic="http://purl.oclc.org/ooxml/drawingml/picture"')
 
 H = (15, 30, 60)
-BALANCE_REF = 0  # reference that opens the right column of the last page (IEEE: last-page columns of equal length)
+BALANCE_REF = 34  # reference that opens the right column of the last page (IEEE: last-page columns of equal length)
 
 
 def rows(path: Path) -> list[dict]:
@@ -470,6 +470,12 @@ def build(out: Path) -> None:
             refs.tables[blk[1]] = len(refs.tables) + 1
         elif blk[0] == "fig":
             fignum[blk[1]] = len(fignum) + 1
+    # IEEE: figures and tables are numbered in the order of their first citation in the text
+    text = " ".join([T.ABSTRACT] + [b[1] for b in T.BODY if b[0] in ("p", "pn")])
+    for tag, numbered in (("F", list(fignum)), ("T", [b[1] for b in T.BODY if b[0] == "table"])):
+        cited = list(dict.fromkeys(re.findall(r"\{%s:(\w+)\}" % tag, text)))
+        if cited != numbered:
+            raise SystemExit(f"{tag} citation order {cited} differs from numbering {numbered}")
 
     zin = zipfile.ZipFile(B.TEMPLATE)
     doc = zin.read("word/document.xml").decode("utf-8")
